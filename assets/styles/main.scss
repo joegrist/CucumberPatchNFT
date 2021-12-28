@@ -1,0 +1,14 @@
+.required:after {
+  content: " *";
+  color: red;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.form-control {
+  &.is-invalid {
+    border: 1px solid #dc3545;
+  }
+}

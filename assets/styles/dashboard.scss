@@ -1,0 +1,16 @@
+@media (min-width: 576px) {
+    .tab-content {
+        .card-deck {
+            display: initial
+        }
+    }
+}
+
+@media (min-width: 1200px) {
+    .tab-content {
+        .card-deck {
+            display: flex;
+        }
+    }
+
+}
