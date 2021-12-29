@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<b-navbar toggleable="lg" type="dark" variant="dark">
-			<b-navbar-brand to="/">
+			<b-navbar-brand href="https://zerocodenft.com">
 				ZERO Code NFT
 				<!-- <b-img img src="/icon.png" alt="logo" width="50px" /> -->
 			</b-navbar-brand>
