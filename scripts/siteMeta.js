@@ -1,8 +1,8 @@
 const type = "website";
-const url = "https://nextflip.io";
-const title = "Next Flip";
-const description = "Upcoming NFT drops for all blockchains under one roof!";
-const mainImage = "https://nextflip.io/icon.png";
+const url = "https://zerocodenft.com";
+const title = "Zero Code NFT";
+const description = "Drop Your NFT Collection With ZERO Coding Skills";
+const mainImage = "https://zerocodenft.com/icon.png";
 const twitterCard = "summary_large_image";
 
 export default (meta) => {

@@ -76,11 +76,24 @@ export const ETHEREUM_RINKEBY = {
 	blockExplorerUrls: ['https://rinkeby.etherscan.io'],
 }
 
+export const ETHEREUM_MAINNET = {
+	chainId: '1',
+	chainName: 'Mainnet',
+	nativeCurrency: {
+		name: 'Ethereum',
+		symbol: 'ETH',
+		decimals: 18
+	},
+	rpcUrls: [],
+	blockExplorerUrls: ['https://etherscan.io'],
+}
+
 export const CHAINID_CONFIG_MAP = {
 	'43114': AVALANCHE_MAINNET_PARAMS,
 	'43113': AVALANCHE_TESTNET_PARAMS,
 	'80001': POLYGON_MUMBAI_TESTNET_CONFIG,
 	'4': ETHEREUM_RINKEBY,
+	'1': ETHEREUM_MAINNET,
 	'4002': FANTOM_TESTNET_CONFIG,
 	
 	'0xA86A': AVALANCHE_MAINNET_PARAMS,
@@ -88,5 +101,6 @@ export const CHAINID_CONFIG_MAP = {
 	'0x89': POLYGON_MAINNET_PARAMS,
 	'0x13881': POLYGON_MUMBAI_TESTNET_CONFIG,
 	'0x4': ETHEREUM_RINKEBY,
+	'0x1': ETHEREUM_MAINNET,
 	'0xfa2': FANTOM_TESTNET_CONFIG
 }
