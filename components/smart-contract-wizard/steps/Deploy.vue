@@ -35,20 +35,20 @@
               <b-button variant='primary' ref='deployBtn' :disabled='!canDeploy' @click='deploy'>Deploy contract
               </b-button>
             </b-overlay>
-            <b-button @click="postOrUpdate" :disabled='deployed || deploymentInProgress'>Save Draft</b-button>
+            <b-button @click="saveDraft()" :disabled='smartContractBuilder.isDeployed || deploymentInProgress'>Save Draft</b-button>
           </div>
         </b-col>
       </b-row>
-      <b-row v-if="contractAddress">
+      <b-row v-if="smartContractBuilder.address">
         <b-col>
-          Deployed contract address: {{ contractAddress }}
+          Deployed contract address: {{ smartContractBuilder.address }}
         </b-col>
       </b-row>
     </b-container>
     <b-modal id='deployment' title='Deployed' size='md' centered ok-only>
       <div class='text-center'>
         <h3>Success!!</h3>
-        <p>Contract has been deployed! Address: {{ contractAddress }}</p>
+        <p>Contract has been deployed! Address: {{ smartContractBuilder.address }}</p>
       </div>
     </b-modal>
   </b-form>
@@ -63,8 +63,6 @@ export default {
   data() {
     return {
       deploymentInProgress: false,
-      deployed: false,
-      contractAddress: ''
     }
   },
   validations: {
@@ -72,7 +70,7 @@ export default {
   },
   computed: {
     canDeploy() {
-      return !this.deployed && this.smartContractBuilder.email && !this.deploymentInProgress
+      return !this.smartContractBuilder.isDeployed && this.smartContractBuilder.email && !this.deploymentInProgress
     }
   },
   methods: {
@@ -80,47 +78,31 @@ export default {
       // Return focus to the button once hidden
       this.$refs.deployBtn.focus()
     },
-    async postOrUpdate() {
+    async saveDraft() {
       try {
-        if(!this.smartContractBuilder.id) {
-
-          const res = await this.$axios.post('/smartcontracts', {
-            ...this.smartContractBuilder,
-            ownerAddress: this.$wallet.account,
-            voucherSigner: this.smartContractBuilder.hasWhitelist 
-              ? ethers.Wallet.createRandom().address 
-              : null
-          })
-
-          const { id, abi, bytecode } = res.data
-
-          this.updateSmartContractBuilder({
-            id,
-            abi,
-            bytecode
-          })
-
-        }
-
-        else {
-          const payload = {
-            ownerAddress: this.$wallet.account,
-            ...this.smartContractBuilder
-          }
-
-          delete payload.abi
-          delete payload.bytecode
-
-          await this.$axios.put(`/smartcontracts/${this.smartContractBuilder.id}`, payload)
-        }
-
-        this.$bvToast.toast(`Draft saved!`, {
-          title: 'Draft',
-          variant: 'info',
-          autoHideDelay: 4000,
+        const res = await this.$axios.post('/smartcontracts/save-draft', {
+          ...this.smartContractBuilder,
+          ownerAddress: this.$wallet.account,
+          voucherSigner: this.smartContractBuilder.hasWhitelist 
+            ? ethers.Wallet.createRandom().address 
+            : null
         })
-      } catch (e) {
-        this.$bvToast.toast(`Error while updating the contract`, {
+
+        const { id } = res.data
+        this.updateSmartContractBuilder({
+            id
+        })
+
+        this.$bvToast.toast('Draft saved', {
+            title: 'Draft',
+            variant: 'info',
+            autoHideDelay: 4000,
+        })
+
+        return id
+
+      } catch (err) {
+        this.$bvToast.toast('Failed to save the draft', {
           title: 'Error',
           variant: 'danger',
           autoHideDelay: 4000,
@@ -128,42 +110,36 @@ export default {
       }
     },
     async deploy() {
-      if (!window.ethereum) {
-        alert('Metamask extension is not isntalled')
-        return
-      }
-      if (!this.$wallet.account) {
-        alert('Wallet is not connected')
-        return
-      }
-
       try {
 
         this.deploymentInProgress = true
 
-        await this.postOrUpdate()
+        const id = await this.saveDraft()
 
-        const { id, abi, bytecode } = this.smartContractBuilder
+        const compilationResult = await this.$axios.post(`smartcontracts/${id}/compile`)
 
-        // console.log(bytecode, abi)
+        const { abi, bytecode } = compilationResult.data
+
+        console.log(bytecode, abi)
 
         this.provider = new ethers.providers.Web3Provider(window.ethereum)
         this.signer = this.provider.getSigner()
 
-        const contractFactory = new ethers.ContractFactory(abi, bytecode, this.signer)
+        const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, this.signer)
         const contract = await contractFactory.deploy()
-        this.contractAddress = contract.address
 
-        await this.$axios.put(`/smartcontracts/${id}`, {
-          ...this.smartContractBuilder,
+        await this.$axios.patch(`/smartcontracts/${id}/deployed`, {
           ownerAddress: this.$wallet.account,
           address: contract.address,
-          isDeployed: true,
+        })
+
+        this.updateSmartContractBuilder({
+            isDeployed: true,
+            address: contract.address
         })
 
         console.log({ contract })
 
-        this.deployed = true
         this.$bvModal.show('deployment')
       } catch (e) {
         console.error(e)

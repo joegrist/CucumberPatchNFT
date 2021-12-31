@@ -98,9 +98,25 @@ export const CHAINID_CONFIG_MAP = {
 	
 	'0xA86A': AVALANCHE_MAINNET_PARAMS,
 	'0xA869': AVALANCHE_TESTNET_PARAMS,
-	'0x89': POLYGON_MAINNET_PARAMS,
 	'0x13881': POLYGON_MUMBAI_TESTNET_CONFIG,
+	'0x89': POLYGON_MAINNET_PARAMS,
 	'0x4': ETHEREUM_RINKEBY,
 	'0x1': ETHEREUM_MAINNET,
-	'0xfa2': FANTOM_TESTNET_CONFIG
+	'0xFA2': FANTOM_TESTNET_CONFIG
+}
+
+export const isTestnet = (chainId) => {
+	return ['43113', '80001', '4', '4002', '0xA869', '0x13881', '0x4', '0xFA2'].includes(chainId)
+}
+
+export function getExplorerUrl(chainId) {
+	return CHAINID_CONFIG_MAP[chainId]?.blockExplorerUrls[0]
+}
+
+export function getCurrency(chainId) {
+	return CHAINID_CONFIG_MAP[chainId]?.nativeCurrency.symbol
+}
+
+export function getNetwork(chainId) {
+	return CHAINID_CONFIG_MAP[chainId]?.chainName
 }

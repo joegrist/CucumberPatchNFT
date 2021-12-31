@@ -38,7 +38,7 @@ import Rolyalties from '~/components/smart-contract-wizard/steps/Rolyalties.vue'
 import Verify from '~/components/smart-contract-wizard/steps/Verify.vue'
 import Deploy from '~/components/smart-contract-wizard/steps/Deploy.vue'
 import getSiteMeta from "@/scripts/siteMeta";
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 
 export default {
     head() {
@@ -140,6 +140,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['updateSmartContractBuilder']),
     // Executed when @completed-step event is triggered
     completeStep(payload) {
       this.buildSteps.forEach((step) => {
@@ -160,11 +161,9 @@ export default {
     },
     // Executed when @stepper-finished event is triggered
     alert(payload) {
-      if(this.smartContractBuilder?.id) {
+      if(this.smartContractBuilder?.id || confirm("You are about to lose all your changes. Are you sure you want to finish ?")) {
+        this.updateSmartContractBuilder({})
         this.$router.push('/dashboard')
-      } else {
-        //smart contract wasn't saved, confirm navigation
-        confirm("You are about to lose all your changes. Are you sure you want to finish ?") && this.$router.push('/dashboard')
       }
     }
   }
