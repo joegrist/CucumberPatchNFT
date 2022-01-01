@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { ethers } from 'ethers'
-import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
+import { getCurrency } from '@/constants/metamask'
 
 
 export default ({env}, inject) => {
@@ -26,7 +26,7 @@ export default ({env}, inject) => {
                 this.accountCompact = `${newAccount.substring(0, 4)}...${newAccount.substring(newAccount.length - 4)}`
 
                 const balance = (await this.provider.getBalance(newAccount)).toString()
-                this.balance = `${(+ethers.utils.formatEther(balance)).toFixed(3)} ${CHAINID_CONFIG_MAP[this.network.chainId]?.nativeCurrency.symbol}`
+                this.balance = `${(+ethers.utils.formatEther(balance)).toFixed(3)} ${getCurrency(this.network.chainId)}`
             }
             else {
                 this.account = null

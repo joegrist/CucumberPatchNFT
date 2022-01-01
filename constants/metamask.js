@@ -61,7 +61,19 @@ export const FANTOM_TESTNET_CONFIG = {
 		decimals: 18,
 	},
 	rpcUrls: ['https://rpc.testnet.fantom.network'],
-	blockExplorerUrls: ['https://testnet.fantom.network'],
+	blockExplorerUrls: ['https://testnet.ftmscan.com'],
+}
+
+export const FANTOM_MAINNET_CONFIG = {
+	chainId: '0xFA',
+	chainName: 'Fantom Opera',
+	nativeCurrency: {
+		name: 'Fantom',
+		symbol: 'FTM',
+		decimals: 18,
+	},
+	rpcUrls: ['https://rpc.ftm.tools'],
+	blockExplorerUrls: ['https://ftmscan.com'],
 }
 
 export const ETHEREUM_RINKEBY = {
@@ -77,7 +89,7 @@ export const ETHEREUM_RINKEBY = {
 }
 
 export const ETHEREUM_MAINNET = {
-	chainId: '1',
+	chainId: '0x1',
 	chainName: 'Mainnet',
 	nativeCurrency: {
 		name: 'Ethereum',
@@ -95,6 +107,7 @@ export const CHAINID_CONFIG_MAP = {
 	'4': ETHEREUM_RINKEBY,
 	'1': ETHEREUM_MAINNET,
 	'4002': FANTOM_TESTNET_CONFIG,
+	'250': FANTOM_MAINNET_CONFIG,
 	
 	'0xA86A': AVALANCHE_MAINNET_PARAMS,
 	'0xA869': AVALANCHE_TESTNET_PARAMS,
@@ -102,7 +115,8 @@ export const CHAINID_CONFIG_MAP = {
 	'0x89': POLYGON_MAINNET_PARAMS,
 	'0x4': ETHEREUM_RINKEBY,
 	'0x1': ETHEREUM_MAINNET,
-	'0xFA2': FANTOM_TESTNET_CONFIG
+	'0xFA2': FANTOM_TESTNET_CONFIG,
+	'0xFA': FANTOM_MAINNET_CONFIG
 }
 
 export const isTestnet = (chainId) => {
@@ -119,4 +133,13 @@ export function getCurrency(chainId) {
 
 export function getNetwork(chainId) {
 	return CHAINID_CONFIG_MAP[chainId]?.chainName
+}
+
+export function getMainnetConfig(testnetChainId) {
+	if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
+	if(['1', '0x1'].includes(testnetChainId)) return ETHEREUM_MAINNET
+	// if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
+	// if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
+
+	throw new Error("Matching mainnet config not found")
 }

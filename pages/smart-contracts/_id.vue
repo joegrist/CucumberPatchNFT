@@ -1,14 +1,22 @@
 <template>
 	<b-container class="mt-5">
 		<b-row>
-			<b-col sm="12" md="8">
-				<h2>Interact with smart contract at 
+			<b-col sm="12" md="9">
+				<h3>Interact with smart contract at 
 					<br/> 
-					<b-link :to="`https://${getExplorerUrl(rawContract.chainId)}/address/${rawContract.address}`">{{ rawContract.address }}</b-link>
-				</h2>
+					<b-link :href="`${getExplorerUrl(rawContract.chainId)}/address/${rawContract.address}`" target="_blank">{{ rawContract.address }}</b-link>
+				</h3>
 			</b-col>
-			<b-col sm="12" md="4">
-				<!-- <b-button>Deploy to Mainnet</b-button> -->
+			<b-col sm="12" md="3" class="d-flex flex-column align-items-end">
+				<b-overlay
+					:show='isBusy'
+					rounded
+					opacity='0.6'
+					spinner-small
+				>
+					<b-button v-if="isTestnet(rawContract.chainId)" class="w-100" :disabled="isBusy" @click="onMainnetDeploy">Deploy to Mainnet</b-button>
+				</b-overlay>
+				<p class="lead font-weight-bold">Contract Balance: {{ contractBalance }}</p>
 			</b-col>
 		</b-row>
 		<b-row>
@@ -20,7 +28,7 @@
 							<b-badge pill size="sm" variant="success">Eco</b-badge>
 						</b-button>
 
-						<h4 class="d-inline pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</h4>
+						<span class="lead font-weight-bold align-middle pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</span>
 
 						<ul v-if="func.inputs.length > 0">
 							<li v-for="(param, idx) in func.inputs.filter(x => !x.name.startsWith('_'))" :key="idx">
@@ -40,7 +48,7 @@
 							<b-badge pill size="sm" variant="warning">Gas</b-badge>
 						</b-button>
 
-						<h4 class="d-inline pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</h4>
+						<span class="lead font-weight-bold align-middle pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</span>
 
 						<ul v-if="func.inputs.length > 0">
 							<li v-for="(param, idx) in func.inputs.filter(x => !x.name.startsWith('_'))" :key="idx">
@@ -57,25 +65,20 @@
 
 <script>
 import Vue from 'vue'
-import { CHAINID_CONFIG_MAP, getExplorerUrl, getCurrency } from '@/constants/metamask'
+import { getExplorerUrl, getCurrency, isTestnet, getMainnetConfig } from '@/constants/metamask'
 import { ethers } from 'ethers';
 import { isNumber } from 'lodash-es'
 const FormatTypes = ethers.utils.FormatTypes;
 
-const paramTypeInputTypeMap = {
-	address: 'text',
-	uint128: 'number',
-	uint256: 'number',
-}
-
 export default {
     data: () => ({
 		FormatTypes,
-		paramTypeInputTypeMap,
 		rawContract: {},
 		contract: {},
 		responses: {},
-		callFuncArgs: {}
+		callFuncArgs: {},
+		contractBalance: 0,
+		isBusy: false
 	}),
 	computed: {
 		greenFunctions() {
@@ -92,19 +95,93 @@ export default {
 	fetchKey: 'smart-contracts-id',
 	async fetch() {
 		if (!this.$wallet.account) return
+
 		const { data } = await this.$axios.get(`/smartcontracts/${this.$route.params.id}`, {
 			params: { ownerAddress: this.$wallet.account },
 		})
-		this.rawContract = data
-		this.contract = new ethers.Contract(data.address, data.abi, await this.$wallet.provider.getSigner())
 
-		console.log('smart-contract', this.contract)
+		const { address, chainId, abi } = data
+		this.rawContract = data
+		this.contract = new ethers.Contract(address, abi, await this.$wallet.provider.getSigner())
+		this.contractBalance = await this.$wallet.provider.getBalance(address) + ' ' + getCurrency(chainId)
+
+		console.log('smart-contract', this.rawContract, this.contract, this.contractBalance)
 	},
 	methods: {
 		getExplorerUrl,
+		isTestnet,
 		onParamChange(value, func, param) {
 			const args = this.callFuncArgs[func.name] ??= new Map()
 			args.set(param.name, value)
+		},
+		async switchNetwork(chainId) {
+			const config = getMainnetConfig(chainId)
+
+			let switchError
+
+			try {
+				await this.$wallet.provider.send('wallet_switchEthereumChain', [
+					{ chainId: config.chainId },
+				])
+			} catch (err) {
+				// This error code indicates that the chain has not been added to MetaMask.
+				if (err.code === 4902) {
+					try {
+						await this.$wallet.provider.send('wallet_addEthereumChain', [config])
+					} catch (addError) {
+						switchError = err
+					}
+				} else {
+					// handle other "switch" errors
+					switchError = err
+				}
+			} finally {
+				if(switchError) {
+					this.$bvToast.toast(switchError.message || 'Network switch failed', {
+						title: 'Network',
+						variant: 'danger',
+						autoHideDelay: 3000,
+					})
+				}
+			}
+		},
+		async onMainnetDeploy() {
+			try {
+				const { id, chainId } = this.rawContract
+
+				const mainnetConfig = getMainnetConfig(chainId)
+				console.log({mainnetConfig})
+
+				if(this.$wallet.network.chainId.toString(16) !== mainnetConfig.chainId) {
+					console.log('swithcing network')
+					await this.switchNetwork(chainId)
+				}
+
+				this.isBusy = true
+
+				const { data } = await this.$axios.get(`/smartcontracts/${id}/compiled`, {
+					params: { ownerAddress: this.$wallet.account },
+				})
+				const { abi, bytecode } = data
+
+				const signer = new ethers.providers.Web3Provider(window.ethereum)?.getSigner()
+				const contractFactory = new ethers.ContractFactory(abi, bytecode, signer)
+				const contract = await contractFactory.deploy()
+				
+				alert(`Deployed to: ${contract.address}`)
+
+				//TODO: call API
+				
+				// this.router.push(`/smart-contracts/${id}`)
+			} catch (err) {
+				this.isBusy = false
+				console.error({err})
+				this.$bvToast.toast(err.message || 'Deployment failed', {
+					title: 'Mainnet Deployment',
+					variant: 'danger',
+					autoHideDelay: 3000,
+				})
+			}
 		},
 		async callFunc(func, idx) {
 			try{
@@ -120,15 +197,17 @@ export default {
 				
 				let txResponse
 
-				const hasFuncArgs = !!this.callFuncArgs[func.name]
+				const hasFuncArgs = this.callFuncArgs[func.name]?.size > 0
 				if(hasFuncArgs) {
-					const args = [...this.callFuncArgs[func.name].values()]
-						.map(value => {
-							console.log(value, isNumber(value))
+					// to preserve correct argument order we run mapping based on original function inputs order 
+					// since we can't guarantee the correct order in callFuncArgs Map
+					const args = func.inputs
+						.map(x => {
+							const value = this.callFuncArgs[func.name].get(x.name) || null
 							return isNumber(value) 
 								? ethers.BigNumber.from(value) 
 								: value
-						})
+							})
 					console.log({args})
 					txResponse = await this.contract[`${func.name}`].call(null, ...args, txOverrides)
 				}
@@ -139,9 +218,9 @@ export default {
 				console.log({ txResponse });
 				
 				if(func.constant) {
-					let value
-					if(func.name.includes('PRICE')) value = ethers.utils.formatEther(txResponse) + ' ' + getCurrency(this.rawContract.chainId)
-					else value = txResponse.toString()
+					const value = func.name.includes('PRICE') 
+						? ethers.utils.formatEther(txResponse) + ' ' + getCurrency(this.rawContract.chainId)
+						: txResponse.toString()
 
 					Vue.set(this.responses, func.name, value)
 
