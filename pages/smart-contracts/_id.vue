@@ -16,14 +16,14 @@
 				<h3 class="text-success text-center py-3">Eco Friendly 🌱</h3>
 				<ul>
 					<li class="mb-2" v-for="(func, idx) in greenFunctions" :key="idx">
-						<b-button class="text-capitalized" @click="callFunc(func, idx)">{{func.name | startCase}} 
+						<b-button @click="callFunc(func, idx)">{{func.name | startCase}} 
 							<b-badge pill size="sm" variant="success">Eco</b-badge>
 						</b-button>
 
 						<h4 class="d-inline pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</h4>
 
 						<ul v-if="func.inputs.length > 0">
-							<li v-for="(param, idx) in func.inputs" :key="idx">
+							<li v-for="(param, idx) in func.inputs.filter(x => !x.name.startsWith('_'))" :key="idx">
 								<span> {{ param.name }} </span>
 								<b-input @change="val => onParamChange(val, func, param)" />
 							</li>
@@ -37,9 +37,17 @@
 					<li class="mb-2" v-for="(func, idx) in gasFunctions" :key="idx">
 						<b-button @click="callFunc(func)">{{func.name | startCase}} 
 							<b-badge v-if="func.payable" pill size="sm" variant="warning">Payable</b-badge>
-							<b-badge v-if="!func.constant" pill size="sm" variant="warning">Gas</b-badge>
+							<b-badge pill size="sm" variant="warning">Gas</b-badge>
 						</b-button>
+
 						<h4 class="d-inline pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</h4>
+
+						<ul v-if="func.inputs.length > 0">
+							<li v-for="(param, idx) in func.inputs.filter(x => !x.name.startsWith('_'))" :key="idx">
+								<span> {{ param.name }} </span>
+								<b-input @change="val => onParamChange(val, func, param)" />
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</b-col>
@@ -49,7 +57,7 @@
 
 <script>
 import Vue from 'vue'
-import { CHAINID_CONFIG_MAP, getExplorerUrl, getCurrency, getNetwork, isTestnet } from '@/constants/metamask'
+import { CHAINID_CONFIG_MAP, getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { ethers } from 'ethers';
 import { isNumber } from 'lodash-es'
 const FormatTypes = ethers.utils.FormatTypes;
@@ -144,8 +152,18 @@ export default {
 					})
 				}
 				else {
+					this.$bvToast.toast(`Transaction hash: ${txResponse.hash}`, {
+						title: `Processing ${func.name}`,
+						variant: 'success',
+						autoHideDelay: 5000
+					})
 					txResponse.wait().then(async (res) => {
 						console.log({ res });
+						this.$bvToast.toast(`Transaction ${txResponse.hash} completed`, {
+							title: `${func.name} completed`,
+							variant: 'success',
+							autoHideDelay: 5000
+						})
 					});
 				}
 			} catch (err) {
