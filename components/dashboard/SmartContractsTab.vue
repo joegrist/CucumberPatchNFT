@@ -1,5 +1,5 @@
 <template>
-	<b-card-group v-if="items.length > 0" class="p-4" deck>
+	<b-card-group v-if="items.length > 0" class="m-3" deck>
 		<b-card v-for="sc in items" :key="sc.id">
 			<template #header>
 				<h6 class="mb-0">{{ sc.name | startCase }}</h6>
@@ -8,12 +8,12 @@
 				<ul class="px-3">
 					<li>Symbol: {{ sc.symbol }}</li>
 					<li>Price: {{ sc.mintPrice }} {{ getCurrency(sc.chainId) }}</li>
+					<li>Blockchain: {{ sc.blockchain | blockchainName }}</li>
+					<li>Network: {{ getNetwork(sc.chainId) }}</li>
 					<li>Whitelist: {{ sc.hasWhitelist | yesNo }}</li>
 					<li>Delayed Reveal: {{ sc.hasDelayedReveal | yesNo }}</li>
-					<li>Blockchain: {{ sc.blockchain | blockchainName }}</li>
-					<li class="text-info">Network: {{ getNetwork(sc.chainId) }}</li>
                     <li class="text-info">Status: {{sc.isDeployed ? 'Live': 'Draft'}}</li>
-					<li>Created On {{ sc.createdOn }} </li>
+					<li>Created: {{ sc.createdOn | toDate }}</li>
 				</ul>
 			</b-card-text>
 			<template #footer>
@@ -50,7 +50,7 @@
 
 <script>
 import { mapMutations } from 'vuex'
-import { CHAINID_CONFIG_MAP, getExplorerUrl, getCurrency, getNetwork, isTestnet } from '@/constants/metamask'
+import { getExplorerUrl, getCurrency, getNetwork, isTestnet } from '@/constants/metamask'
 
 export default {
 	data: () => ({

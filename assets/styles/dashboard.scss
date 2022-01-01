@@ -1,16 +1,5 @@
-@media (min-width: 576px) {
-    .tab-content {
-        .card-deck {
-            display: initial
-        }
+@media (max-width: 1500px) {
+    .card-deck {
+        display: inline;
     }
-}
-
-@media (min-width: 1200px) {
-    .tab-content {
-        .card-deck {
-            display: flex;
-        }
-    }
-
 }
