@@ -20,7 +20,7 @@
 							<b-badge pill size="sm" variant="success">Eco</b-badge>
 						</b-button>
 
-						<span class="pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</span>
+						<h4 class="d-inline pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</h4>
 
 						<ul v-if="func.inputs.length > 0">
 							<li v-for="(param, idx) in func.inputs" :key="idx">
@@ -39,7 +39,7 @@
 							<b-badge v-if="func.payable" pill size="sm" variant="warning">Payable</b-badge>
 							<b-badge v-if="!func.constant" pill size="sm" variant="warning">Gas</b-badge>
 						</b-button>
-						<span class="pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</span>
+						<h4 class="d-inline pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</h4>
 					</li>
 				</ul>
 			</b-col>
@@ -51,6 +51,7 @@
 import Vue from 'vue'
 import { CHAINID_CONFIG_MAP, getExplorerUrl, getCurrency, getNetwork, isTestnet } from '@/constants/metamask'
 import { ethers } from 'ethers';
+import { isNumber } from 'lodash-es'
 const FormatTypes = ethers.utils.FormatTypes;
 
 const paramTypeInputTypeMap = {
@@ -94,11 +95,8 @@ export default {
 	methods: {
 		getExplorerUrl,
 		onParamChange(value, func, param) {
-			const args = this.callFuncArgs[func.name] ??= new Set()
-			args.add({
-				name: param.name,
-				value: value
-			})
+			const args = this.callFuncArgs[func.name] ??= new Map()
+			args.set(param.name, value)
 		},
 		async callFunc(func, idx) {
 			try{
@@ -117,13 +115,15 @@ export default {
 				const hasFuncArgs = !!this.callFuncArgs[func.name]
 				if(hasFuncArgs) {
 					const args = [...this.callFuncArgs[func.name].values()]
-						.map(param => {
-							console.log(param.value, isNaN(param.value))
-							return isNaN(param.value) ? param.value : ethers.BigNumber.from(param.value)
+						.map(value => {
+							console.log(value, isNumber(value))
+							return isNumber(value) 
+								? ethers.BigNumber.from(value) 
+								: value
 						})
 					console.log({args})
-					txResponse = await this.contract[`${func.name}`].call(...args, txOverrides)
-				} 
+					txResponse = await this.contract[`${func.name}`].call(null, ...args, txOverrides)
+				}
 				else {
 					txResponse = await this.contract[`${func.name}`](txOverrides)
 				}
@@ -136,6 +136,12 @@ export default {
 					else value = txResponse.toString()
 
 					Vue.set(this.responses, func.name, value)
+
+					this.$bvToast.toast(`Returned value: ${value}`, {
+						title: func.name,
+						variant: 'success',
+						autoHideDelay: 5000
+					})
 				}
 				else {
 					txResponse.wait().then(async (res) => {
@@ -144,7 +150,7 @@ export default {
 				}
 			} catch (err) {
 				console.error({err});
-				this.$bvToast.toast(err.reason || err.message || 'Function call failed', {
+				this.$bvToast.toast(err.data?.message || err.reason || err.message || 'Function call failed', {
 					title: err.code || 'Error',
 					variant: 'danger',
 					autoHideDelay: 5000

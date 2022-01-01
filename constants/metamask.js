@@ -60,8 +60,8 @@ export const FANTOM_TESTNET_CONFIG = {
 		symbol: 'FTM',
 		decimals: 18,
 	},
-	rpcUrls: ['https://rpc.testnet.fantom.network/'],
-	blockExplorerUrls: ['https://testnet.fantom.network/'],
+	rpcUrls: ['https://rpc.testnet.fantom.network'],
+	blockExplorerUrls: ['https://testnet.fantom.network'],
 }
 
 export const ETHEREUM_RINKEBY = {
