@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { ethers } from 'ethers'
 import { getCurrency } from '@/constants/metamask'
+import MetaMaskOnboarding from '@metamask/onboarding'
 
 
 export default ({env}, inject) => {
@@ -35,47 +36,50 @@ export default ({env}, inject) => {
             }
         },
         async connect() {
-            if (!window.ethereum) {
-                throw new Error("Metamask is not installed")
+            if(!MetaMaskOnboarding.isMetaMaskInstalled()) {
+                const onboarding = new MetaMaskOnboarding()
+                onboarding.startOnboarding()
+                return
             }
         
+            wallet.network = await wallet.provider.getNetwork()
+
             const [account] = await wallet.provider.send('eth_requestAccounts')
             console.log('wallet connect', {account})
-
-            wallet.network = await wallet.provider.getNetwork()
 
             if(account) {
                 await wallet.setAccount(account)
             }
-
         },
     })
 
-    window.ethereum.on('connect', (data) => {
-        console.log('connect', data)
-    })
+    if(window.ethereum) {
+        window.ethereum.on('connect', (data) => {
+            console.log('connect', data)
+        })
+    
+        window.ethereum.on('disconnect', (data) => {
+            console.log('disconnect', data)
+        })
+    
+        window.ethereum.on('accountsChanged', ([newAddress]) => {
+            console.log('accountsChanged', newAddress)
+            wallet.setAccount(newAddress)
+        })
+    
+        window.ethereum.on('chainChanged', (chainId) => {
+            console.log('chainChanged', chainId)
+            setTimeout(() => {
+                window.location.reload()
+            }, 200)
+        })
+    
+        window.ethereum.on('error', (e) => {
+            console.error('on error', e)
+        })
 
-    window.ethereum.on('disconnect', (data) => {
-        console.log('disconnect', data)
-    })
-
-    window.ethereum.on('accountsChanged', ([newAddress]) => {
-        console.log('accountsChanged', newAddress)
-        wallet.setAccount(newAddress)
-    })
-
-    window.ethereum.on('chainChanged', (chainId) => {
-        console.log('chainChanged', chainId)
-        setTimeout(() => {
-            window.location.reload()
-        }, 200)
-    })
-
-    window.ethereum.on('error', (e) => {
-        console.error('on error', e)
-    })
-
-    wallet.init()
+        wallet.init()
+    }
 
     inject('wallet', wallet)
 }

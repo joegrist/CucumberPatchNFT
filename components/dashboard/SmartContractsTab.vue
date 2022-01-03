@@ -1,6 +1,11 @@
 <template>
 	<div v-if="items.length > 0" class="m-3">
-		<b-input-group size="lg" prepend="Seach:" class="mb-3">
+		<b-input-group class="mb-3">
+			<b-input-group-prepend>
+				<b-input-group-text>
+        			<b-icon icon="search" />
+      			</b-input-group-text>
+			</b-input-group-prepend>
 			<b-form-input @input="val => searchTerm = val" debounce="500"/>
 		</b-input-group>
 		<b-card-group deck>

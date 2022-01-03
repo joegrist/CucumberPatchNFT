@@ -43,10 +43,17 @@
 				<h3 class="text-warning text-center py-3">Requires Gas ⛽</h3>
 				<ul>
 					<li class="mb-2" v-for="(func, idx) in gasFunctions" :key="idx">
-						<b-button @click="callFunc(func)">{{func.name | startCase}} 
-							<b-badge v-if="func.payable" pill size="sm" variant="warning">Payable</b-badge>
-							<b-badge pill size="sm" variant="warning">Gas</b-badge>
-						</b-button>
+						<b-overlay
+							:show='busyState[func.name]'
+							rounded
+							opacity='0.6'
+							spinner-small
+						>
+							<b-button @click="callFunc(func)">{{func.name | startCase}} 
+								<b-badge v-if="func.payable" pill size="sm" variant="warning">Payable</b-badge>
+								<b-badge pill size="sm" variant="warning">Gas</b-badge>
+							</b-button>
+						</b-overlay>
 
 						<span class="lead font-weight-bold align-middle pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</span>
 
@@ -78,14 +85,19 @@ export default {
 		responses: {},
 		callFuncArgs: {},
 		contractBalance: 0,
+		busyState: {},
 		isBusy: false
 	}),
 	computed: {
 		greenFunctions() {
-			return Object.values(this.contract.interface?.functions || {}).filter(val => val.constant)
+			return Object.values(this.contract.interface?.functions || {})
+				.filter(val => val.constant)
+				.sort((a,b) => a.name.localeCompare(b.name))
 		},
 		gasFunctions() {
-			return Object.values(this.contract.interface?.functions || {}).filter(val => !val.constant)
+			return Object.values(this.contract.interface?.functions || {})
+				.filter(val => !val.constant)
+				.sort((a,b) => a.name.localeCompare(b.name))
 		},
 		functions(){
 			return this.contract.interface?.functions
@@ -186,6 +198,7 @@ export default {
 		async callFunc(func, idx) {
 			try{
 				console.log('calling ', func)
+				this.busyState[func.name] = true
 				const txOverrides = {}
 
 				if(!func.constant) {
@@ -252,6 +265,8 @@ export default {
 					variant: 'danger',
 					autoHideDelay: 5000
 				})
+			} finally {
+				this.busyState[func.name] = false
 			}
 		}
 	}
