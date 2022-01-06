@@ -104,6 +104,16 @@ export const ETHEREUM_MAINNET = {
 	blockExplorerUrls: ['https://etherscan.io'],
 }
 
+
+export function getMainnetConfig(testnetChainId) {
+	if(['0x4', '4'].includes(testnetChainId)) return ETHEREUM_MAINNET
+	if(['0xA869', '43113'].includes(testnetChainId)) return AVALANCHE_MAINNET_PARAMS
+	if(['0x89', '80001'].includes(testnetChainId)) return POLYGON_MAINNET_PARAMS
+	if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
+
+	throw new Error("Matching mainnet config not found")
+}
+
 export const CHAINID_CONFIG_MAP = {
 	'43114': AVALANCHE_MAINNET_PARAMS,
 	'43113': AVALANCHE_TESTNET_PARAMS,
@@ -137,15 +147,6 @@ export function getCurrency(chainId) {
 
 export function getNetwork(chainId) {
 	return CHAINID_CONFIG_MAP[chainId]?.chainName
-}
-
-export function getMainnetConfig(testnetChainId) {
-	if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
-	if(['1', '0x1'].includes(testnetChainId)) return ETHEREUM_MAINNET
-	// if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
-	// if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
-
-	throw new Error("Matching mainnet config not found")
 }
 
 export function getFaucetList(chainId) {

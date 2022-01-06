@@ -14,7 +14,9 @@
 					opacity='0.6'
 					spinner-small
 				>
-					<b-button v-if="isTestnet(rawContract.chainId)" class="w-100" :disabled="isBusy" @click="onMainnetDeploy">Deploy to Mainnet</b-button>
+					<b-button v-if="isTestnet(rawContract.chainId)" class="bg-gradient-primary border-0 w-100" :disabled="isBusy" @click="onMainnetDeploy">
+						<b-icon icon="wallet2" /> Deploy to Mainnet
+					</b-button>
 				</b-overlay>
 				<p class="lead font-weight-bold">Contract Balance: {{ contractBalance }}</p>
 			</b-col>
@@ -74,6 +76,19 @@
 				</ul>
 			</b-col>
 		</b-row>
+		<b-modal 
+			id='deployment' 
+			title='Deployed' 
+			size='md' 
+			centered 
+			ok-only
+			@hidden="$router.push(`/smart-contracts/${deployedContract.id}`)"
+      		@ok="$router.push(`/smart-contracts/${deployedContract.id}`)">
+			<div class='text-center'>
+				<h3>Success!!</h3>
+				<p>Contract has been deployed! Address: {{ deployedContract.address }}</p>
+			</div>
+		</b-modal>
 	</b-container>
 </template>
 
@@ -93,7 +108,8 @@ export default {
 		callFuncArgs: {},
 		contractBalance: 0,
 		busyState: {},
-		isBusy: false
+		isBusy: false,
+		deployedContract: {}
 	}),
 	computed: {
 		greenFunctions() {
@@ -169,36 +185,38 @@ export default {
 				const { id, chainId } = this.rawContract
 
 				const mainnetConfig = getMainnetConfig(chainId)
-				console.log({mainnetConfig})
+				// console.log({mainnetConfig})
 
-				if(this.$wallet.network.chainId.toString(16) !== mainnetConfig.chainId) {
-					console.log('swithcing network')
-					await this.switchNetwork(chainId)
-				}
+				await this.$wallet.switchNetwork(mainnetConfig)
 
 				this.isBusy = true
-
+				
 				const { data } = await this.$axios.get(`/smartcontracts/${id}/compiled`, {
 					params: { ownerAddress: this.$wallet.account },
 				})
 				const { abi, bytecode } = data
 
-				const signer = new ethers.providers.Web3Provider(window.ethereum)?.getSigner()
+				const signer = this.$wallet.provider?.getSigner()
 				const contractFactory = new ethers.ContractFactory(abi, bytecode, signer)
 				const contract = await contractFactory.deploy()
 				
-				alert(`Deployed to: ${contract.address}`)
+				const { data: mainnetContract } = await this.$axios.post(`/smartcontracts/${id}/deploy-mainnet`, {
+					ownerAddress: this.$wallet.account,
+					address: contract.address,
+					chainId: mainnetConfig.chainId
+				})
 
-				//TODO: call API
-				
-				// this.router.push(`/smart-contracts/${id}`)
+				this.deployedContract = mainnetContract
+
+				this.$bvModal.show("deployment")
+
 			} catch (err) {
 				this.isBusy = false
 				console.error({err})
 				this.$bvToast.toast(err.message || 'Deployment failed', {
 					title: 'Mainnet Deployment',
 					variant: 'danger',
-					autoHideDelay: 3000,
+					autoHideDelay: 3000
 				})
 			}
 		},

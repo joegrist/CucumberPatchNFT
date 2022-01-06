@@ -51,6 +51,23 @@ export default ({env}, inject) => {
                 await wallet.setAccount(account)
             }
         },
+        async switchNetwork(config) {
+            console.log(this.network, config)
+            if(this.network?.chainId === config.chainId || this.network?.chainId.toString(16) === config.chainId) {
+                return
+            }
+
+			try {
+				await this.provider.send('wallet_switchEthereumChain', [
+					{ chainId: config.chainId },
+				])
+			} catch (err) {
+				// This error code indicates that the chain has not been added to MetaMask.
+				if (err.code === 4902) {
+                    await this.provider.send('wallet_addEthereumChain', [config])
+                }
+			}
+		},
     })
 
     if(window.ethereum) {

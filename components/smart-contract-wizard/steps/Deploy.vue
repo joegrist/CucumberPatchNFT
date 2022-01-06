@@ -12,7 +12,7 @@
           <b-collapse id="faucetList">
             <ul class="pt-1">
               <li v-for="faucetUrl in getFaucetList($wallet.network.chainId)" :key="faucetUrl">
-                <b-link  :href="faucetUrl" target="_blank">
+                <b-link :href="faucetUrl" target="_blank">
                   {{ faucetUrl }} <b-icon icon="box-arrow-up-right" />
                 </b-link>
               </li>
@@ -152,7 +152,7 @@ export default {
 
         const contract = await contractFactory.deploy()
 
-        await this.$axios.patch(`/smartcontracts/${id}/deployed`, {
+        await this.$axios.patch(`/smartcontracts/${id}/deploy-testnet`, {
           ownerAddress: this.$wallet.account,
           address: contract.address,
         })

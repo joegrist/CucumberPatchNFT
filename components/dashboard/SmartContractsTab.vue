@@ -8,7 +8,7 @@
 			</b-input-group-prepend>
 			<b-form-input @input="val => searchTerm = val" debounce="500"/>
 		</b-input-group>
-		<b-card-group deck>
+		<b-card-group columns>
 			<b-card v-for="sc in filteredItems" :key="sc.id">
 				<template #header>
 					<h6 class="mb-0">{{ sc.name | startCase }}</h6>
@@ -28,18 +28,18 @@
 				<template #footer>
 					<b-button
 						v-if="sc.isDeployed"
-						variant="primary"
+						class="bg-gradient-primary border-0"
+						size="sm"
+						:to="`/smart-contracts/${sc.id}`"
+						>Interact</b-button
+					>
+					<b-button
+						v-if="sc.isDeployed"
+						variant="info border-0"
 						size="sm"
 						target="_blank"
 						:href="`${getExplorerUrl(sc.chainId)}/address/${sc.address}`"
 						>View <b-icon icon="box-arrow-up-right"/></b-button
-					>
-					<b-button
-						v-if="sc.isDeployed"
-						variant="info"
-						size="sm"
-						:to="`/smart-contracts/${sc.id}`"
-						>Interact</b-button
 					>
 					<b-button v-else variant="primary" size="sm" @click="onEdit(sc)"
 						>Edit/Deploy</b-button

@@ -196,34 +196,15 @@ export default {
 			}
 		},
 		async switchNetwork() {
-			const config = CHAINID_CONFIG_MAP[this.smartContractBuilder.chainId]
-			console.log({ config })
-			let switchError
-
 			try {
-				await this.$wallet.provider.send('wallet_switchEthereumChain', [
-					{ chainId: config.chainId },
-				])
+				await this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[this.smartContractBuilder.chainId])
 			} catch (err) {
-				// This error code indicates that the chain has not been added to MetaMask.
-				if (err.code === 4902) {
-					try {
-						await this.$wallet.provider.send('wallet_addEthereumChain', [config])
-					} catch (addError) {
-						switchError = err
-					}
-				} else {
-					// handle other "switch" errors
-					switchError = err
-				}
-			} finally {
-				if(switchError) {
-					this.$bvToast.toast(switchError.message || 'Network switch failed', {
-						title: 'Network',
-						variant: 'danger',
-						autoHideDelay: 3000,
-					})
-				}
+				console.error(err)
+				this.$bvToast.toast(err?.message || 'Network switch failed', {
+					title: 'Wallet',
+					variant: 'danger',
+					autoHideDelay: 3000,
+				})
 			}
 		},
 		onSelectBlockchain(blockchain) {
