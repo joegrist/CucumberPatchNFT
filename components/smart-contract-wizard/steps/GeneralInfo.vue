@@ -179,7 +179,7 @@
 
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
-import { required, maxLength, numeric ,minValue, decimal } from 'vuelidate/lib/validators'
+import { required, maxLength, numeric, minValue, decimal } from 'vuelidate/lib/validators'
 
 export default {
   mixins: [smartContractBuilderMixin],
@@ -216,7 +216,7 @@ export default {
       name: { required, maxLength: maxLength(30) },
       symbol: { required, maxLength: maxLength(6) },
       collectionSize: { required, numeric},
-      mintPrice: { required, decimal, minValue:minValue(0.00000001) },
+      mintPrice: { required, decimal, minValue:minValue(0) },
       blockchain: { required },
       setAsideTokenCount: { numeric, minValue:minValue(1)},
       maxTokensPerTransaction: { numeric, minValue:minValue(1) }

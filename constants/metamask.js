@@ -20,6 +20,7 @@ export const AVALANCHE_TESTNET_PARAMS = {
 	},
 	rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
 	blockExplorerUrls: ['https://testnet.snowtrace.io'],
+	faucetUrls: ["https://faucet.avax-test.network"]
 }
 
 
@@ -50,6 +51,7 @@ export const POLYGON_MUMBAI_TESTNET_CONFIG = {
 	},
 	rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
 	blockExplorerUrls: ['https://mumbai.polygonscan.com'],
+	faucetUrls: ["https://faucet.polygon.technology"]
 }
 
 export const FANTOM_TESTNET_CONFIG = {
@@ -62,6 +64,7 @@ export const FANTOM_TESTNET_CONFIG = {
 	},
 	rpcUrls: ['https://rpc.testnet.fantom.network'],
 	blockExplorerUrls: ['https://testnet.ftmscan.com'],
+	faucetUrls: ["https://faucet.fantom.network"]
 }
 
 export const FANTOM_MAINNET_CONFIG = {
@@ -86,6 +89,7 @@ export const ETHEREUM_RINKEBY = {
 	},
 	rpcUrls: [],
 	blockExplorerUrls: ['https://rinkeby.etherscan.io'],
+	faucetUrls: ["https://faucet.fantom.network", "https://faucets.chain.link/rinkeby"]
 }
 
 export const ETHEREUM_MAINNET = {
@@ -142,4 +146,8 @@ export function getMainnetConfig(testnetChainId) {
 	// if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
 
 	throw new Error("Matching mainnet config not found")
+}
+
+export function getFaucetList(chainId) {
+	return CHAINID_CONFIG_MAP[chainId]?.faucetUrls
 }

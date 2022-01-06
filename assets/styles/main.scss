@@ -1,3 +1,5 @@
+$theme-gradient: linear-gradient(100.07deg, #DB6F3D -28.71%, #9534DE 36.75%, #5FB9E6 103.59%);
+
 .required:after {
   content: " *";
   color: red;
@@ -10,5 +12,19 @@
 .form-control {
   &.is-invalid {
     border: 1px solid #dc3545;
+  }
+}
+
+.bg-gradient-primary {
+  background: $theme-gradient !important;
+}
+
+.gradient-text {
+  &:hover {
+    background: $theme-gradient;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    // background: transparent;
+    // -webkit-text-fill-color: black;
   }
 }

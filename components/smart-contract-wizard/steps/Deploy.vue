@@ -6,6 +6,18 @@
           <h1 class="text-center"> Attention! </h1>
           <p> You will be using your own metamask wallet to pay the deployment fees and this wallet will thus be the owner of the smart contract. </p>
           <p> This is only a testnet deployment meaning you won't be spending "real" currency but you should still have it to cover the deployment fees.</p>
+          <b-button v-if="getFaucetList($wallet.network.chainId)" class="mb-2" variant="link" v-b-toggle.faucetList>
+            Faucet list to get free tokens 
+          </b-button>
+          <b-collapse id="faucetList">
+            <ul class="pt-1">
+              <li v-for="faucetUrl in getFaucetList($wallet.network.chainId)" :key="faucetUrl">
+                <b-link  :href="faucetUrl" target="_blank">
+                  {{ faucetUrl }} <b-icon icon="box-arrow-up-right" />
+                </b-link>
+              </li>
+            </ul>
+          </b-collapse>
         </b-col>
       </b-row>
       <b-row>
@@ -65,6 +77,7 @@
 <script>
 import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
+import { getFaucetList } from '@/constants/metamask'
 
 export default {
   mixins: [smartContractBuilderMixin],
@@ -82,6 +95,7 @@ export default {
     }
   },
   methods: {
+    getFaucetList,
     onHidden() {
       // Return focus to the button once hidden
       this.$refs.deployBtn.focus()

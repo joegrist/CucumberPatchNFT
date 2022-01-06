@@ -51,7 +51,7 @@
 	<div v-else class="d-flex justify-content-center align-items-center h-100">
 		<div class="d-flex flex-column">
 			<h3>You don't have any smart contracts yet</h3>
-			<b-button variant="primary" size="lg" to="/"
+			<b-button class="bg-gradient-primary border-0" size="lg" to="/"
 				>Create</b-button
 			>
 		</div>
