@@ -21,6 +21,17 @@
 				<p class="lead font-weight-bold">Contract Balance: {{ contractBalance }}</p>
 			</b-col>
 		</b-row>
+		<b-row v-if="rawContract.hasWhitelist">
+			<b-col sm="12" md="9">
+				<div >
+					<h3>Comma-separated whitelist</h3>
+					<b-form-textarea :value="rawContract.whitelist"></b-form-textarea>
+				</div>
+			</b-col>
+			<b-col sm="12" md="3" class="d-flex">
+				<b-button class="align-self-end" variant="success" @click="updateWhitelist">Update</b-button>
+			</b-col>
+		</b-row>
 		<b-row>
 			<b-col cols="6">
 				<h3 class="text-success text-center py-3">Eco Friendly 🌱</h3>
@@ -145,6 +156,15 @@ export default {
 	methods: {
 		getExplorerUrl,
 		isTestnet,
+		async updateWhitelist() {
+			const { data } = await this.$axios.patch(`/smartcontracts/${this.rawContract.id}/update-whitelist`)
+			this.rawContract = data
+			this.$bvToast.toast('List updated', {
+				title: 'Whitelist',
+				variant: 'success',
+				autoHideDelay: 3000
+			})
+		},
 		onParamChange(value, func, param) {
 			const args = this.callFuncArgs[func.name] ??= new Map()
 			args.set(param.name, value)
