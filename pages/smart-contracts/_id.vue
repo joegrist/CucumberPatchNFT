@@ -2,7 +2,7 @@
 	<b-container class="mt-5">
 		<b-row>
 			<b-col sm="12" md="9">
-				<h3>Smart contract deployed at 
+				<h3>Smart contract deployed on {{ isTestnet(rawContract.chainId) ? 'TESTNET': 'MAINNET' }} at 
 					<br/> 
 					<b-link :href="`${getExplorerUrl(rawContract.chainId)}/address/${rawContract.address}`" target="_blank">{{ rawContract.address }}</b-link>
 				</h3>
@@ -14,7 +14,7 @@
 					opacity='0.6'
 					spinner-small
 				>
-					<b-button v-if="isTestnet(rawContract.chainId)" class="bg-gradient-primary border-0 w-100" :disabled="isBusy" @click="onMainnetDeploy">
+					<b-button :disabled="isBusy || !isTestnet(rawContract.chainId)" class="bg-gradient-primary border-0 w-100" @click="onMainnetDeploy">
 						<b-icon icon="wallet2" /> Deploy to Mainnet
 					</b-button>
 				</b-overlay>
@@ -94,7 +94,7 @@
 
 <script>
 import Vue from 'vue'
-import { getExplorerUrl, getCurrency, isTestnet, getMainnetConfig } from '@/constants/metamask'
+import { CHAINID_CONFIG_MAP, getExplorerUrl, getCurrency, isTestnet, getMainnetConfig } from '@/constants/metamask'
 import { ethers } from 'ethers';
 import { isNumber } from 'lodash-es'
 const FormatTypes = ethers.utils.FormatTypes;
@@ -149,37 +149,6 @@ export default {
 			const args = this.callFuncArgs[func.name] ??= new Map()
 			args.set(param.name, value)
 		},
-		async switchNetwork(chainId) {
-			const config = getMainnetConfig(chainId)
-
-			let switchError
-
-			try {
-				await this.$wallet.provider.send('wallet_switchEthereumChain', [
-					{ chainId: config.chainId },
-				])
-			} catch (err) {
-				// This error code indicates that the chain has not been added to MetaMask.
-				if (err.code === 4902) {
-					try {
-						await this.$wallet.provider.send('wallet_addEthereumChain', [config])
-					} catch (addError) {
-						switchError = err
-					}
-				} else {
-					// handle other "switch" errors
-					switchError = err
-				}
-			} finally {
-				if(switchError) {
-					this.$bvToast.toast(switchError.message || 'Network switch failed', {
-						title: 'Network',
-						variant: 'danger',
-						autoHideDelay: 3000,
-					})
-				}
-			}
-		},
 		async onMainnetDeploy() {
 			try {
 				const { id, chainId } = this.rawContract
@@ -223,6 +192,13 @@ export default {
 		async callFunc(func, idx) {
 			try{
 				console.log('calling ', func)
+
+				if(this.rawContract.chainId !== this.$wallet.hexChainId) {
+					const config = CHAINID_CONFIG_MAP[this.rawContract.chainId]
+					await this.$wallet.switchNetwork(config)
+					return // the page will reload when chain was changed so doesnt make sense to continue
+				}
+
 				this.busyState[func.name] = true
 				const txOverrides = {}
 

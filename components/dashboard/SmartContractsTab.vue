@@ -11,7 +11,7 @@
 		<b-card-group columns>
 			<b-card v-for="sc in filteredItems" :key="sc.id">
 				<template #header>
-					<h6 class="mb-0">{{ sc.name | startCase }}</h6>
+					<h6 class="mb-0">{{ sc.name | startCase }} {{ isTestnet(sc.chainId) ? '(Testnet)' : '(Mainnet)'}}</h6>
 				</template>
 				<b-card-text>
 					<ul class="px-3">
@@ -31,7 +31,7 @@
 						class="bg-gradient-primary border-0"
 						size="sm"
 						:to="`/smart-contracts/${sc.id}`"
-						>Interact</b-button
+						>Manage</b-button
 					>
 					<b-button
 						v-if="sc.isDeployed"

@@ -13,6 +13,12 @@ export default ({env}, inject) => {
         balance: null,
         provider: new ethers.providers.Web3Provider(window.ethereum),
 
+        hexChainId: {
+            get: function() {
+                return this.network?.chainId.toString(16)
+            }
+        },
+
         async init() {
             console.log('init', this)
             const [account] = await this.provider.listAccounts()
@@ -52,7 +58,6 @@ export default ({env}, inject) => {
             }
         },
         async switchNetwork(config) {
-            console.log(this.network, config)
             if(this.network?.chainId === config.chainId || this.network?.chainId.toString(16) === config.chainId) {
                 return
             }
@@ -65,6 +70,8 @@ export default ({env}, inject) => {
 				// This error code indicates that the chain has not been added to MetaMask.
 				if (err.code === 4902) {
                     await this.provider.send('wallet_addEthereumChain', [config])
+                } else {
+                    throw err
                 }
 			}
 		},
@@ -86,9 +93,7 @@ export default ({env}, inject) => {
     
         window.ethereum.on('chainChanged', (chainId) => {
             console.log('chainChanged', chainId)
-            setTimeout(() => {
-                window.location.reload()
-            }, 200)
+            window.location.reload()
         })
     
         window.ethereum.on('error', (e) => {

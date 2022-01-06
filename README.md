@@ -1,5 +1,9 @@
 # ZeroCodeNFT
 
+## wallet plugin
+
+contains all the interactions and event listeners necessary to interact with the metamask or another provider
+
 ## Build Setup
 
 ```bash

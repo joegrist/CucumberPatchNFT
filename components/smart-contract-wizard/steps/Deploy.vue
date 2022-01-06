@@ -6,6 +6,7 @@
           <h1 class="text-center"> Attention! </h1>
           <p> You will be using your own metamask wallet to pay the deployment fees and this wallet will thus be the owner of the smart contract. </p>
           <p> This is only a testnet deployment meaning you won't be spending "real" currency but you should still have it to cover the deployment fees.</p>
+          <p class="mt-3">Your wallet address: {{this.$wallet.account}} </p>
           <b-button v-if="getFaucetList($wallet.network.chainId)" class="mb-2" variant="link" v-b-toggle.faucetList>
             Faucet list to get free tokens 
           </b-button>
@@ -55,7 +56,6 @@
               </b-button>
             </b-overlay>
             <b-button @click="saveDraft()" :disabled='smartContractBuilder.isDeployed || deploymentInProgress'>Save Draft</b-button>
-            <p class="mt-3">Your wallet address: {{this.$wallet.account}} </p>
           </div>
         </b-col>
       </b-row>
