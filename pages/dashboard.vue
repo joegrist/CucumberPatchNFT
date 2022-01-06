@@ -7,6 +7,4 @@
     </b-tabs>
 </template>
 
-<style lang="scss" scoped src="@/assets/styles/dashboard.scss">
-
-</style>
+<style lang="scss" scoped src="@/assets/styles/dashboard.scss"></style>
