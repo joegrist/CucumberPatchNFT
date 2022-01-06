@@ -2,7 +2,7 @@
 	<b-container class="mt-5">
 		<b-row>
 			<b-col sm="12" md="9">
-				<h3>Interact with smart contract at 
+				<h3>Smart contract deployed at 
 					<br/> 
 					<b-link :href="`${getExplorerUrl(rawContract.chainId)}/address/${rawContract.address}`" target="_blank">{{ rawContract.address }}</b-link>
 				</h3>
@@ -23,46 +23,53 @@
 			<b-col cols="6">
 				<h3 class="text-success text-center py-3">Eco Friendly 🌱</h3>
 				<ul>
-					<li class="mb-2" v-for="(func, idx) in greenFunctions" :key="idx">
-						<b-button @click="callFunc(func, idx)">{{func.name | startCase}} 
+					<li class="mb-2" v-for="(func, idx) in greenFunctions" :key="idx" role="tab">
+
+						<b-button variant="link" v-b-toggle="`${func.name+idx}`">
+							{{func.name | startCase}} 
 							<b-badge pill size="sm" variant="success">Eco</b-badge>
 						</b-button>
 
-						<span class="lead font-weight-bold align-middle pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</span>
-
-						<ul v-if="func.inputs.length > 0">
-							<li v-for="(param, idx) in func.inputs.filter(x => !x.name.startsWith('_'))" :key="idx">
-								<span> {{ param.name }} </span>
-								<b-input @change="val => onParamChange(val, func, param)" />
-							</li>
-						</ul>
+						<b-collapse :id="func.name+idx" class="mt-2" accordion="eco-accordion" role="tabpanel">
+							<ul v-if="func.inputs.length > 0">
+								<li v-for="(param, idx) in func.inputs.filter(x => !x.name.startsWith('_'))" :key="idx">
+									<span> {{ param.name }} </span>
+									<b-input @change="val => onParamChange(val, func, param)" />
+								</li>
+							</ul>
+							<b-button class="mt-1" variant="success" @click="callFunc(func, idx)">Execute</b-button>
+							<span class="lead font-weight-bold align-middle pl-2" v-show="responses[func.name]">Result: {{ responses[func.name] }}</span>
+						</b-collapse>
 					</li>
 				</ul>
 			</b-col>
 			<b-col cols="6">
 				<h3 class="text-warning text-center py-3">Requires Gas ⛽</h3>
 				<ul>
-					<li class="mb-2" v-for="(func, idx) in gasFunctions" :key="idx">
-						<b-overlay
-							:show='busyState[func.name]'
-							rounded
-							opacity='0.6'
-							spinner-small
-						>
-							<b-button @click="callFunc(func)">{{func.name | startCase}} 
-								<b-badge v-if="func.payable" pill size="sm" variant="warning">Payable</b-badge>
-								<b-badge pill size="sm" variant="warning">Gas</b-badge>
-							</b-button>
-						</b-overlay>
+					<li class="mb-2" v-for="(func, idx) in gasFunctions" :key="idx" role="tab">
+						<b-button variant="link" v-b-toggle="`${func.name+idx}`">
+							{{func.name | startCase}} 
+							<b-badge v-if="func.payable" pill size="sm" variant="warning">Payable</b-badge>
+							<b-badge pill size="sm" variant="warning">Gas</b-badge>
+						</b-button>
+						<span class="lead font-weight-bold align-middle pl-2" v-show="responses[func.name]">Result: {{responses[func.name] }}</span>
 
-						<span class="lead font-weight-bold align-middle pl-2" v-show="responses[func.name]">{{ responses[func.name] }}</span>
-
-						<ul v-if="func.inputs.length > 0">
-							<li v-for="(param, idx) in func.inputs.filter(x => !x.name.startsWith('_'))" :key="idx">
-								<span> {{ param.name }} </span>
-								<b-input @change="val => onParamChange(val, func, param)" />
-							</li>
-						</ul>
+						<b-collapse :id="func.name+idx" class="mt-2" accordion="gas-accordion" role="tabpanel">
+							<ul v-if="func.inputs.length > 0">
+								<li v-for="(param, idx) in func.inputs.filter(x => !x.name.startsWith('_'))" :key="idx">
+									<span> {{ param.name }} </span>
+									<b-input @change="val => onParamChange(val, func, param)" />
+								</li>
+							</ul>
+							<b-overlay
+								:show='busyState[func.name]'
+								rounded
+								opacity='0.6'
+								spinner-small
+							>
+								<b-button class="mt-1" variant="success" @click="callFunc(func, idx)">Execute</b-button>
+							</b-overlay>
+						</b-collapse>
 					</li>
 				</ul>
 			</b-col>

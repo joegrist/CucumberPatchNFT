@@ -3,6 +3,13 @@
     <b-container fluid>
       <b-row>
         <b-col>
+          <h1 class="text-center"> Attention! </h1>
+          <p> You will be using your own metamask wallet to pay the deployment fees and this wallet will thus be the owner of the smart contract. </p>
+          <p> This is only a testnet deployment meaning you won't be spending "real" currency but you should still have it to cover the deployment fees.</p>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col>
           <b-form-group
             label='Email address'
             label-class='required'
@@ -36,6 +43,7 @@
               </b-button>
             </b-overlay>
             <b-button @click="saveDraft()" :disabled='smartContractBuilder.isDeployed || deploymentInProgress'>Save Draft</b-button>
+            <p class="mt-3">Your wallet address: {{this.$wallet.account}} </p>
           </div>
         </b-col>
       </b-row>
@@ -82,10 +90,7 @@ export default {
       try {
         const res = await this.$axios.post('/smartcontracts/save-draft', {
           ...this.smartContractBuilder,
-          ownerAddress: this.$wallet.account,
-          voucherSigner: this.smartContractBuilder.hasWhitelist 
-            ? ethers.Wallet.createRandom().address 
-            : null
+          ownerAddress: this.$wallet.account
         })
 
         const { id } = res.data
@@ -116,16 +121,21 @@ export default {
 
         const id = await this.saveDraft()
 
-        const compilationResult = await this.$axios.post(`smartcontracts/${id}/compile`)
+        const compilationResult = await this.$axios.post(`/smartcontracts/${id}/compile`)
 
         const { abi, bytecode } = compilationResult.data
 
-        console.log(bytecode, abi)
+        // console.log(bytecode, abi)
 
         this.provider = new ethers.providers.Web3Provider(window.ethereum)
         this.signer = this.provider.getSigner()
 
         const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, this.signer)
+
+        const deploymentData = contractFactory.interface.encodeDeploy([])
+        const estimatedGas = await this.provider.estimateGas({ data: deploymentData })
+        console.log('gas estimate', estimatedGas.toString())
+
         const contract = await contractFactory.deploy()
 
         await this.$axios.patch(`/smartcontracts/${id}/deployed`, {
