@@ -1,4 +1,5 @@
 import getSiteMeta from "./scripts/siteMeta";
+import axios from 'axios'
 
 const { API_URL, MAGIC_PUBLISHABLE_API_KEY, MAGIC_SECRET_KEY } = process.env
 
@@ -23,7 +24,7 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' }, // mobile responsive https://search.google.com/test/mobile-friendly
       { name: 'format-detection', content: 'telephone=no' },
       { hid: 'description', name: 'description', content: 'Drop your NFT collection with ZERO coding skills' },
-      { property: "og:site_name", content: "Zero Code NFT" },
+      { property: "og:site_name", content: "Zero Code NFT Wizard" },
       ...getSiteMeta()
     ],
     link: [
@@ -106,27 +107,22 @@ export default {
     }
   },
 
-  // generate: {
-  //   // support to generate dynamic _id routes
-  //   routes: async () => {
-  //     try {
-  //       const date = new Date();
-  //       const startDate = new Date(date.getFullYear(), date.getMonth()-1, 1).toLocaleDateString('en');
-  //       const events = await axios.get(`https://nextflip.azurewebsites.net/api/events?start=${startDate}`)
-  //       return (events?.data || []).map((event) => ({
-  //         route: `/events/${event.id}`
-  //       }))
-  //     } catch(e) {
-  //       console.error(e)
-  //       return []
-  //     }
-  //   },
-  // },
+  generate: {
+    // support to generate dynamic _id routes
+    routes: async () => {
+      try {
+        const contracts = await axios.get(`https://${process.env.API_URL}/smartcontracts/ids`)
+        return (contracts?.data || []).map((id) => ({
+          route: `/smartcontracts/${id}`
+        }))
+      } catch(e) {
+        console.error(e)
+        return []
+      }
+    },
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    vendor: [
-      'vuelidate'
-    ]
   }
 }

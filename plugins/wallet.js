@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import { ethers } from 'ethers'
-import { getCurrency } from '@/constants/metamask'
 import MetaMaskOnboarding from '@metamask/onboarding'
-
+import { getCurrency } from '@/constants/metamask'
 
 export default ({env}, inject) => {
 
@@ -11,19 +10,16 @@ export default ({env}, inject) => {
         accountCompact: null,
         network: null,
         balance: null,
-        provider: new ethers.providers.Web3Provider(window.ethereum),
+        provider: null,
 
-        hexChainId: {
-            get: function() {
-                return this.network?.chainId.toString(16)
-            }
+        get hexChainId() {
+            return '0x' + this.network?.chainId.toString(16)
         },
 
         async init() {
-            console.log('init', this)
-            const [account] = await this.provider.listAccounts()
+            this.provider = new ethers.providers.Web3Provider(window.ethereum) //prefably diff node like Infura, Alchemy or Moralis
             this.network = await this.provider.getNetwork()
-            // console.log('wallet init', {account})
+            const [account] = await this.provider.listAccounts()
 
             !!account && this.setAccount(account)
         },
@@ -58,8 +54,8 @@ export default ({env}, inject) => {
             }
         },
         async switchNetwork(config) {
-            if(this.network?.chainId === config.chainId || this.network?.chainId.toString(16) === config.chainId) {
-                return
+            if(this.network?.chainId === config.chainId || `0x${this.network?.chainId.toString(16)}` === config.chainId) {
+                return //since we are on correct network
             }
 
 			try {
@@ -78,13 +74,6 @@ export default ({env}, inject) => {
     })
 
     if(window.ethereum) {
-        window.ethereum.on('connect', (data) => {
-            console.log('connect', data)
-        })
-    
-        window.ethereum.on('disconnect', (data) => {
-            console.log('disconnect', data)
-        })
     
         window.ethereum.on('accountsChanged', ([newAddress]) => {
             console.log('accountsChanged', newAddress)
@@ -94,10 +83,6 @@ export default ({env}, inject) => {
         window.ethereum.on('chainChanged', (chainId) => {
             console.log('chainChanged', chainId)
             window.location.reload()
-        })
-    
-        window.ethereum.on('error', (e) => {
-            console.error('on error', e)
         })
 
         wallet.init()

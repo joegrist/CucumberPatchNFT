@@ -25,7 +25,7 @@
 			<b-col sm="12" md="9">
 				<div >
 					<h3>Comma-separated whitelist</h3>
-					<b-form-textarea :value="rawContract.whitelist"></b-form-textarea>
+					<b-form-textarea v-model="rawContract.whitelist"></b-form-textarea>
 				</div>
 			</b-col>
 			<b-col sm="12" md="3" class="d-flex">
@@ -157,8 +157,9 @@ export default {
 		getExplorerUrl,
 		isTestnet,
 		async updateWhitelist() {
-			const { data } = await this.$axios.patch(`/smartcontracts/${this.rawContract.id}/update-whitelist`)
-			this.rawContract = data
+			await this.$axios.patch(`/smartcontracts/${this.rawContract.id}/whitelist`, {
+				whitelist: this.rawContract.whitelist
+			})
 			this.$bvToast.toast('List updated', {
 				title: 'Whitelist',
 				variant: 'success',
