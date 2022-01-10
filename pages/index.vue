@@ -19,10 +19,7 @@
 			hide-footer
 			hide-header-close>
 			<div class="text-center">
-				<h3>Connect wallet in order to continue with the wizard</h3>
-				<b-button class="mt-2" variant="info" @click="$wallet.connect">
-					<strong>Connect Wallet</strong>
-				</b-button>
+        <b-img width="200px" class="pointer" thumbnail src="@/assets/images/metamask-fox-stacked.svg" alt="metamask logo" @click="$wallet.connect"></b-img>
 			</div>
 		</b-modal>
   </div>
@@ -135,12 +132,12 @@ export default {
   computed: {
     ...mapState(['smartContractBuilder']),
     showModal() {
-      console.log(this.$wallet.account === null)
       return this.$wallet.account === null
     }
   },
   methods: {
     ...mapMutations(['updateSmartContractBuilder']),
+
     // Executed when @completed-step event is triggered
     completeStep(payload) {
       this.buildSteps.forEach((step) => {
@@ -149,6 +146,7 @@ export default {
         }
       })
     },
+
     // Executed when @active-step event is triggered
     isStepActive(payload) {
       this.buildSteps.forEach((step) => {
@@ -159,6 +157,7 @@ export default {
         }
       })
     },
+
     // Executed when @stepper-finished event is triggered
     alert(payload) {
       if(this.smartContractBuilder?.id || confirm("You are about to lose all your changes. Are you sure you want to finish ?")) {

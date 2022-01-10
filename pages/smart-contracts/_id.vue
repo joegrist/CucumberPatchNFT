@@ -105,6 +105,7 @@
 
 <script>
 import Vue from 'vue'
+import { mapGetters } from 'vuex'
 import { CHAINID_CONFIG_MAP, getExplorerUrl, getCurrency, isTestnet, getMainnetConfig } from '@/constants/metamask'
 import { ethers } from 'ethers';
 import { isNumber } from 'lodash-es'
@@ -123,6 +124,7 @@ export default {
 		deployedContract: {}
 	}),
 	computed: {
+		...mapGetters(['isLoggedIn','userId']),
 		greenFunctions() {
 			return Object.values(this.contract.interface?.functions || {})
 				.filter(val => val.constant)
@@ -135,23 +137,21 @@ export default {
 		},
 		functions(){
 			return this.contract.interface?.functions
-		}
+		},
 	},
     fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
 	async fetch() {
-		if (!this.$wallet.account) return
+		if (!this.isLoggedIn) return
 
-		const { data } = await this.$axios.get(`/smartcontracts/${this.$route.params.id}`, {
-			params: { ownerAddress: this.$wallet.account },
-		})
-
+		const { data } = await this.$axios.get(`/users/${this.userId}/smartcontracts/${this.$route.params.id}`)
 		const { address, chainId, abi } = data
+
 		this.rawContract = data
 		this.contract = new ethers.Contract(address, abi, await this.$wallet.provider.getSigner())
 		this.contractBalance = await this.$wallet.provider.getBalance(address) + ' ' + getCurrency(chainId)
 
-		console.log('smart-contract', this.rawContract, this.contract, this.contractBalance)
+		console.log('loaded smart-contract', this.rawContract, this.contract, this.contractBalance)
 	},
 	methods: {
 		getExplorerUrl,

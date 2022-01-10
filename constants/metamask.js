@@ -89,7 +89,7 @@ export const ETHEREUM_RINKEBY = {
 	},
 	rpcUrls: [],
 	blockExplorerUrls: ['https://rinkeby.etherscan.io'],
-	faucetUrls: ["https://faucet.fantom.network", "https://faucets.chain.link/rinkeby"]
+	faucetUrls: ["https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"]
 }
 
 export const ETHEREUM_MAINNET = {

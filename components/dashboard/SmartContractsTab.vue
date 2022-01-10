@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import { getExplorerUrl, getCurrency, getNetwork, isTestnet } from '@/constants/metamask'
 
 export default {
@@ -72,14 +72,15 @@ export default {
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-tab',
 	async fetch() {
-		if (!this.$wallet.account) return
-		const { data } = await this.$axios.get('/smartcontracts', {
-			params: { ownerAddress: this.$wallet.account },
-		})
+        if(!this.isLoggedIn) return
+
+		const { data } = await this.$axios.get(`/users/${this.userId}/smartcontracts`)
 		this.items = data
+
 		console.log('smart-contracts-tab', this.items)
 	},
 	computed: {
+        ...mapGetters(['isLoggedIn','userId']),
 		filteredItems() {
 			return this.items.filter(x => x.name.includes(this.searchTerm) || x.symbol.includes(this.searchTerm))
 		}
@@ -91,7 +92,7 @@ export default {
 		getNetwork,
 		isTestnet,
 		onEdit(sc) {
-			this.updateSmartContractBuilder({ ...sc })
+			this.updateSmartContractBuilder({...sc})
 			this.$router.push('/')
 		}
 	},

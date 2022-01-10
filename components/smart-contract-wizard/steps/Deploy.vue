@@ -78,6 +78,7 @@
 import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { getFaucetList } from '@/constants/metamask'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   mixins: [smartContractBuilderMixin],
@@ -90,18 +91,29 @@ export default {
     smartContractBuilder: {}
   },
   computed: {
+    ...mapGetters(['isLoggedIn']),
     canDeploy() {
       return !this.smartContractBuilder.isDeployed && this.smartContractBuilder.email && !this.deploymentInProgress
     }
   },
   methods: {
+    ...mapActions(['loginUser']),
     getFaucetList,
     onHidden() {
       // Return focus to the button once hidden
       this.$refs.deployBtn.focus()
     },
+    
     async saveDraft() {
       try {
+
+        if(!this.isLoggedIn) {
+          const user = await this.loginUser({
+            email: this.email,
+          })
+          if(!user) return
+        }
+
         const res = await this.$axios.post('/smartcontracts/save-draft', {
           ...this.smartContractBuilder,
           ownerAddress: this.$wallet.account
@@ -130,6 +142,12 @@ export default {
     },
     async deploy() {
       try {
+        if(!this.isLoggedIn) {
+          const user = await this.loginUser({
+            email: this.email,
+          })
+          if(!user) return
+        }
 
         this.deploymentInProgress = true
 

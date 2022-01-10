@@ -13,7 +13,7 @@ export default ({env}, inject) => {
         provider: null,
 
         get hexChainId() {
-            return '0x' + this.network?.chainId.toString(16)
+            return '0x' + this.network?.chainId?.toString(16)
         },
 
         async init() {
@@ -23,6 +23,7 @@ export default ({env}, inject) => {
 
             !!account && this.setAccount(account)
         },
+
         async setAccount(newAccount) {
             if(newAccount) {
                 this.account = newAccount
@@ -53,6 +54,7 @@ export default ({env}, inject) => {
                 await wallet.setAccount(account)
             }
         },
+
         async switchNetwork(config) {
             if(this.network?.chainId === config.chainId || `0x${this.network?.chainId.toString(16)}` === config.chainId) {
                 return //since we are on correct network
@@ -71,6 +73,12 @@ export default ({env}, inject) => {
                 }
 			}
 		},
+
+        async requestSignature(nonce) {
+            const signer = this.provider.getSigner()
+            const msg = `Hi there from the Zero Code NFT! Sign this unique ID to sign in: ${nonce}`
+            return signer.signMessage(msg)
+        }
     })
 
     if(window.ethereum) {
