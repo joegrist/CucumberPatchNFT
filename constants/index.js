@@ -16,4 +16,12 @@ const BLOCKCHAIN = Object.freeze({
 	8: 'Avalanche'
 })
 
-export { BLOCKCHAIN }
+const WEBSITE_STATUS = Object.freeze({
+	Unknown: 0,
+	Deployed: 1,
+	Ready: 2,
+	1: 'Deployed',
+	2: 'Ready'
+})
+
+export { BLOCKCHAIN, WEBSITE_STATUS }

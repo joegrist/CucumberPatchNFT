@@ -20,9 +20,18 @@
                 <b-card-text>
                     <ul class="px-3">
                         <li>Netlify Site ID: {{ site.netlifySiteId }}</li>
-                        <li>Url: <b-link :href="site.url" target="_blank">{{ site.url }} <b-icon icon="box-arrow-up-right"/></b-link></li>
+                        <li v-show="site.status === WEBSITE_STATUS.Ready">URL: <b-link :href="site.url" target="_blank">{{ site.url }} <b-icon icon="box-arrow-up-right"/></b-link></li>
                         <li>Custom Domain: {{ site.customDomain }}</li>
-                        <li>Is Ready? {{ isReady | yesNo }} </li>
+                        <li class="text-info">
+                            Status: {{ WEBSITE_STATUS[site.status] }}
+                            <b-button 
+                                v-if="site.status === site.netlifyDeployId && WEBSITE_STATUS.Deployed" 
+                                variant="success" 
+                                size="sm" 
+                                :disabled="isBusy"
+                                @click="refreshStatus(site)">Refresh
+                            </b-button>
+                        </li>
                         <li>Created: {{ site.createdOn | toDate }}</li>
                     </ul>
                 </b-card-text>
@@ -45,7 +54,7 @@
             >
         </div>
     </div>
-    <b-modal id="siteModal" title="Create Website" size="md" centered @ok="onCreateSite">
+    <b-modal id="siteModal" title="Create Website" size="md" centered @ok="onCreateSite" :busy="isBusy">
         <b-form>
             <b-form-group
                 label='Website Name'
@@ -108,13 +117,14 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { WEBSITE_STATUS } from '@/constants'
 
 export default {
     data: () => ({
+        WEBSITE_STATUS,
 		searchTerm: '',
 		items: [],
 		isBusy: false,
-        isReady: true,
         newWebsite: {}
 	}),
 	fetchOnServer: false,
@@ -137,15 +147,24 @@ export default {
 		}
 	},
     methods: {
+        async refreshStatus(website) {
+            const { data } = await this.$netlify.get(`/deploys/${website.netlifyDeployId}`)
+            console.log('status', data)
+            if(data.state === 'ready') {
+                website.status = WEBSITE_STATUS.Ready
+            }
+        },
         async onCreateSite(e) {
             e.preventDefault()
+            this.isBusy = true
             try {
                 await this.$axios.post('websites', this.newWebsite)
                 const { data: websites } = await this.$axios.get(`/users/${this.userId}/websites`)
                 this.items = websites
-                // this.$bvModal.hide("siteModal")
+                this.$bvModal.hide("siteModal")
             } catch (err) {
                 console.error({err})
+                this.isBusy = false
                 this.$bvToast.toast(err.message || 'Failed to create website', {
                     title: 'Website',
                     variant: 'danger',
