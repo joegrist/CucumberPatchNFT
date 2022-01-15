@@ -17,7 +17,7 @@ export const state = () => ({
     }
   })
 
-  export const getters = {
+export const getters = {
 	isLoggedIn: (state) => !!state.accessToken,
 	userId: (state) => state.user?.id,
 }
@@ -48,7 +48,7 @@ export const mutations = {
 }
 
 export const actions = {
-    async loginUser({commit, state}, payload) {
+    async login({commit, state}, payload) {
 		try {
 			
 			if(!this.$wallet.account) {
@@ -89,5 +89,13 @@ export const actions = {
 
             return null
 		}
+    },
+
+    logout({commit, state}) {
+        this.$wallet.disconnect()
+        localStorage.setItem('accessToken', null)
+        localStorage.setItem('user', null)
+        commit('setUser', null)
+        commit('setAccessToken', null)
     }
 }

@@ -97,7 +97,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['loginUser']),
+    ...mapActions(['login']),
     getFaucetList,
     onHidden() {
       // Return focus to the button once hidden
@@ -108,7 +108,7 @@ export default {
       try {
 
         if(!this.isLoggedIn) {
-          const user = await this.loginUser({
+          const user = await this.login({
             email: this.email,
           })
           if(!user) return
@@ -143,7 +143,7 @@ export default {
     async deploy() {
       try {
         if(!this.isLoggedIn) {
-          const user = await this.loginUser({
+          const user = await this.login({
             email: this.email,
           })
           if(!user) return

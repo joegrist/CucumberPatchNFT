@@ -1,7 +1,9 @@
 <template>
   <b-container>
-    <b-row v-for='item in summary' :key='item.key'>
-      <b-col><strong>{{ item.key | startCase }}</strong>: {{ item.val | yesNo | blockchainName }}</b-col>
+    <b-row>
+      <b-col sm="12" md="4" v-for='item in summary' :key='item.key'>
+        <strong>{{ item.key | startCase }}</strong>: {{ item.val | yesNo | blockchainName }}
+      </b-col>
     </b-row>
   </b-container>
 </template>
@@ -14,7 +16,7 @@ export default {
   computed: {
     summary() {
       return Object.entries(this.smartContractBuilder)
-        .filter(([k, _]) => !['id', 'abi', 'bytecode', 'chainId'].includes(k))
+        .filter(([k, _]) => !['id', 'abi', 'bytecode', 'chainId', 'voucherSignerAddress'].includes(k))
         .map(([key, val]) => {
           return {
             key, val

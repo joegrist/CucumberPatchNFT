@@ -33,11 +33,10 @@ export default ({env}, inject) => {
                 this.balance = `${(+ethers.utils.formatEther(balance)).toFixed(3)} ${getCurrency(this.network.chainId)}`
             }
             else {
-                this.account = null
-                this.accountCompact = null
-                this.balance = null
+                this.disconnect()
             }
         },
+
         async connect() {
             if(!MetaMaskOnboarding.isMetaMaskInstalled()) {
                 const onboarding = new MetaMaskOnboarding()
@@ -53,6 +52,12 @@ export default ({env}, inject) => {
             if(account) {
                 await wallet.setAccount(account)
             }
+        },
+
+        disconnect() {
+            wallet.account = null
+            wallet.accountCompact = null
+            wallet.balance = null
         },
 
         async switchNetwork(config) {

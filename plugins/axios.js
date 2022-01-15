@@ -6,9 +6,9 @@ export default ({ $axios, store }) => {
       }
     });
     $axios.onError(async err => {
-      // TODO: check for auth failed requests and call loginUser store action
+      // TODO: check for auth failed requests and call login store action
       // if(err.response.status === 401) {
-      //   await store.dispatch('loginUser')
+      //   await store.dispatch('login')
         
       // }
     })
