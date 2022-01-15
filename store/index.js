@@ -1,6 +1,7 @@
 export const state = () => ({
 	user: JSON.parse(localStorage.getItem('user') || '{}'),
 	accessToken: localStorage.getItem('accessToken'),
+    smartContractList: [],
     network: null,
     txInProgress: null,
     txInProgressHash: null,
@@ -40,6 +41,9 @@ export const mutations = {
 	},
     updateSmartContractBuilder(state, payload) {
         state.smartContractBuilder = { ...state.smartContractBuilder, ...payload}
+    },
+    setSmartContractList(state, payload) {
+        state.smartContractList = payload
     }
 }
 

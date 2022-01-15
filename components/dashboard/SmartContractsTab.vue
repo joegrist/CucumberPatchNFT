@@ -77,6 +77,8 @@ export default {
 		const { data } = await this.$axios.get(`/users/${this.userId}/smartcontracts`)
 		this.items = data
 
+		this.setSmartContractList(data)
+
 		console.log('smart-contracts-tab', this.items)
 	},
 	computed: {
@@ -86,7 +88,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['updateSmartContractBuilder']),
+		...mapMutations(['updateSmartContractBuilder', 'setSmartContractList']),
 		getExplorerUrl,
 		getCurrency,
 		getNetwork,

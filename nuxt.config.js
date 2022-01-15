@@ -1,7 +1,7 @@
 import getSiteMeta from "./scripts/siteMeta";
 import axios from 'axios'
 
-const { API_URL, MAGIC_PUBLISHABLE_API_KEY, MAGIC_SECRET_KEY } = process.env
+const { API_URL, MAGIC_PUBLISHABLE_API_KEY, MAGIC_SECRET_KEY, NETLIFY_API_TOKEN } = process.env
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
@@ -13,7 +13,8 @@ export default {
   env: {
     API_URL,
     MAGIC_PUBLISHABLE_API_KEY,
-    MAGIC_SECRET_KEY
+    MAGIC_SECRET_KEY,
+    NETLIFY_API_TOKEN
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -28,7 +29,7 @@ export default {
       ...getSiteMeta()
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/logo.png' }
     ]
   },
 
@@ -41,11 +42,6 @@ export default {
       changefreq: 'daily',
       priority: 1,
       lastmod: new Date()
-    },
-    filter ({ routes }) {
-      return routes.map(route => {
-        return route.url === '/' ? {...route, priority: 1} :  {...route, priority: 0.9}
-      })
     }
   },
 
@@ -57,6 +53,7 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '@/plugins/axios',
+    '@/plugins/netlify',
     '@/plugins/vuelidate',
     '@/plugins/filters',
     '@/plugins/wallet'
