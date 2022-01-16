@@ -100,6 +100,20 @@
 				<p>Contract has been deployed! Address: {{ deployedContract.address }}</p>
 			</div>
 		</b-modal>
+		<b-modal 
+			id='payment' 
+			title='Buy Deployment Voucher' 
+			size='md'
+			static
+			centered
+			scrollable
+			hide-footer
+			@hidden="onPaymentModalHidden"
+			>
+			<div id="payments-container">
+				
+			</div>
+		</b-modal>
 	</b-container>
 </template>
 
@@ -109,6 +123,8 @@ import { mapGetters } from 'vuex'
 import { CHAINID_CONFIG_MAP, getExplorerUrl, getCurrency, isTestnet, getMainnetConfig } from '@/constants/metamask'
 import { ethers } from 'ethers';
 import { isNumber } from 'lodash-es'
+import { loadScript } from "@paypal/paypal-js";
+
 const FormatTypes = ethers.utils.FormatTypes;
 
 export default {
@@ -121,8 +137,35 @@ export default {
 		contractBalance: 0,
 		busyState: {},
 		isBusy: false,
-		deployedContract: {}
+		deployedContract: {},
+		paypal: null,
 	}),
+	fetchOnServer: false,
+	fetchKey: 'smart-contracts-id',
+	async fetch() {
+		if (!this.isLoggedIn) return
+
+		const { data } = await this.$axios.get(`/users/${this.userId}/smartcontracts/${this.$route.params.id}`)
+		const { address, chainId, abi } = data
+
+		this.rawContract = data
+		this.contract = new ethers.Contract(address, abi, await this.$wallet.provider.getSigner())
+		this.contractBalance = await this.$wallet.provider.getBalance(address) + ' ' + getCurrency(chainId)
+
+		console.log('loaded smart-contract', this.rawContract, this.contract, this.contractBalance)
+	},
+	async mounted() {
+		try {
+			this.paypal = await loadScript({ 
+				"client-id": process.env.PAYPAL_CLIENT_ID,
+				"debug": false,
+				"disable-funding": 'credit',
+				"enable-funding": 'venmo',
+			});
+		} catch (err) {
+			console.error("failed to load the PayPal JS SDK script", err);
+		}
+	},
 	computed: {
 		...mapGetters(['isLoggedIn','userId']),
 		greenFunctions() {
@@ -139,20 +182,6 @@ export default {
 			return this.contract.interface?.functions
 		},
 	},
-    fetchOnServer: false,
-	fetchKey: 'smart-contracts-id',
-	async fetch() {
-		if (!this.isLoggedIn) return
-
-		const { data } = await this.$axios.get(`/users/${this.userId}/smartcontracts/${this.$route.params.id}`)
-		const { address, chainId, abi } = data
-
-		this.rawContract = data
-		this.contract = new ethers.Contract(address, abi, await this.$wallet.provider.getSigner())
-		this.contractBalance = await this.$wallet.provider.getBalance(address) + ' ' + getCurrency(chainId)
-
-		console.log('loaded smart-contract', this.rawContract, this.contract, this.contractBalance)
-	},
 	methods: {
 		getExplorerUrl,
 		isTestnet,
@@ -163,15 +192,60 @@ export default {
 			this.$bvToast.toast('List updated', {
 				title: 'Whitelist',
 				variant: 'success',
-				autoHideDelay: 3000
 			})
 		},
 		onParamChange(value, func, param) {
 			const args = this.callFuncArgs[func.name] ??= new Map()
 			args.set(param.name, value)
 		},
+		onPaymentModalHidden() {
+			const container = document.getElementById("payments-container")
+			if(container.firstChild) {
+				container.removeChild(container.firstChild)
+			}
+		},
 		async onMainnetDeploy() {
 			try {
+				
+				const hasCredits = false
+				
+				if(!hasCredits) {
+					this.$bvModal.show("payment")
+					await paypal.Buttons({
+						createOrder: function(data, actions) {
+							console.log('createOrder', data)
+							// Set up the transaction
+							return actions.order.create({
+								purchase_units: [{
+									amount: {
+										value: '399'
+									}
+								}]
+							});
+						},
+						onApprove: function(data, actions) {
+							console.log('onApprove', data)
+							// This function captures the funds from the transaction.
+							return actions.order.capture().then(function(details) {
+								// This function shows a transaction success message to your buyer.
+								console.log({details})
+								alert('Transaction completed by ' + details.payer.name.given_name);
+							});
+						},
+						onCancel: () => {
+							this.$bvModal.hide("payment")
+							this.onPaymentModalHidden()
+						},
+						onError: (err) => {
+							console.error({err})
+							this.$bvModal.hide("payment")
+							this.onPaymentModalHidden()
+						}
+					}).render("#payments-container");
+
+					return
+				}
+
 				const { id, chainId } = this.rawContract
 
 				const mainnetConfig = getMainnetConfig(chainId)
@@ -206,7 +280,6 @@ export default {
 				this.$bvToast.toast(err.message || 'Deployment failed', {
 					title: 'Mainnet Deployment',
 					variant: 'danger',
-					autoHideDelay: 3000
 				})
 			}
 		},
@@ -262,21 +335,18 @@ export default {
 					this.$bvToast.toast(`Returned value: ${value}`, {
 						title: func.name,
 						variant: 'success',
-						autoHideDelay: 5000
 					})
 				}
 				else {
 					this.$bvToast.toast(`Transaction hash: ${txResponse.hash}`, {
 						title: `Processing ${func.name}`,
 						variant: 'success',
-						autoHideDelay: 5000
 					})
 					txResponse.wait().then(async (res) => {
 						console.log({ res });
 						this.$bvToast.toast(`Transaction ${txResponse.hash} completed`, {
 							title: `${func.name} completed`,
 							variant: 'success',
-							autoHideDelay: 5000
 						})
 					});
 				}
@@ -285,7 +355,6 @@ export default {
 				this.$bvToast.toast(err.data?.message || err.reason || err.message || 'Function call failed', {
 					title: err.code || 'Error',
 					variant: 'danger',
-					autoHideDelay: 5000
 				})
 			} finally {
 				this.busyState[func.name] = false

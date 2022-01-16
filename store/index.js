@@ -97,8 +97,8 @@ export const actions = {
 
     logout({commit, state}) {
         this.$wallet.disconnect()
-        localStorage.setItem('accessToken', null)
-        localStorage.setItem('user', null)
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('user')
         commit('setUser', null)
         commit('setAccessToken', null)
     }

@@ -1,7 +1,7 @@
 import getSiteMeta from "./scripts/siteMeta";
 import axios from 'axios'
 
-const { API_URL, MAGIC_PUBLISHABLE_API_KEY, MAGIC_SECRET_KEY, NETLIFY_API_TOKEN } = process.env
+const { API_URL, MAGIC_PUBLISHABLE_API_KEY, MAGIC_SECRET_KEY, NETLIFY_API_TOKEN, PAYPAL_CLIENT_ID } = process.env
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
@@ -14,7 +14,8 @@ export default {
     API_URL,
     MAGIC_PUBLISHABLE_API_KEY,
     MAGIC_SECRET_KEY,
-    NETLIFY_API_TOKEN
+    NETLIFY_API_TOKEN,
+    PAYPAL_CLIENT_ID
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head

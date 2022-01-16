@@ -46,8 +46,8 @@ export default {
           ...getSiteMeta({
             type: 'website',
             title: 'Smart Contract Wizard',
-            description: 'Create and deploy custom smart contract for your NFTs with ZERO code!',
-            url: '/smart-contract-wizard',
+            description: 'Create and deploy custom smart contract for your NFT drop with ZERO code!',
+            url: '/wizard',
             mainImage: '/smart-contract-wizard.png'
           })
         ],
@@ -55,7 +55,7 @@ export default {
           {
             hid: "canonical",
             rel: "canonical",
-            href: '/smart-contract-wizard',
+            href: '/wizard',
           },
           {
             hid: "img_src",
