@@ -6,6 +6,7 @@ export const state = () => ({
     txInProgress: null,
     txInProgressHash: null,
     txResult: null,
+    isBusy: false,
     smartContractBuilder: {
         blockchain: null,
         chainId: null,
@@ -23,6 +24,9 @@ export const getters = {
 }
   
 export const mutations = {
+    setBusy(state, isBusy) {
+        state.isBusy = isBusy
+    },
     setNetwork(state, network) {
         state.network = network
     },

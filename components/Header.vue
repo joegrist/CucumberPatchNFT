@@ -46,6 +46,18 @@
 				</div>
 			</div>
 		</b-sidebar>
+		<b-modal
+			v-model="$store.state.isBusy"
+			body-class="text-center"
+			title="Loading..."
+			size="lg"
+			centered
+			no-close-on-backdrop
+			no-close-on-esc
+			hide-footer
+			hide-header-close>
+        	<b-spinner style="width: 3rem; height: 3rem;" class="m-3" label="Loading..." type="grow"></b-spinner>
+    	</b-modal>
 	</div>
 </template>
 

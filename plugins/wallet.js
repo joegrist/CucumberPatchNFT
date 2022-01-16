@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import MetaMaskOnboarding from '@metamask/onboarding'
 import { getCurrency } from '@/constants/metamask'
 
-export default ({env}, inject) => {
+export default ({store}, inject) => {
 
     const wallet = Vue.observable({
         account: null,
@@ -95,7 +95,10 @@ export default ({env}, inject) => {
     
         window.ethereum.on('chainChanged', (chainId) => {
             console.log('chainChanged', chainId)
-            window.location.reload()
+            store.commit('setBusy', true)
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000)
         })
 
         wallet.init()
