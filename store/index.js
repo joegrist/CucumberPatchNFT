@@ -37,6 +37,10 @@ export const mutations = {
     setTxResult(state, txResult) {
         state.txResult = txResult
     },
+    updateUserCredits(state, count) {
+        state.user.credits = count
+        localStorage.setItem('user', JSON.stringify(state.user))
+    },
     setUser(state, user) {
         state.user = user
     },
@@ -52,6 +56,11 @@ export const mutations = {
 }
 
 export const actions = {
+    async getCreditsCount({commit, state}) {
+        const { data: userCredits } = await this.$axios.get(`/users/${state.user.id}/credits`)
+        commit('updateUserCredits', userCredits)
+        return userCredits
+    },
     async login({commit, state}, payload) {
 		try {
 			
@@ -61,17 +70,15 @@ export const actions = {
 			
 			const { account: publicKey } = this.$wallet
 			
-			const { data: users } = await this.$axios.get("/users", { params: { publicKey }})
-			let user = users.length ? users[0] : null
-			console.log({user})
+			let { data: nonce } = await this.$axios.get("/users/nonce", { params: { publicKey }})
+			console.log({nonce})
 		
-			if(user === null) {
+			if(!nonce) {
 				const { data: createdUser } = await this.$axios.post("/users", { publicKey, ...payload })
 				console.log({createdUser})
-				user = createdUser
+				nonce = createdUser.nonce
 			}
 			
-			const { nonce } = user;
 			const signature = await this.$wallet.requestSignature(nonce)
 			const { data: authData } = await this.$axios.post("auth", {
 				publicKey,
@@ -89,7 +96,7 @@ export const actions = {
             return authUser
 		} catch (err) {
 			console.log({err})
-			alert(err.message || "Login error")
+			alert(err.message || "Login Error")
 
             return null
 		}

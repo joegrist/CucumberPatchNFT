@@ -2,12 +2,15 @@
 	<b-container class="mt-5">
 		<b-row>
 			<b-col sm="12" md="9">
-				<h3>Smart contract deployed on {{ isTestnet(rawContract.chainId) ? 'TESTNET': 'MAINNET' }} at 
+				<p class="lead font-weight-bold">Contract Balance: {{ contractBalance }} 
+					<!-- <b-button v-if="contractBalance > 0" @click="callFunc('withdraw')">Withdraw</b-button> -->
+				</p>
+				<p class="lead font-weight-bold">Deployed on {{ rawContract.blockchain | blockchainName }} {{ isTestnet(rawContract.chainId) ? 'TESTNET': 'MAINNET' }} at 
 					<br/> 
 					<b-link :href="`${getExplorerUrl(rawContract.chainId)}/address/${rawContract.address}`" target="_blank">{{ rawContract.address }}</b-link>
-				</h3>
+				</p>
 			</b-col>
-			<b-col sm="12" md="3" class="d-flex flex-column align-items-end">
+			<b-col sm="12" md="3" class="d-flex flex-column justify-content-center">
 				<b-overlay
 					:show='isBusy'
 					rounded
@@ -18,18 +21,17 @@
 						<b-icon icon="wallet2" /> Deploy to Mainnet
 					</b-button>
 				</b-overlay>
-				<p class="lead font-weight-bold">Contract Balance: {{ contractBalance }}</p>
 			</b-col>
 		</b-row>
 		<b-row v-if="rawContract.hasWhitelist">
 			<b-col sm="12" md="9">
-				<div >
-					<h3>Comma-separated whitelist</h3>
-					<b-form-textarea v-model="rawContract.whitelist"></b-form-textarea>
+				<div>
+					<p class="lead font-weight-bold m-0">Whitelist</p>
+					<b-form-tags v-model="rawContract.whitelist" placeholder="Enter Wallet Address"></b-form-tags>
 				</div>
 			</b-col>
 			<b-col sm="12" md="3" class="d-flex">
-				<b-button class="align-self-end" variant="success" @click="updateWhitelist">Update</b-button>
+				<b-button class="align-self-end" variant="success" @click="updateWhitelist">Update Whitelist</b-button>
 			</b-col>
 		</b-row>
 		<b-row>
@@ -89,15 +91,17 @@
 		</b-row>
 		<b-modal 
 			id='deployment' 
-			title='Deployed' 
+			title='Deployed!' 
 			size='md' 
 			centered 
 			ok-only
-			@hidden="$router.push(`/smart-contracts/${deployedContract.id}`)"
-      		@ok="$router.push(`/smart-contracts/${deployedContract.id}`)">
+			@hidden="$router.push(`/`)"
+			>
 			<div class='text-center'>
-				<h3>Success!!</h3>
+				<h3 class="text-success">Success!!</h3>
 				<p>Contract has been deployed! Address: {{ deployedContract.address }}</p>
+				<p>Please allow some time for the MetaMask transaction to clear.</p>
+				<b-button variant="link" to="/">Go To Dashboard</b-button>
 			</div>
 		</b-modal>
 		<b-modal 
@@ -110,8 +114,19 @@
 			hide-footer
 			@hidden="onPaymentModalHidden"
 			>
-			<div id="payments-container">
-				
+			<div id="payments-container"></div>
+		</b-modal>
+		<b-modal 
+			id='paymentSuccess' 
+			title='Thank You!!' 
+			size='sm'
+			centered
+			hide-footer
+			>
+			<div>
+				<b-button :disabled="isBusy" class="bg-gradient-primary border-0 w-100" @click="() => { this.$bvModal.hide('paymentSuccess'); this.onMainnetDeploy() }">
+					<b-icon icon="wallet2" /> Deploy to Mainnet)
+				</b-button>
 			</div>
 		</b-modal>
 	</b-container>
@@ -128,6 +143,7 @@ import { loadScript } from "@paypal/paypal-js";
 const FormatTypes = ethers.utils.FormatTypes;
 
 export default {
+  	middleware: 'authenticated',
     data: () => ({
 		FormatTypes,
 		rawContract: {},
@@ -143,8 +159,6 @@ export default {
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
 	async fetch() {
-		if (!this.isLoggedIn) return
-
 		const { data } = await this.$axios.get(`/users/${this.userId}/smartcontracts/${this.$route.params.id}`)
 		const { address, chainId, abi } = data
 
@@ -167,7 +181,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapGetters(['isLoggedIn','userId']),
+		...mapGetters(['userId']),
 		greenFunctions() {
 			return Object.values(this.contract.interface?.functions || {})
 				.filter(val => val.constant)
@@ -204,13 +218,8 @@ export default {
 				container.removeChild(container.firstChild)
 			}
 		},
-		async onMainnetDeploy() {
-			try {
-				
-				const hasCredits = false
-				
-				if(!hasCredits) {
-					this.$bvModal.show("payment")
+		async handlePayment(smartContractId, amount) {
+			this.$bvModal.show("payment")
 					await paypal.Buttons({
 						createOrder: function(data, actions) {
 							console.log('createOrder', data)
@@ -218,18 +227,32 @@ export default {
 							return actions.order.create({
 								purchase_units: [{
 									amount: {
-										value: '399'
+										value: amount
 									}
 								}]
 							});
 						},
-						onApprove: function(data, actions) {
+						onApprove: (data, actions) => {
 							console.log('onApprove', data)
 							// This function captures the funds from the transaction.
-							return actions.order.capture().then(function(details) {
+							return actions.order.capture().then(async (details) => {
 								// This function shows a transaction success message to your buyer.
 								console.log({details})
-								alert('Transaction completed by ' + details.payer.name.given_name);
+								const { id: orderId, address, email_address, name, payer_id } = details.payer
+								await this.$axios.post('transactions', {
+									paymentMethod: 'PayPal',
+									amount: amount,
+									orderId: orderId,
+									countryCode: address.country_code,
+									payerId: payer_id,
+									payerName: `${name.given_name} ${name.surname}`,
+									payerEmail: email_address,
+									userId: this.userId,
+									smartContractId: smartContractId,
+								})
+								this.$bvModal.hide("payment")
+								this.$bvModal.show("paymentSuccess")
+								// alert('Transaction completed by ' + details.payer.name.given_name);
 							});
 						},
 						onCancel: () => {
@@ -238,15 +261,27 @@ export default {
 						},
 						onError: (err) => {
 							console.error({err})
-							this.$bvModal.hide("payment")
-							this.onPaymentModalHidden()
+							// this.$bvModal.hide("payment")
+							// this.onPaymentModalHidden()
+							this.$bvToast.toast(err.message || 'Payment failed', {
+								title: 'PayPal',
+								variant: 'danger',
+							})
 						}
 					}).render("#payments-container");
-
+		},
+		async onMainnetDeploy() {
+			try {
+				const { id, chainId } = this.rawContract
+				
+				const userCredits = await this.$store.dispatch('getCreditsCount')
+				const hasToPay = +userCredits < 1
+				
+				if(hasToPay) {
+					const amount = this.rawContract.hasWhitelist ? 599 : 399
+					this.handlePayment(id, amount)
 					return
 				}
-
-				const { id, chainId } = this.rawContract
 
 				const mainnetConfig = getMainnetConfig(chainId)
 				// console.log({mainnetConfig})
