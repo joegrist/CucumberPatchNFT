@@ -18,9 +18,9 @@ const BLOCKCHAIN = Object.freeze({
 
 const WEBSITE_STATUS = Object.freeze({
 	Unknown: 0,
-	Deployed: 1,
+	Building: 1,
 	Ready: 2,
-	1: 'Deployed',
+	1: 'Building',
 	2: 'Ready'
 })
 

@@ -21,6 +21,7 @@
     "dayjs": "^1.10.7",
     "ethers": "^5.5.2",
     "lodash-es": "^4.17.21",
+    "nanoid": "^3.2.0",
     "nuxt": "^2.15.7",
     "vue-stepper": "^1.4.2",
     "vuelidate": "^0.7.7",

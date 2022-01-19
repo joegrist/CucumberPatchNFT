@@ -1,6 +1,6 @@
 <template>
     <b-form>
-        <b-container fluid>
+        <b-container>
             <b-row>
                 <b-col>
                     <b-form-group>

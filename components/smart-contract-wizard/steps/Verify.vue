@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <b-row>
-      <b-col sm="12" md="4" v-for='item in summary' :key='item.key'>
+      <b-col sm="12" md="6" v-for='item in summary' :key='item.key'>
         <strong>{{ item.key | startCase }}</strong>: {{ item.val | yesNo | blockchainName }}
       </b-col>
     </b-row>

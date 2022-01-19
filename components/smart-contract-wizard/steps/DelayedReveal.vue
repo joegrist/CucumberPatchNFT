@@ -1,6 +1,6 @@
 <template>
   <b-form v-if="showForm" @reset.prevent="onFormReset(reset)">
-    <b-container fluid>
+    <b-container>
          <b-row>
         <b-col>
           <b-form-group>
