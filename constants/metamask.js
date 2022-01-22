@@ -19,8 +19,7 @@ export const AVALANCHE_TESTNET_PARAMS = {
 		decimals: 18,
 	},
 	rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
-	blockExplorerUrls: ['https://testnet.snowtrace.io'],
-	faucetUrls: ["https://faucet.avax-test.network"]
+	blockExplorerUrls: ['https://testnet.snowtrace.io']
 }
 
 
@@ -50,8 +49,7 @@ export const POLYGON_MUMBAI_TESTNET_CONFIG = {
 		decimals: 18,
 	},
 	rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
-	blockExplorerUrls: ['https://mumbai.polygonscan.com'],
-	faucetUrls: ["https://faucet.polygon.technology"]
+	blockExplorerUrls: ['https://mumbai.polygonscan.com']
 }
 
 export const FANTOM_TESTNET_CONFIG = {
@@ -63,8 +61,7 @@ export const FANTOM_TESTNET_CONFIG = {
 		decimals: 18,
 	},
 	rpcUrls: ['https://rpc.testnet.fantom.network'],
-	blockExplorerUrls: ['https://testnet.ftmscan.com'],
-	faucetUrls: ["https://faucet.fantom.network"]
+	blockExplorerUrls: ['https://testnet.ftmscan.com']
 }
 
 export const FANTOM_MAINNET_CONFIG = {
@@ -88,8 +85,7 @@ export const ETHEREUM_RINKEBY = {
 		decimals: 18
 	},
 	rpcUrls: [],
-	blockExplorerUrls: ['https://rinkeby.etherscan.io'],
-	faucetUrls: ["https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"]
+	blockExplorerUrls: ['https://rinkeby.etherscan.io']
 }
 
 export const ETHEREUM_MAINNET = {
@@ -131,6 +127,13 @@ export const CHAINID_CONFIG_MAP = {
 	'0x1': ETHEREUM_MAINNET,
 	'0xFA2': FANTOM_TESTNET_CONFIG,
 	'0xFA': FANTOM_MAINNET_CONFIG
+}
+
+export const FAUCETS = {
+	"43113": ["https://faucet.avax-test.network"],
+	"80001": ["https://faucet.polygon.technology"],
+	"4": ["https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"],
+	"4002": ["https://faucet.fantom.network"]
 }
 
 export const isTestnet = (chainId) => {

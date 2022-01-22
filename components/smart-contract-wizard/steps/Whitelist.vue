@@ -19,7 +19,7 @@
         <b-col>
           <b-form-group
             label="Presale Price"
-            description="Can be the same as public sale price"
+            description="Can be the same as public sale price or zero to allow free mint"
             :label-class="{'required': smartContractBuilder.hasWhitelist}"
             :disabled="!smartContractBuilder.hasWhitelist"
           >
@@ -45,17 +45,24 @@
       <b-row>
         <b-col>
           <b-form-group
-            label="Comma-separated list of wallet addresses"
-            description="Can be added/updated later on"
-            :disabled="!smartContractBuilder.hasWhitelist"
+            label="List of wallet addresses"
+            description="Paste address and press Enter to save. Can be updated later on"
           >
-            <b-form-textarea
+            <b-form-tags 
+              id="whitelist"
+              name="whitelist"
+              :disabled="!smartContractBuilder.hasWhitelist"
+              :value="smartContractBuilder.whitelist"
+              @input="(val) => updateSmartContractBuilder({ whitelist: val })"
+              placeholder="0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199">
+            </b-form-tags>
+            <!-- <b-form-textarea
               id="whitelist"
               name="whitelist"
               :value="smartContractBuilder.whitelist"
               @change="(val) => updateSmartContractBuilder({ whitelist: val })"
               placeholder="0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199,0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
-            ></b-form-textarea>
+            ></b-form-textarea> -->
           </b-form-group>
         </b-col>
       </b-row>

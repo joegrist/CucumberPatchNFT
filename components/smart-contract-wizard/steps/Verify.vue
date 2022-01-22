@@ -1,8 +1,24 @@
 <template>
   <b-container>
     <b-row>
-      <b-col sm="12" md="6" v-for='item in summary' :key='item.key'>
-        <strong>{{ item.key | startCase }}</strong>: {{ item.val | yesNo | blockchainName }}
+      <b-col cols="12" class="pb-3 p-md-5">
+          <b-card class="border-0 shadow">
+              <b-row class="px-3">
+                <b-col sm="12" md="4" class="d-flex flex-column justify-content-between">
+                  <div>
+                    <h2 class="mb-1">{{ smartContractBuilder.name }}</h2>
+                    <h6 class="text-muted">{{ smartContractBuilder.symbol }}</h6>
+                  </div>
+                  <b-img width="150px" :src="blockchainImage[smartContractBuilder.blockchain]"></b-img>
+                </b-col>
+                <b-col sm="12" md="8">
+                  <b-row v-for='item in summary' :key='item.key' class="border-bottom pt-1">
+                    <b-col cols="5" class='truncate-text text-muted'>{{ item.key | startCase }}</b-col>
+                    <b-col cols="7" class='truncate-text'>{{ item.val | yesNo }}</b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
+          </b-card>
       </b-col>
     </b-row>
   </b-container>
@@ -10,16 +26,33 @@
 
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
+import { isArray } from 'lodash-es'
+import { BLOCKCHAIN } from '@/constants'
 
 export default {
   mixins: [smartContractBuilderMixin],
+  data() {
+    return { 
+      blockchainImage: {
+        [BLOCKCHAIN.Ethereum]: require('@/assets/images/blockchain/ethereum.svg'),
+        [BLOCKCHAIN.Solana]: require('@/assets/images/blockchain/solana.svg'),
+        [BLOCKCHAIN.Fantom]: require('@/assets/images/blockchain/fantom.svg'),
+        [BLOCKCHAIN.Polygon]: require('@/assets/images/blockchain/polygon.svg'),
+        [BLOCKCHAIN.Avalanche]: require('@/assets/images/blockchain/avalanche.svg'),
+      }
+    }
+  },
   computed: {
     summary() {
       return Object.entries(this.smartContractBuilder)
-        .filter(([k, _]) => !['id', 'abi', 'bytecode', 'chainId', 'voucherSignerAddress'].includes(k))
+        .filter(([k, _]) => !['id', 'abi', 'bytecode', 'blockchain', 'name', 'chainId', 'voucherSignerAddress'].includes(k))
         .map(([key, val]) => {
+          if(isArray(val)) {
+            val = val.join(',')
+          }
           return {
-            key, val
+            key: key.replace('has', ''),
+            val
           }
         })
         .sort((a,b) => a.key.localeCompare(b.key))

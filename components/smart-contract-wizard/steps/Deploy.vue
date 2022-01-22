@@ -2,17 +2,17 @@
   <b-form>
     <b-container>
       <b-row>
-        <b-col>
-          <h1 class="text-center"> Attention! </h1>
+        <b-col class='text-center'>
+          <h1 class="text-warning"> Attention! </h1>
           <p> You will be using your own metamask wallet to pay the deployment fees and this wallet will thus be the owner of the smart contract. </p>
           <p> This is only a testnet deployment meaning you won't be spending "real" currency but you should still have it to cover the deployment fees.</p>
-          <p class="mt-3">Your wallet address: {{this.$wallet.account}} </p>
-          <b-button v-if="getFaucetList($wallet.network.chainId)" class="mb-2" variant="link" v-b-toggle.faucetList>
+          <p class="mt-3"><span class="font-weight-bold">Your wallet address: </span> {{this.$wallet.account}} </p>
+          <b-button v-if="FAUCETS[$wallet.network.chainId]" class="mb-2" variant="link" v-b-toggle.faucetList>
             Faucet list to get free tokens 
           </b-button>
           <b-collapse id="faucetList">
-            <ul class="pt-1">
-              <li v-for="faucetUrl in getFaucetList($wallet.network.chainId)" :key="faucetUrl">
+            <ul class="pt-1 list-unstyled">
+              <li v-for="faucetUrl in FAUCETS[$wallet.network.chainId]" :key="faucetUrl">
                 <b-link :href="faucetUrl" target="_blank">
                   {{ faucetUrl }} <b-icon icon="box-arrow-up-right" />
                 </b-link>
@@ -24,9 +24,8 @@
       <b-row>
         <b-col>
           <b-form-group
-            label='Email address'
+            label='Your email address'
             label-class='required'
-            description="We'll send further instructions to this email address."
           >
             <b-form-input
               id='email'
@@ -42,7 +41,8 @@
       </b-row>
       <b-row>
         <b-col>
-          <div>
+          <div class="d-flex justify-content-center">
+            <b-button @click="saveDraft()" variant="outline-info" class="mr-3" :disabled='smartContractBuilder.isDeployed || deploymentInProgress'>Save Draft</b-button>
             <b-overlay
               :show='deploymentInProgress'
               rounded
@@ -52,10 +52,8 @@
               class='d-inline-block'
               @hidden='onHidden'
             >
-              <b-button variant='primary' ref='deployBtn' :disabled='!canDeploy' @click='deploy'>Deploy contract
-              </b-button>
+              <b-button variant='outline-success' ref='deployBtn' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
             </b-overlay>
-            <b-button @click="saveDraft()" :disabled='smartContractBuilder.isDeployed || deploymentInProgress'>Save Draft</b-button>
           </div>
         </b-col>
       </b-row>
@@ -77,13 +75,14 @@
 <script>
 import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
-import { getFaucetList } from '@/constants/metamask'
+import { FAUCETS } from '@/constants/metamask'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   mixins: [smartContractBuilderMixin],
   data() {
     return {
+      FAUCETS,
       deploymentInProgress: false,
     }
   },
@@ -98,7 +97,6 @@ export default {
   },
   methods: {
     ...mapActions(['login']),
-    getFaucetList,
     onHidden() {
       // Return focus to the button once hidden
       this.$refs.deployBtn.focus()
