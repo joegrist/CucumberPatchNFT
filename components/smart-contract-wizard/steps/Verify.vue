@@ -1,7 +1,12 @@
 <template>
   <b-container>
     <b-row>
-      <b-col cols="12" class="pb-3 p-md-5">
+      <b-col>
+        <h1 class="text-center py-2"> Your Contract's Information </h1>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="12" class="pb-3 pb-md-5">
           <b-card class="border-0 shadow">
               <b-row class="px-3">
                 <b-col sm="12" md="4" class="d-flex flex-column justify-content-between">
@@ -9,7 +14,7 @@
                     <h2 class="mb-1">{{ smartContractBuilder.name }}</h2>
                     <h6 class="text-muted">{{ smartContractBuilder.symbol }}</h6>
                   </div>
-                  <b-img width="150px" :src="blockchainImage[smartContractBuilder.blockchain]"></b-img>
+                  <b-img width="130px" :src="blockchainImage[smartContractBuilder.blockchain]"></b-img>
                 </b-col>
                 <b-col sm="12" md="8">
                   <b-row v-for='item in summary' :key='item.key' class="border-bottom pt-1">

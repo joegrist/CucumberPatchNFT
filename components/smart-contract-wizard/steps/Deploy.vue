@@ -57,11 +57,6 @@
           </div>
         </b-col>
       </b-row>
-      <b-row v-if="smartContractBuilder.address">
-        <b-col>
-          Deployed contract address: {{ smartContractBuilder.address }}
-        </b-col>
-      </b-row>
     </b-container>
     <b-modal id='deployment' title='Deployed' size='md' centered ok-only>
       <div class='text-center'>
