@@ -24,4 +24,11 @@ const WEBSITE_STATUS = Object.freeze({
 	2: 'Ready'
 })
 
-export { BLOCKCHAIN, WEBSITE_STATUS }
+const MARKETPLACE = Object.freeze({
+	Other: 0,
+	OpenSea: 1,
+	0:'Other',
+	1:'OpenSea'
+})
+
+export { BLOCKCHAIN, WEBSITE_STATUS, MARKETPLACE }

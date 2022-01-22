@@ -11,7 +11,7 @@
               <b-row class="px-3">
                 <b-col sm="12" md="4" class="d-flex flex-column justify-content-between">
                   <div>
-                    <h2 class="mb-1">{{ smartContractBuilder.name }}</h2>
+                    <h2 class="mb-1">{{ smartContractBuilder.name | startCase }}</h2>
                     <h6 class="text-muted">{{ smartContractBuilder.symbol }}</h6>
                   </div>
                   <b-img width="130px" :src="blockchainImage[smartContractBuilder.blockchain]"></b-img>
@@ -32,12 +32,13 @@
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { isArray } from 'lodash-es'
-import { BLOCKCHAIN } from '@/constants'
+import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 
 export default {
   mixins: [smartContractBuilderMixin],
   data() {
-    return { 
+    return {
+      MARKETPLACE,
       blockchainImage: {
         [BLOCKCHAIN.Ethereum]: require('@/assets/images/blockchain/ethereum.svg'),
         [BLOCKCHAIN.Solana]: require('@/assets/images/blockchain/solana.svg'),
@@ -54,6 +55,9 @@ export default {
         .map(([key, val]) => {
           if(isArray(val)) {
             val = val.join(',')
+          }
+          if(key === 'marketplace') {
+            val = MARKETPLACE[val]
           }
           return {
             key: key.replace('has', ''),
