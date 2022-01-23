@@ -1,7 +1,12 @@
 import getSiteMeta from "./scripts/siteMeta";
 import axios from 'axios'
 
-const { API_URL, MAGIC_PUBLISHABLE_API_KEY, MAGIC_SECRET_KEY, NETLIFY_API_TOKEN, PAYPAL_CLIENT_ID } = process.env
+const { 
+  API_URL,
+  OPENSEA_API_KEY,
+  NETLIFY_API_TOKEN,
+  PAYPAL_CLIENT_ID
+} = process.env
 
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
@@ -12,8 +17,7 @@ export default {
 
   env: {
     API_URL,
-    MAGIC_PUBLISHABLE_API_KEY,
-    MAGIC_SECRET_KEY,
+    OPENSEA_API_KEY,
     NETLIFY_API_TOKEN,
     PAYPAL_CLIENT_ID
   },
@@ -51,6 +55,12 @@ export default {
     '@/assets/styles/main.scss'
   ],
 
+  styleResources: {
+    scss: [
+      '@/assets/styles/variables.scss',
+    ]
+  },
+
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '@/plugins/axios',
@@ -80,7 +90,8 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     '@nuxtjs/sitemap',
-    '@nuxtjs/recaptcha'
+    '@nuxtjs/recaptcha',
+    '@nuxtjs/style-resources'
   ],
 
   recaptcha: {

@@ -1,12 +1,4 @@
 <template>
-    <!-- <b-tabs content-class="mt-3" justified active-nav-item-class="font-weight-bold text-uppercase">
-        <b-tab title="Smart Contracts (beta)" active>
-            <SmartContractsTab />
-        </b-tab>
-        <b-tab title="Websites (beta)" lazy>
-            <WebsitesTab />
-        </b-tab>
-    </b-tabs> -->
     <div class="p-3">
         <b-input-group class="mb-3">
 			<b-input-group-prepend>
@@ -17,13 +9,51 @@
 			<b-form-input @input="val => searchTerm = val" debounce="500"/>
 		</b-input-group>
         <b-card-group columns>
-            <b-card v-for="item in filteredItems" :key="item.id" no-body>
-                <b-tabs justified card>
-                    <SmartContractTab :sc="item" />
-                    <WebsiteTab :sc="item" />
-                </b-tabs>
-            </b-card>
+            <DashboardCard v-for="sc in filteredItems" :key="sc.id" :sc="sc" @create-site="showWebsiteModal" />
         </b-card-group>
+        <b-modal
+			id="siteModal"
+			title="Create Website"
+			size="lg"
+			centered
+			@ok="onCreateSite"
+			:busy="isBusy">
+			<!-- <p>Smart Contract: {{ $props.sc.name }}</p> -->
+			<b-form>
+				<b-form-group
+					label="Website Name"
+					label-class="required"
+					description="Dispalyed on Google and as a browser tab title. Ours, for example, is Zero Code NFT Wizard">
+					<b-form-input
+						id="name"
+						name="name"
+						v-model="newWebsite.name"
+						type="text"
+						placeholder="Bored Apes Yacht Club"
+						required></b-form-input>
+				</b-form-group>
+				<b-form-group label="Description" label-class="required">
+					<b-form-input
+						id="description"
+						name="description"
+						v-model="newWebsite.description"
+						type="text"
+						placeholder="10k unique NFTs"
+						required></b-form-input>
+				</b-form-group>
+				<b-form-group
+					label="Desired website domain (URL)"
+					label-class="required">
+					<b-form-input
+						id="desiredDomain"
+						name="desiredDomain"
+						v-model="newWebsite.desiredDomain"
+						type="text"
+						placeholder="bayc"
+						required></b-form-input>
+				</b-form-group>
+			</b-form>
+		</b-modal>
     </div>
 </template>
 
@@ -36,6 +66,8 @@ export default {
       return {
           items:[],
           searchTerm: '',
+          isBusy: false,
+          newWebsite: {}
       }
   },
   fetchOnServer: false,
@@ -53,6 +85,7 @@ export default {
 		this.setSmartContractList(contracts)
 
 		console.log('dashboard', this.items)
+
 	},
     computed: {
         ...mapGetters(['userId']),
@@ -63,6 +96,45 @@ export default {
     },
     methods: {
 		...mapMutations(['setSmartContractList']),
+
+        showWebsiteModal(smartContractId) {
+            this.newWebsite.smartContractId = smartContractId
+            this.$bvModal.show("siteModal")
+        },
+
+        async onCreateSite(e) {
+			e.preventDefault()
+			this.isBusy = true
+
+			try {
+				const { data: createdSite} = await this.$axios.post('websites', this.newWebsite)
+
+				this.site = createdSite
+
+				// const { data: websites } = await this.$axios.get(
+				// 	`/users/${this.userId}/websites`
+				// )
+
+                // const sc = this.items.find(x => x.id === createdSite.smartContractId)
+                // sc.website = createdSite
+
+                //TODO: navigate to the created site /websites/{createdSite.id}
+
+				this.$bvModal.hide('siteModal')
+				this.$bvToast.toast('Website submission successful! Please allow ~10 minutes for the website do get deployed.', {
+					title: 'Website',
+					variant: 'success',
+				})
+			} catch (err) {
+				console.error({ err })
+				this.$bvToast.toast(err.message || 'Failed to deploy the website', {
+                    title: 'Website',
+					variant: 'danger',
+				})
+			} finally {
+                this.isBusy = false
+            }
+		},
     }
 }
 </script>
