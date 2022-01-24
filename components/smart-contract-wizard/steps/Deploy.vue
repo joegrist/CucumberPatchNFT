@@ -104,13 +104,18 @@ export default {
           const user = await this.login({
             email: this.email,
           })
-          if(!user) return
+          if(!user) {
+            alert("Login failed")
+            return
+          }
         }
 
         const res = await this.$axios.post('/smartcontracts/save-draft', {
           ...this.smartContractBuilder,
           ownerAddress: this.$wallet.account
         })
+
+        console.log({res})
 
         const { id } = res.data
         this.updateSmartContractBuilder({
@@ -120,16 +125,15 @@ export default {
         this.$bvToast.toast('Draft saved', {
             title: 'Draft',
             variant: 'info',
-            autoHideDelay: 4000,
         })
 
         return id
 
       } catch (err) {
+        console.error({err})
         this.$bvToast.toast('Failed to save the draft', {
           title: 'Error',
           variant: 'danger',
-          autoHideDelay: 4000,
         })
       }
     },
@@ -139,7 +143,10 @@ export default {
           const user = await this.login({
             email: this.email,
           })
-          if(!user) return
+          if(!user) {
+            alert("Login failed")
+            return
+          }
         }
 
         this.deploymentInProgress = true
@@ -181,7 +188,6 @@ export default {
         this.$bvToast.toast(e.message || 'Deployment failed', {
           title: 'Error',
           variant: 'danger',
-          autoHideDelay: 3000
         })
       } finally {
         this.deploymentInProgress = false

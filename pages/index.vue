@@ -6,14 +6,14 @@
         			<b-icon icon="search" />
       			</b-input-group-text>
 			</b-input-group-prepend>
-			<b-form-input @input="val => searchTerm = val" debounce="500"/>
+			<b-form-input @input="val => searchTerm = val" debounce="500" placeholder="Start typing the smart contract name.." />
 		</b-input-group>
         <b-card-group columns>
             <DashboardCard v-for="sc in filteredItems" :key="sc.id" :sc="sc" @create-site="showWebsiteModal" />
         </b-card-group>
         <b-modal
 			id="siteModal"
-			title="Create Website"
+			title="Create Minting Website"
 			size="lg"
 			centered
 			@ok="onCreateSite"
@@ -58,13 +58,12 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapState } from 'vuex'
 
 export default {
   middleware: 'authenticated',
   data() {
       return {
-          items:[],
           searchTerm: '',
           isBusy: false,
           newWebsite: {}
@@ -80,22 +79,21 @@ export default {
             sc.website = websites.find(x =>sc.id === x.smartContractId)
         })
 
-        this.items = contracts
+		this.setDashboardItems(contracts)
 
-		this.setSmartContractList(contracts)
-
-		console.log('dashboard', this.items)
+		console.log('dashboard', this.dashboardItems)
 
 	},
     computed: {
+        ...mapState(['dashboardItems']),
         ...mapGetters(['userId']),
         filteredItems() {
             const term = this.searchTerm.toLowerCase()
-            return this.items.filter(x => x.name.toLowerCase().includes(term) || x.symbol.toLowerCase().includes(term))
-        }   
+            return this.dashboardItems.filter(x => x.name.toLowerCase().includes(term) || x.symbol.toLowerCase().includes(term))
+        }
     },
     methods: {
-		...mapMutations(['setSmartContractList']),
+		...mapMutations(['setDashboardItems']),
 
         showWebsiteModal(smartContractId) {
             this.newWebsite.smartContractId = smartContractId

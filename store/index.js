@@ -1,12 +1,12 @@
 export const state = () => ({
 	user: JSON.parse(localStorage.getItem('user') || '{}'),
 	accessToken: localStorage.getItem('accessToken'),
-    smartContractList: [],
     network: null,
     txInProgress: null,
     txInProgressHash: null,
     txResult: null,
     isBusy: false,
+    dashboardItems: [],
     smartContractBuilder: {
         blockchain: null,
         chainId: null,
@@ -14,7 +14,8 @@ export const state = () => ({
         hasDelayedReveal: false,
         hasOpenSeaRoyalties: true,
         hasRaribleRoylties: false,
-        hasMintableRoylaties: false
+        hasMintableRoylaties: false,
+        marketplaceCollection: {}
     }
   })
 
@@ -48,14 +49,29 @@ export const mutations = {
 		state.accessToken = accessToken
 	},
     updateSmartContractBuilder(state, payload) {
-        state.smartContractBuilder = { ...state.smartContractBuilder, ...payload}
+        state.smartContractBuilder.marketplaceCollection = {
+            ...state.smartContractBuilder.marketplaceCollection,
+            ...payload.marketplaceCollection,
+            sellerFeeBasisPoints: (payload.marketplaceCollection?.royalties || 0) * 100
+        }
+
+        delete payload.marketplaceCollection
+
+        state.smartContractBuilder = { 
+            ...state.smartContractBuilder,
+            ...payload,
+        }
     },
-    setSmartContractList(state, payload) {
-        state.smartContractList = payload
+    setDashboardItems(state, payload) {
+        state.dashboardItems = payload
     }
 }
 
 export const actions = {
+    async removeDashboardCard({commit, state}, id) {
+        await this.$axios.delete(`/smartcontracts/${id}`)
+        commit('setDashboardItems', state.dashboardItems.filter(x => x.id !== id))
+    },
     async getCreditsCount({commit, state}) {
         const { data: userCredits } = await this.$axios.get(`/users/${state.user.id}/credits`)
         commit('updateUserCredits', userCredits)

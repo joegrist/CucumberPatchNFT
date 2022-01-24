@@ -54,7 +54,7 @@
             >
         </div>
     </div>
-    <b-modal id="siteModal" title="Create Website" size="md" centered @ok="onCreateSite" :busy="isBusy">
+    <b-modal id="siteModal" title="Create Minting Website" size="md" centered @ok="onCreateSite" :busy="isBusy">
         <b-form>
             <b-form-group
                 label='Website Name'
@@ -140,7 +140,7 @@ export default {
     computed: {
         ...mapGetters(['isLoggedIn','userId']),
         smartContracts() {
-            return this.$store.state.smartContractList.filter(sc => sc.isDeployed)
+            return this.$store.state.dashboardItems.filter(sc => sc.isDeployed)
         },
 		filteredItems() {
 			return this.items.filter(x => x.name.includes(this.searchTerm))

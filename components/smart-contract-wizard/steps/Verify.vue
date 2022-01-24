@@ -51,7 +51,7 @@ export default {
   computed: {
     summary() {
       return Object.entries(this.smartContractBuilder)
-        .filter(([k, _]) => !['id', 'abi', 'bytecode', 'blockchain', 'name', 'chainId', 'voucherSignerAddress'].includes(k))
+        .filter(([k, _]) => !['id', 'abi', 'bytecode', 'blockchain', 'name', 'chainId', 'voucherSignerAddress', 'marketplaceCollection'].includes(k))
         .map(([key, val]) => {
           if(isArray(val)) {
             val = val.join(',')

@@ -32,7 +32,7 @@ import Blockchain from '~/components/smart-contract-wizard/steps/Blockchain.vue'
 import GeneralInfo from '~/components/smart-contract-wizard/steps/GeneralInfo.vue'
 import Whitelist from '~/components/smart-contract-wizard/steps/Whitelist.vue'
 import DelayedReveal from '~/components/smart-contract-wizard/steps/DelayedReveal.vue'
-import Rolyalties from '~/components/smart-contract-wizard/steps/Rolyalties.vue'
+import Marketplace from '~/components/smart-contract-wizard/steps/Marketplace.vue'
 import Verify from '~/components/smart-contract-wizard/steps/Verify.vue'
 import Deploy from '~/components/smart-contract-wizard/steps/Deploy.vue'
 import getSiteMeta from "@/scripts/siteMeta";
@@ -105,10 +105,10 @@ export default {
         },
         {
           icon: 'looks_5',
-          name: 'royalties',
-          title: 'Royalties',
-          subtitle: 'Get paid from secondary market sales',
-          component: Rolyalties,
+          name: 'marketplace',
+          title: 'Marketplace',
+          subtitle: 'Collection name, royalties, etc.',
+          component: Marketplace,
           completed: false
         },
         {
