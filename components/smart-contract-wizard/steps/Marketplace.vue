@@ -40,7 +40,7 @@
 					<b-form-group 
 						label="Collection Name" 
 						label-class="required" 
-						description="This will be your collection's OpenSea identifier. For example if you name it 'doodles' your collection will be at https://opensea.io/collections/doodles">
+						description="This will be your collection's OpenSea identifier. For example if you name it 'doodles' your collection will be at https://opensea.io/collection/doodles">
 						<b-form-input
 							id="collectionName"
 							name="collectionName"
@@ -191,7 +191,12 @@ export default {
 		}
 	},
 	mounted() {
-		this.updateSmartContractBuilder({ marketplaceCollection: { feeRecipient: this.$wallet.account } })
+		if(!this.$store.state.smartContractBuilder?.marketplaceCollection?.feeRecipient) {
+			this.updateSmartContractBuilder({ marketplaceCollection: { feeRecipient: this.$wallet.account } })
+		}
+		else {
+			this.updateSmartContractBuilder({ marketplaceCollection: { feeRecipient: this.$wallet.account } })
+		}
 	},
 	computed: {
 		validation() {

@@ -34,7 +34,7 @@
 				<b-button class="align-self-end" variant="success" @click="updateWhitelist">Update Whitelist</b-button>
 			</b-col>
 		</b-row>
-		<b-row>
+		<b-row v-if="isReady">
 			<b-col cols="6">
 				<h3 class="text-success text-center py-3">Eco Friendly 🌱</h3>
 				<ul>
@@ -52,7 +52,7 @@
 									<b-input @change="val => onParamChange(val, func, param)" />
 								</li>
 							</ul>
-							<b-button class="mt-1" variant="success" @click="callFunc(func, idx)">Execute</b-button>
+							<b-button class="mt-1" variant="success" @click="callFunc(func)">Execute</b-button>
 							<span class="lead font-weight-bold align-middle pl-2" v-show="responses[func.name]">Result: {{ responses[func.name] }}</span>
 						</b-collapse>
 					</li>
@@ -82,7 +82,7 @@
 								opacity='0.6'
 								spinner-small
 							>
-								<b-button class="mt-1" variant="success" @click="callFunc(func, idx)">Execute</b-button>
+								<b-button class="mt-1 w-100" variant="success" @click="callFunc(func)">Execute</b-button>
 							</b-overlay>
 						</b-collapse>
 					</li>
@@ -148,25 +148,27 @@ export default {
 		FormatTypes,
 		rawContract: {},
 		contract: {},
+		deployedContract: {},
 		responses: {},
 		callFuncArgs: {},
 		contractBalance: 0,
 		busyState: {},
 		isBusy: false,
-		deployedContract: {},
+		isReady: false,
 		paypal: null,
 	}),
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
 	async fetch() {
 		const { data } = await this.$axios.get(`/users/${this.userId}/smartcontracts/${this.$route.params.id}`)
-		const { address, chainId, abi } = data
-
 		this.rawContract = data
-		this.contract = new ethers.Contract(address, abi, await this.$wallet.provider.getSigner())
-		this.contractBalance = await this.$wallet.provider.getBalance(address) + ' ' + getCurrency(chainId)
 
-		console.log('loaded smart-contract', this.rawContract, this.contract, this.contractBalance)
+		const { address, chainId, abi } = this.rawContract
+		this.contract = new ethers.Contract(address, abi, this.$wallet.provider.getSigner())
+		this.contractBalance = await this.$wallet.provider.getBalance(address) + ' ' + getCurrency(chainId)
+		this.isReady = !!(await this.contract.deployed())
+
+		console.log('loaded smart-contract', this.rawContract, this.contract, this.contractBalance, this.isReady)
 	},
 	async mounted() {
 		try {
@@ -177,7 +179,7 @@ export default {
 				"enable-funding": 'venmo',
 			});
 		} catch (err) {
-			console.error("failed to load the PayPal JS SDK script", err);
+			console.error("init error", err);
 		}
 	},
 	computed: {
@@ -318,17 +320,20 @@ export default {
 				})
 			}
 		},
-		async callFunc(func, idx) {
+		async callFunc(func) {
 			try{
 				console.log('calling ', func)
 
-				if(this.rawContract.chainId !== this.$wallet.hexChainId) {
+				// console.log(this.rawContract.chainId, func)
+
+				if(this.rawContract.chainId != this.$wallet.network.chainId) {
 					const config = CHAINID_CONFIG_MAP[this.rawContract.chainId]
 					await this.$wallet.switchNetwork(config)
 					return // the page will reload when chain was changed so doesnt make sense to continue
 				}
 
-				this.busyState[func.name] = true
+				Vue.set(this.busyState, func.name, true)
+
 				const txOverrides = {}
 
 				if(!func.constant) {
@@ -352,6 +357,15 @@ export default {
 								: value
 							})
 					console.log({args})
+
+					if(func.payable) {
+						if(func.name === 'mint') {
+							const mintPrice = await this.contract.MINT_PRICE()
+							const value = Number(ethers.utils.formatEther(mintPrice)) * Number(args[0])
+							txOverrides.value = ethers.utils.parseEther(value.toString())
+						}
+					}
+
 					txResponse = await this.contract[`${func.name}`].call(null, ...args, txOverrides)
 				}
 				else {
@@ -392,7 +406,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.busyState[func.name] = false
+				Vue.set(this.busyState, func.name, false)
 			}
 		}
 	}

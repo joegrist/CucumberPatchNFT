@@ -157,7 +157,6 @@ export default {
 				})
 		},
 		requireNetworkSwitch() {
-			console.log(this.$wallet.network?.chainId)
 			return (
 				this.smartContractBuilder.chainId &&
 				this.$wallet.network?.chainId?.toString() != this.smartContractBuilder.chainId

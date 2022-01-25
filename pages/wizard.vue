@@ -41,11 +41,10 @@ import { mapState, mapMutations } from 'vuex'
 export default {
     head() {
       return {
-        title: 'Smart contract wizard',
+        title: 'Zero Code NFT Wizard',
         meta: [
           ...getSiteMeta({
-            type: 'website',
-            title: 'Smart Contract Wizard',
+            title: 'Zero Code NFT Wizard',
             description: 'Create and deploy custom smart contract for your NFT drop with ZERO code!',
             url: '/wizard',
             mainImage: '/smart-contract-wizard.png'

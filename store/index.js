@@ -52,7 +52,6 @@ export const mutations = {
         state.smartContractBuilder.marketplaceCollection = {
             ...state.smartContractBuilder.marketplaceCollection,
             ...payload.marketplaceCollection,
-            sellerFeeBasisPoints: (payload.marketplaceCollection?.royalties || 0) * 100
         }
 
         delete payload.marketplaceCollection

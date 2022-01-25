@@ -50,23 +50,21 @@
 						<strong>Connect Wallet</strong>
 					</b-button>
 				</div>
-				<div v-else>
+				<div v-if="$store.getters.isLoggedIn">
 					<p>Account: {{ $wallet.accountCompact }}</p>
 					<p>Balance: {{ $wallet.balance }}</p>
-					<p class="text-capitalize">Network: {{ $wallet.network.name }}</p>
+					<p class="text-capitalize">Network: {{ $wallet.networkName }}</p>
 					<p>Credits: {{ $store.state.user.credits }}</p>
 					<b-button
-						v-if="$store.getters.isLoggedIn"
 						class="bg-gradient-primary border-0 w-100"
 						@click="logout"
 						>Logout</b-button
 					>
-					<b-button
-						v-else
+					<!-- <b-button
 						class="bg-gradient-primary border-0 w-100"
 						@click="disconnect"
 						>Disconnect Wallet</b-button
-					>
+					> -->
 				</div>
 			</div>
 		</b-sidebar>
