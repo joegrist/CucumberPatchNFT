@@ -74,6 +74,7 @@ export default {
 				'voucherSignerPublicAddress',
 				'website',
 				'marketplaceCollection',
+				'whitelist'
 			],
 		}
 	},
