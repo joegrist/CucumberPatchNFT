@@ -59,7 +59,6 @@
 <script>
 import { WEBSITE_STATUS } from '@/constants'
 import { mapGetters } from 'vuex'
-import dayjs from 'dayjs'
 
 export default {
 	data() {
@@ -78,10 +77,7 @@ export default {
 		console.log('loaded website', this.site)
 	},
 	computed: {
-		...mapGetters(['userId']),
-		dropDateTime() {
-			dayjs(this.site.dropDate).format('dddd MMM')
-		},
+		...mapGetters(['userId'])
 	},
 	methods: {
 		async refreshStatus() {

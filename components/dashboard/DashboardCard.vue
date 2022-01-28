@@ -40,7 +40,12 @@
 			</b-dd-item>
 		</b-dropdown>
 		<b-card-title class="text-center">
-			<b-link v-if="$props.sc.isDeployed" class="text-dark" :to="`/smart-contracts/${$props.sc.id}`">{{ $props.sc.name | startCase }}</b-link>
+			<b-link
+				v-if="$props.sc.isDeployed"
+				class="text-dark"
+				:to="`/smart-contracts/${$props.sc.id}`"
+				>{{ $props.sc.name | startCase }}</b-link
+			>
 			<span v-else>{{ $props.sc.name | startCase }}</span>
 		</b-card-title>
 		<b-card-sub-title class="text-center mb-2">{{
@@ -68,7 +73,9 @@
 					<span class="text-muted">Revealed</span>
 				</b-col>
 				<b-col cols="6" class="text-center">
-					<span class="font-weight-bold">{{ minted }} / {{ $props.sc.collectionSize }}</span>
+					<span class="font-weight-bold"
+						>{{ minted }} / {{ $props.sc.collectionSize }}</span
+					>
 					<br />
 					<span class="text-muted">Minted</span>
 				</b-col>
@@ -140,7 +147,7 @@ import { ethers } from 'ethers'
 import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
 import { mapActions, mapMutations } from 'vuex'
-const blockchainImage =  {
+const blockchainImage = {
 	[BLOCKCHAIN.Ethereum]: require('@/assets/images/ethereum.svg'),
 	[BLOCKCHAIN.Solana]: require('@/assets/images/solana.svg'),
 	[BLOCKCHAIN.Fantom]: require('@/assets/images/fantom.svg'),
@@ -163,7 +170,6 @@ export default {
 				total_sales: 'n/a',
 				total_volume: 'n/a',
 			},
-			
 		}
 	},
 	props: {
@@ -206,12 +212,12 @@ export default {
 		getExplorerUrl,
 		onEdit() {
 			console.log(this.$props.sc)
-			this.updateSmartContractBuilder({...this.$props.sc})
+			this.updateSmartContractBuilder({ ...this.$props.sc })
 			this.$router.push('/wizard')
 		},
 		async onRemoveCard() {
-            if(!confirm("Are you sure want to remove this card ?")) return
-            
+			if (!confirm('Are you sure want to remove this card ?')) return
+
 			try {
 				await this.removeDashboardCard(this.$props.sc.id)
 				this.$bvToast.toast('Card removed', {
@@ -232,8 +238,8 @@ export default {
 					this.$wallet.provider
 				)
 
-				console.log('contract is deployed:', await contract.deployed())
-				console.log('contractUri', await contract.contractURI())
+				// console.log('contract is deployed:', await contract.deployed())
+				// console.log('contractUri', await contract.contractURI())
 
 				this.balance = await this.$wallet.provider.getBalance(
 					this.$props.sc.address
@@ -256,32 +262,36 @@ export default {
 
 			let openSeaApiUrl, fetchParams
 
-			if(isTestnet(this.$props.sc)) {
+			if (isTestnet(this.$props.sc)) {
 				openSeaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${formattedName}/stats`
-			}
-			else {
+			} else {
 				openSeaApiUrl = `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
 				fetchParams = {
 					headers: {
-						'X-API-KEY': process.env.OPENSEA_API_KEY
-					}
+						'X-API-KEY': process.env.OPENSEA_API_KEY,
+					},
 				}
 			}
 
 			fetch(openSeaApiUrl, fetchParams)
-			.then((response) => response.json())
-			.then((data) => {
-				console.log('OpenSea stats', data)
-				if(!data.stats || data.success === false || data.detail?.startsWith('Request was throttled')) return 
+				.then((response) => response.json())
+				.then((data) => {
+					console.log('OpenSea stats', data)
+					if (
+						!data.stats ||
+						data.success === false ||
+						data.detail?.startsWith('Request was throttled')
+					)
+						return
 
-				this.openSeaStats = data.stats
-				this.openSeaStats.floor_price = !!data.stats.floor_price
-					? data.stats.floor_price.toFixed(2)
-					: 'n/a'
-				this.openSeaStats.total_volume =
-					data.stats.total_volume > 0 ? data.stats.total_volume.toFixed(2) : 0
-			})
-			.catch(console.error)
+					this.openSeaStats = data.stats
+					this.openSeaStats.floor_price = !!data.stats.floor_price
+						? data.stats.floor_price.toFixed(2)
+						: 'n/a'
+					this.openSeaStats.total_volume =
+						data.stats.total_volume > 0 ? data.stats.total_volume.toFixed(2) : 0
+				})
+				.catch(console.error)
 		},
 	},
 }

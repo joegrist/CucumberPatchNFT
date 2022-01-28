@@ -173,22 +173,22 @@ export default {
 			this.updateSmartContractBuilder({chainId})
 			this.$wallet.chainId != chainId && this.callWalletFunc('switchNetwork')
 		},
-		hoverCard(index) {
-			this.hovered = index
+		hoverCard(blockchain) {
+			this.hovered = blockchain
+		},
+		onSelectBlockchain(blockchain) {
+			this.updateSmartContractBuilder({ blockchain, chainId: null })
 		},
 		async callWalletFunc(func) {
 			try {
 				if(func === 'switchNetwork') await this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[this.smartContractBuilder.chainId])
 			} catch (err) {
 				console.error(err)
-				this.$bvToast.toast(err?.message || 'Operation failed', {
+				this.$bvToast.toast(err?.message || `${func} failed`, {
 					title: 'Wallet',
-					variant: 'danger',
+					variant: 'danger'
 				})
 			}
-		},
-		onSelectBlockchain(blockchain) {
-			this.updateSmartContractBuilder({ blockchain, chainId: null })
 		},
 	},
 }

@@ -67,7 +67,9 @@ export default ({store}, inject) => {
         },
 
         async switchNetwork(config) {
-            if(this.network?.chainId === config.chainId || `0x${this.network?.chainId.toString(16)}` === config.chainId) {
+            if(!config?.chainId) return
+
+            if(this.chainId === config.chainId || `0x${this.chainId.toString(16)}` === config.chainId) {
                 return //since we are on correct network
             }
 
