@@ -4,9 +4,9 @@
       <b-row>
         <b-col cols='12'>
           <b-form-group
-            label='Metadata URL'
+            label='IPFS Metadata URL'
             label-class='required'
-            description='URL to the endpoint (folder) that contains metadata .json files'
+            description='URL to the endpoint (folder) that contains metadata .json files. IMPORTANT: has to end with a slash "/"'
           >
             <b-form-input
               id='baseURL'
@@ -20,7 +20,7 @@
               required
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.baseURL">
-              Please fill "Metadata URL"
+              Please correct IPFS Metadata URL"
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
@@ -44,16 +44,16 @@
               required
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.name">
-              Enter name
+              Please correct "Name"
             </b-form-invalid-feedback>
           </b-form-group>
 
         </b-col>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Symbol'
+            label='Token Symbol'
             label-class='required'
-            description='Purely presentational, no spaces, max 6 characters'
+            description='Purely presentational, no spaces, max 10 characters'
           >
             <b-form-input
               id='symbol'
@@ -63,12 +63,12 @@
               @input="$v.smartContractBuilder.symbol.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.symbol.$error}"
               type='text'
-              max='6'
+              maxlength='10'
               placeholder='BAYC'
               required
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.symbol">
-              Enter the symbol
+              Please corrent "Token Symbol"
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
@@ -93,7 +93,7 @@
               required
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.collectionSize">
-              Enter the collection size
+              Please correct "Collection Size"
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
@@ -116,7 +116,7 @@
               required
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.mintPrice">
-              Enter the mint price
+              Please correct "Mint Price"
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
@@ -124,7 +124,7 @@
       <b-row>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Set aside NFTs'
+            label='Set Aside NFTs'
             description='How many tokens starting from 1st one onwards to set aside for the team, marketing etc. Minted to your wallet upon contract deployment and incurs gas fees so the higher this number the higher smart contract deployment fee will be.'
           >
             <b-form-input
@@ -140,14 +140,14 @@
               placeholder='25'
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.setAsideTokenCount">
-              Value must be more than 0
+              Please correct "Set aside NFTs". Enter at least 1 or leave empty.
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
 
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Max tokens per transaction'
+            label='Max Tokens Per Transaction'
             description='How many tokens can one person mint at a time. For example BAYC allowed 20.'
           >
             <b-form-input
@@ -164,7 +164,7 @@
             />
           </b-form-group>
           <b-form-invalid-feedback :state="validation.maxTokensPerTransaction">
-            Value must be more than 0
+            Please correct "Max Tokens Per Transaction". Enter at least 1 or leave empty.
           </b-form-invalid-feedback>
         </b-col>
       </b-row>

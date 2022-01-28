@@ -154,7 +154,7 @@ export default {
 			blockchainImage,
 			revealed: 'n/a',
 			balance: 'n/a',
-			minted: 'n/a',
+			minted: 0,
 			royalties: 'n/a',
 			openSeaStats: {
 				num_owners: 'n/a',
