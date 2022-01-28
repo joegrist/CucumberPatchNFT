@@ -73,8 +73,7 @@
 						id="chainId"
 						name="chainId"
 						:value="smartContractBuilder.chainId"
-						@change="(val) => updateSmartContractBuilder({ chainId: val })"
-						@input="$v.smartContractBuilder.chainId.$touch()"
+						@change="onNetworkChange"
 						:class="{ 'is-invalid': $v.smartContractBuilder.chainId.$error }"
 						:options="networkOptions"
 						required></b-form-select>
@@ -159,7 +158,7 @@ export default {
 		requireNetworkSwitch() {
 			return (
 				this.smartContractBuilder.chainId &&
-				this.$wallet.network?.chainId?.toString() != this.smartContractBuilder.chainId
+				this.$wallet?.chainId != this.smartContractBuilder.chainId
 			)
 		},
 		switchToName() {
@@ -169,6 +168,11 @@ export default {
 		},
 	},
 	methods: {
+		onNetworkChange(chainId) {
+			this.$v.smartContractBuilder.chainId.$touch()
+			this.updateSmartContractBuilder({chainId})
+			this.$wallet.chainId != chainId && this.callWalletFunc('switchNetwork')
+		},
 		hoverCard(index) {
 			this.hovered = index
 		},
@@ -180,7 +184,6 @@ export default {
 				this.$bvToast.toast(err?.message || 'Operation failed', {
 					title: 'Wallet',
 					variant: 'danger',
-					autoHideDelay: 3000,
 				})
 			}
 		},
