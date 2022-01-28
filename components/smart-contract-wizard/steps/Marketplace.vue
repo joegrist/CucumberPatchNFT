@@ -40,7 +40,7 @@
 					<b-form-group 
 						label="Collection Name" 
 						label-class="required" 
-						description="This will be your collection's OpenSea identifier. For example if you name it 'doodles' your collection will be at https://opensea.io/collection/doodles">
+						description="This will be your collection's OpenSea identifier on TESTNET e.g. if the name shows as taken it does not mean it's also taken on the mainnet. For example if you name it 'doodles' your collection will be at https://testnets.opensea.io/collection/doodles">
 						<b-form-input
 							id="collectionName"
 							name="collectionName"
@@ -169,7 +169,7 @@
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { MARKETPLACE } from '@/constants'
-import { required, minValue, decimal, maxValue } from 'vuelidate/lib/validators'
+import { required, requiredIf, minValue, decimal, maxValue } from 'vuelidate/lib/validators'
 
 export default {
 	mixins: [smartContractBuilderMixin],
@@ -194,9 +194,6 @@ export default {
 		if(!this.$store.state.smartContractBuilder?.marketplaceCollection?.feeRecipient) {
 			this.updateSmartContractBuilder({ marketplaceCollection: { feeRecipient: this.$wallet.account } })
 		}
-		else {
-			this.updateSmartContractBuilder({ marketplaceCollection: { feeRecipient: this.$wallet.account } })
-		}
 	},
 	computed: {
 		validation() {
@@ -212,7 +209,9 @@ export default {
 		smartContractBuilder: {
 			marketplace: { required },
 			marketplaceCollection: {
-				name: { required },
+				name: { required: requiredIf(function(model) {
+					return model.marketplace === MARKETPLACE.OpenSea
+				})},
 				royalties: { decimal, minValue: minValue(0), maxValue: maxValue(10) },
 			},
 		},

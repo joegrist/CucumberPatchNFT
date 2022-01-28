@@ -161,7 +161,9 @@ export default {
     // Executed when @stepper-finished event is triggered
     alert(payload) {
       if(this.smartContractBuilder?.id || confirm("You are about to lose all your changes. Are you sure you want to finish ?")) {
-        this.updateSmartContractBuilder({})
+        this.updateSmartContractBuilder({
+          marketplaceCollection: {}
+        })
         this.$router.push('/')
       }
     }

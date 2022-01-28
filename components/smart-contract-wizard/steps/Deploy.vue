@@ -5,20 +5,20 @@
         <b-col class='text-center'>
           <h1 class="text-warning"> Attention! </h1>
           <p> You will be using your own metamask wallet to pay the deployment fees and this wallet will thus be the owner of the smart contract. </p>
-          <p> This is only a testnet deployment meaning you won't be spending "real" currency but you should still have it to cover the deployment fees.</p>
-          <p class="mt-3"><span class="font-weight-bold">Your wallet address: </span> {{this.$wallet.account}} </p>
-          <b-button v-if="FAUCETS[$wallet.network.chainId]" class="mb-2" variant="link" v-b-toggle.faucetList>
-            Faucet list to get free tokens 
+          <p> This is only a testnet deployment meaning you won't be spending real currency but you should still have test tokens to cover the deployment fees.</p>
+          <b-button v-if="FAUCETS[$wallet.chainId]" class="mb-2" variant="link" v-b-toggle.faucetList>
+            Faucet list to get FREE test tokens (click to expand)
           </b-button>
           <b-collapse id="faucetList">
             <ul class="pt-1 list-unstyled">
-              <li v-for="faucetUrl in FAUCETS[$wallet.network.chainId]" :key="faucetUrl">
+              <li v-for="faucetUrl in FAUCETS[$wallet.chainId]" :key="faucetUrl">
                 <b-link :href="faucetUrl" target="_blank">
                   {{ faucetUrl }} <b-icon icon="box-arrow-up-right" />
                 </b-link>
               </li>
             </ul>
           </b-collapse>
+          <p class="mt-3"><span class="font-weight-bold">Your wallet address: </span> {{this.$wallet.account}} </p>
         </b-col>
       </b-row>
       <b-row>
@@ -58,7 +58,7 @@
         </b-col>
       </b-row>
     </b-container>
-    <b-modal id='deployment' title='Deployed' size='md' centered ok-only>
+    <b-modal id='deployment' title='Deployed' size='md' centered ok-only @ok="$router.push('/')">
       <div class='text-center'>
         <h3>Success!!</h3>
         <p>Contract has been deployed! Address: {{ smartContractBuilder.address }}</p>
@@ -89,6 +89,9 @@ export default {
     canDeploy() {
       return !this.smartContractBuilder.isDeployed && this.smartContractBuilder.email && !this.deploymentInProgress
     }
+  },
+  mounted() {
+    console.log(this.$wallet.chainId, this.FAUCETS[this.$wallet.chainId])
   },
   methods: {
     ...mapActions(['login']),

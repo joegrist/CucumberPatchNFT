@@ -18,6 +18,9 @@ export default ({store}, inject) => {
         get networkName() {
             return this.network?.name
         },
+        get chainId() {
+            return this.network?.chainId
+        },
 
         async init() {
             this.provider = new ethers.providers.Web3Provider(window.ethereum) //prefably diff node like Infura, Alchemy or Moralis

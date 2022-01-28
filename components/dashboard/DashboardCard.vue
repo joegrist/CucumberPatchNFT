@@ -68,7 +68,7 @@
 					<span class="text-muted">Revealed</span>
 				</b-col>
 				<b-col cols="6" class="text-center">
-					<span class="font-weight-bold">{{ minted }}</span>
+					<span class="font-weight-bold">{{ minted }} / {{ $props.sc.collectionSize }}</span>
 					<br />
 					<span class="text-muted">Minted</span>
 				</b-col>
@@ -140,10 +140,18 @@ import { ethers } from 'ethers'
 import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
 import { mapActions, mapMutations } from 'vuex'
+const blockchainImage =  {
+	[BLOCKCHAIN.Ethereum]: require('@/assets/images/ethereum.svg'),
+	[BLOCKCHAIN.Solana]: require('@/assets/images/solana.svg'),
+	[BLOCKCHAIN.Fantom]: require('@/assets/images/fantom.svg'),
+	[BLOCKCHAIN.Polygon]: require('@/assets/images/polygon.svg'),
+	[BLOCKCHAIN.Avalanche]: require('@/assets/images/avalanche.svg'),
+}
 
 export default {
 	data() {
 		return {
+			blockchainImage,
 			revealed: 'n/a',
 			balance: 'n/a',
 			minted: 'n/a',
@@ -155,13 +163,7 @@ export default {
 				total_sales: 'n/a',
 				total_volume: 'n/a',
 			},
-			blockchainImage: {
-				[BLOCKCHAIN.Ethereum]: require('@/assets/images/ethereum.svg'),
-				[BLOCKCHAIN.Solana]: require('@/assets/images/solana.svg'),
-				[BLOCKCHAIN.Fantom]: require('@/assets/images/fantom.svg'),
-				[BLOCKCHAIN.Polygon]: require('@/assets/images/polygon.svg'),
-				[BLOCKCHAIN.Avalanche]: require('@/assets/images/avalanche.svg'),
-			},
+			
 		}
 	},
 	props: {
@@ -250,19 +252,27 @@ export default {
 			const { name } = this.$props.sc.marketplaceCollection
 			const formattedName = name.replace(/\s/g, '').toLowerCase()
 
-			const url = isTestnet(this.$props.sc)
-				? `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
-				: `https://testnets-api.opensea.io/api/v1/collection/${formattedName}/stats`
+			// console.log(name, formattedName, isTestnet(this.$props.sc))
 
-			fetch(url, {
-				// headers: {
-				//     'X-API-KEY': process.env.OPENSEA_API_KEY
-				// }
-			})
+			let openSeaApiUrl, fetchParams
+
+			if(isTestnet(this.$props.sc)) {
+				openSeaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${formattedName}/stats`
+			}
+			else {
+				openSeaApiUrl = `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
+				fetchParams = {
+					headers: {
+						'X-API-KEY': process.env.OPENSEA_API_KEY
+					}
+				}
+			}
+
+			fetch(openSeaApiUrl, fetchParams)
 			.then((response) => response.json())
 			.then((data) => {
 				console.log('OpenSea stats', data)
-				if(data?.success === false) return // TODO 
+				if(!data.stats || data.success === false || data.detail?.startsWith('Request was throttled')) return 
 
 				this.openSeaStats = data.stats
 				this.openSeaStats.floor_price = !!data.stats.floor_price

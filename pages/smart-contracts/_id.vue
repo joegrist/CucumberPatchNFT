@@ -366,10 +366,10 @@ export default {
 						}
 					}
 
-					txResponse = await this.contract[`${func.name}`].call(null, ...args, txOverrides)
+					txResponse = await this.contract[func.name].call(null, ...args, txOverrides)
 				}
 				else {
-					txResponse = await this.contract[`${func.name}`](txOverrides)
+					txResponse = await this.contract[func.name](txOverrides)
 				}
 
 				console.log({ txResponse });
@@ -387,13 +387,14 @@ export default {
 					})
 				}
 				else {
-					this.$bvToast.toast(`Transaction hash: ${txResponse.hash}`, {
+					const msg = [this.createToastMessage(txResponse.hash)]
+					this.$bvToast.toast(msg, {
 						title: `Processing ${func.name}`,
 						variant: 'success',
 					})
 					txResponse.wait().then(async (res) => {
 						console.log({ res });
-						this.$bvToast.toast(`Transaction ${txResponse.hash} completed`, {
+						this.$bvToast.toast(msg, {
 							title: `${func.name} completed`,
 							variant: 'success',
 						})
@@ -408,6 +409,20 @@ export default {
 			} finally {
 				Vue.set(this.busyState, func.name, false)
 			}
+		},
+		createToastMessage(hash) {
+			const h = this.$createElement
+			return h(
+						'span',
+						[
+							'Transaction accepted! ',
+							h(
+								'b-link',
+								{ props: { target: '_blank', href: `${this.getExplorerUrl(this.rawContract.chainId)}/tx/${hash}` } },
+								[ 'View on block explorer >']
+							)
+						]
+					)
 		}
 	}
 }

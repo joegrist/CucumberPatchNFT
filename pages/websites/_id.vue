@@ -1,6 +1,6 @@
 <template>
     <b-container class="pt-3">
-        <h1 class="text-center">{{ site.title }}</h1>
+        <h1 class="text-center">{{ site.title }} dApp</h1>
         <ul>
             <li v-if="site.status === WEBSITE_STATUS.Ready">
 					Current URL:
@@ -22,7 +22,7 @@
                     size="sm"
                     :disabled="isBusy"
                     @click="refreshStatus"
-                    >Refresh
+                    >{{ isBusy ? 'Refreshing...' : 'Refresh' }}
                 </b-button>
             </li>
             <li>Drop Date: {{ site.dropDate | toDate }}</li>
@@ -38,7 +38,7 @@
 <script>
 
 import { WEBSITE_STATUS } from '@/constants'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
     data() {
@@ -68,10 +68,18 @@ export default {
                 console.log(data)
     
                 this.site.status = data
-    
+
+                setTimeout(() => {
+                    this.$bvToast.toast('Status refreshed!', {
+                        title: 'Website',
+                        variant: 'success',
+                    })
+                    this.isBusy = false
+                }, 3000)
+
             } catch (err) {
-                console.error(err)
                 this.isBusy = false
+                console.error(err)
             }
         },
     }

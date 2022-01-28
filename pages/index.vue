@@ -57,7 +57,7 @@
 						required></b-form-input>
 				</b-form-group>
 				<div class="d-flex">
-					<b-form-group label="Drop Date" label-class="required" description="Sets the countdown timer. Can be updated later." class="w-50">
+					<b-form-group label="Drop Date" description="Sets the countdown timer. Can be updated later." class="w-50">
 						<b-form-input
 							id="dropDateInput"
 							name="dropDateInput"
@@ -66,7 +66,7 @@
 							:min="new Date().toISOString().split('T')[0]"
 							required></b-form-input>
 					</b-form-group>
-					<b-form-group label="Drop Time" label-class="required" description="Sets the countdown timer. Can be updated later." class="w-50">
+					<b-form-group label="Drop Time" description="Sets the countdown timer. Can be updated later." class="w-50">
 						<b-form-input
 							id="dropTimeInput"
 							name="dropTimeInput"
