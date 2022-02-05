@@ -29,25 +29,25 @@
 			</li>
 			<li v-if="site.discordURL">
 				Discord:
-				<b-link :href="site.discordURL" target="_blank"
+				<b-link :href="transformUrl(site.discordURL)" target="_blank"
 					>{{ site.discordURL }} <b-icon icon="box-arrow-up-right"
 				/></b-link>
 			</li>
 			<li v-if="site.twitterURL">
 				Twitter:
-				<b-link :href="site.twitterURL" target="_blank"
+				<b-link :href="transformUrl(site.twitterURL)" target="_blank"
 					>{{ site.twitterURL }} <b-icon icon="box-arrow-up-right"
 				/></b-link>
 			</li>
 			<li v-if="site.instagramURL">
 				Instagram:
-				<b-link :href="site.instagramURL" target="_blank"
+				<b-link :href="transformUrl(site.instagramURL)" target="_blank"
 					>{{ site.instagramURL }} <b-icon icon="box-arrow-up-right"
 				/></b-link>
 			</li>
 			<li v-if="site.marketplaceURL">
 				Marketplace URL:
-				<b-link :href="site.marketplaceURL" target="_blank"
+				<b-link :href="transformUrl(site.marketplaceURL)" target="_blank"
 					>{{ site.marketplaceURL }} <b-icon icon="box-arrow-up-right"
 				/></b-link>
 			</li>
@@ -80,6 +80,9 @@ export default {
 		...mapGetters(['userId'])
 	},
 	methods: {
+		transformUrl(url) {
+			return url.startsWith('http') ? url : `https://${url}`	
+		},
 		async refreshStatus() {
 			try {
 				this.isBusy = true

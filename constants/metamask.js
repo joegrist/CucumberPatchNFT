@@ -100,12 +100,36 @@ export const ETHEREUM_MAINNET = {
 	blockExplorerUrls: ['https://etherscan.io'],
 }
 
+export const BSC_MAINNET = {
+	chainId: '0x38',
+	chainName: 'Binance Smart Chain',
+	nativeCurrency: {
+		name: 'BNB',
+		symbol: 'BNB',
+		decimals: 18
+	},
+	rpcUrls: ['https://bsc-dataseed.binance.org'],
+	blockExplorerUrls: ['https://bscscan.com'],
+}
+
+export const BSC_TESTNET = {
+	chainId: '0x61',
+	chainName: 'Binance Smart Chain Testnet',
+	nativeCurrency: {
+		name: 'BNB',
+		symbol: 'BNB',
+		decimals: 18
+	},
+	rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+	blockExplorerUrls: ['https://testnet.bscscan.com'],
+}
 
 export function getMainnetConfig(testnetChainId) {
 	if(['0x4', '4'].includes(testnetChainId)) return ETHEREUM_MAINNET
 	if(['0xA869', '43113'].includes(testnetChainId)) return AVALANCHE_MAINNET_PARAMS
 	if(['0x89', '80001'].includes(testnetChainId)) return POLYGON_MAINNET_PARAMS
 	if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
+	if(['0x38', '56'].includes(testnetChainId)) return BSC_MAINNET
 
 	throw new Error("Matching mainnet config not found")
 }
@@ -118,6 +142,8 @@ export const CHAINID_CONFIG_MAP = {
 	'1': ETHEREUM_MAINNET,
 	'4002': FANTOM_TESTNET_CONFIG,
 	'250': FANTOM_MAINNET_CONFIG,
+	'56': BSC_MAINNET,
+	'97': BSC_TESTNET,
 	
 	'0xA86A': AVALANCHE_MAINNET_PARAMS,
 	'0xA869': AVALANCHE_TESTNET_PARAMS,
@@ -126,18 +152,21 @@ export const CHAINID_CONFIG_MAP = {
 	'0x4': ETHEREUM_RINKEBY,
 	'0x1': ETHEREUM_MAINNET,
 	'0xFA2': FANTOM_TESTNET_CONFIG,
-	'0xFA': FANTOM_MAINNET_CONFIG
+	'0xFA': FANTOM_MAINNET_CONFIG,
+	'0x38': BSC_MAINNET,
+	'0x61': BSC_TESTNET
 }
 
 export const FAUCETS = {
 	"43113": ["https://faucet.avax-test.network"],
 	"80001": ["https://faucet.polygon.technology"],
 	"4": ["https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"],
-	"4002": ["https://faucet.fantom.network"]
+	"4002": ["https://faucet.fantom.network"],
+	'97': ["https://testnet.binance.org/faucet-smart"]
 }
 
 export const isTestnet = (chainId) => {
-	return ['43113', '80001', '4', '4002', '0xA869', '0x13881', '0x4', '0xFA2'].includes(chainId)
+	return ['43113', '80001', '4', '4002', '97', '0xA869', '0x13881', '0x4', '0xFA2', '0x61'].includes(chainId)
 }
 
 export function getExplorerUrl(chainId) {

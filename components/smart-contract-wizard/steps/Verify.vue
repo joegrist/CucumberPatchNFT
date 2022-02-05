@@ -59,6 +59,7 @@ export default {
 				[BLOCKCHAIN.Fantom]: require('@/assets/images/blockchain/fantom.svg'),
 				[BLOCKCHAIN.Polygon]: require('@/assets/images/blockchain/polygon.svg'),
 				[BLOCKCHAIN.Avalanche]: require('@/assets/images/blockchain/avalanche.svg'),
+				[BLOCKCHAIN.BinanceSmartChain]: require('@/assets/images/blockchain/binance.svg'),
 			},
 			excludeList: [
 				'id',
@@ -74,7 +75,8 @@ export default {
 				'voucherSignerPublicAddress',
 				'website',
 				'marketplaceCollection',
-				'whitelist'
+				'whitelist',
+				'email'
 			],
 		}
 	},

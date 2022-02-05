@@ -153,6 +153,7 @@ const blockchainImage = {
 	[BLOCKCHAIN.Fantom]: require('@/assets/images/fantom.svg'),
 	[BLOCKCHAIN.Polygon]: require('@/assets/images/polygon.svg'),
 	[BLOCKCHAIN.Avalanche]: require('@/assets/images/avalanche.svg'),
+	[BLOCKCHAIN.BinanceSmartChain]: require('@/assets/images/binance.svg'),
 }
 
 export default {

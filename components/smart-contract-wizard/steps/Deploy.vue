@@ -10,7 +10,7 @@
             Faucet list to get FREE test tokens (click to expand)
           </b-button>
           <b-collapse id="faucetList">
-            <ul class="pt-1 list-unstyled">
+            <ul class="mt-1 list-unstyled">
               <li v-for="faucetUrl in FAUCETS[$wallet.chainId]" :key="faucetUrl">
                 <b-link :href="faucetUrl" target="_blank">
                   {{ faucetUrl }} <b-icon icon="box-arrow-up-right" />
@@ -18,7 +18,11 @@
               </li>
             </ul>
           </b-collapse>
-          <p class="mt-3"><span class="font-weight-bold">Your wallet address: </span> {{this.$wallet.account}} </p>
+          <p class="mt-2">
+            <span class="font-weight-bold">Your wallet address: </span>
+            {{ this.$wallet.account }}
+            <b-button variant="primary" size="sm" class="p-1" @click="onAccountCopy"> Copy </b-button>
+          </p>
         </b-col>
       </b-row>
       <b-row>
@@ -42,9 +46,9 @@
       <b-row>
         <b-col>
           <div class="d-flex justify-content-center">
-            <b-button @click="saveDraft()" variant="outline-info" class="mr-3" :disabled='smartContractBuilder.isDeployed || deploymentInProgress'>Save Draft</b-button>
+            <b-button @click="saveDraft()" variant="outline-info" class="mr-3" :disabled='!canDeploy'>Save Draft</b-button>
             <b-overlay
-              :show='deploymentInProgress'
+              :show='isBusy'
               rounded
               opacity='0.6'
               spinner-small
@@ -61,7 +65,9 @@
     <b-modal id='deployment' title='Deployed' size='md' centered ok-only @ok="$router.push('/')">
       <div class='text-center'>
         <h3>Success!!</h3>
-        <p>Contract has been deployed! Address: {{ smartContractBuilder.address }}</p>
+        <p>Contract has been deployed!<br> 
+          <b-link :href="`${getExplorerUrl(smartContractBuilder.chainId)}/address/${smartContractBuilder.address}`" target="_blank"> View on block explorer </b-link>
+        </p>
       </div>
     </b-modal>
   </b-form>
@@ -70,7 +76,7 @@
 <script>
 import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
-import { FAUCETS } from '@/constants/metamask'
+import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -78,7 +84,7 @@ export default {
   data() {
     return {
       FAUCETS,
-      deploymentInProgress: false,
+      isBusy: false,
     }
   },
   validations: {
@@ -87,14 +93,19 @@ export default {
   computed: {
     ...mapGetters(['isLoggedIn']),
     canDeploy() {
-      return !this.smartContractBuilder.isDeployed && this.smartContractBuilder.email && !this.deploymentInProgress
+      return !this.smartContractBuilder.isDeployed && this.smartContractBuilder.email && !this.isBusy
     }
-  },
-  mounted() {
-    console.log(this.$wallet.chainId, this.FAUCETS[this.$wallet.chainId])
   },
   methods: {
     ...mapActions(['login']),
+    getExplorerUrl,
+    async onAccountCopy() {
+      await navigator.clipboard.writeText(this.$wallet.account)
+      this.$bvToast.toast('Address copied to clipboard', {
+          title: 'Wallet',
+          variant: 'info',
+      })
+    },
     onHidden() {
       // Return focus to the button once hidden
       this.$refs.deployBtn.focus()
@@ -152,7 +163,7 @@ export default {
           }
         }
 
-        this.deploymentInProgress = true
+        this.isBusy = true
 
         const id = await this.saveDraft()
 
@@ -161,14 +172,10 @@ export default {
         const { abi, bytecode } = compilationResult.data
 
         // console.log(bytecode, abi)
-
-        this.provider = new ethers.providers.Web3Provider(window.ethereum)
-        this.signer = this.provider.getSigner()
-
-        const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, this.signer)
+        const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, this.$wallet.provider.getSigner())
 
         const deploymentData = contractFactory.interface.encodeDeploy([])
-        const estimatedGas = await this.provider.estimateGas({ data: deploymentData })
+        const estimatedGas = await this.$wallet.provider.estimateGas({ data: deploymentData })
         console.log('gas estimate', estimatedGas.toString())
 
         const contract = await contractFactory.deploy()
@@ -193,7 +200,7 @@ export default {
           variant: 'danger',
         })
       } finally {
-        this.deploymentInProgress = false
+        this.isBusy = false
       }
     }
   }

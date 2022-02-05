@@ -17,10 +17,14 @@
 		</div>
         <b-modal
 			id="siteModal"
-			title="Create Minting Website"
+			title="Deploy Minting Website"
 			size="lg"
 			centered
+			@hidden="newWebsite = {}"
 			@ok="onCreateSite"
+			ok-title="Deploy"
+			ok-variant="success"
+			no-close-on-backdrop
 			:busy="isBusy">
 			<!-- <p>Smart Contract: {{ $props.sc.name }}</p> -->
 			<b-form>
@@ -170,7 +174,11 @@ export default {
 
 			try {
 				const { dropDateInput, dropTimeInput } = this.newWebsite
-				this.newWebsite.dropDate = `${dropDateInput}T${dropTimeInput}:00`
+				this.newWebsite.dropDate = dropDateInput
+				if(dropTimeInput) {
+					this.newWebsite.dropDate += `T${dropTimeInput}:00`
+				}
+
 				console.log(this.newWebsite)
 
 				const { data: createdSite} = await this.$axios.post('websites', this.newWebsite)

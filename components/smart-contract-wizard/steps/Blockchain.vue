@@ -52,12 +52,23 @@
 			</b-col>
 			<b-col sm="12" md="4">
 				<b-img
+					:class="['pointer mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.BinanceSmartChain || smartContractBuilder.blockchain === BLOCKCHAIN.BinanceSmartChain }]"
+					center
+					width="450px"
+					height="150px"
+					src="@/assets/images/blockchain/binance.svg"
+					@click="onSelectBlockchain(BLOCKCHAIN.BinanceSmartChain)"
+					@mouseover="hoverCard(BLOCKCHAIN.BinanceSmartChain)"
+        			@mouseout="hoverCard(null)" />
+			</b-col>
+			<b-col sm="12" md="4">
+				<b-img
 					:class="['mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Solana }]"
 					center
 					width="450px"
 					height="150px"
 					src="@/assets/images/blockchain/solana.svg" />
-				<h4 class="text-center text-muted position-relative" style="top: -30px">
+				<h4 class="text-center text-muted position-relative" style="top: -45px">
 					Coming soon!
 				</h4>
 			</b-col>
@@ -136,6 +147,12 @@ export default {
 					chainName: 'Fantom Testnet',
 					symbol: 'FTM',
 				},
+				{
+					chainId: '97',
+					blockchain: BLOCKCHAIN.BinanceSmartChain,
+					chainName: 'Binance Smart Chain Testnet',
+					symbol: 'BNB',
+				}
 			],
 		}
 	},
