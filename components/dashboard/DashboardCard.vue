@@ -242,9 +242,10 @@ export default {
 				// console.log('contract is deployed:', await contract.deployed())
 				// console.log('contractUri', await contract.contractURI())
 
-				this.balance = await this.$wallet.provider.getBalance(
+				const contractBalance = await this.$wallet.provider.getBalance(
 					this.$props.sc.address
 				)
+				this.balance = ethers.utils.formatEther(contractBalance)
 				this.minted = await contract.totalSupply()
 				this.revealed = this.$props.sc.hasDelayedReveal
 					? await contract.canReveal()

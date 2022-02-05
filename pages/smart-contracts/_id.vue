@@ -59,7 +59,7 @@
 			</b-row>
 			<b-row v-else-if="!isReady">
 				<b-col>
-					<h3>
+					<h3 class="pt-3">
 						Contract deployment is still in progress, please check back in a
 						minute
 					</h3>
@@ -259,10 +259,9 @@ export default {
 				abi,
 				this.$wallet.provider.getSigner()
 			)
-			this.contractBalance =
-				(await this.$wallet.provider.getBalance(address)) +
-				' ' +
-				getCurrency(chainId)
+			const balance = (await this.$wallet.provider.getBalance(address)) || '0'
+
+			this.contractBalance = ethers.utils.formatEther(balance) + ' ' + getCurrency(chainId)
 			this.isOnWrongNetwork = this.$wallet.chainId !== +chainId
 
 			if (this.isOnWrongNetwork) {
@@ -543,13 +542,14 @@ export default {
 				}
 			} catch (err) {
 				console.error({ err })
+				const { data, reason, message, code } = err
 				this.$bvToast.toast(
-					err.data?.message ||
-						err.reason ||
-						err.message ||
+						data?.message ||
+						reason ||
+						message ||
 						'Function call failed',
 					{
-						title: err.code || 'Error',
+						title: code || 'Error',
 						variant: 'danger',
 					}
 				)
