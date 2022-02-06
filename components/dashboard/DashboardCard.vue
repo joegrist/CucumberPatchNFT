@@ -259,7 +259,7 @@ export default {
 
 			let openSeaApiUrl, fetchParams
 
-			if (isTestnet(this.$props.sc)) {
+			if (isTestnet(this.$props.sc.chainId)) {
 				openSeaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${formattedName}/stats`
 			} else {
 				openSeaApiUrl = `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
@@ -270,16 +270,27 @@ export default {
 				}
 			}
 
-			fetch(openSeaApiUrl, fetchParams)
-				.then((response) => response.json())
+			let retryCount = 0
+
+			const getData = () => {
+				fetch(openSeaApiUrl, fetchParams)
+				.then((response) => {
+					console.log({response})
+					if(response.status == 429 && retryCount < 3) {
+						retryCount++
+						this.wait(2000).then(() => getData())
+					}
+					return response.json()
+				})
 				.then((data) => {
 					console.log('OpenSea stats', data)
 					if (
 						!data.stats ||
-						data.success === false ||
+						!data.success ||
 						data.detail?.startsWith('Request was throttled')
-					)
+					) {
 						return
+					}
 
 					this.openSeaStats = data.stats
 					this.openSeaStats.floor_price = !!data.stats.floor_price
@@ -289,7 +300,13 @@ export default {
 						data.stats.total_volume > 0 ? data.stats.total_volume.toFixed(2) : 0
 				})
 				.catch(console.error)
+			}
+
+			getData()
 		},
+		wait(delay) {
+			return new Promise((resolve) => setTimeout(resolve, delay));
+		}
 	},
 }
 </script>
