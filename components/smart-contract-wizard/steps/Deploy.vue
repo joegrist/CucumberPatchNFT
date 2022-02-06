@@ -62,7 +62,7 @@
         </b-col>
       </b-row>
     </b-container>
-    <b-modal id='deployment' title='Deployed' size='md' centered ok-only @ok="$router.push('/')">
+    <b-modal id='deployment' title='Deployed' size='md' centered ok-only @ok="goToDashboard">
       <div class='text-center'>
         <h3>Success!!</h3>
         <p>Contract has been deployed!<br> 
@@ -99,6 +99,12 @@ export default {
   methods: {
     ...mapActions(['login']),
     getExplorerUrl,
+    goToDashboard() {
+        this.updateSmartContractBuilder({
+          marketplaceCollection: {}
+        })
+        this.$router.push('/')
+    },
     async onAccountCopy() {
       await navigator.clipboard.writeText(this.$wallet.account)
       this.$bvToast.toast('Address copied to clipboard', {
@@ -128,8 +134,6 @@ export default {
           ...this.smartContractBuilder,
           ownerAddress: this.$wallet.account
         })
-
-        console.log({res})
 
         const { id } = res.data
         this.updateSmartContractBuilder({
@@ -190,7 +194,7 @@ export default {
             address: contract.address
         })
 
-        console.log({ contract })
+        // console.log({ contract })
 
         this.$bvModal.show('deployment')
       } catch (e) {

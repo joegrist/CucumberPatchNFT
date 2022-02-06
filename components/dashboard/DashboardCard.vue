@@ -177,8 +177,6 @@ export default {
 		sc: Object,
 	},
 	mounted() {
-		console.log('sc', this.$props.sc)
-
 		if (!this.$props.sc.isDeployed) return
 
 		this.getContractStats()
@@ -212,7 +210,6 @@ export default {
 		isTestnet,
 		getExplorerUrl,
 		onEdit() {
-			console.log(this.$props.sc)
 			this.updateSmartContractBuilder({ ...this.$props.sc })
 			this.$router.push('/wizard')
 		},
@@ -259,8 +256,6 @@ export default {
 
 			const { name } = this.$props.sc.marketplaceCollection
 			const formattedName = name.replace(/\s/g, '').toLowerCase()
-
-			// console.log(name, formattedName, isTestnet(this.$props.sc))
 
 			let openSeaApiUrl, fetchParams
 

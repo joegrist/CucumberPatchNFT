@@ -133,13 +133,9 @@ export default {
 	},
 	beforeMount() {
 		this.site = { ...this.$props.sc.website || {}, nanoId: nanoid() }
-		console.log(this.site, this.$props.sc.website)
 	},
 	computed: {
 		...mapGetters(['userId']),
-		// site() {
-		// 	return this.$props.sc.website
-		// },
 	},
 	methods: {
 		...mapMutations(['updateSmartContractBuilder']),
@@ -150,18 +146,8 @@ export default {
 		async refreshStatus(website) {
 			try { 
 				this.isBusy = true
-				// const { data } = await this.$netlify.get(
-				// 	`/deploys/${website.netlifyDeployId}`
-				// )
-
-				// console.log('status', data)
-
-				// if (data.state === 'ready') {
-				// 	website.status = WEBSITE_STATUS.Ready
-				// }
 
 				const { data } = await this.$axios.get(`/users/${this.userId}/websites/${website.id}/status`)
-				console.log(data)
 
 				this.site.status = data
 
@@ -183,10 +169,6 @@ export default {
 				})
 
 				this.site = createdSite
-
-				// const { data: websites } = await this.$axios.get(
-				// 	`/users/${this.userId}/websites`
-				// )
 
                 //TODO: navigate to the created site /websites/{createdSite.id}
 

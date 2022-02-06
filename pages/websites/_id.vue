@@ -90,7 +90,6 @@ export default {
 				const { data } = await this.$axios.get(
 					`/users/${this.userId}/websites/${this.site.id}/status`
 				)
-				console.log(data)
 
 				this.site.status = data
 

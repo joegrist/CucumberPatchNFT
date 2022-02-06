@@ -121,7 +121,7 @@ export default {
       try {
         const contracts = await axios.get(`https://${process.env.API_URL}/smartcontracts/ids`)
         return (contracts?.data || []).map((id) => ({
-          route: `/smartcontracts/${id}`
+          route: `/smart-contracts/${id}`
         }))
       } catch(e) {
         console.error(e)

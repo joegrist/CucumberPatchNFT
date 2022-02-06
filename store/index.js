@@ -86,11 +86,10 @@ export const actions = {
 			const { account: publicKey } = this.$wallet
 			
 			let { data: nonce } = await this.$axios.get("/users/nonce", { params: { publicKey }})
-			console.log({nonce})
 		
 			if(!nonce) {
 				const { data: createdUser } = await this.$axios.post("/users", { publicKey, ...payload })
-				console.log({createdUser})
+				// console.log({createdUser})
 				nonce = createdUser.nonce
 			}
 			
@@ -99,7 +98,7 @@ export const actions = {
 				publicKey,
 				signature,
 			})
-			console.log( {authData} )
+			// console.log( {authData} )
 		
 			const { accessToken, user: authUser } = authData
 
@@ -110,7 +109,7 @@ export const actions = {
 
             return authUser
 		} catch (err) {
-			console.log({err})
+			console.error({err})
 			alert(err.message || "Login Error")
 
             return null

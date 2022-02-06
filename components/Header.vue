@@ -91,9 +91,6 @@ export default {
 			isSidebarVisible: false,
 		}
 	},
-	mounted() {
-		// console.log(this.$store.getters.isLoggedIn, localStorage.getItem('accessToken'))
-	},
 	methods: {
 		disconnect() {
 			this.isSidebarVisible = false

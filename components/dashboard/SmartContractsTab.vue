@@ -79,7 +79,7 @@ export default {
 
 		this.setDashboardItems(data)
 
-		console.log('smart-contracts-tab', this.items)
+		// console.log('smart-contracts-tab', this.items)
 	},
 	computed: {
         ...mapGetters(['isLoggedIn','userId']),

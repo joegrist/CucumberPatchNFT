@@ -53,7 +53,7 @@ export default ({store}, inject) => {
             wallet.network = await wallet.provider.getNetwork()
 
             const [account] = await wallet.provider.send('eth_requestAccounts')
-            console.log('wallet connect', {account})
+            console.info('wallet connected', {account})
 
             if(account) {
                 await wallet.setAccount(account)
@@ -97,12 +97,12 @@ export default ({store}, inject) => {
     if(window.ethereum) {
     
         window.ethereum.on('accountsChanged', ([newAddress]) => {
-            console.log('accountsChanged', newAddress)
+            console.info('accountsChanged', newAddress)
             wallet.setAccount(newAddress)
         })
     
         window.ethereum.on('chainChanged', (chainId) => {
-            console.log('chainChanged', chainId)
+            console.info('chainChanged', chainId)
             store.commit('setBusy', true)
             setTimeout(() => {
                 window.location.reload()

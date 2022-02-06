@@ -197,7 +197,7 @@
 			hide-footer>
 			<div>
 				<b-button
-					:disabled="isBusy"
+					:disabled="true || isBusy"
 					class="bg-gradient-primary border-0 w-100"
 					@click="
 						() => {
@@ -344,7 +344,7 @@ export default {
 			await paypal
 				.Buttons({
 					createOrder: function (data, actions) {
-						console.log('createOrder', data)
+						// console.log('createOrder', data)
 						// Set up the transaction
 						return actions.order.create({
 							purchase_units: [
@@ -357,11 +357,11 @@ export default {
 						})
 					},
 					onApprove: (data, actions) => {
-						console.log('onApprove', data)
+						// console.log('onApprove', data)
 						// This function captures the funds from the transaction.
 						return actions.order.capture().then(async (details) => {
 							// This function shows a transaction success message to your buyer.
-							console.log({ details })
+							// console.log({ details })
 							const {
 								id: orderId,
 								address,
@@ -415,7 +415,6 @@ export default {
 				}
 
 				const mainnetConfig = getMainnetConfig(chainId)
-				// console.log({mainnetConfig})
 
 				await this.$wallet.switchNetwork(mainnetConfig)
 

@@ -135,7 +135,7 @@ export default {
 		const { data: websites } = await this.$axios.get(`/users/${this.userId}/websites`)
 		this.items = websites
 
-		console.log('websites-tab', this.items, this.smartContracts)
+		// console.log('websites-tab', this.items, this.smartContracts)
 	},
     computed: {
         ...mapGetters(['isLoggedIn','userId']),
@@ -149,7 +149,6 @@ export default {
     methods: {
         async refreshStatus(website) {
             const { data } = await this.$netlify.get(`/deploys/${website.netlifyDeployId}`)
-            console.log('status', data)
             if(data.state === 'ready') {
                 website.status = WEBSITE_STATUS.Ready
             }

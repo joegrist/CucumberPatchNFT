@@ -7,7 +7,6 @@ const twitterCard = "summary_large_image";
 
 export default (meta) => {
 
-    // console.log({meta})
     return [
       {
         hid: "image",
