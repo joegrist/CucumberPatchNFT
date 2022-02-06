@@ -174,13 +174,13 @@ export function getExplorerUrl(chainId) {
 }
 
 export function getCurrency(chainId) {
-	return CHAINID_CONFIG_MAP[chainId]?.nativeCurrency.symbol
+	return CHAINID_CONFIG_MAP[chainId]?.nativeCurrency.symbol || 'Unknown'
 }
 
 export function getNetwork(chainId) {
-	return CHAINID_CONFIG_MAP[chainId]?.chainName
+	return CHAINID_CONFIG_MAP[chainId]?.chainName || 'Unknown'
 }
 
 export function getFaucetList(chainId) {
-	return CHAINID_CONFIG_MAP[chainId]?.faucetUrls
+	return CHAINID_CONFIG_MAP[chainId]?.faucetUrls || []
 }

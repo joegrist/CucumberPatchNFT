@@ -37,10 +37,9 @@
 			v-model="isSidebarVisible"
 			id="sidebar-1"
 			title="Account"
-			shadow
 			right
-			z-index="2"
-			backdrop-variant="dark">
+			backdrop
+			z-index="2">
 			<div class="px-3 py-4">
 				<div v-if="!$wallet.account">
 					<b-button
@@ -55,18 +54,16 @@
 					<p>Balance: {{ $wallet.balance }}</p>
 					<p class="text-capitalize">Network: {{ $wallet.networkName }}</p>
 					<p>Credits: {{ $store.state.user.credits }}</p>
-					<b-button
-						class="bg-gradient-primary border-0 w-100"
-						@click="logout"
-						>Logout</b-button
-					>
-					<!-- <b-button
-						class="bg-gradient-primary border-0 w-100"
-						@click="disconnect"
-						>Disconnect Wallet</b-button
-					> -->
 				</div>
 			</div>
+			<template #footer>
+				<b-button
+					class="bg-gradient-primary border-0 rounded-0 w-100"
+					@click="logout"
+					size="lg"
+					>Logout</b-button
+				>
+			</template>
 		</b-sidebar>
 		<b-modal
 			v-model="$store.state.isBusy"
