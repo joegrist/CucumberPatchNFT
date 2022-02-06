@@ -252,7 +252,7 @@ export default {
 			}
 		},
 		getOpenSeaStats() {
-			if (!this.$props.sc.marketplaceCollection) return
+			if (!this.$props.sc.marketplaceCollection || !this.$props.sc.isDeployed) return
 
 			const { name } = this.$props.sc.marketplaceCollection
 			const formattedName = name.replace(/\s/g, '').toLowerCase()
@@ -275,7 +275,6 @@ export default {
 			const getData = () => {
 				fetch(openSeaApiUrl, fetchParams)
 				.then((response) => {
-					console.log({response})
 					if(response.status == 429 && retryCount < 3) {
 						retryCount++
 						this.wait(2000).then(() => getData())
@@ -283,11 +282,11 @@ export default {
 					return response.json()
 				})
 				.then((data) => {
-					console.log('OpenSea stats', data)
+					console.log('OpenSea stats', data.stats)
 					if (
+						data.detail?.startsWith('Request was throttled') ||
 						!data.stats ||
-						!data.success ||
-						data.detail?.startsWith('Request was throttled')
+						(data.success && data.success === false)
 					) {
 						return
 					}
