@@ -34,12 +34,19 @@
             <b-form-input
               id='email'
               name='email'
-              :value='smartContractBuilder.email'
-              @change='(val) => updateSmartContractBuilder({ email: val })'
               type='email'
               placeholder='john.doe@gmail.com'
+              :value='smartContractBuilder.email'
+              @change='(val) => updateSmartContractBuilder({ email: val })'
+              @blur='$v.smartContractBuilder.email.$touch()'
+              :class="{
+								'is-invalid': $v.smartContractBuilder.email.$error,
+							}"
               required
             ></b-form-input>
+             <b-form-invalid-feedback :state="validation.email">
+              Please correct "Email"
+            </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
       </b-row>
@@ -78,6 +85,7 @@ import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
 import { mapActions, mapGetters } from 'vuex'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   mixins: [smartContractBuilderMixin],
@@ -88,12 +96,19 @@ export default {
     }
   },
   validations: {
-    smartContractBuilder: {}
+    smartContractBuilder: {
+      email: { required }
+    }
   },
   computed: {
     ...mapGetters(['isLoggedIn']),
     canDeploy() {
-      return !this.smartContractBuilder.isDeployed && this.smartContractBuilder.email && !this.isBusy
+      return !this.smartContractBuilder.isDeployed && !this.isBusy && !this.$v.smartContractBuilder.email.$error
+    },
+    validation() {
+      return {
+        email: !this.$v.smartContractBuilder.email.$error,
+      }
     }
   },
   methods: {
@@ -162,7 +177,7 @@ export default {
             email: this.email,
           })
           if(!user) {
-            alert("Login failed")
+            alert("Login failed. Please try again later or contact us on Discord.")
             return
           }
         }

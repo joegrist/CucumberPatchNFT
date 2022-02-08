@@ -28,7 +28,7 @@
               name="delayedRevealURL"
               :value="smartContractBuilder.delayedRevealURL"
               @change="(val) => updateSmartContractBuilder({ delayedRevealURL: val })"
-              @input='$v.smartContractBuilder.delayedRevealURL.$touch()'
+              @blur='$v.smartContractBuilder.delayedRevealURL.$touch()'
               :class="{'is-invalid': $v.smartContractBuilder.delayedRevealURL.$error}"
               type="text"
               placeholder="ipfs://..."

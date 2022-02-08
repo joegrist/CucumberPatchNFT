@@ -13,7 +13,7 @@
               name='baseURL'
               :value='smartContractBuilder.baseURL'
               @change='(val) => updateSmartContractBuilder({ baseURL: val })'
-              @input="$v.smartContractBuilder.baseURL.$touch()"
+              @blur="$v.smartContractBuilder.baseURL.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.baseURL.$error}"
               type='text'
               placeholder='ipfs://Qmcu89CVUrz1dEZ8o32qnQnN4myurbAFr162w1qKLCKAA8/'
@@ -37,7 +37,7 @@
               name='contractName'
               :value='smartContractBuilder.name'
               @change='(val) => updateSmartContractBuilder({ name: val })'
-              @input="$v.smartContractBuilder.name.$touch()"
+              @blur="$v.smartContractBuilder.name.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.name.$error}"
               type='text'
               placeholder='Bored Apes Yacht Club'
@@ -60,7 +60,7 @@
               name='symbol'
               :value='smartContractBuilder.symbol'
               @change='(val) => updateSmartContractBuilder({ symbol: val })'
-              @input="$v.smartContractBuilder.symbol.$touch()"
+              @blur="$v.smartContractBuilder.symbol.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.symbol.$error}"
               type='text'
               maxlength='10'
@@ -85,7 +85,7 @@
               name='collectionSize'
               :value='smartContractBuilder.collectionSize'
               @change='(val) => updateSmartContractBuilder({ collectionSize: val ? +val:null })'
-              @input="$v.smartContractBuilder.collectionSize.$touch()"
+              @blur="$v.smartContractBuilder.collectionSize.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.collectionSize.$error}"
               type='number'
               min='1'
@@ -108,7 +108,7 @@
               name='mintPrice'
               :value='smartContractBuilder.mintPrice'
               @change='(val) => updateSmartContractBuilder({ mintPrice: val ? +val:null })'
-              @input="$v.smartContractBuilder.mintPrice.$touch()"
+              @blur="$v.smartContractBuilder.mintPrice.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.mintPrice.$error}"
               type='number'
               step='any'
@@ -132,7 +132,7 @@
               name='setAsideTokenCount'
               :value='smartContractBuilder.setAsideTokenCount'
               @change='(val) => updateSmartContractBuilder({ setAsideTokenCount: val ? +val:null })'
-              @input="$v.smartContractBuilder.setAsideTokenCount.$touch()"
+              @blur="$v.smartContractBuilder.setAsideTokenCount.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.setAsideTokenCount.$error}"
               type='number'
               step='1'
@@ -155,7 +155,7 @@
               name='maxTokensPerTransaction'
               :value='smartContractBuilder.maxTokensPerTransaction'
               @change='(val) => updateSmartContractBuilder({ maxTokensPerTransaction: val ? +val:null })'
-              @input="$v.smartContractBuilder.maxTokensPerTransaction.$touch()"
+              @blur="$v.smartContractBuilder.maxTokensPerTransaction.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerTransaction.$error}"
               type='number'
               step='1'

@@ -9,7 +9,7 @@
 				</b-input-group-prepend>
 				<b-form-input @input="val => searchTerm = val" debounce="500" placeholder="Start typing the smart contract name.." />
 			</b-input-group>
-			<b-card-group v-if="contracts.length > 0" columns>
+			<b-card-group v-if="dashboardItems.length > 0" columns>
 				<DashboardCard v-for="sc in filteredItems" :key="sc.id" :sc="sc" @create-site="showWebsiteModal" />
 			</b-card-group>
 			<div v-else class="text-center pt-2">
@@ -127,7 +127,6 @@ export default {
   data() {
       return {
 		  MARKETPLACE,
-		  contracts: [],
           searchTerm: '',
           isBusy: false,
           newWebsite: {},
@@ -140,8 +139,6 @@ export default {
 
 		const { data: contracts } = await this.$axios.get(`/users/${this.userId}/smartcontracts`)
         const { data: websites } = await this.$axios.get(`/users/${this.userId}/websites`)
-
-		this.contracts = contracts
 
         contracts.forEach(sc => {
             sc.website = websites.find(x =>sc.id === x.smartContractId)

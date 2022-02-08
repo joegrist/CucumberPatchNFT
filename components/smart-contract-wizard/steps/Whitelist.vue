@@ -29,7 +29,7 @@
               :value="smartContractBuilder.whitelistPrice"
               @change="(val) => updateSmartContractBuilder({ whitelistPrice: val ? +val:null })"
               :required="smartContractBuilder.hasWhitelist"
-              @input='$v.smartContractBuilder.whitelistPrice.$touch()'
+              @blur='$v.smartContractBuilder.whitelistPrice.$touch()'
               :class="{'is-invalid': $v.smartContractBuilder.whitelistPrice.$error}"
               type="number"
               step="any"
@@ -37,7 +37,7 @@
               placeholder="0.03"
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.whitelistPrice">
-              Enter the presale price
+              Please correct "Presale Price"
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>

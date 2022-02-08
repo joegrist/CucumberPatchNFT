@@ -11,16 +11,19 @@
 						<b-form-select
 							id="marketplace"
 							name="marketplace"
+							:options="marketplaces"
 							:value="smartContractBuilder.marketplace"
 							@change="
 								(val) => updateSmartContractBuilder({ marketplace: val, marketplaceCollection: { marketplace: val } })
 							"
-							@input="$v.smartContractBuilder.marketplace.$touch()"
+							@blur.native="$v.smartContractBuilder.marketplace.$touch()"
 							:class="{
 								'is-invalid': $v.smartContractBuilder.marketplace.$error,
 							}"
-							:options="marketplaces"
-							required></b-form-select>
+							></b-form-select>
+							<b-form-invalid-feedback :state="validation.marketplace">
+								Please correct "Marketplace"
+							</b-form-invalid-feedback>
 					</b-form-group>
 				</b-col>
 			</b-row>
@@ -44,14 +47,14 @@
 						<b-form-input
 							id="collectionName"
 							name="collectionName"
+							type="text"
+							placeholder="Doodles"
 							:value="smartContractBuilder.marketplaceCollection.name"
 							@change="onNameChange"
-							@input="$v.smartContractBuilder.marketplaceCollection.name.$touch()"
+							@blur="$v.smartContractBuilder.marketplaceCollection.name.$touch()"
 							:class="{
 								'is-invalid': $v.smartContractBuilder.marketplaceCollection.name.$error || nameIsTaken,
 							}"
-							type="text"
-							placeholder="Doodles"
 							required></b-form-input>
 							<b-form-invalid-feedback :state="validation.marketplaceCollection.name">
 								Please correct "Collection Name"
@@ -64,15 +67,14 @@
 						<b-form-textarea
 							id="collectionDescription"
 							name="collectionDescription"
+							type="text"
+							placeholder="Doodles are characters that came from..."
 							:value="smartContractBuilder.marketplaceCollection.description"
 							@change="
 								(val) =>
 									updateSmartContractBuilder({
 										marketplaceCollection: { description: val },
-									})
-							"
-							type="text"
-							placeholder="Doodles are characters that came from..."
+									})"
 							></b-form-textarea>
 					</b-form-group>
 					<b-form-group
@@ -105,7 +107,7 @@
 							:class="{
 								'is-invalid': $v.smartContractBuilder.marketplaceCollection.royalties.$error,
 							}"
-							@input="$v.smartContractBuilder.marketplaceCollection.royalties.$touch()"
+							@blur="$v.smartContractBuilder.marketplaceCollection.royalties.$touch()"
 							type="number"
 							step="0.01"
 							min="0"
@@ -168,7 +170,7 @@
 
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
-import { MARKETPLACE } from '@/constants'
+import { MARKETPLACE, BLOCKCHAIN } from '@/constants'
 import { required, requiredIf, minValue, decimal, maxValue } from 'vuelidate/lib/validators'
 
 export default {
@@ -176,16 +178,6 @@ export default {
 	data() {
 		return {
 			MARKETPLACE,
-			marketplaces: [
-				{
-					text: 'OpenSea',
-					value: 1,
-				},
-				{
-					text: 'Other',
-					value: 0,
-				},
-			],
 			maxValue,
 			nameIsTaken: false,
 		}
@@ -196,8 +188,25 @@ export default {
 		}
 	},
 	computed: {
+		marketplaces() {
+			const openSeaBlockchains = [BLOCKCHAIN.Ethereum, BLOCKCHAIN.Polygon]
+			const list = [
+				{
+					text: 'Other',
+					value: 0,
+				},
+			]
+			if(openSeaBlockchains.includes(this.smartContractBuilder.blockchain)) {
+				list.unshift({
+					text: 'OpenSea',
+					value: 1
+				})
+			}
+			return list
+		},
 		validation() {
 			return {
+				marketplace: !this.$v.smartContractBuilder.marketplace.$error,
 				marketplaceCollection: {
 					name: !this.$v.smartContractBuilder.marketplaceCollection.name.$error,
 					royalties: !this.$v.smartContractBuilder.marketplaceCollection.royalties.$error,
