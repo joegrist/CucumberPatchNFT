@@ -255,7 +255,7 @@ export default {
 			if (!this.$props.sc.marketplaceCollection || !this.$props.sc.isDeployed) return
 
 			const { name } = this.$props.sc.marketplaceCollection
-			const formattedName = name.replace(/\s/g, '').toLowerCase()
+			const formattedName = name.replace(/\s/g, '-').toLowerCase()
 
 			let openSeaApiUrl, fetchParams
 

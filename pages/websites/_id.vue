@@ -11,9 +11,8 @@
 			<li v-else class="text-warning">
 				Current URL: building <b-spinner small></b-spinner>
 			</li>
-			<li>Desired Domain: {{ site.desiredDomain }}</li>
-			<li class="text-info">
-				Status: {{ WEBSITE_STATUS[site.status] }}
+			<li>
+				<span class="text-success">Status: {{ WEBSITE_STATUS[site.status] }}</span>
 				<b-button
 					v-if="site.status !== WEBSITE_STATUS.Ready"
 					variant="success"
@@ -23,36 +22,136 @@
 					>{{ isBusy ? 'Refreshing...' : 'Refresh' }}
 				</b-button>
 			</li>
-			<li v-if="site.description">Description: {{ site.description }}</li>
-			<li v-if="site.dropDate">
-				Drop Date: {{ new Date(site.dropDate).toLocaleString() }}
-			</li>
-			<li v-if="site.discordURL">
-				Discord:
-				<b-link :href="transformUrl(site.discordURL)" target="_blank"
-					>{{ site.discordURL }} <b-icon icon="box-arrow-up-right"
-				/></b-link>
-			</li>
-			<li v-if="site.twitterURL">
-				Twitter:
-				<b-link :href="transformUrl(site.twitterURL)" target="_blank"
-					>{{ site.twitterURL }} <b-icon icon="box-arrow-up-right"
-				/></b-link>
-			</li>
-			<li v-if="site.instagramURL">
-				Instagram:
-				<b-link :href="transformUrl(site.instagramURL)" target="_blank"
-					>{{ site.instagramURL }} <b-icon icon="box-arrow-up-right"
-				/></b-link>
-			</li>
-			<li v-if="site.marketplaceURL">
-				Marketplace URL:
-				<b-link :href="transformUrl(site.marketplaceURL)" target="_blank"
-					>{{ site.marketplaceURL }} <b-icon icon="box-arrow-up-right"
-				/></b-link>
-			</li>
 			<li>Created: {{ site.createdOn | toDate }}</li>
 		</ul>
+		<b-form @submit="onUpdate" class="mb-3" >
+			<b-form-group
+				label="Website Name"
+				label-class="required"
+				description="Dispalyed on Google and as a browser tab title. Ours, for example, is Zero Code NFT Wizard">
+				<b-form-input
+					id="title"
+					name="title"
+					v-model="site.title"
+					type="text"
+					placeholder="Bored Apes Yacht Club"
+					required></b-form-input>
+			</b-form-group>
+			<b-form-group label="Description" label-class="required">
+				<b-form-input
+					id="description"
+					name="description"
+					v-model="site.description"
+					type="text"
+					placeholder="10k unique NFTs"
+					required></b-form-input>
+			</b-form-group>
+			<b-form-group label="Desired website domain (URL)" label-class="required">
+				<b-form-input
+					id="desiredDomain"
+					name="desiredDomain"
+					v-model="site.desiredDomain"
+					type="url"
+					placeholder="zerocodenft.com"
+					required></b-form-input>
+			</b-form-group>
+			<div class="d-flex">
+				<b-form-group
+					label="Drop Date"
+					description="Sets the countdown timer. Can be updated later."
+					class="w-50">
+					<b-form-input
+						id="dropDateInput"
+						name="dropDateInput"
+						v-model="site.dropDate"
+						type="date"
+						:min="new Date().toISOString().split('T')[0]"
+						required></b-form-input>
+				</b-form-group>
+				<b-form-group
+					label="Drop Time"
+					description="Sets the countdown timer. Can be updated later."
+					class="w-50">
+					<b-form-input
+						id="dropTimeInput"
+						name="dropTimeInput"
+						v-model="site.dropTime"
+						type="time"
+						required></b-form-input>
+				</b-form-group>
+			</div>
+			<b-form-group>
+				<template #label>
+					Twitter URL
+					<b-link
+						v-if="site.twitterURL"
+						:href="transformUrl(site.twitterURL)"
+						target="_blank"
+						><b-icon icon="box-arrow-up-right"
+					/></b-link>
+				</template>
+				<b-form-input
+					id="twitterURL"
+					name="twitterURL"
+					v-model="site.twitterURL"
+					type="url"
+					required></b-form-input>
+			</b-form-group>
+			<b-form-group>
+				<template #label>
+					Discord URL
+					<b-link
+						v-if="site.discordURL"
+						:href="transformUrl(site.discordURL)"
+						target="_blank"
+						><b-icon icon="box-arrow-up-right"
+					/></b-link>
+				</template>
+				<b-form-input
+					id="discordURL"
+					name="discordURL"
+					v-model="site.discordURL"
+					type="url"
+					required></b-form-input>
+			</b-form-group>
+			<b-form-group>
+				<template #label>
+					Instagram URL
+					<b-link
+						v-if="site.instagramURL"
+						:href="transformUrl(site.instagramURL)"
+						target="_blank"
+						><b-icon icon="box-arrow-up-right"
+					/></b-link>
+				</template>
+				<b-form-input
+					id="instagramURL"
+					name="instagramURL"
+					v-model="site.instagramURL"
+					type="url"
+					required></b-form-input>
+			</b-form-group>
+			<b-form-group label="Marketplace URL">
+				<template #label>
+					Marketplace URL
+					<b-link
+						v-if="site.marketplaceURL"
+						:href="transformUrl(site.marketplaceURL)"
+						target="_blank"
+						><b-icon icon="box-arrow-up-right"
+					/></b-link>
+				</template>
+				<b-form-input
+					id="marketplaceURL"
+					name="marketplaceURL"
+					v-model="site.marketplaceURL"
+					type="url"
+					required></b-form-input>
+			</b-form-group>
+			<!-- <div class="d-flex justify-content-end">
+				<b-button variant="success">Update</b-button>
+			</div> -->
+		</b-form>
 	</b-container>
 </template>
 
@@ -73,15 +172,20 @@ export default {
 	async fetch() {
 		const { data } = await this.$axios.get(`/websites/${this.$route.params.id}`)
 		this.site = data
+		if(this.site.dropDate) {
+			const [date, time] = this.site.dropDate.split('T')
+			this.site.dropDate = date
+			this.site.dropTime = time || '00:00'
+		}
 
 		console.log('loaded website', this.site)
 	},
 	computed: {
-		...mapGetters(['userId'])
+		...mapGetters(['userId']),
 	},
 	methods: {
 		transformUrl(url) {
-			return url.startsWith('http') ? url : `https://${url}`	
+			return url?.startsWith('http') ? url : `https://${url}`
 		},
 		async refreshStatus() {
 			try {
@@ -105,6 +209,9 @@ export default {
 				console.error(err)
 			}
 		},
+		onUpdate() {
+
+		}
 	},
 }
 </script>
