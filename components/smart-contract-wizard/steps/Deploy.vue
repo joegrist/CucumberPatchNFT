@@ -278,7 +278,7 @@ export default {
         // console.log(bytecode, abi)
         const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, this.$wallet.provider.getSigner())
 
-        const deploymentData = contractFactory.interface.encodeDeploy([])
+        // const deploymentData = contractFactory.interface.encodeDeploy([])
         // const estimatedGas = await this.$wallet.provider.estimateGas({ data: deploymentData })
         // console.log('gas estimate', estimatedGas.toString())
 
