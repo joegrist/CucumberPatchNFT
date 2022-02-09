@@ -45,7 +45,7 @@
               required
             ></b-form-input>
              <b-form-invalid-feedback :state="validation.email">
-              Please correct "Email"
+              Please provide "Email"
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
@@ -103,7 +103,7 @@ export default {
   computed: {
     ...mapGetters(['isLoggedIn']),
     canDeploy() {
-      return !this.smartContractBuilder.isDeployed && !this.isBusy && !this.$v.smartContractBuilder.email.$error
+      return !this.smartContractBuilder.isDeployed && !this.isBusy && this.smartContractBuilder.email
     },
     validation() {
       return {
@@ -115,9 +115,9 @@ export default {
     ...mapActions(['login']),
     getExplorerUrl,
     goToDashboard() {
-        this.updateSmartContractBuilder({
-          marketplaceCollection: {}
-        })
+        this.resetBuilder()
+
+        console.log(this.smartContractBuilder)
         this.$router.push('/')
     },
     async onAccountCopy() {
@@ -194,8 +194,8 @@ export default {
         const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, this.$wallet.provider.getSigner())
 
         const deploymentData = contractFactory.interface.encodeDeploy([])
-        const estimatedGas = await this.$wallet.provider.estimateGas({ data: deploymentData })
-        console.log('gas estimate', estimatedGas.toString())
+        // const estimatedGas = await this.$wallet.provider.estimateGas({ data: deploymentData })
+        // console.log('gas estimate', estimatedGas.toString())
 
         const contract = await contractFactory.deploy()
 

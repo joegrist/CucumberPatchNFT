@@ -63,6 +63,11 @@ export const mutations = {
     },
     setDashboardItems(state, payload) {
         state.dashboardItems = payload
+    },
+    resetSmartContractBuilder(state, payload) {
+        state.smartContractBuilder = { 
+            marketplaceCollection: {}
+        }
     }
 }
 

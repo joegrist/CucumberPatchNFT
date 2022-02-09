@@ -228,9 +228,9 @@ export default {
 	methods: {
 		onNameChange(name) {
 			this.updateSmartContractBuilder({ marketplaceCollection: { name } })
-			const formattedName = name.replace(/\s/g, '').toLowerCase()
+			const formattedName = name.replace(/\s/g, '-').toLowerCase()
 
-			fetch(`https://api.opensea.io/api/v1/collection/${formattedName}`)
+			fetch(`https://rinkeby-api.opensea.io/api/v1/collection/${formattedName}`)
 				.then(response => {
 					// console.log(response)
 					this.nameIsTaken = response.status !== 404

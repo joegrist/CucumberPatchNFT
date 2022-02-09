@@ -136,7 +136,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['updateSmartContractBuilder']),
+    ...mapMutations(['updateSmartContractBuilder', 'resetSmartContractBuilder']),
 
     // Executed when @completed-step event is triggered
     completeStep(payload) {
@@ -161,9 +161,7 @@ export default {
     // Executed when @stepper-finished event is triggered
     alert(payload) {
       if(this.smartContractBuilder?.id || confirm("You are about to lose all your changes. Are you sure you want to finish ?")) {
-        this.updateSmartContractBuilder({
-          marketplaceCollection: {}
-        })
+        this.resetSmartContractBuilder()
         this.$router.push('/')
       }
     }

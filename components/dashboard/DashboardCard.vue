@@ -260,7 +260,7 @@ export default {
 			let openSeaApiUrl, fetchParams
 
 			if (isTestnet(this.$props.sc.chainId)) {
-				openSeaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${formattedName}/stats`
+				openSeaApiUrl = `https://rinkeby-api.opensea.io/api/v1/collection/${formattedName}/stats`
 			} else {
 				openSeaApiUrl = `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
 				fetchParams = {
