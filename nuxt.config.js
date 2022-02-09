@@ -5,7 +5,8 @@ const {
   API_URL,
   OPENSEA_API_KEY,
   NETLIFY_API_TOKEN,
-  PAYPAL_CLIENT_ID
+  PAYPAL_CLIENT_ID,
+  RECAPTCHA_KEY
 } = process.env
 
 export default {
@@ -94,7 +95,7 @@ export default {
   ],
 
   recaptcha: {
-    siteKey: process.env.RECAPTCHA_KEY,
+    siteKey: RECAPTCHA_KEY,
     version: 3,
     size: 'compact'
   },
@@ -105,7 +106,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env.API_URL
+    baseURL: API_URL
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
@@ -116,24 +117,27 @@ export default {
   },
 
   generate: {
+    fallback: 'index.html',
     // support to generate dynamic _id routes
     routes: async () => {
       try {
-        const contracts = await axios.get(`https://${process.env.API_URL}/smartcontracts/ids`)
-        const websites = await axios.get(`https://${process.env.API_URL}/websites/ids`)
+        const contracts = await axios.get(`${API_URL}/smartcontracts/ids`)
+        const websites = await axios.get(`${API_URL}/websites/ids`)
         const result = []
+
+        console.log('***********************here', contracts, websites)
         
         if(contracts?.data) {
           contracts.data.forEach((id) => {
-            result.push({route: `/smart-contracts/${id}`})
+            result.push(`/smart-contracts/${id}`)
           })
         }
         if(websites?.data) {
           websites.data.forEach((id) => {
-            result.push({route: `/websites/${id}`})
+            result.push(`/websites/${id}`)
           })
         }
-        
+
         return result
       } catch(e) {
         console.error(e)
