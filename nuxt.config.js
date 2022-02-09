@@ -120,9 +120,21 @@ export default {
     routes: async () => {
       try {
         const contracts = await axios.get(`https://${process.env.API_URL}/smartcontracts/ids`)
-        return (contracts?.data || []).map((id) => ({
-          route: `/smart-contracts/${id}`
-        }))
+        const websites = await axios.get(`https://${process.env.API_URL}/websites/ids`)
+        const result = []
+        
+        if(contracts?.data) {
+          contracts.data.forEach((id) => {
+            result.push({route: `/smart-contracts/${id}`})
+          })
+        }
+        if(websites?.data) {
+          websites.data.forEach((id) => {
+            result.push({route: `/websites/${id}`})
+          })
+        }
+        
+        return result
       } catch(e) {
         console.error(e)
         return []

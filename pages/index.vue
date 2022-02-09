@@ -62,7 +62,7 @@
 							required></b-form-input>
 					</b-form-group>
 					<div class="d-flex">
-						<b-form-group label="Drop Date" description="Sets the countdown timer. Can be updated later." class="w-50">
+						<b-form-group label="Drop Date" description="Sets the countdown timer. Can be updated later." class="pr-1 w-50">
 							<b-form-input
 								id="dropDateInput"
 								name="dropDateInput"
@@ -71,7 +71,7 @@
 								:min="new Date().toISOString().split('T')[0]"
 								required></b-form-input>
 						</b-form-group>
-						<b-form-group label="Drop Time" description="Sets the countdown timer. Can be updated later." class="w-50">
+						<b-form-group label="Drop Time" description="Sets the countdown timer. Can be updated later." class="pl-1 w-50">
 							<b-form-input
 								id="dropTimeInput"
 								name="dropTimeInput"
@@ -80,38 +80,42 @@
 								required></b-form-input>
 						</b-form-group>
 					</div>
-					<b-form-group label="Twitter URL">
-						<b-form-input
-							id="twitterUrl"
-							name="twitterUrl"
-							v-model="newWebsite.twitterUrl"
-							type="url"
-							required></b-form-input>
-					</b-form-group>
-					<b-form-group label="Discord URL">
-						<b-form-input
-							id="discordURL"
-							name="discordURL"
-							v-model="newWebsite.discordURL"
-							type="url"
-							required></b-form-input>
-					</b-form-group>
-					<b-form-group label="Instagram URL">
-						<b-form-input
-							id="instagramURL"
-							name="instagramURL"
-							v-model="newWebsite.instagramURL"
-							type="url"
-							required></b-form-input>
-					</b-form-group>
-					<b-form-group label="Marketplace URL">
-						<b-form-input
-							id="marketplaceURL"
-							name="marketplaceURL"
-							v-model="newWebsite.marketplaceURL"
-							type="url"
-							required></b-form-input>
-					</b-form-group>
+					<div class="d-flex">
+						<b-form-group label="Twitter URL" class="pr-1 w-50">
+							<b-form-input
+								id="twitterUrl"
+								name="twitterUrl"
+								v-model="newWebsite.twitterUrl"
+								type="url"
+								required></b-form-input>
+						</b-form-group>
+						<b-form-group label="Discord URL" class="pl-1 w-50">
+							<b-form-input
+								id="discordURL"
+								name="discordURL"
+								v-model="newWebsite.discordURL"
+								type="url"
+								required></b-form-input>
+						</b-form-group>
+					</div>
+					<div class="d-flex">
+						<b-form-group label="Instagram URL" class="pr-1 w-50">
+							<b-form-input
+								id="instagramURL"
+								name="instagramURL"
+								v-model="newWebsite.instagramURL"
+								type="url"
+								required></b-form-input>
+						</b-form-group>
+						<b-form-group label="Marketplace URL" class="pl-1 w-50">
+							<b-form-input
+								id="marketplaceURL"
+								name="marketplaceURL"
+								v-model="newWebsite.marketplaceURL"
+								type="url"
+								required></b-form-input>
+						</b-form-group>
+					</div>
 				</b-form>
 			</b-modal>
 		</div>
