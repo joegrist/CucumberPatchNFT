@@ -2,8 +2,48 @@
   <b-form>
     <b-container>
       <b-row>
+			<b-col>
+				<h1 class="text-center py-2">Verify Your Contract's Information</h1>
+			</b-col>
+		</b-row>
+		<b-row>
+			<b-col cols="12" class="pb-3 pb-md-5">
+				<b-card class="border-0 shadow">
+					<b-row class="px-3">
+						<b-col
+							sm="12"
+							md="4"
+							class="d-flex flex-column justify-content-between">
+							<div>
+								<h2 class="mb-1">
+									{{ smartContractBuilder.name | startCase }}
+								</h2>
+								<h6 class="text-muted">{{ smartContractBuilder.symbol }}</h6>
+							</div>
+							<b-img
+								width="130px"
+								:src="blockchainImage[smartContractBuilder.blockchain]"></b-img>
+						</b-col>
+						<b-col sm="12" md="8">
+							<b-row
+								v-for="item in summary"
+								:key="item.key"
+								class="border-bottom pt-1">
+								<b-col cols="5" class="truncate-text text-muted">{{
+									item.key | startCase
+								}}</b-col>
+								<b-col cols="7" class="truncate-text">{{
+									item.val | yesNo
+								}}</b-col>
+							</b-row>
+						</b-col>
+					</b-row>
+				</b-card>
+			</b-col>
+		</b-row>
+      <b-row>
         <b-col class='text-center'>
-          <h1 class="text-warning"> Attention! </h1>
+          <h1> Deployment </h1>
           <p> You will be using your own metamask wallet to pay the deployment fees and this wallet will thus be the owner of the smart contract. </p>
           <p> This is only a testnet deployment meaning you won't be spending real currency but you should still have test tokens to cover the deployment fees.</p>
           <b-button v-if="FAUCETS[$wallet.chainId]" class="mb-2" variant="link" v-b-toggle.faucetList>
@@ -83,16 +123,44 @@
 <script>
 import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
+import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
 import { mapActions, mapGetters } from 'vuex'
 import { required } from 'vuelidate/lib/validators'
+import { isArray } from 'lodash-es'
 
 export default {
   mixins: [smartContractBuilderMixin],
   data() {
     return {
       FAUCETS,
+			MARKETPLACE,
       isBusy: false,
+			blockchainImage: {
+				[BLOCKCHAIN.Ethereum]: require('@/assets/images/blockchain/ethereum.svg'),
+				[BLOCKCHAIN.Solana]: require('@/assets/images/blockchain/solana.svg'),
+				[BLOCKCHAIN.Fantom]: require('@/assets/images/blockchain/fantom.svg'),
+				[BLOCKCHAIN.Polygon]: require('@/assets/images/blockchain/polygon.svg'),
+				[BLOCKCHAIN.Avalanche]: require('@/assets/images/blockchain/avalanche.svg'),
+				[BLOCKCHAIN.BinanceSmartChain]: require('@/assets/images/blockchain/binance.svg'),
+			},
+			excludeList: [
+				'id',
+				'hasMintableRoylaties',
+				'hasRaribleRoylaties',
+				'abi',
+				'bytecode',
+				'address',
+				'createdOn',
+				'blockchain',
+				'name',
+				'chainId',
+				'voucherSignerPublicAddress',
+				'website',
+				'marketplaceCollection',
+				'whitelist',
+				'email'
+			],
     }
   },
   validations: {
@@ -102,14 +170,31 @@ export default {
   },
   computed: {
     ...mapGetters(['isLoggedIn']),
-    canDeploy() {
-      return !this.smartContractBuilder.isDeployed && !this.isBusy && this.smartContractBuilder.email
-    },
     validation() {
       return {
         email: !this.$v.smartContractBuilder.email.$error,
       }
-    }
+    },
+    canDeploy() {
+      return !this.smartContractBuilder.isDeployed && !this.isBusy && this.smartContractBuilder.email
+    },
+    summary() {
+			return Object.entries(this.smartContractBuilder)
+				.filter(([k, _]) => !this.excludeList.includes(k))
+				.map(([key, val]) => {
+					if (isArray(val)) {
+						val = val.join(',')
+					}
+					if (key === 'marketplace') {
+						val = MARKETPLACE[val]
+					}
+					return {
+						key: key.replace('has', ''),
+						val,
+					}
+				})
+				.sort((a, b) => a.key.localeCompare(b.key))
+		},
   },
   methods: {
     ...mapActions(['login']),

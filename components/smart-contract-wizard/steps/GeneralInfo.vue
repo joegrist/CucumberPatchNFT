@@ -1,5 +1,5 @@
 <template>
-  <b-form v-if='showForm' @reset.prevent='onFormReset(reset)'>
+  <b-form v-if='showForm' @reset.prevent='onFormReset(reset)' novalidate>
     <b-container fluid>
       <b-row>
         <b-col cols='12'>
@@ -16,7 +16,7 @@
               @blur="$v.smartContractBuilder.baseURL.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.baseURL.$error}"
               type='text'
-              placeholder='ipfs://Qmcu89CVUrz1dEZ8o32qnQnN4myurbAFr162w1qKLCKAA8/'
+              placeholder='ipfs://*************************/'
               required
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.baseURL">
@@ -99,7 +99,7 @@
         </b-col>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Mint Price'
+            :label="`Mint Price (${getCurrency(smartContractBuilder.chainId)})`"
             label-class='required'
             description='Price per NFT'
           >
@@ -125,7 +125,7 @@
         <b-col sm='12' md='6'>
           <b-form-group
             label='Set Aside NFTs'
-            description='How many tokens starting from 1st one onwards to set aside for the team, marketing etc. Minted to your wallet upon contract deployment and incurs gas fees so the higher this number the higher smart contract deployment fee will be.'
+            description='How many tokens starting from 1st one onwards to set aside for the team, marketing etc. Minted to your wallet upon contract deployment and incurs gas fees so the higher this number the higher smart contract deployment fee will be'
           >
             <b-form-input
               id='setAsideTokenCount'
@@ -147,8 +147,8 @@
 
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Max Tokens Per Transaction'
-            description='How many tokens can one person mint at a time. For example BAYC allowed 20.'
+            label='Max Number Of NFTs Per Transaction'
+            description='How many tokens can one person mint at a time. For example BAYC allowed 20'
           >
             <b-form-input
               id='maxTokensPerTransaction'
@@ -180,6 +180,7 @@
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { required, maxLength, numeric, minValue, decimal } from 'vuelidate/lib/validators'
+import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
 
 export default {
   mixins: [smartContractBuilderMixin],
@@ -197,10 +198,22 @@ export default {
       }
     }
   },
+    validations: {
+      smartContractBuilder: {
+        baseURL: { required },
+        name: { required, maxLength: maxLength(30) },
+        symbol: { required, maxLength: maxLength(6) },
+        collectionSize: { required, numeric},
+        mintPrice: { required, decimal, minValue:minValue(0) },
+        blockchain: { required },
+        setAsideTokenCount: { numeric, minValue:minValue(1)},
+        maxTokensPerTransaction: { numeric, minValue:minValue(1) }
+      }
+  },
   computed: {
     validation() {
       return {
-        baseURL:!this.$v.smartContractBuilder.baseURL.$error,
+        baseURL: !this.$v.smartContractBuilder.baseURL.$error,
         name: !this.$v.smartContractBuilder.name.$error,
         symbol: !this.$v.smartContractBuilder.symbol.$error,
         collectionSize: !this.$v.smartContractBuilder.collectionSize.$error,
@@ -210,17 +223,9 @@ export default {
       }
     }
   },
-  validations: {
-    smartContractBuilder: {
-      baseURL: { required },
-      name: { required, maxLength: maxLength(30) },
-      symbol: { required, maxLength: maxLength(6) },
-      collectionSize: { required, numeric},
-      mintPrice: { required, decimal, minValue:minValue(0) },
-      blockchain: { required },
-      setAsideTokenCount: { numeric, minValue:minValue(1)},
-      maxTokensPerTransaction: { numeric, minValue:minValue(1) }
-    }
-  },
+  methods: {
+    getCurrency
+  }
+
 }
 </script>

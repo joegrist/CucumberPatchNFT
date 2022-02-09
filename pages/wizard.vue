@@ -30,10 +30,8 @@
 import HorizontalStepper from 'vue-stepper'
 import Blockchain from '~/components/smart-contract-wizard/steps/Blockchain.vue'
 import GeneralInfo from '~/components/smart-contract-wizard/steps/GeneralInfo.vue'
-import Whitelist from '~/components/smart-contract-wizard/steps/Whitelist.vue'
-import DelayedReveal from '~/components/smart-contract-wizard/steps/DelayedReveal.vue'
+import Features from '~/components/smart-contract-wizard/steps/Features.vue'
 import Marketplace from '~/components/smart-contract-wizard/steps/Marketplace.vue'
-import Verify from '~/components/smart-contract-wizard/steps/Verify.vue'
 import Deploy from '~/components/smart-contract-wizard/steps/Deploy.vue'
 import getSiteMeta from "@/scripts/siteMeta";
 import { mapState, mapMutations } from 'vuex'
@@ -88,41 +86,33 @@ export default {
         },
         {
           icon: 'looks_3',
-          name: 'whitelist',
-          title: 'Whitelist',
-          subtitle: 'Give priority access to selected few',
-          component: Whitelist,
+          name: 'features',
+          title: 'Features',
+          subtitle: 'Delayed reveal, whitelist, etc.',
+          component: Features,
           completed: false
         },
         {
           icon: 'looks_4',
-          name: 'delayedReveal',
-          title: 'Delayed Reveal',
-          subtitle: 'Reveal minted items after a period of time',
-          component: DelayedReveal,
-          completed: false
-        },
-        {
-          icon: 'looks_5',
           name: 'marketplace',
           title: 'Marketplace',
           subtitle: 'Collection name, royalties, etc.',
           component: Marketplace,
           completed: false
         },
+        // {
+        //   icon: 'looks_5',
+        //   name: 'verify',
+        //   title: 'Verify',
+        //   subtitle: 'Double check entered information',
+        //   component: Verify,
+        //   completed: false
+        // },
         {
-          icon: 'looks_6',
-          name: 'verify',
-          title: 'Verify',
-          subtitle: 'Double check entered information',
-          component: Verify,
-          completed: false
-        },
-        {
-          icon: 'filter_7',
+          icon: 'looks_5',
           name: 'deploy',
           title: 'Deploy',
-          subtitle: 'Publish the smart contract',
+          subtitle: 'Verify and publish the smart contract',
           component: Deploy,
           completed: false
         }

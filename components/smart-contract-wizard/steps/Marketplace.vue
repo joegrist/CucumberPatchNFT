@@ -43,7 +43,7 @@
 					<b-form-group 
 						label="Collection Name" 
 						label-class="required" 
-						description="This will be your collection's OpenSea identifier on TESTNET e.g. if the name shows as taken it does not mean it's also taken on the mainnet. For example if you name it 'doodles' your collection will be at https://testnets.opensea.io/collection/doodles">
+						description="This will be your collection's OpenSea identifier on TESTNET. For example if you name it 'doodles' your collection will be at https://testnets.opensea.io/collection/doodles">
 						<b-form-input
 							id="collectionName"
 							name="collectionName"
@@ -180,30 +180,35 @@ export default {
 			MARKETPLACE,
 			maxValue,
 			nameIsTaken: false,
+			openSeaBlockchains: [BLOCKCHAIN.Ethereum, BLOCKCHAIN.Polygon],
+			marketplaces: []
 		}
 	},
 	mounted() {
-		if(!this.$store.state.smartContractBuilder?.marketplaceCollection?.feeRecipient) {
+		if(!this.smartContractBuilder.marketplaceCollection?.feeRecipient) {
 			this.updateSmartContractBuilder({ marketplaceCollection: { feeRecipient: this.$wallet.account } })
+		}
+		this.marketplaces = [
+			{
+				text: 'Other',
+				value: MARKETPLACE.Other,
+			}
+		]
+		if(this.openSeaBlockchains.includes(this.smartContractBuilder.blockchain)) {
+			this.marketplaces.unshift({
+				text: 'OpenSea',
+				value: MARKETPLACE.OpenSea
+			})
+
+			// set OpenSea as default
+			if (!this.smartContractBuilder.marketplace) {
+				this.updateSmartContractBuilder({
+					marketplace: MARKETPLACE.OpenSea
+				})
+			}
 		}
 	},
 	computed: {
-		marketplaces() {
-			const openSeaBlockchains = [BLOCKCHAIN.Ethereum, BLOCKCHAIN.Polygon]
-			const list = [
-				{
-					text: 'Other',
-					value: 0,
-				},
-			]
-			if(openSeaBlockchains.includes(this.smartContractBuilder.blockchain)) {
-				list.unshift({
-					text: 'OpenSea',
-					value: 1
-				})
-			}
-			return list
-		},
 		validation() {
 			return {
 				marketplace: !this.$v.smartContractBuilder.marketplace.$error,

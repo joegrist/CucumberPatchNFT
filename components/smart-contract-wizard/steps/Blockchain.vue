@@ -102,7 +102,7 @@
 				<template v-else>
 					<p class="text-capitalize">
 						You are currently connected to:
-						<strong>{{ $wallet.network.name || '' }}</strong>✅
+						<strong>{{ $wallet.networkName || '' }}</strong>✅
 					</p>
 				</template>
 			</b-col>
@@ -161,6 +161,17 @@ export default {
 			chainId: { required },
 		},
 	},
+	mounted() {
+		// changing network in metamask requires reloading the page so in order to preserve user selected 
+		// blockchain before the page reload we store it in local storage
+		const blockchain = localStorage.getItem('blockchain')
+		if(blockchain) {
+			this.updateSmartContractBuilder({
+				...JSON.parse(blockchain)
+			})
+			localStorage.removeItem('blockchain')
+		}
+	},
 	computed: {
 		networkOptions() {
 			return this.networks
@@ -188,7 +199,12 @@ export default {
 		onNetworkChange(chainId) {
 			this.$v.smartContractBuilder.chainId.$touch()
 			this.updateSmartContractBuilder({chainId})
-			this.$wallet.chainId != chainId && this.callWalletFunc('switchNetwork')
+			if(this.$wallet.chainId != chainId) {
+				localStorage.setItem('blockchain', JSON.stringify({
+					blockchain: this.smartContractBuilder.blockchain,
+				}))
+				this.callWalletFunc('switchNetwork')
+			}
 		},
 		hoverCard(blockchain) {
 			this.hovered = blockchain
