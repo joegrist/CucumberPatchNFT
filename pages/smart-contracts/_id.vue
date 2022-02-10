@@ -63,7 +63,7 @@
 						<ul class="list-unstyled">
 						<li
 							class="mb-2 border rounded"
-							v-for="(func, idx) in functions"
+							v-for="(func, idx) in filteredFunctions"
 							:key="idx"
 							role="tab">
 							<div class="d-flex justify-content-between p-2" v-b-toggle="`${func.name + idx}`">
@@ -296,7 +296,9 @@ export default {
 		functions() {
 			return Object.values(this.contract.interface?.functions || {})
 				.sort((a, b) => a.name.localeCompare(b.name))
-				.filter(f => this.showAdvancedFunctions || basicFunctions.includes(f.name))
+		},
+		filteredFunctions() {
+			return this.functions?.filter(f => this.showAdvancedFunctions || basicFunctions.includes(f.name))
 		}
 	},
 	methods: {
