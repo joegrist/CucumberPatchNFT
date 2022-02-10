@@ -17,7 +17,7 @@
 					</p>
 					<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
 						<b-button
-							:disabled="isBusy || !isTestnet(rawContract.chainId)"
+							:disabled="isMainnetDeployEnabled"
 							class="bg-gradient-primary border-0"
 							@click="onMainnetDeploy">
 							<b-icon icon="wallet2" /> Deploy to Mainnet
@@ -98,9 +98,10 @@
 									<b-overlay
 									:show="busyState[func.name]"
 									rounded
+									:class="[!func.inputs.length && 'w-100']"
 									opacity="0.5"
 									spinner-small>
-										<b-button :class="['mt-1', func.inputs.length === 0 && 'w-100']" variant="success" @click="callFunc(func)"
+										<b-button :class="[!func.inputs.length && 'w-100']" variant="success" @click="callFunc(func)"
 											>Execute</b-button
 										>
 									</b-overlay>
@@ -175,8 +176,8 @@
 			hide-footer>
 			<div>
 				<b-button
-					:disabled="true || isBusy"
-					class="bg-gradient-primary border-0 w-100"
+					:disabled="isBusy"
+					class="bg-gradient-primary border-0"
 					@click="
 						() => {
 							this.$bvModal.hide('paymentSuccess')
@@ -289,6 +290,9 @@ export default {
 	},
 	computed: {
 		...mapGetters(['userId']),
+		isMainnetDeployEnabled() {
+			return process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'false' || this.isBusy || !isTestnet(this.rawContract.chainId)
+		},
 		functions() {
 			return Object.values(this.contract.interface?.functions || {})
 				.sort((a, b) => a.name.localeCompare(b.name))

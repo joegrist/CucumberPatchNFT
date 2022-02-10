@@ -6,7 +6,8 @@ const {
   OPENSEA_API_KEY,
   NETLIFY_API_TOKEN,
   PAYPAL_CLIENT_ID,
-  RECAPTCHA_KEY
+  RECAPTCHA_KEY,
+  ENABLE_MAINNET_DEPLOY_FLAG
 } = process.env
 
 export default {
@@ -20,7 +21,8 @@ export default {
     API_URL,
     OPENSEA_API_KEY,
     NETLIFY_API_TOKEN,
-    PAYPAL_CLIENT_ID
+    PAYPAL_CLIENT_ID,
+    ENABLE_MAINNET_DEPLOY_FLAG
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
