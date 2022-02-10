@@ -49,9 +49,13 @@
 			</b-row>
 			<b-row v-else class="mt-4">
 				<b-col>
-					<b-row>
+					<b-row class="mb-2">
 						<b-col cols="6">
-							<h4>Update Smart Contract</h4>
+							<h4 class="m-0">Update Smart Contract</h4>
+						</b-col>
+						<b-col cols="6" class="d-flex justify-content-end my-auto">
+							<span class="pr-2">Advanced</span>
+							<b-form-checkbox v-model="showAdvancedFunctions" name="check-button" switch />
 						</b-col>
 					</b-row>
 					<b-row>
@@ -118,7 +122,7 @@
 							<h4>Whitelist</h4>
 						</b-col>
 					</b-row>
-					<b-row class="h-100">
+					<b-row>
 						<b-col>
 							<b-form-tags
 								class="mb-2"
@@ -200,13 +204,26 @@ import { ethers } from 'ethers'
 import { isNumber } from 'lodash-es'
 import { loadScript } from '@paypal/paypal-js'
 
+const basicFunctions = [
+	'canReveal',
+	'COLLECTION_SIZE',
+	'flipSaleState',
+	'flipWhitelistSale',
+	'isPublicSaleActive',
+	'isWhitelistSaleActive',
+	'MINT_PRICE',
+	'owner',
+	'reveal',
+	'totalSupply'
+]
+
 const FormatTypes = ethers.utils.FormatTypes
 
 export default {
 	middleware: 'authenticated',
 	data: () => ({
 		FormatTypes,
-		advancedMode: false,
+		showAdvancedFunctions: false,
 		rawContract: {},
 		contract: {},
 		deployedContract: {},
@@ -275,7 +292,8 @@ export default {
 		functions() {
 			return Object.values(this.contract.interface?.functions || {})
 				.sort((a, b) => a.name.localeCompare(b.name))
-		},
+				.filter(f => this.showAdvancedFunctions || basicFunctions.includes(f.name))
+		}
 	},
 	methods: {
 		getExplorerUrl,
