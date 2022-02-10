@@ -1,13 +1,9 @@
 <template>
 	<b-container class="mt-5">
 		<b-overlay :show="isBusy" opacity="1">
-			<b-row>
+			<b-row class="mb-3">
 				<b-col sm="12" md="9">
-					<p class="lead font-weight-bold">
-						Contract Balance: {{ contractBalance }}
-						<!-- <b-button v-if="contractBalance > 0" @click="callFunc('withdraw')">Withdraw</b-button> -->
-					</p>
-					<p class="lead font-weight-bold">
+					<p class="lead font-weight-bold mb-1">
 						Deployed on {{ rawContract.blockchain | blockchainName }}
 						{{ isTestnet(rawContract.chainId) ? 'TESTNET' : 'MAINNET' }} at
 						<br />
@@ -19,34 +15,20 @@
 							>{{ rawContract.address }}</b-link
 						>
 					</p>
-				</b-col>
-				<b-col sm="12" md="3" class="d-flex flex-column justify-content-center">
 					<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
 						<b-button
 							:disabled="isBusy || !isTestnet(rawContract.chainId)"
-							class="bg-gradient-primary border-0 w-100"
+							class="bg-gradient-primary border-0"
 							@click="onMainnetDeploy">
 							<b-icon icon="wallet2" /> Deploy to Mainnet
 						</b-button>
 					</b-overlay>
 				</b-col>
-			</b-row>
-			<b-row v-if="rawContract.hasWhitelist">
-				<b-col sm="12" md="9">
-					<div>
-						<p class="lead font-weight-bold m-0">Whitelist</p>
-						<b-form-tags
-							v-model="rawContract.whitelist"
-							placeholder="Enter Wallet Address"></b-form-tags>
-					</div>
-				</b-col>
-				<b-col sm="12" md="3" class="d-flex">
-					<b-button
-						class="align-self-end"
-						variant="success"
-						@click="updateWhitelist"
-						>Update Whitelist</b-button
-					>
+				<b-col sm="12" md="3" class="d-flex flex-column justify-content-end">
+					<p class="lead font-weight-bold">
+						Contract Balance: {{ contractBalance }} {{ getCurrency(rawContract.chainId) }}
+					</p>
+					<b-button variant="success" :disabled="contractBalance === 0" @click="onWithdraw">Withdraw</b-button>
 				</b-col>
 			</b-row>
 			<b-row v-if="isOnWrongNetwork">
@@ -65,26 +47,39 @@
 					</h3>
 				</b-col>
 			</b-row>
-			<b-row v-else>
-				<b-col cols="6">
-					<h3 class="text-success text-center py-3">Eco Friendly 🌱</h3>
-					<ul>
+			<b-row v-else class="mt-4">
+				<b-col>
+					<b-row>
+						<b-col cols="6">
+							<h4>Update Smart Contract</h4>
+						</b-col>
+					</b-row>
+					<b-row>
+						<b-col>
+						<ul class="list-unstyled">
 						<li
-							class="mb-2"
-							v-for="(func, idx) in greenFunctions"
+							class="mb-2 border rounded"
+							v-for="(func, idx) in functions"
 							:key="idx"
 							role="tab">
-							<b-button variant="link" v-b-toggle="`${func.name + idx}`">
-								{{ func.name | startCase }}
-								<b-badge pill size="sm" variant="success">Eco</b-badge>
-							</b-button>
-
+							<div class="d-flex justify-content-between p-2" v-b-toggle="`${func.name + idx}`">
+								<template v-if="func.constant">
+									<b-badge pill size="sm" variant="success" class="my-auto">Eco</b-badge>
+								</template>
+								<template v-else>
+									<b-badge pill size="sm" variant="warning" class="my-auto">Gas</b-badge>
+								</template>
+								<span variant="link">
+									{{ func.name | startCase }}
+								</span>
+								<b-icon icon="chevron-down" class="my-auto" />
+							</div>
 							<b-collapse
 								:id="func.name + idx"
-								class="mt-2"
+								class="p-2"
 								accordion="eco-accordion"
 								role="tabpanel">
-								<ul v-if="func.inputs.length > 0">
+								<ul v-if="func.inputs.length > 0" class="mb-2">
 									<li
 										v-for="(param, idx) in func.inputs.filter(
 											(x) => !x.name.startsWith('_')
@@ -95,70 +90,49 @@
 											@change="(val) => onParamChange(val, func, param)" />
 									</li>
 								</ul>
-								<b-button class="mt-1" variant="success" @click="callFunc(func)"
-									>Execute</b-button
-								>
-								<span
-									class="lead font-weight-bold align-middle pl-2"
-									v-show="responses[func.name]"
-									>Result: {{ responses[func.name] }}</span
-								>
-							</b-collapse>
-						</li>
-					</ul>
-				</b-col>
-				<b-col cols="6">
-					<h3 class="text-warning text-center py-3">Requires Gas ⛽</h3>
-					<ul>
-						<li
-							class="mb-2"
-							v-for="(func, idx) in gasFunctions"
-							:key="idx"
-							role="tab">
-							<b-button variant="link" v-b-toggle="`${func.name + idx}`">
-								{{ func.name | startCase }}
-								<b-badge v-if="func.payable" pill size="sm" variant="warning"
-									>Payable</b-badge
-								>
-								<b-badge pill size="sm" variant="warning">Gas</b-badge>
-							</b-button>
-							<span
-								class="lead font-weight-bold align-middle pl-2"
-								v-show="responses[func.name]"
-								>Result: {{ responses[func.name] }}</span
-							>
-
-							<b-collapse
-								:id="func.name + idx"
-								class="mt-2"
-								accordion="gas-accordion"
-								role="tabpanel">
-								<ul v-if="func.inputs.length > 0">
-									<li
-										v-for="(param, idx) in func.inputs.filter(
-											(x) => !x.name.startsWith('_')
-										)"
-										:key="idx">
-										<span> {{ param.name }} </span>
-										<b-input
-											@change="(val) => onParamChange(val, func, param)" />
-									</li>
-								</ul>
-								<b-overlay
+								<div :class="['d-flex', func.inputs.length > 0 && 'justify-content-end']">
+									<b-overlay
 									:show="busyState[func.name]"
 									rounded
-									opacity="0.6"
+									opacity="0.5"
 									spinner-small>
-									<b-button
-										class="mt-1 w-100"
-										variant="success"
-										@click="callFunc(func)"
-										>Execute</b-button
-									>
-								</b-overlay>
+										<b-button :class="['mt-1', func.inputs.length === 0 && 'w-100']" variant="success" @click="callFunc(func)"
+											>Execute</b-button
+										>
+									</b-overlay>
+								</div>
+								<div
+									v-show="responses[func.name]"
+									class="lead font-weight-bold mt-2"
+									>{{ func.inputs.length > 0 ? 'Result' : func.name | startCase }}: {{ responses[func.name] }}</div
+								>
 							</b-collapse>
 						</li>
 					</ul>
+						</b-col>
+					</b-row>
+				</b-col>
+				<b-col v-if="rawContract.hasWhitelist" cols="5">
+					<b-row>
+						<b-col cols="6">
+							<h4>Whitelist</h4>
+						</b-col>
+					</b-row>
+					<b-row class="h-100">
+						<b-col>
+							<b-form-tags
+								class="mb-2"
+								v-model="rawContract.whitelist"
+								placeholder="Enter Wallet Address">
+							</b-form-tags>
+							<b-button
+								class="align-self-end"
+								variant="success"
+								@click="updateWhitelist"
+								>Update Whitelist</b-button
+							>
+						</b-col>
+					</b-row>
 				</b-col>
 			</b-row>
 		</b-overlay>
@@ -232,6 +206,7 @@ export default {
 	middleware: 'authenticated',
 	data: () => ({
 		FormatTypes,
+		advancedMode: false,
 		rawContract: {},
 		contract: {},
 		deployedContract: {},
@@ -261,7 +236,7 @@ export default {
 			)
 			const balance = (await this.$wallet.provider.getBalance(address)) || '0'
 
-			this.contractBalance = ethers.utils.formatEther(balance) + ' ' + getCurrency(chainId)
+			this.contractBalance = +ethers.utils.formatEther(balance)
 			this.isOnWrongNetwork = this.$wallet.chainId !== +chainId
 
 			if (this.isOnWrongNetwork) {
@@ -297,23 +272,15 @@ export default {
 	},
 	computed: {
 		...mapGetters(['userId']),
-		greenFunctions() {
-			return Object.values(this.contract.interface?.functions || {})
-				.filter((val) => val.constant)
-				.sort((a, b) => a.name.localeCompare(b.name))
-		},
-		gasFunctions() {
-			return Object.values(this.contract.interface?.functions || {})
-				.filter((val) => !val.constant)
-				.sort((a, b) => a.name.localeCompare(b.name))
-		},
 		functions() {
-			return this.contract.interface?.functions
+			return Object.values(this.contract.interface?.functions || {})
+				.sort((a, b) => a.name.localeCompare(b.name))
 		},
 	},
 	methods: {
 		getExplorerUrl,
 		isTestnet,
+		getCurrency,
 		switchNetwork() {
 			this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[this.rawContract.chainId])
 		},
@@ -457,6 +424,12 @@ export default {
 				})
 			}
 		},
+		onWithdraw() {
+			const func = this.functions.find((val) => val.name === 'withdraw')
+			if(func) {
+				this.callFunc(func)
+			}
+		},
 		async callFunc(func) {
 			try {
 				console.log('calling ', func)
@@ -541,14 +514,15 @@ export default {
 				}
 			} catch (err) {
 				console.error({ err })
-				const { data, reason, message, code } = err
+				const { data, reason, message, code, method, error } = err
 				this.$bvToast.toast(
+						error?.message ||
 						data?.message ||
 						reason ||
 						message ||
 						'Function call failed',
 					{
-						title: code || 'Error',
+						title: method || code || 'Error',
 						variant: 'danger',
 					}
 				)

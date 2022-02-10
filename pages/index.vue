@@ -1,20 +1,38 @@
 <template>
-	<b-overlay :show="isBusy" opacity="1">
-		<div class="p-3">
+	<div class="p-3">
+		<div class="d-flex justify-content-between">
 			<b-input-group class="mb-3">
 				<b-input-group-prepend>
 					<b-input-group-text>
 						<b-icon icon="search" />
 					</b-input-group-text>
 				</b-input-group-prepend>
-				<b-form-input @input="val => searchTerm = val" debounce="500" placeholder="Start typing the smart contract name.." />
+				<b-form-input
+					@input="(val) => (searchTerm = val)"
+					debounce="500"
+					placeholder="Start typing the smart contract name.." />
+				<b-input-group-append>
+					<b-button class="bg-gradient-primary border-0" to="/wizard"
+						>Add new</b-button
+					>
+				</b-input-group-append>
 			</b-input-group>
+		</div>
+		<b-overlay :show="isBusy" opacity="1">
 			<b-card-group v-if="dashboardItems.length > 0" columns>
-				<DashboardCard v-for="sc in filteredItems" :key="sc.id" :sc="sc" @create-site="showWebsiteModal" />
+				<DashboardCard
+					v-for="sc in filteredItems"
+					:key="sc.id"
+					:sc="sc"
+					@create-site="showWebsiteModal" />
 			</b-card-group>
 			<div v-else class="text-center pt-2">
 				<h1>You Don't Have Any Contracts Yet</h1>
-				<b-button class="bg-gradient-primary border-0 w-50" @click="$router.push('/wizard')">Create One</b-button>
+				<b-button
+					class="bg-gradient-primary border-0 w-50"
+					@click="$router.push('/wizard')"
+					>Create One</b-button
+				>
 			</div>
 			<b-modal
 				id="siteModal"
@@ -62,7 +80,10 @@
 							required></b-form-input>
 					</b-form-group>
 					<div class="d-flex">
-						<b-form-group label="Drop Date" description="Sets the countdown timer. Can be updated later." class="pr-1 w-50">
+						<b-form-group
+							label="Drop Date"
+							description="Sets the countdown timer. Can be updated later."
+							class="pr-1 w-50">
 							<b-form-input
 								id="dropDateInput"
 								name="dropDateInput"
@@ -71,7 +92,10 @@
 								:min="new Date().toISOString().split('T')[0]"
 								required></b-form-input>
 						</b-form-group>
-						<b-form-group label="Drop Time" description="Sets the countdown timer. Can be updated later." class="pl-1 w-50">
+						<b-form-group
+							label="Drop Time"
+							description="Sets the countdown timer. Can be updated later."
+							class="pl-1 w-50">
 							<b-form-input
 								id="dropTimeInput"
 								name="dropTimeInput"
@@ -118,8 +142,8 @@
 					</div>
 				</b-form>
 			</b-modal>
-		</div>
-	</b-overlay>
+		</b-overlay>
+	</div>
 </template>
 
 <script>
@@ -127,26 +151,30 @@ import { mapMutations, mapGetters, mapState } from 'vuex'
 import { MARKETPLACE } from '@/constants'
 
 export default {
-  middleware: 'authenticated',
-  data() {
-      return {
-		  MARKETPLACE,
-          searchTerm: '',
-          isBusy: false,
-          newWebsite: {},
-      }
-  },
-  fetchOnServer: false,
+	middleware: 'authenticated',
+	data() {
+		return {
+			MARKETPLACE,
+			searchTerm: '',
+			isBusy: false,
+			newWebsite: {},
+		}
+	},
+	fetchOnServer: false,
 	fetchKey: 'dashboard',
 	async fetch() {
 		this.isBusy = true
 
-		const { data: contracts } = await this.$axios.get(`/users/${this.userId}/smartcontracts`)
-        const { data: websites } = await this.$axios.get(`/users/${this.userId}/websites`)
+		const { data: contracts } = await this.$axios.get(
+			`/users/${this.userId}/smartcontracts`
+		)
+		const { data: websites } = await this.$axios.get(
+			`/users/${this.userId}/websites`
+		)
 
-        contracts.forEach(sc => {
-            sc.website = websites.find(x =>sc.id === x.smartContractId)
-        })
+		contracts.forEach((sc) => {
+			sc.website = websites.find((x) => sc.id === x.smartContractId)
+		})
 
 		this.setDashboardItems(contracts)
 
@@ -154,59 +182,72 @@ export default {
 
 		// console.log('dashboard', this.dashboardItems)
 	},
-    computed: {
-        ...mapState(['dashboardItems']),
-        ...mapGetters(['userId']),
-        filteredItems() {
-            const term = this.searchTerm.toLowerCase()
-            return this.dashboardItems.filter(x => x.name.toLowerCase().includes(term) || x.symbol.toLowerCase().includes(term))
-        }
-    },
-    methods: {
+	computed: {
+		...mapState(['dashboardItems']),
+		...mapGetters(['userId']),
+		filteredItems() {
+			const term = this.searchTerm.toLowerCase()
+			return this.dashboardItems.filter(
+				(x) =>
+					x.name.toLowerCase().includes(term) ||
+					x.symbol.toLowerCase().includes(term)
+			)
+		},
+	},
+	methods: {
 		...mapMutations(['setDashboardItems']),
 
-        showWebsiteModal(smartContractId) {
-			const smartContract = this.dashboardItems.find(x => x.id === smartContractId)
-			if(smartContract.marketplaceCollection?.marketpalce === MARKETPLACE.OpenSea) {
+		showWebsiteModal(smartContractId) {
+			const smartContract = this.dashboardItems.find(
+				(x) => x.id === smartContractId
+			)
+			if (
+				smartContract.marketplaceCollection?.marketpalce === MARKETPLACE.OpenSea
+			) {
 				this.newWebsite.marketplace = MARKETPLACE.OpenSea
 				this.newWebsite.marketplaceURL = smartContract.marketplaceCollection.url
 			}
-            this.newWebsite.smartContractId = smartContractId
-            this.$bvModal.show("siteModal")
-        },
+			this.newWebsite.smartContractId = smartContractId
+			this.$bvModal.show('siteModal')
+		},
 
-        async onCreateSite(e) {
+		async onCreateSite(e) {
 			e.preventDefault()
 			this.isBusy = true
 
 			try {
 				const { dropDateInput, dropTimeInput } = this.newWebsite
 				this.newWebsite.dropDate = dropDateInput
-				if(dropTimeInput) {
+				if (dropTimeInput) {
 					this.newWebsite.dropDate += `T${dropTimeInput}:00`
 				}
 
-				const { data: createdSite} = await this.$axios.post('websites', this.newWebsite)
+				const { data: createdSite } = await this.$axios.post(
+					'websites',
+					this.newWebsite
+				)
 
 				this.$bvModal.hide('siteModal')
-				this.$bvToast.toast('Website submission successful! Please allow ~10 minutes for the website to get deployed.', {
-					title: 'Website',
-					variant: 'success',
-				})
-                
-				this.$router.push(`/websites/${createdSite.id}`)
+				this.$bvToast.toast(
+					'Website submission successful! Please allow ~10 minutes for the website to get deployed.',
+					{
+						title: 'Website',
+						variant: 'success',
+					}
+				)
 
+				this.$router.push(`/websites/${createdSite.id}`)
 			} catch (err) {
 				console.error({ err })
 				this.$bvToast.toast(err.message || 'Failed to deploy the website', {
-                    title: 'Website',
+					title: 'Website',
 					variant: 'danger',
 				})
 			} finally {
-                this.isBusy = false
-            }
+				this.isBusy = false
+			}
 		},
-    }
+	},
 }
 </script>
 
