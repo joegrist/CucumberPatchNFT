@@ -68,7 +68,7 @@
 							font-scale="0.9"
 							icon="bootstrap-reboot"
 							variant="success"
-							@click="onRefreshBalance" />
+							@click="onRefreshBalance(true)" />
 					</div>
 					<b-button
 						variant="success"
@@ -400,13 +400,15 @@ export default {
 		getExplorerUrl,
 		isTestnet,
 		getCurrency,
-		async onRefreshBalance() {
+		async onRefreshBalance(showNotification = false) {
 			this.isBusy = true
-			const balance =
-				(await this.$wallet.provider.getBalance(this.rawContract.address)) ||
-				'0'
+			const balance = (await this.$wallet.provider.getBalance(this.rawContract.address)) || '0'
 			this.contractBalance = +ethers.utils.formatEther(balance)
 			this.isBusy = false
+			showNotification && this.$bvToast.toast('Balance successfully refreshed', {
+				title: 'Balance',
+				variant: 'success',
+			})
 		},
 		formatFuncResponse(func) {
 			let actualResponse = this.responses[func.name]
