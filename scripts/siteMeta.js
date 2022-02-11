@@ -2,7 +2,7 @@ const type = "website";
 const url = "https://app.zerocodenft.com";
 const title = "Zero Code NFT Wizard";
 const description = "Drop Your NFT Collection With ZERO Coding Skills";
-const mainImage = "https://app.zerocodenft.com/logo-bg.png";
+const mainImage = "https://app.zerocodenft.com/logo-bg.jpg";
 const twitterCard = "summary_large_image";
 
 export default (meta) => {
