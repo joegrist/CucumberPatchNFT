@@ -2,6 +2,8 @@
   "name": "ZeroCodeNFT",
   "version": "1.0.0",
   "private": true,
+  "author": "Code Space Inc",
+  "description": "Seamless solution to create a smart contract & facilitate the launch of your NFT collection!",
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",

@@ -114,7 +114,15 @@ export default {
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      lang: 'en'
+      name: 'Zero Code NFT',
+      short_name: 'ZCNFT',
+    },
+    meta: {
+      name: 'Zero Code NFT',
+      ogHost: 'https://app.zerocodenft.com',
+      twitterCard: 'summary_large_image',
+      twitterSite: 'Drop your NFT collection with ZERO code!',
+      twitterCreator: 'zero_code_nft'
     }
   },
 
