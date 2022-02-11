@@ -2,7 +2,7 @@
 	<div>
 		<b-navbar toggleable="lg" type="light" variant="light" style="z-index: 3">
 			<b-navbar-brand href="https://zerocodenft.com">
-				<b-img img src="/logo.png" alt="logo" width="100px" />
+				<b-img img src="/logo-black.png" alt="logo" width="100px" />
 			</b-navbar-brand>
 
 			<b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
