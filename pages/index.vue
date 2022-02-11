@@ -59,25 +59,24 @@
 							placeholder="Bored Apes Yacht Club"
 							required></b-form-input>
 					</b-form-group>
-					<b-form-group label="Description" label-class="required">
+					<b-form-group label="Description">
 						<b-form-input
 							id="description"
 							name="description"
 							v-model="newWebsite.description"
 							type="text"
 							placeholder="10k unique NFTs"
-							required></b-form-input>
+							></b-form-input>
 					</b-form-group>
 					<b-form-group
-						label="Desired website domain (URL)"
-						label-class="required">
+						label="Desired website domain (URL)">
 						<b-form-input
 							id="desiredDomain"
 							name="desiredDomain"
 							v-model="newWebsite.desiredDomain"
 							type="url"
 							placeholder="zerocodenft.com"
-							required></b-form-input>
+							></b-form-input>
 					</b-form-group>
 					<div class="d-flex">
 						<b-form-group
@@ -90,7 +89,7 @@
 								v-model="newWebsite.dropDateInput"
 								type="date"
 								:min="new Date().toISOString().split('T')[0]"
-								required></b-form-input>
+								></b-form-input>
 						</b-form-group>
 						<b-form-group
 							label="Drop Time"
@@ -101,7 +100,7 @@
 								name="dropTimeInput"
 								v-model="newWebsite.dropTimeInput"
 								type="time"
-								required></b-form-input>
+								></b-form-input>
 						</b-form-group>
 					</div>
 					<div class="d-flex">
@@ -111,7 +110,7 @@
 								name="twitterUrl"
 								v-model="newWebsite.twitterUrl"
 								type="url"
-								required></b-form-input>
+								></b-form-input>
 						</b-form-group>
 						<b-form-group label="Discord URL" class="pl-1 w-50">
 							<b-form-input
@@ -119,7 +118,7 @@
 								name="discordURL"
 								v-model="newWebsite.discordURL"
 								type="url"
-								required></b-form-input>
+								></b-form-input>
 						</b-form-group>
 					</div>
 					<div class="d-flex">
@@ -129,15 +128,25 @@
 								name="instagramURL"
 								v-model="newWebsite.instagramURL"
 								type="url"
-								required></b-form-input>
+								></b-form-input>
 						</b-form-group>
+						<b-form-group label="Marketplace URL" class="pl-1 w-50">
+							<b-form-input
+								id="tiktokURL"
+								name="tiktokURL"
+								v-model="newWebsite.tiktokURL"
+								type="url"
+								></b-form-input>
+						</b-form-group>
+					</div>
+					<div class="d-flex">
 						<b-form-group label="Marketplace URL" class="pl-1 w-50">
 							<b-form-input
 								id="marketplaceURL"
 								name="marketplaceURL"
 								v-model="newWebsite.marketplaceURL"
 								type="url"
-								required></b-form-input>
+								></b-form-input>
 						</b-form-group>
 					</div>
 				</b-form>

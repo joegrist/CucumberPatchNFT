@@ -2,7 +2,7 @@
 	<b-container class="mt-5">
 		<b-overlay :show="isBusy" opacity="1">
 			<b-row class="mb-3">
-				<b-col sm="12" md="9">
+				<b-col sm="12" md="8">
 					<p class="lead font-weight-bold mb-1">
 						Deployed on {{ rawContract.blockchain | blockchainName }}
 						{{ isTestnet(rawContract.chainId) ? '(Testnet)' : '(Mainnet)' }} at
@@ -24,25 +24,56 @@
 						</b-button>
 					</b-overlay>
 				</b-col>
-				<b-col sm="12" md="3" class="d-flex flex-column">
+				<b-col sm="12" md="4" class="d-flex flex-column">
 					<div class="lead font-weight-bold">
 						Sale Status:
-						<span :class="{
-							'text-warning': saleStatus === 'Paused',
-							'text-dark': saleStatus === 'Presale',
-							'text-success': saleStatus === 'Public'
-						}">{{
-							saleStatus
-						}}</span>
+						<span
+							:class="{
+								'text-warning': saleStatus === 'Paused',
+								'text-dark': saleStatus === 'Presale',
+								'text-success': saleStatus === 'Public',
+							}"
+							>{{ saleStatus }}</span
+						>
+						<b-icon
+							v-if="isBusy"
+							class="pointer"
+							font-scale="0.9"
+							icon="bootstrap-reboot"
+							variant="success"
+							animation="spin"
+							:disabled="true" />
+						<b-icon
+							v-else
+							class="pointer"
+							font-scale="0.9"
+							icon="bootstrap-reboot"
+							variant="success"
+							@click="callFuncByName('saleStatus')" />
 					</div>
 					<div class="lead font-weight-bold mb-1">
 						Contract Balance: {{ contractBalance }}
 						{{ getCurrency(rawContract.chainId) }}
+						<b-icon
+							v-if="isBusy"
+							class="pointer"
+							font-scale="0.9"
+							icon="bootstrap-reboot"
+							variant="success"
+							animation="spin"
+							:disabled="true" />
+						<b-icon
+							v-else
+							class="pointer"
+							font-scale="0.9"
+							icon="bootstrap-reboot"
+							variant="success"
+							@click="onRefreshBalance" />
 					</div>
 					<b-button
 						variant="success"
 						:disabled="contractBalance === 0"
-						@click="onWithdraw"
+						@click="callFuncByName('withdraw')"
 						>Withdraw</b-button
 					>
 				</b-col>
@@ -307,17 +338,15 @@ export default {
 				abi,
 				this.$wallet.provider.getSigner()
 			)
-			const balance = (await this.$wallet.provider.getBalance(address)) || '0'
 
-			this.contractBalance = +ethers.utils.formatEther(balance)
 			this.isOnWrongNetwork = this.$wallet.chainId !== +chainId
 
 			if (this.isOnWrongNetwork) {
 				await this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[chainId])
 			}
 
+			await this.onRefreshBalance()
 			const saleStatus = await this.contract.saleStatus()
-			console.log({ saleStatus })
 			this.saleStatus = SALE_STATUS[saleStatus]
 
 			this.isReady = !!(await this.contract.deployed())
@@ -371,6 +400,14 @@ export default {
 		getExplorerUrl,
 		isTestnet,
 		getCurrency,
+		async onRefreshBalance() {
+			this.isBusy = true
+			const balance =
+				(await this.$wallet.provider.getBalance(this.rawContract.address)) ||
+				'0'
+			this.contractBalance = +ethers.utils.formatEther(balance)
+			this.isBusy = false
+		},
 		formatFuncResponse(func) {
 			let actualResponse = this.responses[func.name]
 			const prefix = func.inputs.length > 0 ? 'Response' : startCase(func.name)
@@ -522,21 +559,18 @@ export default {
 				})
 			}
 		},
-		onWithdraw() {
-			const func = this.functions.find((val) => val.name === 'withdraw')
-			if (func) {
-				this.callFunc(func)
-			}
-		},
 		onUpdateSaleStatus(value) {
 			const func = this.functions.find((val) => val.name === 'setSaleStatus')
 			if (func) {
 				this.onParamChange(value, func, { name: 'status' })
-				// const val1 = this.callFuncArgs[func.name].get('status')
-				// const val2 = isNumber(value) ? ethers.BigNumber.from(value) : value
-				// console.log(val1, val2)
 				this.callFunc(func)
 			}
+		},
+		callFuncByName(name) {
+			this.isBusy = true
+			const func = this.functions.find((val) => val.name === name)
+			func && this.callFunc(func)
+			this.isBusy = false
 		},
 		async callFunc(func) {
 			try {
@@ -595,12 +629,12 @@ export default {
 
 				if (func.constant) {
 					let value = txResponse.toString()
-					if(func.name.includes('PRICE')) {
+					if (func.name.includes('PRICE')) {
 						value = `${+ethers.utils.formatEther(txResponse)} ${getCurrency(
-								this.rawContract.chainId
-						  )}`
+							this.rawContract.chainId
+						)}`
 					}
-					if(func.name === 'saleStatus') {
+					if (func.name === 'saleStatus') {
 						value = SALE_STATUS[txResponse]
 					}
 
@@ -628,7 +662,7 @@ export default {
 				console.error({ err })
 				const { data, reason, message, code, method, error } = err
 				this.$bvToast.toast(
-						error?.message ||
+					error?.message ||
 						data?.message ||
 						reason ||
 						message ||
