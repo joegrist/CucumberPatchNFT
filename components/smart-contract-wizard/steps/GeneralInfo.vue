@@ -99,27 +99,6 @@
       <b-row>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Max NFTs Per Person'
-            description='Maximum number of tokens per wallet address'
-          >
-            <b-form-input
-              id='maxTokensPerPerson'
-              name='maxTokensPerPerson'
-              :value='smartContractBuilder.maxTokensPerPerson'
-              @change='(val) => updateSmartContractBuilder({ maxTokensPerPerson: val ? +val:null })'
-              @blur="$v.smartContractBuilder.maxTokensPerPerson.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerPerson.$error}"
-              type='number'
-              min='0'
-              placeholder='20'
-            ></b-form-input>
-            <b-form-invalid-feedback :state="validation.maxTokensPerPerson">
-              Please correct "Max NFTs Per Person". Enter 0 or leave empty.
-            </b-form-invalid-feedback>
-          </b-form-group>
-        </b-col>
-        <b-col sm='12' md='6'>
-          <b-form-group
             :label="`Mint Price (${getCurrency(smartContractBuilder.chainId)})`"
             label-class='required'
             description='Price per NFT'
@@ -138,6 +117,27 @@
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.mintPrice">
               Please correct "Mint Price"
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
+        <b-col sm='12' md='6'>
+          <b-form-group
+            label='Max NFTs Per Person'
+            description='Maximum number of tokens per wallet address'
+          >
+            <b-form-input
+              id='maxTokensPerPerson'
+              name='maxTokensPerPerson'
+              :value='smartContractBuilder.maxTokensPerPerson'
+              @change='(val) => updateSmartContractBuilder({ maxTokensPerPerson: val ? +val:null })'
+              @blur="$v.smartContractBuilder.maxTokensPerPerson.$touch()"
+              :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerPerson.$error}"
+              type='number'
+              min='0'
+              placeholder='20'
+            ></b-form-input>
+            <b-form-invalid-feedback :state="validation.maxTokensPerPerson">
+              Please correct "Max NFTs Per Person". Enter 0 or leave empty.
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>

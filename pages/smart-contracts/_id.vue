@@ -27,7 +27,7 @@
 				<b-col sm="12" md="3" class="d-flex flex-column">
 					<div class="lead font-weight-bold">
 						Sale Status:
-						<span :class="{ 
+						<span :class="{
 							'text-warning': saleStatus === 'Paused',
 							'text-dark': saleStatus === 'Presale',
 							'text-success': saleStatus === 'Public'
@@ -264,8 +264,8 @@ const basicFunctions = [
 	'COLLECTION_SIZE',
 	'MINT_PRICE',
 	'PRESALE_MINT_PRICE',
-	'saleStatus',
 	'setSaleStatus',
+	'saleStatus',
 	'owner',
 	'reveal',
 	'totalSupply',
@@ -594,11 +594,15 @@ export default {
 				console.log({ txResponse })
 
 				if (func.constant) {
-					const value = func.name.includes('PRICE')
-						? `${+ethers.utils.formatEther(txResponse)} ${getCurrency(
+					let value = txResponse.toString()
+					if(func.name.includes('PRICE')) {
+						value = `${+ethers.utils.formatEther(txResponse)} ${getCurrency(
 								this.rawContract.chainId
 						  )}`
-						: txResponse.toString()
+					}
+					if(func.name === 'saleStatus') {
+						value = SALE_STATUS[txResponse]
+					}
 
 					Vue.set(this.responses, func.name, value)
 
@@ -624,7 +628,7 @@ export default {
 				console.error({ err })
 				const { data, reason, message, code, method, error } = err
 				this.$bvToast.toast(
-					error?.message ||
+						error?.message ||
 						data?.message ||
 						reason ||
 						message ||

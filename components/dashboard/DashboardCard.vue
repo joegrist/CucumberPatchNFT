@@ -108,7 +108,9 @@
 					<span class="text-muted">Volume</span>
 				</b-col>
 				<b-col cols="12" class="text-center" style="padding: 0">
-					<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+					<b-link :href="openSeaUrl || '#'" target="_blank">
+						<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+					</b-link>
 				</b-col>
 				<b-col cols="6" class="text-center">
 					<span class="font-weight-bold">{{ openSeaStats.floor_price }}</span>
@@ -205,6 +207,17 @@ export default {
 			}
 			return address
 		},
+		openSeaUrl() {
+			if(this.$props.sc.marketplace !== MARKETPLACE.OpenSea) {
+				return '#'
+			}
+
+			const { name } = this.$props.sc.marketplaceCollection
+			const formattedName = name.replace(/\s/g, '-').toLowerCase()
+			return isTestnet(this.$props.sc.chainId)
+				? `https://testnets.opensea.io/collection/${formattedName}`
+				: `https://opensea.io/collection/${formattedName}`
+		}
 	},
 	methods: {
 		...mapMutations(['updateSmartContractBuilder']),
@@ -257,26 +270,25 @@ export default {
 		getOpenSeaStats() {
 			if (!this.$props.sc.marketplaceCollection || !this.$props.sc.isDeployed) return
 
+			let fetchParams, openseaApiUrl
+			let retryCount = 0
+
 			const { name } = this.$props.sc.marketplaceCollection
 			const formattedName = name.replace(/\s/g, '-').toLowerCase()
 
-			let openSeaApiUrl, fetchParams
-
 			if (isTestnet(this.$props.sc.chainId)) {
-				openSeaApiUrl = `https://rinkeby-api.opensea.io/api/v1/collection/${formattedName}/stats`
+				openseaApiUrl = `https://rinkeby-api.opensea.io/api/v1/collection/${formattedName}/stats`
 			} else {
-				openSeaApiUrl = `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
+				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
 				fetchParams = {
 					headers: {
 						'X-API-KEY': process.env.OPENSEA_API_KEY,
-					},
+					}
 				}
 			}
 
-			let retryCount = 0
-
 			const getData = () => {
-				fetch(openSeaApiUrl, fetchParams)
+				fetch(openseaApiUrl, fetchParams)
 				.then((response) => {
 					if(response.status == 429 && retryCount < 3) {
 						retryCount++
