@@ -2,7 +2,7 @@
   <b-form v-if='showForm' @reset.prevent='onFormReset(reset)' novalidate>
     <b-container fluid>
       <b-row>
-        <b-col cols='12'>
+        <b-col sm='12' md='6'>
           <b-form-group
             label='IPFS Metadata URL'
             label-class='required'
@@ -21,6 +21,29 @@
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.baseURL">
               Please correct IPFS Metadata URL"
+            </b-form-invalid-feedback>
+          </b-form-group>
+        </b-col>
+        <b-col sm='12' md='6'>
+          <b-form-group
+            label='Collection Size'
+            label-class='required'
+            description='Maximum number of tokens that can be ever minted'
+          >
+            <b-form-input
+              id='collectionSize'
+              name='collectionSize'
+              :value='smartContractBuilder.collectionSize'
+              @change='(val) => updateSmartContractBuilder({ collectionSize: val ? +val:null })'
+              @blur="$v.smartContractBuilder.collectionSize.$touch()"
+              :class="{'is-invalid': $v.smartContractBuilder.collectionSize.$error}"
+              type='number'
+              min='1'
+              placeholder='5000'
+              required
+            ></b-form-input>
+            <b-form-invalid-feedback :state="validation.collectionSize">
+              Please correct "Collection Size"
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
@@ -76,24 +99,22 @@
       <b-row>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Collection Size'
-            label-class='required'
-            description='Maximum number of tokens that can be ever minted'
+            label='Max NFTs Per Person'
+            description='Maximum number of tokens per wallet address'
           >
             <b-form-input
-              id='collectionSize'
-              name='collectionSize'
-              :value='smartContractBuilder.collectionSize'
-              @change='(val) => updateSmartContractBuilder({ collectionSize: val ? +val:null })'
-              @blur="$v.smartContractBuilder.collectionSize.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.collectionSize.$error}"
+              id='maxTokensPerPerson'
+              name='maxTokensPerPerson'
+              :value='smartContractBuilder.maxTokensPerPerson'
+              @change='(val) => updateSmartContractBuilder({ maxTokensPerPerson: val ? +val:null })'
+              @blur="$v.smartContractBuilder.maxTokensPerPerson.$touch()"
+              :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerPerson.$error}"
               type='number'
-              min='1'
-              placeholder='5000'
-              required
+              min='0'
+              placeholder='20'
             ></b-form-input>
-            <b-form-invalid-feedback :state="validation.collectionSize">
-              Please correct "Collection Size"
+            <b-form-invalid-feedback :state="validation.maxTokensPerPerson">
+              Please correct "Max NFTs Per Person". Enter 0 or leave empty.
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
@@ -136,18 +157,18 @@
               :class="{'is-invalid': $v.smartContractBuilder.setAsideTokenCount.$error}"
               type='number'
               step='1'
-              min='1'
+              min='0'
               placeholder='25'
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.setAsideTokenCount">
-              Please correct "Set aside NFTs". Enter at least 1 or leave empty.
+              Please correct "Set aside NFTs". Enter 0 or leave empty.
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
 
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Max Number Of NFTs Per Transaction'
+            label='Max NFTs Per Transaction'
             description='How many tokens can one person mint at a time. For example BAYC allowed 20'
           >
             <b-form-input
@@ -159,12 +180,12 @@
               :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerTransaction.$error}"
               type='number'
               step='1'
-              min='1'
+              min='0'
               placeholder='20'
             />
           </b-form-group>
           <b-form-invalid-feedback :state="validation.maxTokensPerTransaction">
-            Please correct "Max Tokens Per Transaction". Enter at least 1 or leave empty.
+            Please correct "Max Tokens Per Transaction". Enter 0 or leave empty.
           </b-form-invalid-feedback>
         </b-col>
       </b-row>
@@ -180,34 +201,34 @@
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { required, maxLength, numeric, minValue, decimal } from 'vuelidate/lib/validators'
-import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
+import { getCurrency } from '@/constants/metamask'
 
 export default {
   mixins: [smartContractBuilderMixin],
   data() {
     return {
       reset: {
-        blockchain: null,
+        baseURL: null,
         collectionSize: null,
         name: null,
         symbol: null,
         mintPrice: null,
-        baseURL: null,
         setAsideTokenCount: null,
-        maxTokensPerTransaction: null
+        maxTokensPerTransaction: null,
+        maxTokensPerPerson: null
       }
     }
   },
     validations: {
       smartContractBuilder: {
         baseURL: { required },
+        collectionSize: { required, numeric},
         name: { required, maxLength: maxLength(30) },
         symbol: { required, maxLength: maxLength(6) },
-        collectionSize: { required, numeric},
         mintPrice: { required, decimal, minValue:minValue(0) },
-        blockchain: { required },
-        setAsideTokenCount: { numeric, minValue:minValue(1)},
-        maxTokensPerTransaction: { numeric, minValue:minValue(1) }
+        setAsideTokenCount: { numeric, minValue:minValue(0)},
+        maxTokensPerTransaction: { numeric, minValue:minValue(0) },
+        maxTokensPerPerson: { numeric, minValue:minValue(0) }
       }
   },
   computed: {
@@ -219,6 +240,7 @@ export default {
         collectionSize: !this.$v.smartContractBuilder.collectionSize.$error,
         mintPrice: !this.$v.smartContractBuilder.mintPrice.$error,
         setAsideTokenCount: !this.$v.smartContractBuilder.setAsideTokenCount.$error,
+        maxTokensPerPerson: !this.$v.smartContractBuilder.maxTokensPerPerson.$error,
         maxTokensPerTransaction: !this.$v.smartContractBuilder.maxTokensPerTransaction.$error,
       }
     }

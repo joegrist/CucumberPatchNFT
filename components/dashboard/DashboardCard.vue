@@ -81,7 +81,7 @@
 				</b-col>
 				<b-col cols="6" class="text-center">
 					<span class="font-weight-bold">{{
-						balance === 'n/a' ? 'n/a' : `${balance} ${getCurrency(sc.chainId)}`
+						formattedBalance
 					}}</span>
 					<br />
 					<span class="text-muted">Balance</span>
@@ -186,6 +186,9 @@ export default {
 		}
 	},
 	computed: {
+		formattedBalance() {
+			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.$props.sc.chainId)}`
+		},
 		viewContractUrl() {
 			return `${this.getExplorerUrl(this.$props.sc.chainId)}/address/${
 				this.$props.sc.address
@@ -242,7 +245,7 @@ export default {
 				const contractBalance = await this.$wallet.provider.getBalance(
 					this.$props.sc.address
 				)
-				this.balance = ethers.utils.formatEther(contractBalance)
+				this.balance = +ethers.utils.formatEther(contractBalance)
 				this.minted = await contract.totalSupply()
 				this.revealed = this.$props.sc.hasDelayedReveal
 					? await contract.canReveal()

@@ -127,7 +127,9 @@ export default {
 	data() {
 		return {
 			reset: {
+				delayedRevealURL: null,
 				whitelistPrice: null,
+				whitelist: []
 			},
 		}
 	},

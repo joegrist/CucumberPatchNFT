@@ -5,7 +5,7 @@
 				<b-col sm="12" md="9">
 					<p class="lead font-weight-bold mb-1">
 						Deployed on {{ rawContract.blockchain | blockchainName }}
-						{{ isTestnet(rawContract.chainId) ? 'TESTNET' : 'MAINNET' }} at
+						{{ isTestnet(rawContract.chainId) ? '(Testnet)' : '(Mainnet)' }} at
 						<br />
 						<b-link
 							:href="`${getExplorerUrl(rawContract.chainId)}/address/${
@@ -24,16 +24,32 @@
 						</b-button>
 					</b-overlay>
 				</b-col>
-				<b-col sm="12" md="3" class="d-flex flex-column justify-content-end">
-					<p class="lead font-weight-bold">
-						Contract Balance: {{ contractBalance }} {{ getCurrency(rawContract.chainId) }}
-					</p>
-					<b-button variant="success" :disabled="contractBalance === 0" @click="onWithdraw">Withdraw</b-button>
+				<b-col sm="12" md="3" class="d-flex flex-column">
+					<div class="lead font-weight-bold">
+						Sale Status:
+						<span :class="{ 
+							'text-warning': saleStatus === 'Paused',
+							'text-dark': saleStatus === 'Presale',
+							'text-success': saleStatus === 'Public'
+						}">{{
+							saleStatus
+						}}</span>
+					</div>
+					<div class="lead font-weight-bold mb-1">
+						Contract Balance: {{ contractBalance }}
+						{{ getCurrency(rawContract.chainId) }}
+					</div>
+					<b-button
+						variant="success"
+						:disabled="contractBalance === 0"
+						@click="onWithdraw"
+						>Withdraw</b-button
+					>
 				</b-col>
 			</b-row>
 			<b-row v-if="isOnWrongNetwork">
 				<b-col class="d-flex flex-column align-items-center mt-3">
-					<h3>Detected network is different than the smart contract</h3>
+					<h3>Detected network is different than this smart contract</h3>
 					<b-button variant="warning" @click="switchNetwork">
 						Switch network
 					</b-button>
@@ -55,65 +71,102 @@
 						</b-col>
 						<b-col cols="6" class="d-flex justify-content-end my-auto">
 							<span class="pr-2">Advanced</span>
-							<b-form-checkbox v-model="showAdvancedFunctions" name="check-button" switch />
+							<b-form-checkbox
+								v-model="showAdvancedFunctions"
+								name="check-button"
+								switch />
 						</b-col>
 					</b-row>
 					<b-row>
 						<b-col>
-						<ul class="list-unstyled">
-						<li
-							class="mb-2 border rounded"
-							v-for="(func, idx) in filteredFunctions"
-							:key="idx"
-							role="tab">
-							<div class="d-flex justify-content-between p-2" v-b-toggle="`${func.name + idx}`">
-								<template v-if="func.constant">
-									<b-badge pill size="sm" variant="success" class="my-auto">Eco</b-badge>
-								</template>
-								<template v-else>
-									<b-badge pill size="sm" variant="warning" class="my-auto">Gas</b-badge>
-								</template>
-								<span variant="link">
-									{{ func.name | startCase }}
-								</span>
-								<b-icon icon="chevron-down" class="my-auto" />
-							</div>
-							<b-collapse
-								:id="func.name + idx"
-								class="p-2"
-								accordion="eco-accordion"
-								role="tabpanel">
-								<ul v-if="func.inputs.length > 0" class="mb-2">
-									<li
-										v-for="(param, idx) in func.inputs.filter(
-											(x) => !x.name.startsWith('_')
-										)"
-										:key="idx">
-										<span> {{ param.name }} </span>
-										<b-input
-											@change="(val) => onParamChange(val, func, param)" />
-									</li>
-								</ul>
-								<div :class="['d-flex', func.inputs.length > 0 && 'justify-content-end']">
-									<b-overlay
-									:show="busyState[func.name]"
-									rounded
-									:class="[!func.inputs.length && 'w-100']"
-									opacity="0.5"
-									spinner-small>
-										<b-button :class="[!func.inputs.length && 'w-100']" variant="success" @click="callFunc(func)"
-											>Execute</b-button
-										>
-									</b-overlay>
-								</div>
-								<div
-									v-show="responses[func.name]"
-									class="lead font-weight-bold mt-2"
-									>{{ func.inputs.length > 0 ? 'Result' : func.name | startCase }}: {{ responses[func.name] }}</div
-								>
-							</b-collapse>
-						</li>
-					</ul>
+							<ul class="list-unstyled">
+								<li
+									class="mb-2 border rounded"
+									v-for="(func, idx) in filteredFunctions"
+									:key="idx"
+									role="tab">
+									<div
+										class="d-flex justify-content-between p-2"
+										v-b-toggle="`${func.name + idx}`">
+										<template v-if="func.constant">
+											<b-badge pill size="sm" variant="success" class="my-auto"
+												>Eco</b-badge
+											>
+										</template>
+										<template v-else>
+											<b-badge pill size="sm" variant="warning" class="my-auto"
+												>Gas</b-badge
+											>
+										</template>
+										<span variant="link">
+											{{ func.name | startCase }}
+										</span>
+										<b-icon icon="chevron-down" class="my-auto" />
+									</div>
+									<b-collapse
+										:id="func.name + idx"
+										class="p-2"
+										accordion="eco-accordion"
+										role="tabpanel">
+										<ul
+											v-if="
+												func.inputs.length > 0 && func.name !== 'setSaleStatus'
+											"
+											class="mb-2">
+											<li
+												v-for="(param, idx) in func.inputs.filter(
+													(x) => !x.name.startsWith('_')
+												)"
+												:key="idx">
+												<span> {{ param.name }} </span>
+												<b-input
+													@change="(val) => onParamChange(val, func, param)" />
+											</li>
+										</ul>
+										<div>
+											<b-overlay
+												:show="busyState[func.name]"
+												rounded
+												class="w-100"
+												opacity="0.5"
+												spinner-small>
+												<b-button-group
+													v-if="func.name === 'setSaleStatus'"
+													class="w-100">
+													<b-button
+														variant="warning"
+														@click="onUpdateSaleStatus(SALE_STATUS.Paused)"
+														>Pause Sales</b-button
+													>
+													<b-button
+														v-if="rawContract.hasWhitelist"
+														variant="dark"
+														@click="onUpdateSaleStatus(SALE_STATUS.Presale)"
+														>Start Presale</b-button
+													>
+													<b-button
+														variant="success"
+														@click="onUpdateSaleStatus(SALE_STATUS.Public)"
+														>Start Public Sale</b-button
+													>
+												</b-button-group>
+												<b-button
+													v-else
+													class="w-100"
+													variant="success"
+													@click="callFunc(func)"
+													>Call</b-button
+												>
+											</b-overlay>
+										</div>
+										<div
+											v-show="responses[func.name]"
+											class="font-weight-bold mt-2">
+											{{ formatFuncResponse(func) }}
+										</div>
+									</b-collapse>
+								</li>
+							</ul>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -194,6 +247,7 @@
 <script>
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
+import { SALE_STATUS } from '@/constants'
 import {
 	CHAINID_CONFIG_MAP,
 	getExplorerUrl,
@@ -202,20 +256,19 @@ import {
 	getMainnetConfig,
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
-import { isNumber } from 'lodash-es'
+import { isNumber, startCase } from 'lodash-es'
 import { loadScript } from '@paypal/paypal-js'
 
 const basicFunctions = [
 	'canReveal',
 	'COLLECTION_SIZE',
-	'flipSaleState',
-	'flipWhitelistSale',
-	'isPublicSaleActive',
-	'isWhitelistSaleActive',
 	'MINT_PRICE',
+	'PRESALE_MINT_PRICE',
+	'saleStatus',
+	'setSaleStatus',
 	'owner',
 	'reveal',
-	'totalSupply'
+	'totalSupply',
 ]
 
 const FormatTypes = ethers.utils.FormatTypes
@@ -224,6 +277,7 @@ export default {
 	middleware: 'authenticated',
 	data: () => ({
 		FormatTypes,
+		SALE_STATUS,
 		showAdvancedFunctions: false,
 		rawContract: {},
 		contract: {},
@@ -231,6 +285,7 @@ export default {
 		responses: {},
 		callFuncArgs: {},
 		contractBalance: 0,
+		saleStatus: 'N/A',
 		busyState: {},
 		isBusy: true,
 		isReady: false,
@@ -260,6 +315,10 @@ export default {
 			if (this.isOnWrongNetwork) {
 				await this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[chainId])
 			}
+
+			const saleStatus = await this.contract.saleStatus()
+			console.log({ saleStatus })
+			this.saleStatus = SALE_STATUS[saleStatus]
 
 			this.isReady = !!(await this.contract.deployed())
 		} catch (err) {
@@ -291,20 +350,35 @@ export default {
 	computed: {
 		...mapGetters(['userId']),
 		isMainnetDeployEnabled() {
-			return process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'false' || this.isBusy || !isTestnet(this.rawContract.chainId)
+			return (
+				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'false' ||
+				this.isBusy ||
+				!isTestnet(this.rawContract.chainId)
+			)
 		},
 		functions() {
-			return Object.values(this.contract.interface?.functions || {})
-				.sort((a, b) => a.name.localeCompare(b.name))
+			return Object.values(this.contract.interface?.functions || {}).sort(
+				(a, b) => a.name.localeCompare(b.name)
+			)
 		},
 		filteredFunctions() {
-			return this.functions?.filter(f => this.showAdvancedFunctions || basicFunctions.includes(f.name))
-		}
+			return this.functions?.filter(
+				(f) => this.showAdvancedFunctions || basicFunctions.includes(f.name)
+			)
+		},
 	},
 	methods: {
 		getExplorerUrl,
 		isTestnet,
 		getCurrency,
+		formatFuncResponse(func) {
+			let actualResponse = this.responses[func.name]
+			const prefix = func.inputs.length > 0 ? 'Response' : startCase(func.name)
+			if (actualResponse === 'true' || actualResponse === 'false') {
+				actualResponse = actualResponse === 'true' ? 'Yes' : 'No'
+			}
+			return `${prefix}: ${actualResponse}`
+		},
 		switchNetwork() {
 			this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[this.rawContract.chainId])
 		},
@@ -450,7 +524,17 @@ export default {
 		},
 		onWithdraw() {
 			const func = this.functions.find((val) => val.name === 'withdraw')
-			if(func) {
+			if (func) {
+				this.callFunc(func)
+			}
+		},
+		onUpdateSaleStatus(value) {
+			const func = this.functions.find((val) => val.name === 'setSaleStatus')
+			if (func) {
+				this.onParamChange(value, func, { name: 'status' })
+				// const val1 = this.callFuncArgs[func.name].get('status')
+				// const val2 = isNumber(value) ? ethers.BigNumber.from(value) : value
+				// console.log(val1, val2)
 				this.callFunc(func)
 			}
 		},
@@ -484,7 +568,7 @@ export default {
 					// to preserve correct argument order we run mapping based on original function inputs order
 					// since we can't guarantee the correct order in callFuncArgs Map
 					const args = func.inputs.map((x) => {
-						const value = this.callFuncArgs[func.name].get(x.name) || null
+						const value = this.callFuncArgs[func.name].get(x.name)
 						return isNumber(value) ? ethers.BigNumber.from(value) : value
 					})
 					console.log({ args })
@@ -511,9 +595,9 @@ export default {
 
 				if (func.constant) {
 					const value = func.name.includes('PRICE')
-						? ethers.utils.formatEther(txResponse) +
-						  ' ' +
-						  getCurrency(this.rawContract.chainId)
+						? `${+ethers.utils.formatEther(txResponse)} ${getCurrency(
+								this.rawContract.chainId
+						  )}`
 						: txResponse.toString()
 
 					Vue.set(this.responses, func.name, value)
@@ -540,7 +624,7 @@ export default {
 				console.error({ err })
 				const { data, reason, message, code, method, error } = err
 				this.$bvToast.toast(
-						error?.message ||
+					error?.message ||
 						data?.message ||
 						reason ||
 						message ||

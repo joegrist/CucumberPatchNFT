@@ -124,7 +124,7 @@
 import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
-import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
+import { FAUCETS, getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapGetters } from 'vuex'
 import { required } from 'vuelidate/lib/validators'
 import { isArray } from 'lodash-es'
@@ -187,6 +187,9 @@ export default {
 					}
 					if (key === 'marketplace') {
 						val = MARKETPLACE[val]
+					}
+          if (key.includes('Price')) {
+						val = `${val} ${getCurrency(this.smartContractBuilder.chainId)}`
 					}
 					return {
 						key: key.replace('has', ''),
