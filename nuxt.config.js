@@ -113,6 +113,10 @@ export default {
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
+    icon: {
+      source:'/static/zero-code-icon.png',
+      fileName:'zero-code-icon.png'
+    },
     manifest: {
       name: 'Zero Code NFT',
       short_name: 'ZCNFT',
