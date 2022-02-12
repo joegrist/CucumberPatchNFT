@@ -67,9 +67,8 @@ export default ({store}, inject) => {
         },
 
         async switchNetwork(config) {
-            if(!config?.chainId) return
 
-            if(this.chainId === config.chainId || `0x${this.chainId.toString(16)}` === config.chainId) {
+            if(!config?.chainId || this.chainId === config.chainId || this.hexChainId === config.chainId) {
                 return //since we are on correct network
             }
 
@@ -77,6 +76,13 @@ export default ({store}, inject) => {
 				await this.provider.send('wallet_switchEthereumChain', [
 					{ chainId: config.chainId },
 				])
+
+                await this.init()
+
+                // create a small delay to let the wallet reset to new network
+                return new Promise((resolve) => {
+                    setTimeout(() => resolve(), 1000)
+                })
 			} catch (err) {
 				// This error code indicates that the chain has not been added to MetaMask.
 				if (err.code === 4902) {
@@ -101,12 +107,13 @@ export default ({store}, inject) => {
             wallet.setAccount(newAddress)
         })
     
-        window.ethereum.on('chainChanged', (chainId) => {
+        window.ethereum.on('chainChanged', async (chainId) => {
             console.info('chainChanged', chainId)
-            store.commit('setBusy', true)
-            setTimeout(() => {
-                window.location.reload()
-            }, 1000)
+            wallet.init()
+            // store.commit('setBusy', true)
+            // setTimeout(() => {
+            //     window.location.reload()
+            // }, 1000)
         })
 
         wallet.init()

@@ -320,7 +320,6 @@ export default {
 		busyState: {},
 		isBusy: true,
 		isReady: false,
-		isOnWrongNetwork: false,
 		paypal: null,
 	}),
 	fetchOnServer: false,
@@ -332,18 +331,17 @@ export default {
 			)
 			this.rawContract = data
 
-			const { address, chainId, abi } = this.rawContract
+			const { address, abi } = this.rawContract
+
+			if (this.isOnWrongNetwork) {
+				await this.switchNetwork()
+			}
+
 			this.contract = new ethers.Contract(
 				address,
 				abi,
 				this.$wallet.provider.getSigner()
 			)
-
-			this.isOnWrongNetwork = this.$wallet.chainId !== +chainId
-
-			if (this.isOnWrongNetwork) {
-				await this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[chainId])
-			}
 
 			await this.onRefreshBalance()
 			const saleStatus = await this.contract.saleStatus()
@@ -395,6 +393,9 @@ export default {
 				(f) => this.showAdvancedFunctions || basicFunctions.includes(f.name)
 			)
 		},
+		isOnWrongNetwork() {
+			return this.$wallet.chainId !== +this.rawContract.chainId
+		}
 	},
 	methods: {
 		getExplorerUrl,
@@ -418,8 +419,8 @@ export default {
 			}
 			return `${prefix}: ${actualResponse}`
 		},
-		switchNetwork() {
-			this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[this.rawContract.chainId])
+		async switchNetwork() {
+			await this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[this.rawContract.chainId])
 		},
 		async updateWhitelist() {
 			await this.$axios.patch(
@@ -580,12 +581,6 @@ export default {
 
 				// console.log(this.rawContract.chainId, func)
 
-				if (this.rawContract.chainId != this.$wallet.network.chainId) {
-					const config = CHAINID_CONFIG_MAP[this.rawContract.chainId]
-					await this.$wallet.switchNetwork(config)
-					return // the page will reload when chain was changed so doesnt make sense to continue
-				}
-
 				Vue.set(this.busyState, func.name, true)
 
 				const txOverrides = {}
@@ -638,6 +633,7 @@ export default {
 					}
 					if (func.name === 'saleStatus') {
 						value = SALE_STATUS[txResponse]
+						this.saleStatus = SALE_STATUS[txResponse]
 					}
 
 					Vue.set(this.responses, func.name, value)

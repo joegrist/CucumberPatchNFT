@@ -39,7 +39,7 @@
 			title="Account"
 			right
 			backdrop
-			z-index="2">
+			z-index="100">
 			<div class="px-3 py-4">
 				<div v-if="!$wallet.account">
 					<b-button

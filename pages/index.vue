@@ -34,124 +34,124 @@
 					>Create One</b-button
 				>
 			</div>
-			<b-modal
-				id="siteModal"
-				title="Deploy Minting Website"
-				size="lg"
-				centered
-				@hidden="newWebsite = {}"
-				@ok="onCreateSite"
-				ok-title="Deploy"
-				ok-variant="success"
-				no-close-on-backdrop
-				:busy="isBusy">
-				<!-- <p>Smart Contract: {{ $props.sc.name }}</p> -->
-				<b-form>
-					<b-form-group
-						label="Website Name"
-						label-class="required"
-						description="Dispalyed on Google and as a browser tab title. Ours, for example, is Zero Code NFT Wizard">
-						<b-form-input
-							id="title"
-							name="title"
-							v-model="newWebsite.title"
-							type="text"
-							placeholder="Bored Apes Yacht Club"
-							required></b-form-input>
-					</b-form-group>
-					<b-form-group label="Description">
-						<b-form-input
-							id="description"
-							name="description"
-							v-model="newWebsite.description"
-							type="text"
-							placeholder="10k unique NFTs"
-							></b-form-input>
-					</b-form-group>
-					<b-form-group
-						label="Desired website domain (URL)">
-						<b-form-input
-							id="desiredDomain"
-							name="desiredDomain"
-							v-model="newWebsite.desiredDomain"
-							type="url"
-							placeholder="zerocodenft.com"
-							></b-form-input>
-					</b-form-group>
-					<div class="d-flex">
-						<b-form-group
-							label="Drop Date"
-							description="Sets the countdown timer. Can be updated later."
-							class="pr-1 w-50">
-							<b-form-input
-								id="dropDateInput"
-								name="dropDateInput"
-								v-model="newWebsite.dropDateInput"
-								type="date"
-								:min="new Date().toISOString().split('T')[0]"
-								></b-form-input>
-						</b-form-group>
-						<b-form-group
-							label="Drop Time"
-							description="Sets the countdown timer. Can be updated later."
-							class="pl-1 w-50">
-							<b-form-input
-								id="dropTimeInput"
-								name="dropTimeInput"
-								v-model="newWebsite.dropTimeInput"
-								type="time"
-								></b-form-input>
-						</b-form-group>
-					</div>
-					<div class="d-flex">
-						<b-form-group label="Twitter URL" class="pr-1 w-50">
-							<b-form-input
-								id="twitterUrl"
-								name="twitterUrl"
-								v-model="newWebsite.twitterUrl"
-								type="url"
-								></b-form-input>
-						</b-form-group>
-						<b-form-group label="Discord URL" class="pl-1 w-50">
-							<b-form-input
-								id="discordURL"
-								name="discordURL"
-								v-model="newWebsite.discordURL"
-								type="url"
-								></b-form-input>
-						</b-form-group>
-					</div>
-					<div class="d-flex">
-						<b-form-group label="Instagram URL" class="pr-1 w-50">
-							<b-form-input
-								id="instagramURL"
-								name="instagramURL"
-								v-model="newWebsite.instagramURL"
-								type="url"
-								></b-form-input>
-						</b-form-group>
-						<b-form-group label="Marketplace URL" class="pl-1 w-50">
-							<b-form-input
-								id="tiktokURL"
-								name="tiktokURL"
-								v-model="newWebsite.tiktokURL"
-								type="url"
-								></b-form-input>
-						</b-form-group>
-					</div>
-					<div class="d-flex">
-						<b-form-group label="Marketplace URL" class="pl-1 w-50">
-							<b-form-input
-								id="marketplaceURL"
-								name="marketplaceURL"
-								v-model="newWebsite.marketplaceURL"
-								type="url"
-								></b-form-input>
-						</b-form-group>
-					</div>
-				</b-form>
-			</b-modal>
 		</b-overlay>
+		<b-modal
+			id="siteModal"
+			title="Deploy Minting Website"
+			size="lg"
+			centered
+			@hidden="newWebsite = {}"
+			@ok="onCreateSite"
+			ok-title="Deploy"
+			ok-variant="success"
+			no-close-on-backdrop
+			:busy="isBusy">
+			<!-- <p>Smart Contract: {{ $props.sc.name }}</p> -->
+			<b-form>
+				<b-form-group
+					label="Website Name"
+					label-class="required"
+					description="Dispalyed on Google and as a browser tab title. Ours, for example, is Zero Code NFT Wizard">
+					<b-form-input
+						id="title"
+						name="title"
+						v-model="newWebsite.title"
+						type="text"
+						placeholder="Bored Apes Yacht Club"
+						required></b-form-input>
+				</b-form-group>
+				<b-form-group label="Description">
+					<b-form-input
+						id="description"
+						name="description"
+						v-model="newWebsite.description"
+						type="text"
+						placeholder="10k unique NFTs"
+						></b-form-input>
+				</b-form-group>
+				<b-form-group
+					label="Desired website domain (URL)">
+					<b-form-input
+						id="desiredDomain"
+						name="desiredDomain"
+						v-model="newWebsite.desiredDomain"
+						type="url"
+						placeholder="zerocodenft.com"
+						></b-form-input>
+				</b-form-group>
+				<div class="d-flex">
+					<b-form-group
+						label="Drop Date"
+						description="Sets the countdown timer. Can be updated later."
+						class="pr-1 w-50">
+						<b-form-input
+							id="dropDateInput"
+							name="dropDateInput"
+							v-model="newWebsite.dropDateInput"
+							type="date"
+							:min="new Date().toISOString().split('T')[0]"
+							></b-form-input>
+					</b-form-group>
+					<b-form-group
+						label="Drop Time"
+						description="Sets the countdown timer. Can be updated later."
+						class="pl-1 w-50">
+						<b-form-input
+							id="dropTimeInput"
+							name="dropTimeInput"
+							v-model="newWebsite.dropTimeInput"
+							type="time"
+							></b-form-input>
+					</b-form-group>
+				</div>
+				<div class="d-flex">
+					<b-form-group label="Twitter URL" class="pr-1 w-50">
+						<b-form-input
+							id="twitterUrl"
+							name="twitterUrl"
+							v-model="newWebsite.twitterUrl"
+							type="url"
+							></b-form-input>
+					</b-form-group>
+					<b-form-group label="Discord URL" class="pl-1 w-50">
+						<b-form-input
+							id="discordURL"
+							name="discordURL"
+							v-model="newWebsite.discordURL"
+							type="url"
+							></b-form-input>
+					</b-form-group>
+				</div>
+				<div class="d-flex">
+					<b-form-group label="Instagram URL" class="pr-1 w-50">
+						<b-form-input
+							id="instagramURL"
+							name="instagramURL"
+							v-model="newWebsite.instagramURL"
+							type="url"
+							></b-form-input>
+					</b-form-group>
+					<b-form-group label="Marketplace URL" class="pl-1 w-50">
+						<b-form-input
+							id="tiktokURL"
+							name="tiktokURL"
+							v-model="newWebsite.tiktokURL"
+							type="url"
+							></b-form-input>
+					</b-form-group>
+				</div>
+				<div class="d-flex">
+					<b-form-group label="Marketplace URL" class="pl-1 w-50">
+						<b-form-input
+							id="marketplaceURL"
+							name="marketplaceURL"
+							v-model="newWebsite.marketplaceURL"
+							type="url"
+							></b-form-input>
+					</b-form-group>
+				</div>
+			</b-form>
+		</b-modal>
 	</div>
 </template>
 
