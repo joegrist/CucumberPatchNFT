@@ -10,7 +10,7 @@
 				<b-img
 					:class="['pointer mw-100 rounded p-4', { 'shadow': hovered === BLOCKCHAIN.Ethereum || smartContractBuilder.blockchain === BLOCKCHAIN.Ethereum }]"
 					center
-					width="450px"
+					width="400px"
 					height="150px"
 					src="@/assets/images/blockchain/ethereum.svg"
 					@click="onSelectBlockchain(BLOCKCHAIN.Ethereum)"
@@ -21,7 +21,7 @@
 				<b-img
 					:class="['pointer mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Avalanche || smartContractBuilder.blockchain === BLOCKCHAIN.Avalanche }]"
 					center
-					width="450px"
+					width="400px"
 					height="150px"
 					src="@/assets/images/blockchain/avalanche.svg"
 					@click="onSelectBlockchain(BLOCKCHAIN.Avalanche)"
@@ -32,7 +32,7 @@
 				<b-img
 					:class="['pointer mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Polygon || smartContractBuilder.blockchain === BLOCKCHAIN.Polygon }]"
 					center
-					width="450px"
+					width="400px"
 					height="150px"
 					src="@/assets/images/blockchain/polygon.svg"
 					@click="onSelectBlockchain(BLOCKCHAIN.Polygon)"
@@ -43,7 +43,7 @@
 				<b-img
 					:class="['pointer mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Fantom || smartContractBuilder.blockchain === BLOCKCHAIN.Fantom }]"
 					center
-					width="450px"
+					width="400px"
 					height="150px"
 					src="@/assets/images/blockchain/fantom.svg"
 					@click="onSelectBlockchain(BLOCKCHAIN.Fantom)"
@@ -54,7 +54,7 @@
 				<b-img
 					:class="['pointer mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.BinanceSmartChain || smartContractBuilder.blockchain === BLOCKCHAIN.BinanceSmartChain }]"
 					center
-					width="450px"
+					width="400px"
 					height="150px"
 					src="@/assets/images/blockchain/binance.svg"
 					@click="onSelectBlockchain(BLOCKCHAIN.BinanceSmartChain)"
@@ -63,9 +63,20 @@
 			</b-col>
 			<b-col sm="12" md="4">
 				<b-img
+					:class="['pointer mw-100', { 'shadow': hovered === BLOCKCHAIN.Cronos || smartContractBuilder.blockchain === BLOCKCHAIN.Cronos }]"
+					center
+					width="400px"
+					height="150px"
+					src="@/assets/images/blockchain/cronos.svg"
+					@click="onSelectBlockchain(BLOCKCHAIN.Cronos)"
+					@mouseover="hoverCard(BLOCKCHAIN.Cronos)"
+        			@mouseout="hoverCard(null)" />
+			</b-col>
+			<b-col sm="12" md="4">
+				<b-img
 					:class="['mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Solana }]"
 					center
-					width="450px"
+					width="400px"
 					height="150px"
 					src="@/assets/images/blockchain/solana.svg" />
 				<h4 class="text-center text-muted position-relative" style="top: -45px">
@@ -152,7 +163,13 @@ export default {
 					blockchain: BLOCKCHAIN.BinanceSmartChain,
 					chainName: 'Binance Smart Chain Testnet',
 					symbol: 'BNB',
-				}
+				},
+				{
+					chainId: '338',
+					blockchain: BLOCKCHAIN.Cronos,
+					chainName: 'Cronos Testnet',
+					symbol: 'TCRO',
+				},
 			],
 		}
 	},

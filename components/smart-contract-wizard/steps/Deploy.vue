@@ -143,9 +143,12 @@ export default {
 				[BLOCKCHAIN.Polygon]: require('@/assets/images/blockchain/polygon.svg'),
 				[BLOCKCHAIN.Avalanche]: require('@/assets/images/blockchain/avalanche.svg'),
 				[BLOCKCHAIN.BinanceSmartChain]: require('@/assets/images/blockchain/binance.svg'),
+				[BLOCKCHAIN.Cronos]: require('@/assets/images/blockchain/cronos.svg'),
 			},
 			excludeList: [
 				'id',
+        'isDeployed',
+        'collectionMetadataURL',
 				'hasMintableRoylaties',
 				'hasRaribleRoylaties',
 				'abi',

@@ -124,12 +124,38 @@ export const BSC_TESTNET = {
 	blockExplorerUrls: ['https://testnet.bscscan.com'],
 }
 
+export const CRONOS_TESTNET = {
+	chainId: '0x152',
+	chainName: 'Cronos Testnet',
+	nativeCurrency: {
+		name: 'CRONOS',
+		symbol: 'TCRO',
+		decimals: 18
+	},
+	rpcUrls: ['https://cronos-testnet-3.crypto.org:8545/'],
+	blockExplorerUrls: ['https://cronos.crypto.org/explorer'],
+}
+
+export const CRONOS_MAINNET = {
+	chainId: '0x19',
+	chainName: 'Cronos',
+	nativeCurrency: {
+		name: 'Cronos',
+		symbol: 'CRO',
+		decimals: 18
+	},
+	rpcUrls: ['https://evm-cronos.crypto.org'],
+	blockExplorerUrls: ['https://cronos.crypto.org/explorer'],
+}
+
+// get corresponding mainnet config based on testnet chainID
 export function getMainnetConfig(testnetChainId) {
 	if(['0x4', '4'].includes(testnetChainId)) return ETHEREUM_MAINNET
 	if(['0xA869', '43113'].includes(testnetChainId)) return AVALANCHE_MAINNET_PARAMS
 	if(['0x89', '80001'].includes(testnetChainId)) return POLYGON_MAINNET_PARAMS
 	if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
 	if(['0x38', '56'].includes(testnetChainId)) return BSC_MAINNET
+	if(['0x19', '25'].includes(testnetChainId)) return CRONOS_MAINNET
 
 	throw new Error("Matching mainnet config not found")
 }
@@ -144,7 +170,9 @@ export const CHAINID_CONFIG_MAP = {
 	'250': FANTOM_MAINNET_CONFIG,
 	'56': BSC_MAINNET,
 	'97': BSC_TESTNET,
-	
+	'338': CRONOS_TESTNET,
+	'25': CRONOS_MAINNET,
+
 	'0xA86A': AVALANCHE_MAINNET_PARAMS,
 	'0xA869': AVALANCHE_TESTNET_PARAMS,
 	'0x13881': POLYGON_MUMBAI_TESTNET_CONFIG,
@@ -154,7 +182,9 @@ export const CHAINID_CONFIG_MAP = {
 	'0xFA2': FANTOM_TESTNET_CONFIG,
 	'0xFA': FANTOM_MAINNET_CONFIG,
 	'0x38': BSC_MAINNET,
-	'0x61': BSC_TESTNET
+	'0x61': BSC_TESTNET,
+	'0x152': CRONOS_TESTNET,
+	'0x19': CRONOS_MAINNET,
 }
 
 export const FAUCETS = {
@@ -162,11 +192,12 @@ export const FAUCETS = {
 	"80001": ["https://faucet.polygon.technology"],
 	"4": ["https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"],
 	"4002": ["https://faucet.fantom.network"],
-	'97': ["https://testnet.binance.org/faucet-smart"]
+	'97': ["https://testnet.binance.org/faucet-smart"],
+	'338': ["https://cronos.crypto.org/faucet"]
 }
 
 export const isTestnet = (chainId) => {
-	return ['43113', '80001', '4', '4002', '97', '0xA869', '0x13881', '0x4', '0xFA2', '0x61'].includes(chainId)
+	return ['43113', '80001', '4', '4002', '97', '338', '0xA869', '0x13881', '0x4', '0xFA2', '0x61', '0x152'].includes(chainId)
 }
 
 export function getExplorerUrl(chainId) {

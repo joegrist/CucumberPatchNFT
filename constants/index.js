@@ -8,12 +8,15 @@ const BLOCKCHAIN = Object.freeze({
 	Flow: 7,
 	Avalanche: 8,
 	Legacy: 9,
+	Cronos: 10,
 	1: 'Ethereum',
 	2: 'Solana',
 	3: 'Fantom',
 	4: 'BinanceSmartChain',
 	6: 'Polygon',
-	8: 'Avalanche'
+	8: 'Avalanche',
+	9: 'Legacy',
+	10: 'Cronos'
 })
 
 const WEBSITE_STATUS = Object.freeze({
