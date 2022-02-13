@@ -15,7 +15,8 @@ export const state = () => ({
         hasOpenSeaRoyalties: true,
         hasRaribleRoylties: false,
         hasMintableRoylaties: false,
-        marketplaceCollection: {}
+        marketplaceCollection: {},
+        revenueSplits: []
     }
   })
 
@@ -60,6 +61,9 @@ export const mutations = {
             ...state.smartContractBuilder,
             ...payload,
         }
+    },
+    updateBuilderRevenueSplits(state, payload) {
+        state.smartContractBuilder.revenueSplits = payload
     },
     setDashboardItems(state, payload) {
         state.dashboardItems = payload

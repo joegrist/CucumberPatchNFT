@@ -48,9 +48,11 @@
 			>
 			<span v-else>{{ $props.sc.name | startCase }}</span>
 		</b-card-title>
+		
 		<b-card-sub-title class="text-center mb-2">{{
 			isTestnet($props.sc.chainId) ? 'Testnet' : 'Mainnet'
 		}}</b-card-sub-title>
+
 		<b-container fluid>
 			<b-row class="stats">
 				<b-col cols="6" class="text-center">
@@ -108,9 +110,14 @@
 					<span class="text-muted">Volume</span>
 				</b-col>
 				<b-col cols="12" class="text-center" style="padding: 0">
-					<b-link :href="openSeaUrl || '#'" target="_blank">
+					<template v-if="openSeaUrl">
+						<b-link :href="openSeaUrl || '#'" target="_blank">
+							<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+						</b-link>
+					</template>
+					<template v-else>
 						<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
-					</b-link>
+					</template>
 				</b-col>
 				<b-col cols="6" class="text-center">
 					<span class="font-weight-bold">{{ openSeaStats.floor_price }}</span>
@@ -210,7 +217,7 @@ export default {
 		},
 		openSeaUrl() {
 			if(this.$props.sc.marketplace !== MARKETPLACE.OpenSea) {
-				return '#'
+				return null
 			}
 
 			const { name } = this.$props.sc.marketplaceCollection

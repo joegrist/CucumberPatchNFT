@@ -109,8 +109,80 @@
 				</b-col>
 			</b-row>
 			<b-row>
+				<b-col cols="11">
+					<b-form-group>
+						<b-form-checkbox
+							id="revenueSplitFeature"
+							name="revenueSplitFeature"
+                            switch
+                            size="lg"
+							:checked="smartContractBuilder.hasRevenueSplits"
+							@change="
+								(val) => updateSmartContractBuilder({ hasRevenueSplits: val })
+							">
+							Primary Sales Revenue Splits
+						</b-form-checkbox>
+					</b-form-group>
+				</b-col>
+				<b-col cols="1" class="text-right">
+					<b-button variant="success" size="sm" :disabled="!smartContractBuilder.hasRevenueSplits" @click="onAddSplit">
+						<b-icon icon="plus-circle"/> Add
+					</b-button>
+				</b-col>
+			</b-row>
+			<b-row v-for="(split, idx) in revenueSplits" :key="idx">
+				<b-col cols="8">
+					<b-form-group
+						label="Wallet Address"
+						:label-class="{ required: smartContractBuilder.hasRevenueSplits }"
+						:disabled="!smartContractBuilder.hasRevenueSplits">
+						<b-form-input
+							:name="`wallet${idx}`"
+							:value="split.wallet"
+							@change="val => onSplitWalletUpdate(val, idx)"
+							type="text"></b-form-input>
+						<b-form-invalid-feedback :state="validation.revenueSplits">
+							Please correct "Wallet {{ idx }}"
+						</b-form-invalid-feedback>
+					</b-form-group>
+				</b-col>
+				<b-col cols="3">
+					<b-form-group
+						label="Share %"
+						:label-class="{ required: smartContractBuilder.hasRevenueSplits }"
+						:disabled="!smartContractBuilder.hasRevenueSplits">
+						<b-form-input
+							:name="`share${idx}`"
+							:value="split.share"
+							@change="val => onSplitShareUpdate(val ? +val:0, idx)"
+							type="number"
+							step="any"
+							min="0"></b-form-input>
+						<b-form-invalid-feedback :state="validation.revenueSplits">
+							Please correct "Share {{ idx }}"
+						</b-form-invalid-feedback>
+					</b-form-group>
+				</b-col>
+				<b-col cols="1">
+					<b-form-group label="Actions" label-class="text-center" class="text-center">
+						<b-button variant="danger" @click="onRemoveSplit(idx)" :disabled="revenueSplits.length === 1">
+							<b-icon icon="trash" />
+						</b-button>
+					</b-form-group>
+				</b-col>
+			</b-row>
+			<b-row v-if="revenueSplitErrors.length > 0">
+				<b-col cols="12">
+					<ul>
+						<li v-for="msg in revenueSplitErrors" :key="msg" class="text-danger">
+							{{ msg }}
+						</li>
+					</ul>
+				</b-col>
+			</b-row>
+			<b-row class="mt-3">
 				<b-col>
-					<b-button class="float-right" type="reset" variant="danger"
+					<b-button type="reset" variant="danger"
 						>Reset</b-button
 					>
 				</b-col>
@@ -120,27 +192,65 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
-import { requiredIf, decimal, minValue } from 'vuelidate/lib/validators'
+import { requiredIf, decimal, minValue, maxValue } from 'vuelidate/lib/validators'
 
 export default {
+	mixins: [smartContractBuilderMixin],
 	data() {
 		return {
+			revenueSplits: [{
+				wallet: this.$wallet.account,
+				share: 100
+			}],
 			reset: {
+				hasDelayedReveal: false,
+				hasWhitelist: false,
+				hasRevenueSplits: false,
 				delayedRevealURL: null,
 				whitelistPrice: null,
-				whitelist: []
+				whitelist: [],
+				revenueSplits: [{
+					wallet: this.$wallet.account,
+					share: 100
+				}]
 			},
 		}
 	},
-	mixins: [smartContractBuilderMixin],
+	mounted() {
+		const splits = this.$store.state.smartContractBuilder.revenueSplits
+		if(splits?.length) {
+			// hard copy from state to avoid vuex errors of mutating state outside of store
+			this.revenueSplits = JSON.parse(JSON.stringify(splits))
+		}
+	},
+	beforeDestroy() {
+		// we perform split revenue updates locally and only update store before leaving
+		this.updateBuilderRevenueSplits(this.revenueSplits)
+	},
 	computed: {
 		validation() {
 			return {
 				delayedRevealURL: !this.$v.smartContractBuilder.delayedRevealURL.$error,
 				whitelistPrice: !this.$v.smartContractBuilder.whitelistPrice.$error,
+				shares: this.revenueSplitErrors.length === 0
 			}
 		},
+		splitShareTotal() {
+			return this.revenueSplits.map(x => x.share).reduce((acc,val) => acc+val, 0)
+		},
+		revenueSplitErrors() {
+			const errors = []
+			const sumsTo100 = this.splitShareTotal === 100
+			const hasWallets = this.revenueSplits.map(x => x.wallet).every(w => w !== null && w !== '')
+			const hasShares = this.revenueSplits.map(x => x.share).every(s => s !== null && s !== 0)
+			if(!sumsTo100) errors.push("Shares have to add up to 100%")
+			if(!hasWallets) errors.push("All wallets must have a valid address")
+			if(!hasShares) errors.push("Shares must be greater than 0")
+
+			return errors
+		}
 	},
 	validations: {
 		smartContractBuilder: {
@@ -157,6 +267,34 @@ export default {
 				minValue: minValue(0),
 			},
 		},
+		revenueSplitErrors: {
+			maxValue: maxValue(0)
+		}
 	},
+	methods: {
+		onAddSplit() {
+			const otherShares = this.revenueSplits.map(x => x.share).reduce((acc,val) => acc+val, 0)
+			this.revenueSplits.push({
+				wallet: null,
+				share: 100 - otherShares
+			})
+		},
+		onRemoveSplit(idx) {
+			this.revenueSplits.splice(idx,1)
+		},
+		onSplitWalletUpdate(wallet, idx) {
+			Vue.set(this.revenueSplits, idx, {
+				wallet: wallet,
+				share: this.revenueSplits[idx].share
+			})
+		},
+		onSplitShareUpdate(share, idx) {
+			Vue.set(this.revenueSplits, idx, {
+				wallet: this.revenueSplits[idx].wallet,
+				share: share
+			})
+		}
+	}
+
 }
 </script>

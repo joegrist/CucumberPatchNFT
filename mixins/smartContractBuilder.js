@@ -25,7 +25,7 @@ const smartContractWizardMixin = {
 		},
 	},
 	methods: {
-		...mapMutations(['updateSmartContractBuilder', 'resetSmartContractBuilder']),
+		...mapMutations(['updateSmartContractBuilder', 'resetSmartContractBuilder', 'updateBuilderRevenueSplits']),
 		onFormReset(value) {
 			this.updateSmartContractBuilder(value)
 			// Trick to reset/clear native browser form validation state
