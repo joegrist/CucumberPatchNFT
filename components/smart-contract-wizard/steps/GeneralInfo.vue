@@ -5,23 +5,19 @@
         <b-col sm='12' md='6'>
           <b-form-group
             label='IPFS Metadata URL'
-            label-class='required'
-            description='URL to the endpoint (folder) that contains metadata .json files. IMPORTANT: has to end with a slash "/"'
+            description='URL to the endpoint (folder) that contains metadata .json files'
           >
             <b-form-input
               id='baseURL'
               name='baseURL'
               :value='smartContractBuilder.baseURL'
-              @change='(val) => updateSmartContractBuilder({ baseURL: val })'
-              @blur="$v.smartContractBuilder.baseURL.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.baseURL.$error}"
+              @change="(val) => updateSmartContractBuilder({ baseURL: val && val.endsWith('/') ? val : `${val}/` })"
               type='text'
               placeholder='ipfs://*************************/'
-              required
             ></b-form-input>
-            <b-form-invalid-feedback :state="validation.baseURL">
+            <!-- <b-form-invalid-feedback :state="validation.baseURL">
               Please correct IPFS Metadata URL"
-            </b-form-invalid-feedback>
+            </b-form-invalid-feedback> -->
           </b-form-group>
         </b-col>
         <b-col sm='12' md='6'>
@@ -221,7 +217,7 @@ export default {
   },
     validations: {
       smartContractBuilder: {
-        baseURL: { required },
+        // baseURL: { required },
         collectionSize: { required, numeric},
         name: { required, maxLength: maxLength(30) },
         symbol: { required, maxLength: maxLength(6) },
@@ -234,7 +230,7 @@ export default {
   computed: {
     validation() {
       return {
-        baseURL: !this.$v.smartContractBuilder.baseURL.$error,
+        // baseURL: !this.$v.smartContractBuilder.baseURL.$error,
         name: !this.$v.smartContractBuilder.name.$error,
         symbol: !this.$v.smartContractBuilder.symbol.$error,
         collectionSize: !this.$v.smartContractBuilder.collectionSize.$error,
