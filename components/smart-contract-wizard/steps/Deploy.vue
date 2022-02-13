@@ -162,7 +162,10 @@ export default {
 				'website',
 				'marketplaceCollection',
 				'whitelist',
-				'email'
+				'email',
+        'revenueSplits',
+        'hasRaribleRoyalties',
+        'hasMintableRoyalties'
 			],
     }
   },

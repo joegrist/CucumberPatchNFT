@@ -278,20 +278,22 @@ export default {
 		getOpenSeaStats() {
 			if (!this.$props.sc.marketplaceCollection || !this.$props.sc.isDeployed) return
 
-			let fetchParams, openseaApiUrl
+			let openseaApiUrl
 			let retryCount = 0
+			const fetchParams = {}
 
 			const { name } = this.$props.sc.marketplaceCollection
 			const formattedName = name.replace(/\s/g, '-').toLowerCase()
 
 			if (isTestnet(this.$props.sc.chainId)) {
-				openseaApiUrl = `https://rinkeby-api.opensea.io/api/v1/collection/${formattedName}/stats`
+				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${formattedName}/stats`
+				fetchParams.headers = {
+					'X-API-KEY': ''
+				}
 			} else {
 				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
-				fetchParams = {
-					headers: {
-						'X-API-KEY': process.env.OPENSEA_API_KEY,
-					}
+				fetchParams.headers = {
+					'X-API-KEY': process.env.OPENSEA_API_KEY,
 				}
 			}
 

@@ -8,13 +8,17 @@ export const state = () => ({
     isBusy: false,
     dashboardItems: [],
     smartContractBuilder: {
+        baseURL: null,
         blockchain: null,
         chainId: null,
+        collectionSize: null,
+        email: null,
         hasWhitelist: false,
         hasDelayedReveal: false,
         hasOpenSeaRoyalties: true,
-        hasRaribleRoylties: false,
-        hasMintableRoylaties: false,
+        name: null,
+        symbol: null,
+        marketplace: null,
         marketplaceCollection: {},
         revenueSplits: []
     }

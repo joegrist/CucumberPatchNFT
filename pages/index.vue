@@ -41,7 +41,7 @@
 			size="lg"
 			centered
 			@hidden="newWebsite = {}"
-			@ok="onCreateSite"
+			@ok="onDeploySite"
 			ok-title="Deploy"
 			ok-variant="success"
 			no-close-on-backdrop
@@ -131,7 +131,7 @@
 							type="url"
 							></b-form-input>
 					</b-form-group>
-					<b-form-group label="Marketplace URL" class="pl-1 w-50">
+					<b-form-group label="TikTok URL" class="pl-1 w-50">
 						<b-form-input
 							id="tiktokURL"
 							name="tiktokURL"
@@ -165,14 +165,13 @@ export default {
 		return {
 			MARKETPLACE,
 			searchTerm: '',
-			isBusy: false,
 			newWebsite: {},
 		}
 	},
 	fetchOnServer: false,
 	fetchKey: 'dashboard',
 	async fetch() {
-		this.isBusy = true
+		this.setBusy(true)
 
 		const { data: contracts } = await this.$axios.get(
 			`/users/${this.userId}/smartcontracts`
@@ -186,13 +185,12 @@ export default {
 		})
 
 		this.setDashboardItems(contracts)
-
-		this.isBusy = false
+		this.setBusy(false)
 
 		// console.log('dashboard', this.dashboardItems)
 	},
 	computed: {
-		...mapState(['dashboardItems']),
+		...mapState(['dashboardItems', 'isBusy']),
 		...mapGetters(['userId']),
 		filteredItems() {
 			const term = this.searchTerm.toLowerCase()
@@ -204,7 +202,7 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['setDashboardItems']),
+		...mapMutations(['setDashboardItems', 'setBusy']),
 
 		showWebsiteModal(smartContractId) {
 			const smartContract = this.dashboardItems.find(
@@ -220,9 +218,9 @@ export default {
 			this.$bvModal.show('siteModal')
 		},
 
-		async onCreateSite(e) {
+		async onDeploySite(e) {
 			e.preventDefault()
-			this.isBusy = true
+			this.setBusy(true)
 
 			try {
 				const { dropDateInput, dropTimeInput } = this.newWebsite
@@ -253,7 +251,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.isBusy = false
+				this.setBusy(false)
 			}
 		},
 	},
