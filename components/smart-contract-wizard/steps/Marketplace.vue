@@ -124,6 +124,10 @@
 							name="collectionFeeRecipient"
 							placeholder="0x3fad..."
 							:value="smartContractBuilder.marketplaceCollection.feeRecipient"
+							:class="{
+								'is-invalid': $v.smartContractBuilder.marketplaceCollection.feeRecipient.$error,
+							}"
+							@blur="$v.smartContractBuilder.marketplaceCollection.feeRecipient.$touch()"
 							@change="
 								(val) =>
 									updateSmartContractBuilder({
@@ -131,6 +135,9 @@
 									})
 							"
 							type="text"></b-form-input>
+						<b-form-invalid-feedback :state="validation.marketplaceCollection.feeRecipient">
+							Please correct "Fee Recipient"
+						</b-form-invalid-feedback>
 					</b-form-group>
 				</b-col>
 			</b-row>
@@ -169,6 +176,7 @@
 </template>
 
 <script>
+import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { MARKETPLACE, BLOCKCHAIN } from '@/constants'
 import { required, requiredIf, minValue, decimal, maxValue } from 'vuelidate/lib/validators'
@@ -214,6 +222,7 @@ export default {
 				marketplace: !this.$v.smartContractBuilder.marketplace.$error,
 				marketplaceCollection: {
 					name: !this.$v.smartContractBuilder.marketplaceCollection.name.$error,
+					feeRecipient: !this.$v.smartContractBuilder.marketplaceCollection.feeRecipient.$error,
 					royalties: !this.$v.smartContractBuilder.marketplaceCollection.royalties.$error,
 				},
 			}
@@ -226,6 +235,7 @@ export default {
 				name: { required: requiredIf(function(model) {
 					return model.marketplace === MARKETPLACE.OpenSea
 				})},
+				feeRecipient: { hasValidAddress: val => ethers.utils.isAddress(val) }, 
 				royalties: { decimal, minValue: minValue(0), maxValue: maxValue(10) },
 			},
 		},

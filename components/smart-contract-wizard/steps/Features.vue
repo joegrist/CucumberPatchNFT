@@ -141,9 +141,9 @@
 							:value="split.wallet"
 							@change="val => onSplitWalletUpdate(val, idx)"
 							type="text"></b-form-input>
-						<b-form-invalid-feedback :state="validation.revenueSplits">
+						<!-- <b-form-invalid-feedback :state="revenueSplitErrors[idx]">
 							Please correct "Wallet {{ idx }}"
-						</b-form-invalid-feedback>
+						</b-form-invalid-feedback> -->
 					</b-form-group>
 				</b-col>
 				<b-col cols="3">
@@ -158,9 +158,9 @@
 							type="number"
 							step="any"
 							min="0"></b-form-input>
-						<b-form-invalid-feedback :state="validation.revenueSplits">
+						<!-- <b-form-invalid-feedback :state="validation.revenueSplits">
 							Please correct "Share {{ idx }}"
-						</b-form-invalid-feedback>
+						</b-form-invalid-feedback> -->
 					</b-form-group>
 				</b-col>
 				<b-col cols="1">
@@ -193,6 +193,7 @@
 
 <script>
 import Vue from 'vue'
+import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { requiredIf, decimal, minValue, maxValue } from 'vuelidate/lib/validators'
 
@@ -243,10 +244,10 @@ export default {
 		revenueSplitErrors() {
 			const errors = []
 			const sumsTo100 = this.splitShareTotal === 100
-			const hasWallets = this.revenueSplits.map(x => x.wallet).every(w => w !== null && w !== '')
+			const hasValidWallets = this.revenueSplits.map(x => x.wallet).every(w => w !== null && w !== '' && ethers.utils.isAddress(w))
 			const hasShares = this.revenueSplits.map(x => x.share).every(s => s !== null && s !== 0)
 			if(!sumsTo100) errors.push("Shares have to add up to 100%")
-			if(!hasWallets) errors.push("All wallets must have a valid address")
+			if(!hasValidWallets) errors.push("All wallets must have a valid address")
 			if(!hasShares) errors.push("Shares must be greater than 0")
 
 			return errors
