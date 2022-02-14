@@ -84,7 +84,7 @@
 				</h4>
 			</b-col>
 		</b-row>
-		<b-row v-if="smartContractBuilder.blockchain">
+		<b-row v-show="smartContractBuilder.blockchain">
 			<b-col cols="12">
 				<b-form-group
 					label-class="required"
@@ -228,6 +228,7 @@ export default {
 		},
 		onSelectBlockchain(blockchain) {
 			this.updateSmartContractBuilder({ blockchain, chainId: null })
+			document.getElementById("chainId").scrollIntoView({behavior: 'smooth'})
 		},
 		async callWalletFunc(func) {
 			try {
