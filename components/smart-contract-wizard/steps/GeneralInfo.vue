@@ -157,7 +157,7 @@
               placeholder='25'
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.setAsideTokenCount">
-              Please correct "Set aside NFTs". Enter 0 or leave empty.
+              Please correct "Set aside NFTs". Enter 0 or leave empty. Can't exceed "Collection Size".
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
@@ -218,11 +218,11 @@ export default {
     validations: {
       smartContractBuilder: {
         // baseURL: { required },
-        collectionSize: { required, numeric},
+        collectionSize: { required, numeric, minValue: minValue(1)},
         name: { required, maxLength: maxLength(30) },
         symbol: { required, maxLength: maxLength(6) },
         mintPrice: { required, decimal, minValue:minValue(0) },
-        setAsideTokenCount: { numeric, minValue:minValue(0)},
+        setAsideTokenCount: { numeric, minValue:minValue(0), maxValue: (val, siblings) => val <= siblings.collectionSize },
         maxTokensPerTransaction: { numeric, minValue:minValue(0) },
         maxTokensPerPerson: { numeric, minValue:minValue(0) }
       }

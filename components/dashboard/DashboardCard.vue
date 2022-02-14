@@ -33,7 +33,6 @@
 				<b-dd-item v-else @click="() => $emit('create-site', $props.sc.id)"
 					><b-icon icon="cloud-upload" /> Website</b-dd-item
 				>
-				<!-- <b-dd-item disabled><b-icon icon="cash-stack" /> Withdraw</b-dd-item> -->
 			</template>
 			<b-dd-item variant="danger" @click="onRemoveCard"
 				><b-icon icon="trash" /> Remove Card
@@ -78,6 +77,7 @@
 					<span class="font-weight-bold"
 						>{{ minted }} / {{ $props.sc.collectionSize }}</span
 					>
+					<span v-if="minted === $props.sc.collectionSize">🎉</span>
 					<br />
 					<span class="text-muted">Minted</span>
 				</b-col>
@@ -267,7 +267,7 @@ export default {
 					this.$props.sc.address
 				)
 				this.balance = +ethers.utils.formatEther(contractBalance)
-				this.minted = await contract.totalSupply()
+				this.minted = (await contract.totalSupply())?.toNumber()
 				this.revealed = this.$props.sc.hasDelayedReveal
 					? await contract.canReveal()
 					: 'n/a'
