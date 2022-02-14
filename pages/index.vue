@@ -13,7 +13,7 @@
 					placeholder="Start typing the smart contract name.." />
 				<b-input-group-append>
 					<b-button class="bg-gradient-primary border-0" to="/wizard"
-						>Add new</b-button
+						>Add New</b-button
 					>
 				</b-input-group-append>
 			</b-input-group>

@@ -125,8 +125,8 @@
 					</b-form-group>
 				</b-col>
 				<b-col cols="1" class="text-right">
-					<b-button variant="success" size="sm" :disabled="!smartContractBuilder.hasRevenueSplits" @click="onAddSplit">
-						<b-icon icon="plus-circle"/> Add
+					<b-button variant="success" size="sm" :hidden="!smartContractBuilder.hasRevenueSplits" @click="onAddSplit">
+						<b-icon icon="plus-circle"/>
 					</b-button>
 				</b-col>
 			</b-row>
