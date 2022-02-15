@@ -17,7 +17,7 @@
 					</p>
 					<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
 						<b-button
-							:disabled="isMainnetDeployEnabled"
+							:disabled="!canDeployMainnet"
 							class="bg-gradient-primary border-0"
 							@click="onMainnetDeploy">
 							<b-icon icon="wallet2" /> Deploy to Mainnet
@@ -401,10 +401,10 @@ export default {
 	},
 	computed: {
 		...mapGetters(['userId']),
-		isMainnetDeployEnabled() {
+		canDeployMainnet() {
 			return (
-				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'false' ||
-				this.isBusy ||
+				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'true' &&
+				!this.isBusy &&
 				!isTestnet(this.rawContract.chainId)
 			)
 		},
