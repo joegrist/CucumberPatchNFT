@@ -402,11 +402,10 @@ export default {
 	computed: {
 		...mapGetters(['userId']),
 		canDeployMainnet() {
-			console.log(process.env.ENABLE_MAINNET_DEPLOY_FLAG,!this.isBusy,!isTestnet(this.rawContract.chainId) )
 			return (
-				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'true' &&
-				!this.isBusy &&
-				!isTestnet(this.rawContract.chainId)
+				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'true'
+				&& isTestnet(this.rawContract.chainId)
+				&& !this.isBusy
 			)
 		},
 		functions() {
