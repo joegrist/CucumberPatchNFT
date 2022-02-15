@@ -125,7 +125,7 @@ import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 import { FAUCETS, getExplorerUrl, getCurrency } from '@/constants/metamask'
-import { mapActions, mapGetters } from 'vuex'
+import { mapState, mapActions, mapGetters, mapMutations } from 'vuex'
 import { required } from 'vuelidate/lib/validators'
 import { isArray } from 'lodash-es'
 
@@ -135,7 +135,6 @@ export default {
     return {
       FAUCETS,
 			MARKETPLACE,
-      isBusy: false,
 			blockchainImage: {
 				[BLOCKCHAIN.Ethereum]: require('@/assets/images/blockchain/ethereum.svg'),
 				[BLOCKCHAIN.Solana]: require('@/assets/images/blockchain/solana.svg'),
@@ -175,6 +174,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['isBusy']),
     ...mapGetters(['isLoggedIn']),
     validation() {
       return {
@@ -207,6 +207,7 @@ export default {
   },
   methods: {
     ...mapActions(['login']),
+    ...mapMutations(['setBusy']),
     getExplorerUrl,
     goToDashboard() {
         this.resetBuilder()
@@ -276,7 +277,7 @@ export default {
           }
         }
 
-        this.isBusy = true
+        this.setBusy(true)
 
         const id = await this.saveDraft()
 
@@ -313,7 +314,7 @@ export default {
           variant: 'danger',
         })
       } finally {
-        this.isBusy = false
+        this.setBusy(false)
       }
     }
   }
