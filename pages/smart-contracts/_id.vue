@@ -403,9 +403,7 @@ export default {
 		...mapGetters(['userId']),
 		canDeployMainnet() {
 			return (
-				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'true'
-				&& isTestnet(this.rawContract.chainId)
-				&& !this.isBusy
+				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'true' && isTestnet(this.rawContract.chainId)
 			)
 		},
 		functions() {
@@ -479,18 +477,6 @@ export default {
 				CHAINID_CONFIG_MAP[this.rawContract.chainId]
 			)
 		},
-		// async updateWhitelist() {
-		// 	await this.$axios.patch(
-		// 		`/smartcontracts/${this.rawContract.id}/whitelist`,
-		// 		{
-		// 			whitelist: this.rawContract.whitelist,
-		// 		}
-		// 	)
-		// 	this.$bvToast.toast('List updated', {
-		// 		title: 'Whitelist',
-		// 		variant: 'success',
-		// 	})
-		// },
 		onParamChange(value, func, param) {
 			const args = (this.callFuncArgs[func.name] ??= new Map())
 			args.set(param.name, value)
