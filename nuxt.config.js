@@ -41,7 +41,7 @@ export default {
       ...getSiteMeta()
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/logo-bg.png' }
+      { rel: 'icon', type: 'image/x-icon', href: '/zero-code-icon.png' }
     ]
   },
 

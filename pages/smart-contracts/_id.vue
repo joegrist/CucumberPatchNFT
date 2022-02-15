@@ -212,14 +212,28 @@
 							<b-form-tags
 								class="mb-2"
 								v-model="rawContract.whitelist"
+								@input="onWhitelistInput"
+								invalid-tag-text="Address is invalid"
+								:tag-validator="whitelistValidator"
 								placeholder="Enter Wallet Address">
 							</b-form-tags>
-							<b-button
-								class="align-self-end"
-								variant="success"
-								@click="updateWhitelist"
-								>Update Whitelist</b-button
-							>
+							<b-row no-gutters>
+								<b-col cols="9">
+									<b-form-file
+										v-model="whitelistFile"
+										placeholder="Choose or drop .csv file"
+										drop-placeholder="Drop file here..."
+									></b-form-file>
+								</b-col>
+								<b-col cols="3" class="text-right">
+									<b-button
+										:disabled="whitelistFile === null"
+										variant="success"
+										@click="onImportCsv"
+										>Import</b-button
+									>
+								</b-col>
+							</b-row>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -289,6 +303,7 @@ import {
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
 import { loadScript } from '@paypal/paypal-js'
+import { VueCsvImport } from 'vue-csv-import';
 
 const basicFunctions = [
 	'canReveal',
@@ -306,6 +321,9 @@ const FormatTypes = ethers.utils.FormatTypes
 
 export default {
 	middleware: 'authenticated',
+	components: {
+		VueCsvImport
+	},
 	data: () => ({
 		FormatTypes,
 		SALE_STATUS,
@@ -321,6 +339,8 @@ export default {
 		isBusy: true,
 		isReady: false,
 		paypal: null,
+		whitelist: null,
+		whitelistFile: null
 	}),
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
@@ -401,6 +421,30 @@ export default {
 		getExplorerUrl,
 		isTestnet,
 		getCurrency,
+		whitelistValidator(tag) {
+			return ethers.utils.isAddress(tag)
+		},
+		async onWhitelistInput(val) {
+			await this.$axios.patch(
+				`/smartcontracts/${this.rawContract.id}/whitelist`,
+				{
+					whitelist: val,
+				}
+			)
+		},
+		async onImportCsv() {
+			const form = new FormData();
+			form.append('file', this.whitelistFile)
+
+			const { data } = await this.$axios.post(`/smartcontracts/${this.rawContract.id}/whitelist`, form)
+			this.rawContract.whitelist = data
+			this.whitelistFile = null
+
+			this.$bvToast.toast('File successfully uploaded', {
+				title: 'Whitelist',
+				variant: 'success',
+			})
+		},
 		async onRefreshBalance(showNotification = false) {
 			this.isBusy = true
 			const balance = (await this.$wallet.provider.getBalance(this.rawContract.address)) || '0'
@@ -422,18 +466,18 @@ export default {
 		async switchNetwork() {
 			await this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[this.rawContract.chainId])
 		},
-		async updateWhitelist() {
-			await this.$axios.patch(
-				`/smartcontracts/${this.rawContract.id}/whitelist`,
-				{
-					whitelist: this.rawContract.whitelist,
-				}
-			)
-			this.$bvToast.toast('List updated', {
-				title: 'Whitelist',
-				variant: 'success',
-			})
-		},
+		// async updateWhitelist() {
+		// 	await this.$axios.patch(
+		// 		`/smartcontracts/${this.rawContract.id}/whitelist`,
+		// 		{
+		// 			whitelist: this.rawContract.whitelist,
+		// 		}
+		// 	)
+		// 	this.$bvToast.toast('List updated', {
+		// 		title: 'Whitelist',
+		// 		variant: 'success',
+		// 	})
+		// },
 		onParamChange(value, func, param) {
 			const args = (this.callFuncArgs[func.name] ??= new Map())
 			args.set(param.name, value)
