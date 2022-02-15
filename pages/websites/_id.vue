@@ -24,7 +24,7 @@
 			</li>
 			<li>Created: {{ site.createdOn | toDate }}</li>
 		</ul>
-		<b-form @submit="onUpdate" class="mb-3" >
+		<b-form @submit.prevent="onUpdate" class="mb-3" >
 			<b-form-group
 				label="Website Name"
 				label-class="required"
@@ -44,21 +44,20 @@
 					v-model="site.description"
 					type="text"
 					placeholder="10k unique NFTs"
-					required></b-form-input>
+					></b-form-input>
 			</b-form-group>
 			<b-form-group label="Desired website domain (URL)" label-class="required">
 				<b-form-input
 					id="desiredDomain"
 					name="desiredDomain"
 					v-model="site.desiredDomain"
-					type="url"
 					placeholder="zerocodenft.com"
-					required></b-form-input>
+					></b-form-input>
 			</b-form-group>
 			<div class="d-flex">
 				<b-form-group
 					label="Drop Date"
-					description="Sets the countdown timer. Can be updated later."
+					description="Sets the countdown timer"
 					class="w-50">
 					<b-form-input
 						id="dropDateInput"
@@ -66,18 +65,18 @@
 						v-model="site.dropDate"
 						type="date"
 						:min="new Date().toISOString().split('T')[0]"
-						required></b-form-input>
+						></b-form-input>
 				</b-form-group>
 				<b-form-group
 					label="Drop Time"
-					description="Sets the countdown timer. Can be updated later."
+					description="Sets the countdown timer"
 					class="w-50">
 					<b-form-input
 						id="dropTimeInput"
 						name="dropTimeInput"
 						v-model="site.dropTime"
 						type="time"
-						required></b-form-input>
+						></b-form-input>
 				</b-form-group>
 			</div>
 			<b-form-group>
@@ -94,8 +93,7 @@
 					id="twitterURL"
 					name="twitterURL"
 					v-model="site.twitterURL"
-					type="url"
-					required></b-form-input>
+					></b-form-input>
 			</b-form-group>
 			<b-form-group>
 				<template #label>
@@ -111,8 +109,7 @@
 					id="discordURL"
 					name="discordURL"
 					v-model="site.discordURL"
-					type="url"
-					required></b-form-input>
+					></b-form-input>
 			</b-form-group>
 			<b-form-group>
 				<template #label>
@@ -128,8 +125,7 @@
 					id="instagramURL"
 					name="instagramURL"
 					v-model="site.instagramURL"
-					type="url"
-					required></b-form-input>
+					></b-form-input>
 			</b-form-group>
 			<b-form-group label="Marketplace URL">
 				<template #label>
@@ -145,19 +141,34 @@
 					id="marketplaceURL"
 					name="marketplaceURL"
 					v-model="site.marketplaceURL"
-					type="url"
-					required></b-form-input>
+					></b-form-input>
 			</b-form-group>
-			<!-- <div class="d-flex justify-content-end">
-				<b-button variant="success">Update</b-button>
-			</div> -->
+			<b-form-group label="TikTok URL">
+				<template #label>
+					TikTok URL
+					<b-link
+						v-if="site.tikTokURL"
+						:href="transformUrl(site.tikTokURL)"
+						target="_blank"
+						><b-icon icon="box-arrow-up-right"
+					/></b-link>
+				</template>
+				<b-form-input
+					id="tikTokURL"
+					name="tikTokURL"
+					v-model="site.tikTokURL"
+					></b-form-input>
+			</b-form-group>
+			<div class="d-flex justify-content-end">
+				<b-button type="submit" variant="success">Update</b-button>
+			</div>
 		</b-form>
 	</b-container>
 </template>
 
 <script>
 import { WEBSITE_STATUS } from '@/constants'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
 	data() {
@@ -184,6 +195,8 @@ export default {
 		...mapGetters(['userId']),
 	},
 	methods: {
+		...mapMutations(['setBusy']),
+
 		transformUrl(url) {
 			return url?.startsWith('http') ? url : `https://${url}`
 		},
@@ -209,8 +222,39 @@ export default {
 				console.error(err)
 			}
 		},
-		onUpdate() {
+		async onUpdate() {
+			this.setBusy(true)
 
+			try {
+				const { dropDate, dropTime, id } = this.site
+
+				const update = { ...this.site }
+				update.dropDate = dropDate
+				if (dropTime) {
+					update.dropDate += `T${dropTime}:00`
+				}
+
+				await this.$axios.put(
+					`websites/${id}`,
+					update
+				)
+
+				this.$bvToast.toast(
+					'Website updated. Please give it 5-10 mins for the changes to take effect',
+					{
+						title: 'Website',
+						variant: 'success',
+					}
+				)
+			} catch (err) {
+				console.error({ err })
+				this.$bvToast.toast(err.message || 'Failed to update the website', {
+					title: 'Website',
+					variant: 'danger',
+				})
+			} finally {
+				this.setBusy(false)
+			}
 		}
 	},
 }

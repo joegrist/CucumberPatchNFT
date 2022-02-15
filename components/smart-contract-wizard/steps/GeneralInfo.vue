@@ -141,29 +141,6 @@
       <b-row>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Set Aside NFTs'
-            description='How many tokens starting from 1st one onwards to set aside for the team, marketing etc. Minted to your wallet upon contract deployment and incurs gas fees so the higher this number the higher smart contract deployment fee will be'
-          >
-            <b-form-input
-              id='setAsideTokenCount'
-              name='setAsideTokenCount'
-              :value='smartContractBuilder.setAsideTokenCount'
-              @change='(val) => updateSmartContractBuilder({ setAsideTokenCount: val ? +val:null })'
-              @blur="$v.smartContractBuilder.setAsideTokenCount.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.setAsideTokenCount.$error}"
-              type='number'
-              step='1'
-              min='0'
-              placeholder='25'
-            ></b-form-input>
-            <b-form-invalid-feedback :state="validation.setAsideTokenCount">
-              Please correct "Set aside NFTs". Enter 0 or leave empty. Can't exceed "Collection Size".
-            </b-form-invalid-feedback>
-          </b-form-group>
-        </b-col>
-
-        <b-col sm='12' md='6'>
-          <b-form-group
             label='Max NFTs Per Transaction'
             description='How many tokens can one person mint at a time. For example BAYC allowed 20'
           >
@@ -209,7 +186,6 @@ export default {
         name: null,
         symbol: null,
         mintPrice: null,
-        setAsideTokenCount: null,
         maxTokensPerTransaction: null,
         maxTokensPerPerson: null
       }
@@ -222,7 +198,6 @@ export default {
         name: { required, maxLength: maxLength(30) },
         symbol: { required, maxLength: maxLength(6) },
         mintPrice: { required, decimal, minValue:minValue(0) },
-        setAsideTokenCount: { numeric, minValue:minValue(0), maxValue: (val, siblings) => val <= siblings.collectionSize },
         maxTokensPerTransaction: { numeric, minValue:minValue(0) },
         maxTokensPerPerson: { numeric, minValue:minValue(0) }
       }
@@ -235,7 +210,6 @@ export default {
         symbol: !this.$v.smartContractBuilder.symbol.$error,
         collectionSize: !this.$v.smartContractBuilder.collectionSize.$error,
         mintPrice: !this.$v.smartContractBuilder.mintPrice.$error,
-        setAsideTokenCount: !this.$v.smartContractBuilder.setAsideTokenCount.$error,
         maxTokensPerPerson: !this.$v.smartContractBuilder.maxTokensPerPerson.$error,
         maxTokensPerTransaction: !this.$v.smartContractBuilder.maxTokensPerTransaction.$error,
       }

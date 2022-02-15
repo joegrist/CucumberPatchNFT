@@ -133,9 +133,9 @@
 					</b-form-group>
 					<b-form-group label="TikTok URL" class="pl-1 w-50">
 						<b-form-input
-							id="tiktokURL"
-							name="tiktokURL"
-							v-model="newWebsite.tiktokURL"
+							id="tikTokURL"
+							name="tikTokURL"
+							v-model="newWebsite.tikTokURL"
 							type="url"
 							></b-form-input>
 					</b-form-group>
