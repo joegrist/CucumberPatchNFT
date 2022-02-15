@@ -201,39 +201,44 @@
 						</b-col>
 					</b-row>
 				</b-col>
-				<b-col v-if="rawContract.hasWhitelist" cols="5">
+				<b-col v-if="rawContract.hasWhitelist" cols="4" class="mb-3">
 					<b-row>
-						<b-col cols="6">
+						<b-col>
 							<h4>Whitelist</h4>
+						</b-col>
+					</b-row>
+					<b-row no-gutters>
+						<b-col sm="12" md="9">
+							<b-form-file
+								v-model="whitelistFile"
+								placeholder="Choose or drop .csv file"
+								drop-placeholder="Drop file here..."></b-form-file>
+						</b-col>
+						<b-col sm="12" md="3" class="text-right">
+							<b-button
+								:disabled="whitelistFile === null"
+								variant="success"
+								@click="onImportCsv"
+								>Import</b-button
+							>
+						</b-col>
+					</b-row>
+					<b-row class="mb-3">
+						<b-col>
+							<b-link href="/whitelist-csv-example.csv" download
+								>Download example</b-link
+							>
 						</b-col>
 					</b-row>
 					<b-row>
 						<b-col>
 							<b-form-tags
-								class="mb-2"
 								v-model="rawContract.whitelist"
 								@input="onWhitelistInput"
 								invalid-tag-text="Address is invalid"
 								:tag-validator="whitelistValidator"
 								placeholder="Enter Wallet Address">
 							</b-form-tags>
-							<b-row no-gutters>
-								<b-col cols="9">
-									<b-form-file
-										v-model="whitelistFile"
-										placeholder="Choose or drop .csv file"
-										drop-placeholder="Drop file here..."
-									></b-form-file>
-								</b-col>
-								<b-col cols="3" class="text-right">
-									<b-button
-										:disabled="whitelistFile === null"
-										variant="success"
-										@click="onImportCsv"
-										>Import</b-button
-									>
-								</b-col>
-							</b-row>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -303,7 +308,7 @@ import {
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
 import { loadScript } from '@paypal/paypal-js'
-import { VueCsvImport } from 'vue-csv-import';
+import { VueCsvImport } from 'vue-csv-import'
 
 const basicFunctions = [
 	'canReveal',
@@ -322,7 +327,7 @@ const FormatTypes = ethers.utils.FormatTypes
 export default {
 	middleware: 'authenticated',
 	components: {
-		VueCsvImport
+		VueCsvImport,
 	},
 	data: () => ({
 		FormatTypes,
@@ -340,7 +345,7 @@ export default {
 		isReady: false,
 		paypal: null,
 		whitelist: null,
-		whitelistFile: null
+		whitelistFile: null,
 	}),
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
@@ -415,7 +420,7 @@ export default {
 		},
 		isOnWrongNetwork() {
 			return this.$wallet.chainId !== +this.rawContract.chainId
-		}
+		},
 	},
 	methods: {
 		getExplorerUrl,
@@ -433,10 +438,13 @@ export default {
 			)
 		},
 		async onImportCsv() {
-			const form = new FormData();
+			const form = new FormData()
 			form.append('file', this.whitelistFile)
 
-			const { data } = await this.$axios.post(`/smartcontracts/${this.rawContract.id}/whitelist`, form)
+			const { data } = await this.$axios.post(
+				`/smartcontracts/${this.rawContract.id}/whitelist`,
+				form
+			)
 			this.rawContract.whitelist = data
 			this.whitelistFile = null
 
@@ -447,13 +455,16 @@ export default {
 		},
 		async onRefreshBalance(showNotification = false) {
 			this.isBusy = true
-			const balance = (await this.$wallet.provider.getBalance(this.rawContract.address)) || '0'
+			const balance =
+				(await this.$wallet.provider.getBalance(this.rawContract.address)) ||
+				'0'
 			this.contractBalance = +ethers.utils.formatEther(balance)
 			this.isBusy = false
-			showNotification && this.$bvToast.toast('Balance successfully refreshed', {
-				title: 'Balance',
-				variant: 'success',
-			})
+			showNotification &&
+				this.$bvToast.toast('Balance successfully refreshed', {
+					title: 'Balance',
+					variant: 'success',
+				})
 		},
 		formatFuncResponse(func) {
 			let actualResponse = this.responses[func.name]
@@ -464,7 +475,9 @@ export default {
 			return `${prefix}: ${actualResponse}`
 		},
 		async switchNetwork() {
-			await this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[this.rawContract.chainId])
+			await this.$wallet.switchNetwork(
+				CHAINID_CONFIG_MAP[this.rawContract.chainId]
+			)
 		},
 		// async updateWhitelist() {
 		// 	await this.$axios.patch(
