@@ -21,6 +21,17 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
+  // publicRuntimeConfig: {
+  //   API_URL,
+  //   ENABLE_MAINNET_DEPLOY_FLAG
+  // },
+
+  // privateRuntimeConfig: {
+  //   OPENSEA_API_KEY,
+  //   NETLIFY_API_TOKEN,
+  //   PAYPAL_CLIENT_ID,
+  // },
+
   env: {
     API_URL,
     OPENSEA_API_KEY,

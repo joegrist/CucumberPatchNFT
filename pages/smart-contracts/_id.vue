@@ -402,6 +402,7 @@ export default {
 	computed: {
 		...mapGetters(['userId']),
 		canDeployMainnet() {
+			console.log(process.env.ENABLE_MAINNET_DEPLOY_FLAG,!this.isBusy,!isTestnet(this.rawContract.chainId) )
 			return (
 				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'true' &&
 				!this.isBusy &&
@@ -565,7 +566,12 @@ export default {
 		},
 		async onMainnetDeploy() {
 			try {
+				if(!this.canDeployMainnet) return
+
 				const { id, chainId } = this.rawContract
+
+				const mainnetConfig = getMainnetConfig(chainId)
+				await this.$wallet.switchNetwork(mainnetConfig)
 
 				const userCredits = await this.$store.dispatch('getCreditsCount')
 				const hasToPay = +userCredits < 1
@@ -575,10 +581,6 @@ export default {
 					this.handlePayment(id, amount)
 					return
 				}
-
-				const mainnetConfig = getMainnetConfig(chainId)
-
-				await this.$wallet.switchNetwork(mainnetConfig)
 
 				this.isBusy = true
 
@@ -596,6 +598,11 @@ export default {
 					bytecode,
 					signer
 				)
+
+				// const deploymentData = contractFactory.interface.encodeDeploy([])
+				// const estimatedGas = await this.$wallet.provider.estimateGas({ data: deploymentData })
+				// console.log('CONTRACT gas estimate', estimatedGas.toString())
+
 				const contract = await contractFactory.deploy()
 
 				const { data: mainnetContract } = await this.$axios.post(

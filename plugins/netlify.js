@@ -1,4 +1,4 @@
-export default function ({ $axios }, inject) {
+export default function ({ $axios, $config }, inject) {
     // Create a custom axios instance
     const netlify = $axios.create({
       headers: {
