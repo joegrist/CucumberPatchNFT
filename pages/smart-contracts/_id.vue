@@ -273,14 +273,14 @@
 		</b-modal>
 		<b-modal
 			id="paymentSuccess"
-			title="Thank You!!"
+			title="Thank You!"
 			size="sm"
 			centered
 			hide-footer>
 			<div>
 				<b-button
 					:disabled="isBusy"
-					class="bg-gradient-primary border-0"
+					class="bg-gradient-primary border-0 w-100"
 					@click="
 						() => {
 							this.$bvModal.hide('paymentSuccess')
@@ -571,7 +571,7 @@ export default {
 				const hasToPay = +userCredits < 1
 
 				if (hasToPay) {
-					const amount = 499
+					const amount = 599
 					this.handlePayment(id, amount)
 					return
 				}
