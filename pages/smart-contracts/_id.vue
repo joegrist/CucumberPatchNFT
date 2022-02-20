@@ -278,6 +278,7 @@
 			centered
 			hide-footer>
 			<div>
+				<p>Total: $699</p>
 				<b-button
 					:disabled="isBusy"
 					class="bg-gradient-primary border-0 w-100"
@@ -320,6 +321,7 @@ const basicFunctions = [
 	'owner',
 	'reveal',
 	'totalSupply',
+	'setPublicMintPrice'
 ]
 
 const FormatTypes = ethers.utils.FormatTypes
@@ -562,7 +564,7 @@ export default {
 				const hasToPay = +userCredits < 1
 
 				if (hasToPay) {
-					const amount = 599
+					const amount = 699
 					this.handlePayment(id, amount)
 					return
 				}
@@ -647,7 +649,7 @@ export default {
 				if (hasFuncArgs) {
 					// to preserve correct argument order we run mapping based on original function inputs order
 					// since we can't guarantee the correct order in callFuncArgs Map
-					const args = func.inputs.map((x) => {
+					let args = func.inputs.map((x) => {
 						const value = this.callFuncArgs[func.name].get(x.name)
 						return isNumber(value) ? ethers.BigNumber.from(value) : value
 					})
@@ -660,6 +662,12 @@ export default {
 								Number(ethers.utils.formatEther(mintPrice)) * Number(args[0])
 							txOverrides.value = ethers.utils.parseEther(value.toString())
 						}
+						
+					}
+
+					if (func.name === 'setPublicMintPrice') {
+						const value = this.callFuncArgs[func.name].get(func.inputs[0].name)
+						args = [ethers.utils.parseUnits(value)]
 					}
 
 					txResponse = await this.contract[func.name].call(
@@ -667,6 +675,7 @@ export default {
 						...args,
 						txOverrides
 					)
+
 				} else {
 					txResponse = await this.contract[func.name](txOverrides)
 				}

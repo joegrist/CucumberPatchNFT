@@ -4,9 +4,7 @@ import axios from 'axios'
 const { 
   API_URL,
   OPENSEA_API_KEY,
-  NETLIFY_API_TOKEN,
   PAYPAL_CLIENT_ID,
-  RECAPTCHA_KEY,
   ENABLE_MAINNET_DEPLOY_FLAG
 } = process.env
 
@@ -35,7 +33,6 @@ export default {
   env: {
     API_URL,
     OPENSEA_API_KEY,
-    NETLIFY_API_TOKEN,
     PAYPAL_CLIENT_ID,
     ENABLE_MAINNET_DEPLOY_FLAG
   },
@@ -82,7 +79,7 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '@/plugins/axios',
-    '@/plugins/netlify',
+    // '@/plugins/netlify',
     '@/plugins/vuelidate',
     '@/plugins/filters',
     '@/plugins/wallet'
@@ -107,15 +104,15 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     '@nuxtjs/sitemap',
-    '@nuxtjs/recaptcha',
+    // '@nuxtjs/recaptcha',
     '@nuxtjs/style-resources'
   ],
 
-  recaptcha: {
-    siteKey: RECAPTCHA_KEY,
-    version: 3,
-    size: 'compact'
-  },
+  // recaptcha: {
+  //   siteKey: RECAPTCHA_KEY,
+  //   version: 3,
+  //   size: 'compact'
+  // },
 
   bootstrapVue: {
     icons: true,
