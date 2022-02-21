@@ -596,7 +596,7 @@ export default {
 					{
 						ownerAddress: this.$wallet.account,
 						address: contract.address,
-						chainId: mainnetConfig.chainId,
+						chainId: this.$wallet.chainId,
 					}
 				)
 
