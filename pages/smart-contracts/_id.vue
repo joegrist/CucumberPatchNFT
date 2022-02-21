@@ -262,7 +262,7 @@
 		</b-modal>
 		<b-modal
 			id="payment"
-			title="Buy Deployment Voucher"
+			title="Buy Deployment Voucher ($699)"
 			size="md"
 			static
 			centered
@@ -278,7 +278,6 @@
 			centered
 			hide-footer>
 			<div>
-				<p>Total: $699</p>
 				<b-button
 					:disabled="isBusy"
 					class="bg-gradient-primary border-0 w-100"
@@ -288,7 +287,7 @@
 							this.onMainnetDeploy()
 						}
 					">
-					<b-icon icon="wallet2" /> Deploy to Mainnet)
+					<b-icon icon="wallet2" /> Deploy to Mainnet
 				</b-button>
 			</div>
 		</b-modal>
@@ -557,9 +556,6 @@ export default {
 
 				const { id, chainId } = this.rawContract
 
-				const mainnetConfig = getMainnetConfig(chainId)
-				await this.$wallet.switchNetwork(mainnetConfig)
-
 				const userCredits = await this.$store.dispatch('getCreditsCount')
 				const hasToPay = +userCredits < 1
 
@@ -568,6 +564,9 @@ export default {
 					this.handlePayment(id, amount)
 					return
 				}
+
+				const mainnetConfig = getMainnetConfig(chainId)
+				await this.$wallet.switchNetwork(mainnetConfig)
 
 				this.isBusy = true
 
