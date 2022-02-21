@@ -299,11 +299,9 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { SALE_STATUS } from '@/constants'
 import {
-	CHAINID_CONFIG_MAP,
 	getExplorerUrl,
 	getCurrency,
 	isTestnet,
-	getMainnetConfig,
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
@@ -474,9 +472,7 @@ export default {
 			return `${prefix}: ${actualResponse}`
 		},
 		async switchNetwork() {
-			await this.$wallet.switchNetwork(
-				CHAINID_CONFIG_MAP[this.rawContract.chainId]
-			)
+			await this.$wallet.switchNetwork(this.rawContract.chainId)
 		},
 		onParamChange(value, func, param) {
 			const args = (this.callFuncArgs[func.name] ??= new Map())
@@ -565,8 +561,7 @@ export default {
 					return
 				}
 
-				const mainnetConfig = getMainnetConfig(chainId)
-				await this.$wallet.switchNetwork(mainnetConfig)
+				await this.$wallet.switchNetwork(chainId)
 
 				this.isBusy = true
 

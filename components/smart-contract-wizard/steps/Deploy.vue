@@ -277,6 +277,10 @@ export default {
           }
         }
 
+        if(this.smartContractBuilder.chainId !== this.$wallet.chainId) {
+          await this.$wallet.switchNetwork(this.smartContractBuilder.chainId)
+        }
+
         this.setBusy(true)
 
         const id = await this.saveDraft()
