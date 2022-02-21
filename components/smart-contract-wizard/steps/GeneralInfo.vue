@@ -119,7 +119,7 @@
         <b-col sm='12' md='6'>
           <b-form-group
             label='Max NFTs Per Person'
-            description='Maximum number of tokens per wallet address'
+            description='Maximum number of tokens someone can mint during public sale'
           >
             <b-form-input
               id='maxTokensPerPerson'

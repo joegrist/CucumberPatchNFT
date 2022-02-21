@@ -127,22 +127,6 @@
 					v-model="site.instagramURL"
 					></b-form-input>
 			</b-form-group>
-			<b-form-group label="Marketplace URL">
-				<template #label>
-					Marketplace URL
-					<b-link
-						v-if="site.marketplaceURL"
-						:href="transformUrl(site.marketplaceURL)"
-						target="_blank"
-						><b-icon icon="box-arrow-up-right"
-					/></b-link>
-				</template>
-				<b-form-input
-					id="marketplaceURL"
-					name="marketplaceURL"
-					v-model="site.marketplaceURL"
-					></b-form-input>
-			</b-form-group>
 			<b-form-group label="TikTok URL">
 				<template #label>
 					TikTok URL
@@ -157,6 +141,22 @@
 					id="tikTokURL"
 					name="tikTokURL"
 					v-model="site.tikTokURL"
+					></b-form-input>
+			</b-form-group>
+			<b-form-group label="Marketplace URL">
+				<template #label>
+					Marketplace URL
+					<b-link
+						v-if="site.marketplaceURL"
+						:href="transformUrl(site.marketplaceURL)"
+						target="_blank"
+						><b-icon icon="box-arrow-up-right"
+					/></b-link>
+				</template>
+				<b-form-input
+					id="marketplaceURL"
+					name="marketplaceURL"
+					v-model="site.marketplaceURL"
 					></b-form-input>
 			</b-form-group>
 			<div class="d-flex justify-content-end">

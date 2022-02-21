@@ -62,9 +62,9 @@
 				</b-col>
 			</b-row>
 			<b-row>
-				<b-col>
+				<b-col sm="12" md="6">
 					<b-form-group
-						label="Presale Price"
+						label="Price"
 						description="Can be the same as public sale price or zero to allow free mint"
 						:label-class="{ required: smartContractBuilder.hasWhitelist }"
 						:disabled="!smartContractBuilder.hasWhitelist">
@@ -88,6 +88,35 @@
 							placeholder="0.03"></b-form-input>
 						<b-form-invalid-feedback :state="validation.whitelistPrice">
 							Please correct "Presale Price"
+						</b-form-invalid-feedback>
+					</b-form-group>
+				</b-col>
+				<b-col sm="12" md="6">
+					<b-form-group
+						label="Max NFTs Per Person"
+						description="Maximum number of tokens someone can mint during whitelist sale"
+						:label-class="{ required: smartContractBuilder.hasWhitelist }"
+						:disabled="!smartContractBuilder.hasWhitelist">
+						<b-form-input
+							id="maxTokensPerPersonOnWhitelist"
+							name="maxTokensPerPersonOnWhitelist"
+							:value="smartContractBuilder.maxTokensPerPersonOnWhitelist"
+							@change="
+								(val) =>
+									updateSmartContractBuilder({
+										maxTokensPerPersonOnWhitelist: val ? +val : null,
+									})
+							"
+							@blur="$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$touch()"
+							:class="{
+								'is-invalid': $v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$error,
+							}"
+							type="number"
+							step="1"
+							min="1"
+							></b-form-input>
+						<b-form-invalid-feedback :state="validation.maxTokensPerPersonOnWhitelist">
+							Please correct "Max NFTs Per Person"
 						</b-form-invalid-feedback>
 					</b-form-group>
 				</b-col>
@@ -239,6 +268,7 @@ export default {
 				hasRevenueSplits: false,
 				delayedRevealURL: null,
 				whitelistPrice: null,
+				maxTokensPerPersonOnWhitelist: 1,
 				whitelist: [],
 				revenueSplits: [
 					{
@@ -265,6 +295,7 @@ export default {
 			return {
 				delayedRevealURL: !this.$v.smartContractBuilder.delayedRevealURL.$error,
 				whitelistPrice: !this.$v.smartContractBuilder.whitelistPrice.$error,
+				maxTokensPerPersonOnWhitelist: !this.$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$error,
 				shares: this.revenueSplitErrors.length === 0,
 			}
 		},
@@ -282,6 +313,7 @@ export default {
 			const hasShares = this.revenueSplits
 				.map((x) => x.share)
 				.every((s) => s !== null && s !== 0)
+
 			if (!sumsTo100) errors.push('Shares must add up to 100%')
 			if (!hasValidWallets) errors.push('All wallets must have a valid address')
 			if (!hasShares) errors.push('Shares must be greater than 0')
@@ -303,6 +335,12 @@ export default {
 				decimal,
 				minValue: minValue(0),
 			},
+			maxTokensPerPersonOnWhitelist: {
+				required: requiredIf(function () {
+					return this.smartContractBuilder.hasWhitelist
+				}),
+				minValue: minValue(1)
+			}
 		},
 		revenueSplitErrors: {
 			maxValue: maxValue(0),
