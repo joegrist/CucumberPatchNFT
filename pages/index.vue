@@ -225,7 +225,7 @@ export default {
 			try {
 				const { dropDateInput, dropTimeInput } = this.newWebsite
 				this.newWebsite.dropDate = dropDateInput
-				if (dropTimeInput) {
+				if (dropDateInput && dropTimeInput) {
 					this.newWebsite.dropDate += `T${dropTimeInput}:00`
 				}
 
