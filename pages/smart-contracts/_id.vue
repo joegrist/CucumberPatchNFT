@@ -435,20 +435,27 @@ export default {
 			)
 		},
 		async onImportCsv() {
-			const form = new FormData()
-			form.append('file', this.whitelistFile)
-
-			const { data } = await this.$axios.post(
-				`/smartcontracts/${this.rawContract.id}/whitelist`,
-				form
-			)
-			this.rawContract.whitelist = data
-			this.whitelistFile = null
-
-			this.$bvToast.toast('File successfully uploaded', {
-				title: 'Whitelist',
-				variant: 'success',
-			})
+			try {
+				const form = new FormData()
+				form.append('file', this.whitelistFile)
+	
+				const { data } = await this.$axios.post(
+					`/smartcontracts/${this.rawContract.id}/whitelist`,
+					form
+				)
+				this.rawContract.whitelist = data
+				this.whitelistFile = null
+	
+				this.$bvToast.toast('File successfully uploaded', {
+					title: 'Whitelist',
+					variant: 'success',
+				})
+			} catch (err) {
+				this.$bvToast.toast('File upload failed', {
+					title: 'Whitelist',
+					variant: 'danger',
+				})
+			}
 		},
 		async onRefreshBalance(showNotification = false) {
 			this.isBusy = true
