@@ -171,23 +171,25 @@ export default {
 	fetchOnServer: false,
 	fetchKey: 'dashboard',
 	async fetch() {
-		this.setBusy(true)
-
-		const { data: contracts } = await this.$axios.get(
-			`/users/${this.userId}/smartcontracts`
-		)
-		const { data: websites } = await this.$axios.get(
-			`/users/${this.userId}/websites`
-		)
-
-		contracts.forEach((sc) => {
-			sc.website = websites.find((x) => sc.id === x.smartContractId)
-		})
-
-		this.setDashboardItems(contracts)
-		this.setBusy(false)
-
-		// console.log('dashboard', this.dashboardItems)
+		try {
+			this.setBusy(true)
+	
+			const { data: contracts } = await this.$axios.get(
+				`/users/${this.userId}/smartcontracts`
+			)
+			const { data: websites } = await this.$axios.get(
+				`/users/${this.userId}/websites`
+			)
+	
+			contracts.forEach((sc) => {
+				sc.website = websites.find((x) => sc.id === x.smartContractId)
+			})
+	
+			this.setDashboardItems(contracts)
+			this.setBusy(false)
+		} catch(err) {
+			console.error(err)
+		}
 	},
 	computed: {
 		...mapState(['dashboardItems', 'isBusy']),

@@ -18,7 +18,7 @@
 					>
 					<b-nav-item
 						v-else
-						@click="$store.dispatch('login')"
+						@click="onLogin"
 						class="gradient-text"
 						>Login</b-nav-item
 					>
@@ -92,6 +92,10 @@ export default {
 		}
 	},
 	methods: {
+		async onLogin() {
+			const user = await $store.dispatch('login')
+			if(user) this.$router.push('/')
+		},
 		disconnect() {
 			this.isSidebarVisible = false
 			this.$wallet.disconnect()
