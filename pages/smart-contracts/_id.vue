@@ -402,7 +402,7 @@ export default {
 		...mapGetters(['userId']),
 		canDeployMainnet() {
 			return (
-				this.$config.FF_MAINNET_DEPLOY === 'true' && isTestnet(this.rawContract.chainId)
+				this.$config.FF_MAINNET_DEPLOY && isTestnet(this.rawContract.chainId)
 			)
 		},
 		functions() {

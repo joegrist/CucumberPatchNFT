@@ -24,7 +24,8 @@ export default {
     API_URL,
     OPENSEA_API_KEY,
     PAYPAL_CLIENT_ID,
-    FF_MAINNET_DEPLOY
+    FF_MAINNET_DEPLOY,
+    FF_CREATE_SITE
   },
 
   // privateRuntimeConfig: {

@@ -28,10 +28,10 @@
 				<b-dd-item
 					v-if="$props.sc.website"
 					:to="`/websites/${$props.sc.website.id}`"
-					><b-icon icon="pencil-square" /> Website</b-dd-item
+					><b-icon icon="pencil-square" />Website</b-dd-item
 				>
-				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE === 'true'" @click="() => $emit('create-site', $props.sc.id)"
-					><b-icon icon="cloud-upload" /> Website</b-dd-item
+				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE" @click="() => $emit('create-site', $props.sc.id)"
+					><b-icon icon="cloud-upload" />Website</b-dd-item
 				>
 			</template>
 			<b-dd-item variant="danger" @click="onRemoveCard"
@@ -187,6 +187,8 @@ export default {
 		sc: Object,
 	},
 	mounted() {
+		console.log(this.$config)
+
 		if (!this.$props.sc.isDeployed) return
 
 		this.getContractStats()
@@ -266,6 +268,7 @@ export default {
 				const contractBalance = await this.$wallet.provider.getBalance(
 					this.$props.sc.address
 				)
+				console.log(this.$props.sc.address, +(await contract.totalSupply()))
 				this.balance = +ethers.utils.formatEther(contractBalance)
 				this.minted = +(await contract.totalSupply())
 				this.revealed = this.$props.sc.hasDelayedReveal

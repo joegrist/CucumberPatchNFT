@@ -96,11 +96,10 @@ export const actions = {
 			})
 	
 			commit('setDashboardItems', contracts)
-            commit('setBusy', false)
         } catch(err) {
 			console.error(err)
 		} finally {
-			this.setBusy(false)
+			commit('setBusy', false)
         }
     },
     async removeDashboardCard({commit, state}, id) {

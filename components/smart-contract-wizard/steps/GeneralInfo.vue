@@ -142,7 +142,7 @@
         <b-col sm='12' md='6'>
           <b-form-group
             label='Max NFTs Per Transaction'
-            description='Maximum number of token someone can mint in one go. Helps to prevent botting and give everyone a fair chance to mint.'
+            description='Maximum number of tokens someone can mint in one go. Helps prevent botting and give everyone a fair chance to mint.'
           >
             <b-form-input
               id='maxTokensPerTransaction'
