@@ -93,7 +93,7 @@ export default {
 	},
 	methods: {
 		async onLogin() {
-			const user = await $store.dispatch('login')
+			const user = await this.$store.dispatch('login')
 			if(user) this.$router.push('/')
 		},
 		disconnect() {
