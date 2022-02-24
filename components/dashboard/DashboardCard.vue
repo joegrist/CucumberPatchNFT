@@ -30,7 +30,7 @@
 					:to="`/websites/${$props.sc.website.id}`"
 					><b-icon icon="pencil-square" /> Website</b-dd-item
 				>
-				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE" @click="() => $emit('create-site', $props.sc.id)"
+				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE === 'true'" @click="() => $emit('create-site', $props.sc.id)"
 					><b-icon icon="cloud-upload" /> Website</b-dd-item
 				>
 			</template>
@@ -267,7 +267,7 @@ export default {
 					this.$props.sc.address
 				)
 				this.balance = +ethers.utils.formatEther(contractBalance)
-				this.minted = (await contract.totalSupply())?.toNumber()
+				this.minted = +(await contract.totalSupply())
 				this.revealed = this.$props.sc.hasDelayedReveal
 					? await contract.canReveal()
 					: 'n/a'
