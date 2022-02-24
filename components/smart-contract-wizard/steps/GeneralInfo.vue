@@ -142,7 +142,7 @@
         <b-col sm='12' md='6'>
           <b-form-group
             label='Max NFTs Per Transaction'
-            description='How many tokens can one person mint at a time. For example BAYC allowed 20'
+            description='Maximum number of token someone can mint in one go. Helps to prevent botting and give everyone a fair chance to mint.'
           >
             <b-form-input
               id='maxTokensPerTransaction'

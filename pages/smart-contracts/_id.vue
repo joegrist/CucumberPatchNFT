@@ -389,7 +389,7 @@ export default {
 	async mounted() {
 		try {
 			this.paypal = await loadScript({
-				'client-id': process.env.PAYPAL_CLIENT_ID,
+				'client-id': this.$config.PAYPAL_CLIENT_ID,
 				'debug': false,
 				'disable-funding': 'credit',
 				'enable-funding': 'venmo',
@@ -402,7 +402,7 @@ export default {
 		...mapGetters(['userId']),
 		canDeployMainnet() {
 			return (
-				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'true' && isTestnet(this.rawContract.chainId)
+				this.$config.FF_MAINNET_DEPLOY === 'true' && isTestnet(this.rawContract.chainId)
 			)
 		},
 		functions() {
