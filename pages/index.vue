@@ -156,7 +156,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapState } from 'vuex'
+import { mapMutations, mapActions, mapGetters, mapState } from 'vuex'
 import { MARKETPLACE } from '@/constants'
 
 export default {
@@ -171,41 +171,25 @@ export default {
 	fetchOnServer: false,
 	fetchKey: 'dashboard',
 	async fetch() {
-		try {
-			this.setBusy(true)
-	
-			const { data: contracts } = await this.$axios.get(
-				`/users/${this.userId}/smartcontracts`
-			)
-			const { data: websites } = await this.$axios.get(
-				`/users/${this.userId}/websites`
-			)
-	
-			contracts.forEach((sc) => {
-				sc.website = websites.find((x) => sc.id === x.smartContractId)
-			})
-	
-			this.setDashboardItems(contracts)
-			this.setBusy(false)
-		} catch(err) {
-			console.error(err)
-		}
+		await this.loadDashboardCards()
 	},
 	computed: {
 		...mapState(['dashboardItems', 'isBusy']),
 		...mapGetters(['userId']),
 		filteredItems() {
 			const term = this.searchTerm.toLowerCase()
-			return this.dashboardItems.filter(
+			const filtered = this.dashboardItems.filter(
 				(x) =>
 					x.name.toLowerCase().includes(term) ||
 					x.symbol.toLowerCase().includes(term)
 			)
+			// console.log(this.dashboardItems, term, filtered)
+			return filtered 
 		},
 	},
 	methods: {
 		...mapMutations(['setDashboardItems', 'setBusy']),
-
+		...mapActions(['loadDashboardCards']),
 		showWebsiteModal(smartContractId) {
 			const smartContract = this.dashboardItems.find(
 				(x) => x.id === smartContractId

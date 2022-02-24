@@ -80,6 +80,29 @@ export const mutations = {
 }
 
 export const actions = {
+    async loadDashboardCards({commit, state}) {
+        try {
+            commit('setBusy', true)
+	
+			const { data: contracts } = await this.$axios.get(
+				`/users/${state.user.id}/smartcontracts`
+			)
+			const { data: websites } = await this.$axios.get(
+				`/users/${state.user.id}/websites`
+			)
+	
+			contracts.forEach((sc) => {
+				sc.website = websites.find((x) => sc.id === x.smartContractId)
+			})
+	
+			commit('setDashboardItems', contracts)
+            commit('setBusy', false)
+        } catch(err) {
+			console.error(err)
+		} finally {
+			this.setBusy(false)
+        }
+    },
     async removeDashboardCard({commit, state}, id) {
         await this.$axios.delete(`/smartcontracts/${id}`)
         commit('setDashboardItems', state.dashboardItems.filter(x => x.id !== id))

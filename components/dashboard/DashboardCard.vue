@@ -216,7 +216,7 @@ export default {
 			return address
 		},
 		openSeaUrl() {
-			if(this.$props.sc.marketplace !== MARKETPLACE.OpenSea) {
+			if(!this.$props.sc.marketplaceCollection || this.$props.sc.marketplace !== MARKETPLACE.OpenSea) {
 				return null
 			}
 
