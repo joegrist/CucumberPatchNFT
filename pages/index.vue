@@ -69,7 +69,7 @@
 						placeholder="10k unique NFTs"
 						></b-form-input>
 				</b-form-group>
-				<b-form-group
+				<!-- <b-form-group
 					label="Desired website domain (URL)">
 					<b-form-input
 						id="desiredDomain"
@@ -78,7 +78,7 @@
 						type="url"
 						placeholder="zerocodenft.com"
 						></b-form-input>
-				</b-form-group>
+				</b-form-group> -->
 				<div class="d-flex">
 					<b-form-group
 						label="Drop Date"
@@ -215,9 +215,14 @@ export default {
 					this.newWebsite.dropDate += `T${dropTimeInput}:00`
 				}
 
+				const payload = Object.keys(this.newWebsite).reduce((formData, key) => {
+					if(this.newWebsite[key]) formData.append(key, this.newWebsite[key]);
+					return formData;
+				}, new FormData());
+
 				const { data: createdSite } = await this.$axios.post(
 					'websites',
-					this.newWebsite
+					payload
 				)
 
 				this.$bvModal.hide('siteModal')

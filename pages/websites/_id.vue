@@ -37,7 +37,7 @@
 					placeholder="Bored Apes Yacht Club"
 					required></b-form-input>
 			</b-form-group>
-			<b-form-group label="Description" label-class="required">
+			<b-form-group label="Description">
 				<b-form-input
 					id="description"
 					name="description"
@@ -46,14 +46,14 @@
 					placeholder="10k unique NFTs"
 					></b-form-input>
 			</b-form-group>
-			<b-form-group label="Desired website domain (URL)" label-class="required">
+			<!-- <b-form-group label="Desired website domain (URL)">
 				<b-form-input
 					id="desiredDomain"
 					name="desiredDomain"
 					v-model="site.desiredDomain"
 					placeholder="zerocodenft.com"
 					></b-form-input>
-			</b-form-group>
+			</b-form-group> -->
 			<div class="d-flex">
 				<b-form-group
 					label="Drop Date"
