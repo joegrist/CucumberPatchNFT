@@ -124,7 +124,6 @@
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { BLOCKCHAIN } from '@/constants'
-import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
 import { required } from 'vuelidate/lib/validators'
 
 export default {
@@ -232,7 +231,7 @@ export default {
 		},
 		async callWalletFunc(func) {
 			try {
-				if(func === 'switchNetwork') await this.$wallet.switchNetwork(CHAINID_CONFIG_MAP[this.smartContractBuilder.chainId])
+				if(func === 'switchNetwork') await this.$wallet.switchNetwork(this.smartContractBuilder.chainId)
 			} catch (err) {
 				console.error(err)
 				this.$bvToast.toast(err?.message || `${func} failed`, {

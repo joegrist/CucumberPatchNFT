@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { ethers } from 'ethers'
 import MetaMaskOnboarding from '@metamask/onboarding'
-import { getCurrency } from '@/constants/metamask'
+import { getCurrency, CHAINID_CONFIG_MAP } from '@/constants/metamask'
 
 export default ({store}, inject) => {
 
@@ -66,11 +66,13 @@ export default ({store}, inject) => {
             wallet.balance = null
         },
 
-        async switchNetwork(config) {
+        async switchNetwork(chainId) {
 
-            if(!config?.chainId || this.chainId === config.chainId || this.hexChainId === config.chainId) {
-                return //since we are on correct network
+            if(!chainId || this.chainId === chainId || this.hexChainId === chainId) {
+                return
             }
+
+            const config = CHAINID_CONFIG_MAP[chainId]
 
 			try {
 				await this.provider.send('wallet_switchEthereumChain', [

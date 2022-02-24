@@ -230,7 +230,7 @@ export default {
 
 				const update = { ...this.site }
 				update.dropDate = dropDate
-				if (dropTime) {
+				if (dropDate && dropTime) {
 					update.dropDate += `T${dropTime}:00`
 				}
 

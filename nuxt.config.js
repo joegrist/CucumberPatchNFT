@@ -5,7 +5,8 @@ const {
   API_URL,
   OPENSEA_API_KEY,
   PAYPAL_CLIENT_ID,
-  ENABLE_MAINNET_DEPLOY_FLAG
+  FF_MAINNET_DEPLOY,
+  FF_CREATE_SITE
 } = process.env
 
 export default {
@@ -19,10 +20,12 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
-  // publicRuntimeConfig: {
-  //   API_URL,
-  //   ENABLE_MAINNET_DEPLOY_FLAG
-  // },
+  publicRuntimeConfig: {
+    API_URL,
+    OPENSEA_API_KEY,
+    PAYPAL_CLIENT_ID,
+    FF_MAINNET_DEPLOY
+  },
 
   // privateRuntimeConfig: {
   //   OPENSEA_API_KEY,
@@ -30,12 +33,12 @@ export default {
   //   PAYPAL_CLIENT_ID,
   // },
 
-  env: {
-    API_URL,
-    OPENSEA_API_KEY,
-    PAYPAL_CLIENT_ID,
-    ENABLE_MAINNET_DEPLOY_FLAG
-  },
+  // env: {
+  //   API_URL,
+  //   OPENSEA_API_KEY,
+  //   PAYPAL_CLIENT_ID,
+  //   FF_MAINNET_DEPLOY
+  // },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {

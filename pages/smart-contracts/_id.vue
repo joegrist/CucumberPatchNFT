@@ -299,11 +299,9 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { SALE_STATUS } from '@/constants'
 import {
-	CHAINID_CONFIG_MAP,
 	getExplorerUrl,
 	getCurrency,
 	isTestnet,
-	getMainnetConfig,
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
@@ -391,7 +389,7 @@ export default {
 	async mounted() {
 		try {
 			this.paypal = await loadScript({
-				'client-id': process.env.PAYPAL_CLIENT_ID,
+				'client-id': this.$config.PAYPAL_CLIENT_ID,
 				'debug': false,
 				'disable-funding': 'credit',
 				'enable-funding': 'venmo',
@@ -404,7 +402,7 @@ export default {
 		...mapGetters(['userId']),
 		canDeployMainnet() {
 			return (
-				process.env.ENABLE_MAINNET_DEPLOY_FLAG === 'true' && isTestnet(this.rawContract.chainId)
+				this.$config.FF_MAINNET_DEPLOY === 'true' && isTestnet(this.rawContract.chainId)
 			)
 		},
 		functions() {
@@ -437,20 +435,27 @@ export default {
 			)
 		},
 		async onImportCsv() {
-			const form = new FormData()
-			form.append('file', this.whitelistFile)
-
-			const { data } = await this.$axios.post(
-				`/smartcontracts/${this.rawContract.id}/whitelist`,
-				form
-			)
-			this.rawContract.whitelist = data
-			this.whitelistFile = null
-
-			this.$bvToast.toast('File successfully uploaded', {
-				title: 'Whitelist',
-				variant: 'success',
-			})
+			try {
+				const form = new FormData()
+				form.append('file', this.whitelistFile)
+	
+				const { data } = await this.$axios.post(
+					`/smartcontracts/${this.rawContract.id}/whitelist`,
+					form
+				)
+				this.rawContract.whitelist = data
+				this.whitelistFile = null
+	
+				this.$bvToast.toast('File successfully uploaded', {
+					title: 'Whitelist',
+					variant: 'success',
+				})
+			} catch (err) {
+				this.$bvToast.toast('File upload failed', {
+					title: 'Whitelist',
+					variant: 'danger',
+				})
+			}
 		},
 		async onRefreshBalance(showNotification = false) {
 			this.isBusy = true
@@ -474,9 +479,7 @@ export default {
 			return `${prefix}: ${actualResponse}`
 		},
 		async switchNetwork() {
-			await this.$wallet.switchNetwork(
-				CHAINID_CONFIG_MAP[this.rawContract.chainId]
-			)
+			await this.$wallet.switchNetwork(this.rawContract.chainId)
 		},
 		onParamChange(value, func, param) {
 			const args = (this.callFuncArgs[func.name] ??= new Map())
@@ -565,8 +568,7 @@ export default {
 					return
 				}
 
-				const mainnetConfig = getMainnetConfig(chainId)
-				await this.$wallet.switchNetwork(mainnetConfig)
+				await this.$wallet.switchNetwork(chainId)
 
 				this.isBusy = true
 
