@@ -7,7 +7,7 @@ export default ({store}, inject) => {
 
     const wallet = Vue.observable({
         account: null,
-        accountCompact: null,
+        accountCompact: 'Connect Wallet',
         network: null,
         balance: null,
         provider: null,

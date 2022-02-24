@@ -234,9 +234,14 @@ export default {
 					update.dropDate += `T${dropTime}:00`
 				}
 
+				const payload = Object.keys(update).reduce((formData, key) => {
+					if(update[key]) formData.append(key, update[key]);
+					return formData;
+				}, new FormData());
+
 				await this.$axios.put(
 					`websites/${id}`,
-					update
+					payload
 				)
 
 				this.$bvToast.toast(
