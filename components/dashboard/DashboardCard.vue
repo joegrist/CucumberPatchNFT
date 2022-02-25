@@ -187,8 +187,6 @@ export default {
 		sc: Object,
 	},
 	mounted() {
-		console.log(this.$config)
-
 		if (!this.$props.sc.isDeployed) return
 
 		this.getContractStats()
