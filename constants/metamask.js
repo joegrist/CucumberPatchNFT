@@ -60,7 +60,7 @@ export const FANTOM_TESTNET_CONFIG = {
 		symbol: 'FTM',
 		decimals: 18,
 	},
-	rpcUrls: ['https://rpc.testnet.fantom.network'],
+	rpcUrls: ['https://xapi.testnet.fantom.network/lachesis', 'https://rpc.testnet.fantom.network'],
 	blockExplorerUrls: ['https://testnet.ftmscan.com']
 }
 
