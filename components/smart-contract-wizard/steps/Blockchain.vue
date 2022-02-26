@@ -72,7 +72,7 @@
 					@mouseover="hoverCard(BLOCKCHAIN.Cronos)"
         			@mouseout="hoverCard(null)" />
 			</b-col>
-			<b-col sm="12" md="4">
+			<!-- <b-col sm="12" md="4">
 				<b-img
 					:class="['pointer mw-100 py-3', { 'shadow': hovered === BLOCKCHAIN.Songbird || smartContractBuilder.blockchain === BLOCKCHAIN.Songbird }]"
 					center
@@ -82,7 +82,7 @@
 					@click="onSelectBlockchain(BLOCKCHAIN.Songbird)"
 					@mouseover="hoverCard(BLOCKCHAIN.Songbird)"
         			@mouseout="hoverCard(null)" />
-			</b-col>
+			</b-col> -->
 			<b-col sm="12" md="4">
 				<b-img
 					:class="['mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Solana }]"
