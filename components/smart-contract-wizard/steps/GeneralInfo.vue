@@ -173,8 +173,9 @@
 
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
-import { required, maxLength, numeric, minValue, decimal } from 'vuelidate/lib/validators'
+import { required, maxLength, numeric, minValue, decimal, alphaNum } from 'vuelidate/lib/validators'
 import { getCurrency } from '@/constants/metamask'
+const mustBeName = val => /^[\w ]*$/.test(val)
 
 export default {
   mixins: [smartContractBuilderMixin],
@@ -194,12 +195,12 @@ export default {
     validations: {
       smartContractBuilder: {
         // baseURL: { required },
-        collectionSize: { required, numeric, minValue: minValue(1)},
-        name: { required, maxLength: maxLength(30) },
-        symbol: { required, maxLength: maxLength(6) },
-        mintPrice: { required, decimal, minValue:minValue(0) },
-        maxTokensPerTransaction: { numeric, minValue:minValue(0) },
-        maxTokensPerPerson: { numeric, minValue:minValue(0) }
+        collectionSize: { required, numeric, minValue: minValue(1) },
+        name: { required, mustBeName, maxLength: maxLength(30) },
+        symbol: { required, alphaNum, maxLength: maxLength(10) },
+        mintPrice: { required, decimal, minValue: minValue(0) },
+        maxTokensPerTransaction: { numeric, minValue: minValue(1) },
+        maxTokensPerPerson: { numeric, minValue: minValue(1) }
       }
   },
   computed: {

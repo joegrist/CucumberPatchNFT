@@ -74,6 +74,17 @@
 			</b-col>
 			<b-col sm="12" md="4">
 				<b-img
+					:class="['pointer mw-100 py-3', { 'shadow': hovered === BLOCKCHAIN.Songbird || smartContractBuilder.blockchain === BLOCKCHAIN.Songbird }]"
+					center
+					width="400px"
+					height="150px"
+					src="@/assets/images/blockchain/songbird1.svg"
+					@click="onSelectBlockchain(BLOCKCHAIN.Songbird)"
+					@mouseover="hoverCard(BLOCKCHAIN.Songbird)"
+        			@mouseout="hoverCard(null)" />
+			</b-col>
+			<b-col sm="12" md="4">
+				<b-img
 					:class="['mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Solana }]"
 					center
 					width="400px"
@@ -168,6 +179,12 @@ export default {
 					blockchain: BLOCKCHAIN.Cronos,
 					chainName: 'Cronos Testnet',
 					symbol: 'TCRO',
+				},
+				{
+					chainId: '16',
+					blockchain: BLOCKCHAIN.Songbird,
+					chainName: 'Songbird Testnet',
+					symbol: 'CFLR',
 				},
 			],
 		}

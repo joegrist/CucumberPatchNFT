@@ -202,6 +202,9 @@ export default {
 				value: MARKETPLACE.Other,
 			}
 		]
+		this.updateSmartContractBuilder({
+			marketplace: MARKETPLACE.Other
+		})
 		if(this.openSeaBlockchains.includes(this.smartContractBuilder.blockchain)) {
 			this.marketplaces.unshift({
 				text: 'OpenSea',

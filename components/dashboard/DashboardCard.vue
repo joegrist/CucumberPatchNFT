@@ -164,6 +164,7 @@ const blockchainImage = {
 	[BLOCKCHAIN.Avalanche]: require('@/assets/images/avalanche.svg'),
 	[BLOCKCHAIN.BinanceSmartChain]: require('@/assets/images/binance.svg'),
 	[BLOCKCHAIN.Cronos]: require('@/assets/images/cronos.svg'),
+	[BLOCKCHAIN.Songbird]: require('@/assets/images/songbird.svg')
 }
 
 export default {
@@ -260,13 +261,10 @@ export default {
 					this.$wallet.provider
 				)
 
-				// console.log('contract is deployed:', await contract.deployed())
-				// console.log('contractUri', await contract.contractURI())
-
 				const contractBalance = await this.$wallet.provider.getBalance(
 					this.$props.sc.address
 				)
-				console.log(this.$props.sc.address, +(await contract.totalSupply()))
+
 				this.balance = +ethers.utils.formatEther(contractBalance)
 				this.minted = +(await contract.totalSupply())
 				this.revealed = this.$props.sc.hasDelayedReveal
