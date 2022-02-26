@@ -9,6 +9,7 @@ const BLOCKCHAIN = Object.freeze({
 	Avalanche: 8,
 	Legacy: 9,
 	Cronos: 10,
+	Songbird: 11,
 	1: 'Ethereum',
 	2: 'Solana',
 	3: 'Fantom',
@@ -16,7 +17,8 @@ const BLOCKCHAIN = Object.freeze({
 	6: 'Polygon',
 	8: 'Avalanche',
 	9: 'Legacy',
-	10: 'Cronos'
+	10: 'Cronos',
+	11: 'Songbird'
 })
 
 const WEBSITE_STATUS = Object.freeze({

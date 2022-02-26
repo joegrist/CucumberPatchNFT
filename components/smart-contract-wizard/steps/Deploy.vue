@@ -143,6 +143,7 @@ export default {
 				[BLOCKCHAIN.Avalanche]: require('@/assets/images/blockchain/avalanche.svg'),
 				[BLOCKCHAIN.BinanceSmartChain]: require('@/assets/images/blockchain/binance.svg'),
 				[BLOCKCHAIN.Cronos]: require('@/assets/images/blockchain/cronos.svg'),
+				[BLOCKCHAIN.Songbird]: require('@/assets/images/blockchain/songbird.svg'),
 			},
 			excludeList: [
 				'id',
