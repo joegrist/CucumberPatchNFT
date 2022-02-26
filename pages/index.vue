@@ -61,13 +61,11 @@
 						required></b-form-input>
 				</b-form-group>
 				<b-form-group label="Description">
-					<b-form-input
+					<b-form-textarea
 						id="description"
 						name="description"
 						v-model="newWebsite.description"
-						type="text"
-						placeholder="10k unique NFTs"
-						></b-form-input>
+						></b-form-textarea>
 				</b-form-group>
 				<!-- <b-form-group
 					label="Desired website domain (URL)">
@@ -81,8 +79,22 @@
 				</b-form-group> -->
 				<div class="d-flex">
 					<b-form-group
+						label="Icon"
+						description="Your site's icon"
+						class="pr-1 w-50">
+						<b-form-file v-model="newWebsite.icon" name="icon" placeholder="Choose a file or drop it here..." drop-placeholder="Drop file here..."></b-form-file>
+					</b-form-group>
+					<b-form-group
+						label="Background Image"
+						description="Your site's background"
+						class="pr-1 w-50">
+						<b-form-file v-model="newWebsite.backgroundImage" name="backgroundImage" placeholder="Choose a file or drop it here..." drop-placeholder="Drop file here..."></b-form-file>
+					</b-form-group>
+				</div>
+				<div class="d-flex">
+					<b-form-group
 						label="Drop Date"
-						description="Sets the countdown timer. Can be updated later."
+						description="Sets the countdown timer. Can be updated later"
 						class="pr-1 w-50">
 						<b-form-input
 							id="dropDateInput"
@@ -94,7 +106,7 @@
 					</b-form-group>
 					<b-form-group
 						label="Drop Time"
-						description="Sets the countdown timer. Can be updated later."
+						description="Sets the countdown timer. Can be updated later"
 						class="pl-1 w-50">
 						<b-form-input
 							id="dropTimeInput"

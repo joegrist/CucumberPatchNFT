@@ -28,10 +28,10 @@
 				<b-dd-item
 					v-if="$props.sc.website"
 					:to="`/websites/${$props.sc.website.id}`"
-					><b-icon icon="pencil-square" />Website</b-dd-item
+					><b-icon icon="pencil-square" /> Website</b-dd-item
 				>
 				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE" @click="() => $emit('create-site', $props.sc.id)"
-					><b-icon icon="cloud-upload" />Website</b-dd-item
+					><b-icon icon="cloud-upload" /> Website</b-dd-item
 				>
 			</template>
 			<b-dd-item variant="danger" @click="onRemoveCard"
