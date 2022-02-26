@@ -61,9 +61,9 @@
 					@mouseover="hoverCard(BLOCKCHAIN.BinanceSmartChain)"
         			@mouseout="hoverCard(null)" />
 			</b-col>
-			<b-col sm="12" md="4">
+			<b-col sm="12" md="4" class="">
 				<b-img
-					:class="['pointer mw-100', { 'shadow': hovered === BLOCKCHAIN.Cronos || smartContractBuilder.blockchain === BLOCKCHAIN.Cronos }]"
+					:class="['pointer mw-100 px-4 cryptodotcom', { 'shadow': hovered === BLOCKCHAIN.Cronos || smartContractBuilder.blockchain === BLOCKCHAIN.Cronos }]"
 					center
 					width="400px"
 					height="150px"
@@ -78,7 +78,7 @@
 					center
 					width="400px"
 					height="150px"
-					src="@/assets/images/blockchain/songbird1.svg"
+					src="@/assets/images/blockchain/songbird.svg"
 					@click="onSelectBlockchain(BLOCKCHAIN.Songbird)"
 					@mouseover="hoverCard(BLOCKCHAIN.Songbird)"
         			@mouseout="hoverCard(null)" />
@@ -260,3 +260,10 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss">
+	.cryptodotcom {
+		// transform: scale(1.5) !important;
+
+	}
+</style>
