@@ -60,6 +60,7 @@
 					<b-form-file
 						v-model="site.icon"
 						name="icon"
+						accept="image/*"
 						placeholder="Choose a file or drop it here..."
 						drop-placeholder="Drop file here..."></b-form-file>
 				</b-form-group>
@@ -70,6 +71,7 @@
 					<b-form-file
 						v-model="site.backgroundImage"
 						name="backgroundImage"
+						accept="image/*"
 						placeholder="Choose a file or drop it here..."
 						drop-placeholder="Drop file here..."></b-form-file>
 				</b-form-group>
@@ -266,6 +268,16 @@ export default {
 			}
 		},
 		async onUpdate() {
+			if(this.site.backgroundImage?.size / (1024*1024) > 1) {
+				alert("Background image is too big. Max supported size is 1 mb.")
+				return
+			}
+
+			if(this.site.icon?.size / (1024*1024) > 1) {
+				alert("Icon is too big. Max supported size is 1 mb.")
+				return
+			}
+
 			this.setBusy(true)
 
 			try {

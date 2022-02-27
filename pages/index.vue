@@ -51,7 +51,7 @@
 				<b-form-group
 					label="Website Name"
 					label-class="required"
-					description="Dispalyed on Google and as a browser tab title. Ours, for example, is Zero Code NFT Wizard">
+				>
 					<b-form-input
 						id="title"
 						name="title"
@@ -84,6 +84,7 @@
 						<b-form-file
 							v-model="newWebsite.icon"
 							name="icon"
+							accept="image/*"
 							placeholder="Choose a file or drop it here..."
 							drop-placeholder="Drop file here..."></b-form-file>
 					</b-form-group>
@@ -94,6 +95,7 @@
 						<b-form-file
 							v-model="newWebsite.backgroundImage"
 							name="backgroundImage"
+							accept="image/*"
 							placeholder="Choose a file or drop it here..."
 							drop-placeholder="Drop file here..."></b-form-file>
 					</b-form-group>
@@ -218,6 +220,17 @@ export default {
 
 		async onDeploySite(e) {
 			e.preventDefault()
+
+			if(this.newWebsite.backgroundImage?.size / (1024*1024) > 1){
+				alert("Background image is too big. Max supported size is 1 mb.")
+				return
+			}
+
+			if(this.newWebsite.icon?.size / (1024*1024) > 1){
+				alert("Icon is too big. Max supported size is 1 mb.")
+				return
+			}
+
 			this.setBusy(true)
 
 			try {

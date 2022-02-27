@@ -28,10 +28,10 @@
 				<b-dd-item
 					v-if="$props.sc.website"
 					:to="`/websites/${$props.sc.website.id}`"
-					><b-icon icon="pencil-square" /> Website</b-dd-item
+					><b-icon icon="pencil-square" /> Minting Page</b-dd-item
 				>
-				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE" @click="() => $emit('create-site', $props.sc.id)"
-					><b-icon icon="cloud-upload" /> Website</b-dd-item
+				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE" @click="onCreateMintPage"
+					><b-icon icon="cloud-upload" /> Minting Page</b-dd-item
 				>
 			</template>
 			<b-dd-item variant="danger" @click="onRemoveCard"
@@ -155,7 +155,7 @@
 import { ethers } from 'ethers'
 import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 const blockchainImage = {
 	[BLOCKCHAIN.Ethereum]: require('@/assets/images/ethereum.svg'),
 	[BLOCKCHAIN.Solana]: require('@/assets/images/solana.svg'),
@@ -197,6 +197,7 @@ export default {
 		}
 	},
 	computed: {
+		...mapGetters(['userId']),
 		formattedBalance() {
 			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.$props.sc.chainId)}`
 		},
@@ -237,6 +238,17 @@ export default {
 		onEdit() {
 			this.updateSmartContractBuilder({ ...this.$props.sc })
 			this.$router.push('/wizard')
+		},
+		async onCreateMintPage() {
+			this.$emit('create-site', this.$props.sc.id)
+
+			// const pagesCount = this.$axios.get(`/users/${this.userId}/websites/count`)
+			// if(pagesCount >= 2) {
+			// 	alert("You've exhausted your minting pages limit (2). Please remove other pages first or upgrade your account")
+			// }
+			// else {
+			// 	this.$emit('create-site', this.$props.sc.id)
+			// }
 		},
 		async onRemoveCard() {
 			if (!confirm('Are you sure want to remove this card ?')) return
