@@ -64,8 +64,7 @@
 					<b-form-textarea
 						id="description"
 						name="description"
-						v-model="newWebsite.description"
-						></b-form-textarea>
+						v-model="newWebsite.description"></b-form-textarea>
 				</b-form-group>
 				<!-- <b-form-group
 					label="Desired website domain (URL)">
@@ -80,15 +79,23 @@
 				<div class="d-flex">
 					<b-form-group
 						label="Icon"
-						description="Your site's icon"
+						description="Your site's icon. Max 1 MB in size"
 						class="pr-1 w-50">
-						<b-form-file v-model="newWebsite.icon" name="icon" placeholder="Choose a file or drop it here..." drop-placeholder="Drop file here..."></b-form-file>
+						<b-form-file
+							v-model="newWebsite.icon"
+							name="icon"
+							placeholder="Choose a file or drop it here..."
+							drop-placeholder="Drop file here..."></b-form-file>
 					</b-form-group>
 					<b-form-group
 						label="Background Image"
-						description="Your site's background"
+						description="Your site's background. Max 1 MB in size"
 						class="pr-1 w-50">
-						<b-form-file v-model="newWebsite.backgroundImage" name="backgroundImage" placeholder="Choose a file or drop it here..." drop-placeholder="Drop file here..."></b-form-file>
+						<b-form-file
+							v-model="newWebsite.backgroundImage"
+							name="backgroundImage"
+							placeholder="Choose a file or drop it here..."
+							drop-placeholder="Drop file here..."></b-form-file>
 					</b-form-group>
 				</div>
 				<div class="d-flex">
@@ -101,8 +108,7 @@
 							name="dropDateInput"
 							v-model="newWebsite.dropDateInput"
 							type="date"
-							:min="new Date().toISOString().split('T')[0]"
-							></b-form-input>
+							:min="new Date().toISOString().split('T')[0]"></b-form-input>
 					</b-form-group>
 					<b-form-group
 						label="Drop Time"
@@ -112,8 +118,7 @@
 							id="dropTimeInput"
 							name="dropTimeInput"
 							v-model="newWebsite.dropTimeInput"
-							type="time"
-							></b-form-input>
+							type="time"></b-form-input>
 					</b-form-group>
 				</div>
 				<div class="d-flex">
@@ -122,16 +127,14 @@
 							id="twitterUrl"
 							name="twitterUrl"
 							v-model="newWebsite.twitterUrl"
-							type="url"
-							></b-form-input>
+							type="url"></b-form-input>
 					</b-form-group>
 					<b-form-group label="Discord URL" class="pl-1 w-50">
 						<b-form-input
 							id="discordURL"
 							name="discordURL"
 							v-model="newWebsite.discordURL"
-							type="url"
-							></b-form-input>
+							type="url"></b-form-input>
 					</b-form-group>
 				</div>
 				<div class="d-flex">
@@ -140,16 +143,14 @@
 							id="instagramURL"
 							name="instagramURL"
 							v-model="newWebsite.instagramURL"
-							type="url"
-							></b-form-input>
+							type="url"></b-form-input>
 					</b-form-group>
 					<b-form-group label="TikTok URL" class="pl-1 w-50">
 						<b-form-input
 							id="tikTokURL"
 							name="tikTokURL"
 							v-model="newWebsite.tikTokURL"
-							type="url"
-							></b-form-input>
+							type="url"></b-form-input>
 					</b-form-group>
 				</div>
 				<div class="d-flex">
@@ -158,8 +159,7 @@
 							id="marketplaceURL"
 							name="marketplaceURL"
 							v-model="newWebsite.marketplaceURL"
-							type="url"
-							></b-form-input>
+							type="url"></b-form-input>
 					</b-form-group>
 				</div>
 			</b-form>
@@ -196,7 +196,7 @@ export default {
 					x.symbol.toLowerCase().includes(term)
 			)
 			// console.log(this.dashboardItems, term, filtered)
-			return filtered 
+			return filtered
 		},
 	},
 	methods: {
@@ -228,9 +228,9 @@ export default {
 				}
 
 				const payload = Object.keys(this.newWebsite).reduce((formData, key) => {
-					if(this.newWebsite[key]) formData.append(key, this.newWebsite[key]);
-					return formData;
-				}, new FormData());
+					if (this.newWebsite[key]) formData.append(key, this.newWebsite[key])
+					return formData
+				}, new FormData())
 
 				const { data: createdSite } = await this.$axios.post(
 					'websites',

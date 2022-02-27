@@ -3,7 +3,9 @@
 		<h1 class="text-center">{{ site.title }} dApp</h1>
 		<ul>
 			<li>
-				<span class="text-success">Status: {{ WEBSITE_STATUS[site.status] }}</span>
+				<span class="text-success"
+					>Status: {{ WEBSITE_STATUS[site.status] }}</span
+				>
 				<b-button
 					v-if="site.status !== WEBSITE_STATUS.Ready"
 					variant="success"
@@ -23,6 +25,13 @@
 				Current URL: building <b-spinner small></b-spinner>
 			</li>
 			<li>Created: {{ site.createdOn | toDate }}</li>
+			<li v-if="site.status === WEBSITE_STATUS.Ready">To use on your existing website as sub domain add a new CNAME record </li>
+			<li v-if="site.status === WEBSITE_STATUS.Ready">
+				<ul>
+					<li>Name: mint</li>
+					<li>Value: {{ site.url.replace('http://', '') }}</li>
+				</ul>
+			</li>
 		</ul>
 		<b-form @submit.prevent="onUpdate" class="mb-3">
 			<b-form-group
@@ -41,21 +50,28 @@
 				<b-form-textarea
 					id="description"
 					name="description"
-					v-model="site.description"
-					></b-form-textarea>
+					v-model="site.description"></b-form-textarea>
 			</b-form-group>
 			<div class="d-flex">
 				<b-form-group
 					label="Icon"
-					description="Your site's icon"
+					description="Your site's icon. Max 1 MB in size"
 					class="pr-1 w-50">
-					<b-form-file v-model="site.icon" name="icon" placeholder="Choose a file or drop it here..." drop-placeholder="Drop file here..."></b-form-file>
+					<b-form-file
+						v-model="site.icon"
+						name="icon"
+						placeholder="Choose a file or drop it here..."
+						drop-placeholder="Drop file here..."></b-form-file>
 				</b-form-group>
 				<b-form-group
 					label="Background Image"
-					description="Your site's background"
+					description="Your site's background. Max 1 MB in size"
 					class="pr-1 w-50">
-					<b-form-file v-model="site.backgroundImage" name="backgroundImage" placeholder="Choose a file or drop it here..." drop-placeholder="Drop file here..."></b-form-file>
+					<b-form-file
+						v-model="site.backgroundImage"
+						name="backgroundImage"
+						placeholder="Choose a file or drop it here..."
+						drop-placeholder="Drop file here..."></b-form-file>
 				</b-form-group>
 			</div>
 			<!-- <b-form-group label="Desired website domain (URL)">
@@ -76,8 +92,7 @@
 						name="dropDateInput"
 						v-model="site.dropDate"
 						type="date"
-						:min="new Date().toISOString().split('T')[0]"
-						></b-form-input>
+						:min="new Date().toISOString().split('T')[0]"></b-form-input>
 				</b-form-group>
 				<b-form-group
 					label="Drop Time"
@@ -87,8 +102,7 @@
 						id="dropTimeInput"
 						name="dropTimeInput"
 						v-model="site.dropTime"
-						type="time"
-						></b-form-input>
+						type="time"></b-form-input>
 				</b-form-group>
 			</div>
 			<div class="d-flex">
@@ -105,8 +119,7 @@
 					<b-form-input
 						id="twitterURL"
 						name="twitterURL"
-						v-model="site.twitterURL"
-						></b-form-input>
+						v-model="site.twitterURL"></b-form-input>
 				</b-form-group>
 				<b-form-group class="w-50">
 					<template #label>
@@ -121,8 +134,7 @@
 					<b-form-input
 						id="discordURL"
 						name="discordURL"
-						v-model="site.discordURL"
-						></b-form-input>
+						v-model="site.discordURL"></b-form-input>
 				</b-form-group>
 			</div>
 			<div class="d-flex">
@@ -139,8 +151,7 @@
 					<b-form-input
 						id="instagramURL"
 						name="instagramURL"
-						v-model="site.instagramURL"
-						></b-form-input>
+						v-model="site.instagramURL"></b-form-input>
 				</b-form-group>
 				<b-form-group class="w-50">
 					<template #label>
@@ -155,8 +166,7 @@
 					<b-form-input
 						id="tikTokURL"
 						name="tikTokURL"
-						v-model="site.tikTokURL"
-						></b-form-input>
+						v-model="site.tikTokURL"></b-form-input>
 				</b-form-group>
 			</div>
 			<b-form-group label="Marketplace URL">
@@ -172,11 +182,15 @@
 				<b-form-input
 					id="marketplaceURL"
 					name="marketplaceURL"
-					v-model="site.marketplaceURL"
-					></b-form-input>
+					v-model="site.marketplaceURL"></b-form-input>
 			</b-form-group>
 			<div class="d-flex justify-content-end">
-				<b-button variant="danger" @click="onDelete" :disabled="isBusy || site.status !== WEBSITE_STATUS.Ready">Delete</b-button>
+				<b-button
+					variant="danger"
+					@click="onDelete"
+					:disabled="isBusy || site.status !== WEBSITE_STATUS.Ready"
+					>Delete</b-button
+				>
 				<b-button class="ml-2" type="submit" variant="success">Update</b-button>
 			</div>
 		</b-form>
@@ -200,7 +214,7 @@ export default {
 	async fetch() {
 		const { data } = await this.$axios.get(`/websites/${this.$route.params.id}`)
 		this.site = data
-		if(this.site.dropDate) {
+		if (this.site.dropDate) {
 			const [date, time] = this.site.dropDate.split('T')
 			this.site.dropDate = date
 			this.site.dropTime = time || '00:00'
@@ -242,7 +256,7 @@ export default {
 		async onDelete() {
 			try {
 				this.setBusy(true)
-				if(!confirm("Are you sure you want to delete this site ?")) return
+				if (!confirm('Are you sure you want to delete this site ?')) return
 				await this.$axios.delete(`/websites/${this.site.id}`)
 				this.$router.push('/')
 			} catch (err) {
@@ -264,14 +278,11 @@ export default {
 				}
 
 				const payload = Object.keys(update).reduce((formData, key) => {
-					if(update[key]) formData.append(key, update[key]);
-					return formData;
-				}, new FormData());
+					if (update[key]) formData.append(key, update[key])
+					return formData
+				}, new FormData())
 
-				await this.$axios.put(
-					`websites/${id}`,
-					payload
-				)
+				await this.$axios.put(`websites/${id}`, payload)
 
 				this.$bvToast.toast(
 					'Website updated. Please give it 5-10 mins for the changes to take effect',
@@ -289,7 +300,7 @@ export default {
 			} finally {
 				this.setBusy(false)
 			}
-		}
+		},
 	},
 }
 </script>
