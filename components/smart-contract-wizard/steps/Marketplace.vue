@@ -212,7 +212,7 @@ export default {
 			})
 
 			// set OpenSea as default
-			if (this.smartContractBuilder.marketplace === null) {
+			if (!this.smartContractBuilder.marketplace) {
 				this.updateSmartContractBuilder({
 					marketplace: MARKETPLACE.OpenSea
 				})
