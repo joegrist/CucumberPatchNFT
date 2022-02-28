@@ -33,6 +33,9 @@
 				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE" @click="onCreateMintPage"
 					><b-icon icon="cloud-upload" /> Minting Page</b-dd-item
 				>
+				<b-dd-item @click="onCloneContract"
+					><b-icon icon="files" /> Clone</b-dd-item
+				>
 			</template>
 			<b-dd-item variant="danger" @click="onRemoveCard"
 				><b-icon icon="trash" /> Remove Card
@@ -231,7 +234,7 @@ export default {
 	},
 	methods: {
 		...mapMutations(['updateSmartContractBuilder']),
-		...mapActions(['removeDashboardCard']),
+		...mapActions(['removeDashboardCard', 'cloneDashboardCard']),
 		getCurrency,
 		isTestnet,
 		getExplorerUrl,
@@ -249,6 +252,17 @@ export default {
 			// else {
 			// 	this.$emit('create-site', this.$props.sc.id)
 			// }
+		},
+		async onCloneContract() {
+			try {
+				await this.cloneDashboardCard(this.$props.sc.id)
+			} catch (err) {
+				console.error({ err })
+				this.$bvToast.toast('Clone failed', {
+					title: 'Smart Contract',
+					variant: 'danger',
+				})
+			}
 		},
 		async onRemoveCard() {
 			if (!confirm('Are you sure want to remove this card ?')) return

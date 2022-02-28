@@ -102,6 +102,10 @@ export const actions = {
 			commit('setBusy', false)
         }
     },
+    async cloneDashboardCard(actionObj, id) {
+        await this.$axios.post(`/smartcontracts/${id}/clone`)
+        await actionObj.dispatch('loadDashboardCards')
+    },
     async removeDashboardCard({commit, state}, id) {
         await this.$axios.delete(`/smartcontracts/${id}`)
         commit('setDashboardItems', state.dashboardItems.filter(x => x.id !== id))
