@@ -37,7 +37,7 @@
 			<b-form-group
 				label="Website Name"
 				label-class="required"
-				description="Dispalyed on Google and as a browser tab title. Ours, for example, is Zero Code NFT Wizard">
+				>
 				<b-form-input
 					id="title"
 					name="title"
