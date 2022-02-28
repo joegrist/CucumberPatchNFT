@@ -204,6 +204,7 @@ import { WEBSITE_STATUS } from '@/constants'
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {
+	middleware: 'authenticated',
 	data() {
 		return {
 			WEBSITE_STATUS,

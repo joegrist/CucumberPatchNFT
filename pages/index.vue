@@ -46,7 +46,6 @@
 			ok-variant="success"
 			no-close-on-backdrop
 			:busy="isBusy">
-			<!-- <p>Smart Contract: {{ $props.sc.name }}</p> -->
 			<b-form>
 				<b-form-group
 					label="Website Name"

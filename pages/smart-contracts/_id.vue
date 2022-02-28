@@ -1,6 +1,5 @@
 <template>
 	<b-container class="mt-5">
-		<b-overlay :show="isBusy" opacity="1">
 			<b-row class="mb-3">
 				<b-col sm="12" md="8">
 					<p class="lead font-weight-bold mb-1">
@@ -202,31 +201,27 @@
 					</b-row>
 				</b-col>
 				<b-col v-if="rawContract.hasWhitelist" cols="4" class="mb-3">
-					<b-row>
+					<b-row class="mb-2">
 						<b-col>
-							<h4>Whitelist</h4>
-						</b-col>
-					</b-row>
-					<b-row no-gutters>
-						<b-col sm="12" md="9">
-							<b-form-file
-								v-model="whitelistFile"
-								placeholder="Choose or drop .csv file"
-								drop-placeholder="Drop file here..."></b-form-file>
-						</b-col>
-						<b-col sm="12" md="3" class="text-right">
-							<b-button
-								:disabled="whitelistFile === null"
-								variant="success"
-								@click="onImportCsv"
-								>Import</b-button
+							<h4 class="m-0">Whitelist</h4>
+							<b-link href="/whitelist-csv-example.csv" download
+								>Download example</b-link
 							>
 						</b-col>
 					</b-row>
-					<b-row class="mb-3">
+					<b-row no-gutters>
 						<b-col>
-							<b-link href="/whitelist-csv-example.csv" download
-								>Download example</b-link
+							<b-form-file
+								accept=".csv"
+								@input="onImportCsv"
+								placeholder="Choose or drop .csv file"
+								drop-placeholder="Drop file here..."></b-form-file>
+						</b-col>
+					</b-row>
+					<b-row class="mt-3 mb-1">
+						<b-col>
+							<b-button block variant="warning" @click="onWhitelistCommit"
+								>Commit List Update</b-button
 							>
 						</b-col>
 					</b-row>
@@ -234,7 +229,6 @@
 						<b-col>
 							<b-form-tags
 								v-model="rawContract.whitelist"
-								@input="onWhitelistInput"
 								invalid-tag-text="Address is invalid"
 								:tag-validator="whitelistValidator"
 								placeholder="Enter Wallet Address">
@@ -243,7 +237,6 @@
 					</b-row>
 				</b-col>
 			</b-row>
-		</b-overlay>
 		<b-modal
 			id="deployment"
 			title="Deployed!"
@@ -296,7 +289,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 import { SALE_STATUS } from '@/constants'
 import {
 	getExplorerUrl,
@@ -307,6 +300,7 @@ import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
 import { loadScript } from '@paypal/paypal-js'
 import { VueCsvImport } from 'vue-csv-import'
+import { getMerkleRoot } from '@/utils'
 
 const basicFunctions = [
 	'canReveal',
@@ -340,16 +334,15 @@ export default {
 		contractBalance: 0,
 		saleStatus: 'N/A',
 		busyState: {},
-		isBusy: true,
 		isReady: false,
 		paypal: null,
-		whitelist: null,
-		whitelistFile: null,
 	}),
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
 	async fetch() {
 		try {
+			this.setBusy(true)
+
 			const { data } = await this.$axios.get(
 				`/users/${this.userId}/smartcontracts/${this.$route.params.id}`
 			)
@@ -375,7 +368,7 @@ export default {
 		} catch (err) {
 			console.error(err)
 		} finally {
-			this.isBusy = false
+			this.setBusy(false)
 		}
 
 		// console.log(
@@ -399,6 +392,7 @@ export default {
 		}
 	},
 	computed: {
+		...mapState(['isBusy']),
 		...mapGetters(['userId']),
 		canDeployMainnet() {
 			return (
@@ -417,35 +411,69 @@ export default {
 		},
 		isOnWrongNetwork() {
 			return this.$wallet.chainId !== +this.rawContract.chainId
-		},
+		}
 	},
 	methods: {
 		getExplorerUrl,
 		isTestnet,
 		getCurrency,
+    	...mapMutations(['setBusy']),
 		whitelistValidator(tag) {
 			return ethers.utils.isAddress(tag)
 		},
-		async onWhitelistInput(val) {
-			await this.$axios.patch(
-				`/smartcontracts/${this.rawContract.id}/whitelist`,
-				{
-					whitelist: val,
-				}
-			)
+		async onWhitelistCommit() {
+			this.setBusy(true)
+			try {
+				await this.$axios.patch(
+					`/smartcontracts/${this.rawContract.id}/whitelist`,
+					{
+						whitelist: this.rawContract.whitelist,
+					}
+				)
+
+				const rootHash = getMerkleRoot(this.rawContract.whitelist)
+				const txResponse = await this.contract.setMerkleRoot(rootHash)
+
+				const msg = [this.createToastMessage(txResponse.hash)]
+				this.$bvToast.toast(msg, {
+					title: `Processing 'Commit List Update'`,
+					variant: 'success',
+				})
+				txResponse.wait().then(async (res) => {
+					console.log({ res })
+					this.$bvToast.toast(msg, {
+						title: 'Commit List Update',
+						variant: 'success',
+					})
+				})
+			} catch (err) {
+				console.log(err)
+				this.$bvToast.toast('Whitelist commit failed', {
+					title: 'Whitelist',
+					variant: 'danger',
+				})
+			} finally {
+				this.setBusy(false)
+			}
 		},
-		async onImportCsv() {
+		async onImportCsv(file) {
+			if(file === null) return
+
 			try {
 				const form = new FormData()
-				form.append('file', this.whitelistFile)
+				form.append('file', file)
 	
 				const { data } = await this.$axios.post(
 					`/smartcontracts/${this.rawContract.id}/whitelist`,
 					form
 				)
+
 				this.rawContract.whitelist = data
-				this.whitelistFile = null
 	
+				this.$bvToast.toast('You MUST commit the list to save it into the smart contract for it to take effect!', {
+					title: 'Whitelist',
+					variant: 'warning',
+				})
 				this.$bvToast.toast('File successfully uploaded', {
 					title: 'Whitelist',
 					variant: 'success',
@@ -458,12 +486,12 @@ export default {
 			}
 		},
 		async onRefreshBalance(showNotification = false) {
-			this.isBusy = true
+			this.setBusy(true)
 			const balance =
 				(await this.$wallet.provider.getBalance(this.rawContract.address)) ||
 				'0'
 			this.contractBalance = +ethers.utils.formatEther(balance)
-			this.isBusy = false
+			this.setBusy(false)
 			showNotification &&
 				this.$bvToast.toast('Balance successfully refreshed', {
 					title: 'Balance',
@@ -570,7 +598,7 @@ export default {
 
 				await this.$wallet.switchNetwork(chainId)
 
-				this.isBusy = true
+				this.setBusy(true)
 
 				const { data } = await this.$axios.get(
 					`/smartcontracts/${id}/compiled`,
@@ -606,12 +634,13 @@ export default {
 
 				this.$bvModal.show('deployment')
 			} catch (err) {
-				this.isBusy = false
 				console.error({ err })
 				this.$bvToast.toast(err.message || 'Deployment failed', {
 					title: 'Mainnet Deployment',
 					variant: 'danger',
 				})
+			} finally {
+				this.setBusy(false)
 			}
 		},
 		onUpdateSaleStatus(value) {
@@ -622,10 +651,10 @@ export default {
 			}
 		},
 		callFuncByName(name) {
-			this.isBusy = true
+			this.setBusy(true)
 			const func = this.functions.find((val) => val.name === name)
 			func && this.callFunc(func)
-			this.isBusy = false
+			this.setBusy(false)
 		},
 		async callFunc(func) {
 			try {
@@ -698,19 +727,19 @@ export default {
 					Vue.set(this.responses, func.name, value)
 
 					this.$bvToast.toast(`Returned value: ${value}`, {
-						title: func.name,
+						title: startCase(func.name),
 						variant: 'success',
 					})
 				} else {
 					const msg = [this.createToastMessage(txResponse.hash)]
 					this.$bvToast.toast(msg, {
-						title: `Processing ${func.name}`,
+						title: `Processing '${startCase(func.name)}'`,
 						variant: 'success',
 					})
 					txResponse.wait().then(async (res) => {
 						console.log({ res })
 						this.$bvToast.toast(msg, {
-							title: `${func.name} completed`,
+							title: `${startCase(func.name)} completed`,
 							variant: 'success',
 						})
 					})

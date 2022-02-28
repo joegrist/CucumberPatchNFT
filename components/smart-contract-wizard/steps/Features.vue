@@ -121,7 +121,7 @@
 					</b-form-group>
 				</b-col>
 			</b-row>
-			<b-row>
+			<!-- <b-row>
 				<b-col>
 					<b-form-group
 						label="List of wallet addresses"
@@ -136,18 +136,9 @@
 							@input="(val) => updateSmartContractBuilder({ whitelist: val })"
 							placeholder="0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199">
 						</b-form-tags>
-						<!-- <vue-csv-import
-							v-model="whitelist"
-							:headers="true"
-							buttonClass="btn btn-success"
-							submitBtnText="Import"
-							:map-fields="['wallet']"
-							:url="`/smart-contracts/${rawContract.id}/whitelist`"
-						>
-						</vue-csv-import> -->
 					</b-form-group>
 				</b-col>
-			</b-row>
+			</b-row> -->
 			<b-row>
 				<b-col>
 					<b-form-group>
@@ -200,9 +191,6 @@
 							type="number"
 							step="any"
 							min="0"></b-form-input>
-						<!-- <b-form-invalid-feedback :state="validation.revenueSplits">
-							Please correct "Share {{ idx }}"
-						</b-form-invalid-feedback> -->
 					</b-form-group>
 				</b-col>
 				<b-col cols="1">
@@ -242,7 +230,6 @@
 
 <script>
 import Vue from 'vue'
-// import { VueCsvImport } from 'vue-csv-import';
 import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import {
@@ -269,7 +256,6 @@ export default {
 				delayedRevealURL: null,
 				whitelistPrice: null,
 				maxTokensPerPersonOnWhitelist: 1,
-				whitelist: [],
 				revenueSplits: [
 					{
 						wallet: this.$wallet.account,
@@ -347,9 +333,6 @@ export default {
 		},
 	},
 	methods: {
-		whitelistValidator(tag) {
-			return ethers.utils.isAddress(tag)
-		},
 		onAddSplit() {
 			const otherShares = this.revenueSplits
 				.map((x) => x.share)
