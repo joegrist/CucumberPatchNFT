@@ -286,7 +286,7 @@ export default {
 				const update = { ...this.site }
 				update.dropDate = dropDate
 				if (dropDate && dropTime) {
-					update.dropDate += `T${dropTime}:00`
+					update.dropDate += `T${dropTime}`
 				}
 
 				const payload = Object.keys(update).reduce((formData, key) => {
