@@ -23,6 +23,7 @@
     "dayjs": "^1.10.7",
     "ethers": "^5.5.2",
     "lodash-es": "^4.17.21",
+    "merkletreejs": "^0.2.30",
     "nanoid": "^3.2.0",
     "nuxt": "^2.15.7",
     "vue-csv-import": "^2.3.4",
