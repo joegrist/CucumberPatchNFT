@@ -295,6 +295,7 @@ import {
 	getExplorerUrl,
 	getCurrency,
 	isTestnet,
+	getMainnetConfig
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
@@ -303,6 +304,7 @@ import { VueCsvImport } from 'vue-csv-import'
 import { getMerkleRoot } from '@/utils'
 
 const basicFunctions = [
+	'airdrop',
 	'canReveal',
 	'COLLECTION_SIZE',
 	'MINT_PRICE',
@@ -595,7 +597,13 @@ export default {
 					return
 				}
 
-				await this.$wallet.switchNetwork(chainId)
+				const mainnetConfig = getMainnetConfig(chainId)
+				if(!mainnetConfig) {
+					alert("Mainnet configuration not found.")
+					return
+				}
+				
+				await this.$wallet.switchNetwork(mainnetConfig.chainId)
 
 				this.setBusy(true)
 
