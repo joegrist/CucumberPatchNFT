@@ -7,6 +7,22 @@ const getMerkleRoot = (whitelist) => {
     return merkleTree.getRoot()
 }
 
+const wait = (delay) => {
+    return new Promise((resolve) => setTimeout(resolve, delay));
+}
+
+const getCompactAddress = (address) => {
+    if(!address) return address
+    
+	const length = address.length
+    return `${address.substring(0, 4)}...${address.substring(
+        length - 4,
+        length
+    )}`
+}
+
 export {
-    getMerkleRoot
+    getMerkleRoot,
+    wait,
+    getCompactAddress
 }

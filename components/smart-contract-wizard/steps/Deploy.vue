@@ -61,7 +61,7 @@
           <p class="mt-2">
             <span class="font-weight-bold">Your wallet address: </span>
             {{ this.$wallet.account }}
-            <b-button variant="primary" size="sm" class="p-1" @click="onAccountCopy"> Copy </b-button>
+            <b-icon icon="files" class="pointer" @click="onAccountCopy"></b-icon>
           </p>
         </b-col>
       </b-row>
@@ -236,7 +236,6 @@ export default {
             email: this.email,
           })
           if(!user) {
-            alert("Login failed")
             return
           }
         }

@@ -189,26 +189,37 @@
 			<div class="d-flex justify-content-end">
 				<b-button
 					variant="danger"
-					@click="onDelete"
+					v-b-modal="site.id"
 					:disabled="isBusy || site.status !== WEBSITE_STATUS.Ready"
 					>Delete</b-button
 				>
 				<b-button class="ml-2" type="submit" variant="success">Update</b-button>
 			</div>
 		</b-form>
+		<b-modal
+			:id="site.id"
+			title="Confirm"
+			centered
+			body-class="text-center"
+			ok-variant="success"
+			ok-title="Yes"
+			cancel-title="No"
+			@ok="onDelete"
+		>
+			<h5>Are you sure want to delete this website ?</h5>
+		</b-modal>
 	</b-container>
 </template>
 
 <script>
 import { WEBSITE_STATUS } from '@/constants'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 
 export default {
 	middleware: 'authenticated',
 	data() {
 		return {
 			WEBSITE_STATUS,
-			isBusy: false,
 			site: {},
 		}
 	},
@@ -222,11 +233,10 @@ export default {
 			this.site.dropDate = date
 			this.site.dropTime = time || '00:00'
 		}
-
-		console.log('loaded website', this.site)
 	},
 	computed: {
-		...mapGetters(['userId']),
+		...mapState(['isBusy']),
+		...mapGetters(['userId'])
 	},
 	methods: {
 		...mapMutations(['setBusy']),
@@ -236,12 +246,11 @@ export default {
 		},
 		async refreshStatus() {
 			try {
-				this.isBusy = true
+				this.setBusy(true)
 
 				const { data } = await this.$axios.get(
 					`/users/${this.userId}/websites/${this.site.id}/status`
 				)
-
 				this.site.status = data
 
 				setTimeout(() => {
@@ -249,23 +258,29 @@ export default {
 						title: 'Website',
 						variant: 'success',
 					})
-					this.isBusy = false
-				}, 3000)
+					this.setBusy(false)
+				}, 2000)
 			} catch (err) {
-				this.isBusy = false
-				console.error(err)
+				this.$bvToast.toast('Refresh failed', {
+					title: 'Website',
+					variant: 'danger',
+				})
+			} finally {
+				this.setBusy(false)
 			}
 		},
 		async onDelete() {
 			try {
 				this.setBusy(true)
-				if (!confirm('Are you sure you want to delete this site ?')) return
 				await this.$axios.delete(`/websites/${this.site.id}`)
+				this.setBusy(false)
 				this.$router.push('/')
 			} catch (err) {
-				console.error(err)
-			} finally {
 				this.setBusy(false)
+				this.$bvToast.toast('Website delete failed', {
+					title: 'Website',
+					variant: 'danger',
+				})
 			}
 		},
 		async onUpdate() {
@@ -305,7 +320,6 @@ export default {
 					}
 				)
 			} catch (err) {
-				console.error({ err })
 				this.$bvToast.toast(err.message || 'Failed to update the website', {
 					title: 'Website',
 					variant: 'danger',

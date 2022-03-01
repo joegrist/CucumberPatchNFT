@@ -37,11 +37,11 @@
 					><b-icon icon="files" /> Clone</b-dd-item
 				>
 			</template>
-			<b-dd-item variant="danger" @click="onRemoveCard"
+			<b-dd-item variant="danger" v-b-modal="$props.sc.id"
 				><b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
-		<b-card-title class="text-center">
+		<b-card-title class="text-center truncate-text px-3">
 			<b-link
 				v-if="$props.sc.isDeployed"
 				class="text-dark"
@@ -151,6 +151,18 @@
 				</b-col>
 			</b-row>
 		</b-container>
+		<b-modal
+			:id="$props.sc.id"
+			title="Confirm"
+			centered
+			body-class="text-center"
+			ok-variant="success"
+			ok-title="Yes"
+			cancel-title="No"
+			@ok="onRemoveCard"
+		>
+			<h5>Are you sure want to remove this card ?</h5>
+		</b-modal>
 	</b-card>
 </template>
 
@@ -159,6 +171,8 @@ import { ethers } from 'ethers'
 import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { wait, getCompactAddress } from '@/utils'
+
 const blockchainImage = {
 	[BLOCKCHAIN.Ethereum]: require('@/assets/images/ethereum.svg'),
 	[BLOCKCHAIN.Solana]: require('@/assets/images/solana.svg'),
@@ -210,15 +224,7 @@ export default {
 			}`
 		},
 		addressCompact() {
-			const address = this.$props.sc.address
-			if (address) {
-				const length = address.length
-				return `${address.substring(0, 4)}...${address.substring(
-					length - 4,
-					length
-				)}`
-			}
-			return address
+			return getCompactAddress(this.$props.sc.address)
 		},
 		openSeaUrl() {
 			if(!this.$props.sc.marketplaceCollection || this.$props.sc.marketplace !== MARKETPLACE.OpenSea) {
@@ -233,7 +239,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['updateSmartContractBuilder']),
+		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
 		...mapActions(['removeDashboardCard', 'cloneDashboardCard']),
 		getCurrency,
 		isTestnet,
@@ -245,36 +251,42 @@ export default {
 		async onCreateMintPage() {
 			this.$emit('create-site', this.$props.sc.id)
 
-			// const pagesCount = this.$axios.get(`/users/${this.userId}/websites/count`)
-			// if(pagesCount >= 2) {
-			// 	alert("You've exhausted your minting pages limit (2). Please remove other pages first or upgrade your account")
-			// }
-			// else {
-			// 	this.$emit('create-site', this.$props.sc.id)
-			// }
+			const pagesCount = this.$axios.get(`/users/${this.userId}/websites/count`)
+			if(pagesCount >= 2) {
+				alert("You've reached minting pages limit (2). Please remove other pages first or contact us to upgrade your account")
+			}
+			else {
+				this.$emit('create-site', this.$props.sc.id)
+			}
 		},
 		async onCloneContract() {
 			try {
+				this.setBusy(true)
 				await this.cloneDashboardCard(this.$props.sc.id)
 			} catch (err) {
-				console.error({ err })
 				this.$bvToast.toast('Clone failed', {
 					title: 'Smart Contract',
 					variant: 'danger',
 				})
+			} finally {
+				this.setBusy(false)
 			}
 		},
 		async onRemoveCard() {
-			if (!confirm('Are you sure want to remove this card ?')) return
-
 			try {
+				this.setBusy(true)
 				await this.removeDashboardCard(this.$props.sc.id)
 				this.$bvToast.toast('Card removed', {
 					title: 'Dashboard',
 					variant: 'success',
 				})
 			} catch (err) {
-				console.error({ err })
+				this.$bvToast.toast('Card delete failed', {
+					title: 'Dashboard',
+					variant: 'danger',
+				})
+			} finally {
+				this.setBusy(false)
 			}
 		},
 		async getContractStats() {
@@ -327,7 +339,7 @@ export default {
 				.then((response) => {
 					if(response.status == 429 && retryCount < 3) {
 						retryCount++
-						this.wait(2000).then(() => getData())
+						wait(2000).then(() => getData())
 					}
 					return response.json()
 				})
@@ -352,9 +364,6 @@ export default {
 			}
 
 			getData()
-		},
-		wait(delay) {
-			return new Promise((resolve) => setTimeout(resolve, delay));
 		}
 	},
 }
@@ -388,9 +397,6 @@ export default {
 	z-index: 1;
 	background: white;
 	transform: translate(-50%, -50%);
-
-	// border-image-source: $theme-gradient !important;
-	// border-image-slice:1 !important;
 }
 
 .hr {

@@ -109,7 +109,7 @@
 							}"
 							@blur="$v.smartContractBuilder.marketplaceCollection.royalties.$touch()"
 							type="number"
-							step="0.01"
+							step="0.1"
 							min="0"
 							max="10"></b-form-input>
 						<b-form-invalid-feedback :state="validation.marketplaceCollection.royalties">
@@ -141,36 +141,6 @@
 					</b-form-group>
 				</b-col>
 			</b-row>
-			<!-- <b-row>
-				<b-col>
-					<b-form-group>
-						<b-form-checkbox
-							id="raribleRoyltiesFeature"
-							name="raribleRoyltiesFeature"
-							:checked="smartContractBuilder.raribleRoyltiesFeature"
-							:disabled="true"
-							@change="
-								(val) => updateSmartContractBuilder({ raribleRoyltiesFeature: val })">
-							Add Rarible royalties feature (coming soon) ?
-						</b-form-checkbox>
-					</b-form-group>
-				</b-col>
-			</b-row>
-			<b-row>
-				<b-col>
-					<b-form-group>
-						<b-form-checkbox
-							id="mintableRoylatiesFeature"
-							name="mintableRoylatiesFeature"
-							:checked="smartContractBuilder.mintableRoylatiesFeature"
-							:disabled="true"
-							@change="
-								(val) => updateSmartContractBuilder({ mintableRoylatiesFeature: val })">
-							Add Mintable royalties feature (coming soon) ?
-						</b-form-checkbox>
-					</b-form-group>
-				</b-col>
-			</b-row> -->
 		</b-container>
 	</b-form>
 </template>
@@ -238,7 +208,7 @@ export default {
 				name: { required: requiredIf(function(model) {
 					return model.marketplace === MARKETPLACE.OpenSea
 				})},
-				feeRecipient: { hasValidAddress: val => ethers.utils.isAddress(val) }, 
+				feeRecipient: { hasValidAddress: val => val ? ethers.utils.isAddress(val) : true }, 
 				royalties: { decimal, minValue: minValue(0), maxValue: maxValue(10) },
 			},
 		},

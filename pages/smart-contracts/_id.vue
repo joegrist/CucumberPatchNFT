@@ -562,7 +562,6 @@ export default {
 							})
 							this.$bvModal.hide('payment')
 							this.$bvModal.show('paymentSuccess')
-							// alert('Transaction completed by ' + details.payer.name.given_name);
 						})
 					},
 					onCancel: () => {

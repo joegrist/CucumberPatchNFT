@@ -49,7 +49,7 @@
           <b-form-group
             label='Name'
             label-class='required'
-            description='Purely presentational'
+            description='Purely presentational, no special characters'
           >
             <b-form-input
               id='contractName'
