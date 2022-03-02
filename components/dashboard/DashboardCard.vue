@@ -37,7 +37,7 @@
 					><b-icon icon="files" /> Clone</b-dd-item
 				>
 				<b-dd-item v-if="isOpenSea" v-b-modal="`OpenSea${$props.sc.id}`"
-					><b-icon icon="files" /> Sync OpenSea</b-dd-item
+					><b-icon icon="link" /> Link OpenSea</b-dd-item
 				>
 			</template>
 			<b-dd-item variant="danger" v-b-modal="`Remove${$props.sc.id}`"
@@ -116,14 +116,9 @@
 					<span class="text-muted">Volume</span>
 				</b-col>
 				<b-col cols="12" class="text-center" style="padding: 0">
-					<template v-if="openSeaUrl">
-						<b-link :href="openSeaUrl || '#'" target="_blank">
-							<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
-						</b-link>
-					</template>
-					<template v-else>
+					<b-link v-if="isOpenSea" :href="openSeaUrl || '#'" target="_blank">
 						<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
-					</template>
+					</b-link>
 				</b-col>
 				<b-col cols="6" class="text-center">
 					<span class="font-weight-bold">{{ openSeaStats.floor_price }}</span>
@@ -168,19 +163,27 @@
 		</b-modal>
 		<b-modal
 			:id="`OpenSea${$props.sc.id}`"
-			title="Open Sea"
+			title="Link your OpenSea collection"
 			centered
-			body-class="text-center"
 			ok-variant="success"
-			ok-title="Update"
-			cancel-title="No"
-			@ok="onRemoveCard"
+			ok-title="Link"
+			cancel-title="Cancel"
+			@ok="onLinkOpenSea"
 		>
 			<div>
-				<p>Current URL: {{ openSeaUrl }}</p>
-				<b-form-input>
-					
-				</b-form-input>
+				 <b-form-group
+					label='Collection URL'
+					label-class='required'
+					description='Your current collection URL'
+				>
+					<b-form-input
+					id='link'
+					name='link'
+					v-model='openSeaLinkUrl'
+					type='url'
+					required
+					></b-form-input>
+				</b-form-group>
 			</div>
 		</b-modal>
 	</b-card>
@@ -207,10 +210,12 @@ const blockchainImage = {
 export default {
 	data() {
 		return {
+			smartContract: null,
 			blockchainImage,
 			revealed: 'n/a',
 			balance: 'n/a',
 			minted: 0,
+			openSeaLinkUrl: null,
 			royalties: 'n/a',
 			openSeaStats: {
 				num_owners: 'n/a',
@@ -270,6 +275,31 @@ export default {
 		onEdit() {
 			this.updateSmartContractBuilder({ ...this.$props.sc })
 			this.$router.push('/wizard')
+		},
+		async onLinkOpenSea(e) {
+			e.preventDefault()
+
+			this.setBusy(true)
+
+			try {
+				const payload = {
+					id: this.$props.sc.marketplaceCollection?.id,
+					smartContractId: this.$props.sc.id,
+					url: this.openSeaLinkUrl
+				}
+
+				const { data } = await this.$axios.post('/marketplaceCollections/link', payload)
+				console.log(data)
+
+				this.$bvModal.hide(`OpenSea${this.$props.sc.id}`)
+			} catch (err) {
+				this.$bvToast.toast('Linking failed', {
+					title: 'Collection Link',
+					variant: 'danger',
+				})
+			} finally {
+				this.setBusy(false)
+			}
 		},
 		async onCreateMintPage() {
 			this.$emit('create-site', this.$props.sc.id)
