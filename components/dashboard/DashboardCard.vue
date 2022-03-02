@@ -36,8 +36,11 @@
 				<b-dd-item @click="onCloneContract"
 					><b-icon icon="files" /> Clone</b-dd-item
 				>
+				<b-dd-item v-if="isOpenSea" v-b-modal="`OpenSea${$props.sc.id}`"
+					><b-icon icon="files" /> Sync OpenSea</b-dd-item
+				>
 			</template>
-			<b-dd-item variant="danger" v-b-modal="$props.sc.id"
+			<b-dd-item variant="danger" v-b-modal="`Remove${$props.sc.id}`"
 				><b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
@@ -152,7 +155,7 @@
 			</b-row>
 		</b-container>
 		<b-modal
-			:id="$props.sc.id"
+			:id="`Remove${$props.sc.id}`"
 			title="Confirm"
 			centered
 			body-class="text-center"
@@ -162,6 +165,23 @@
 			@ok="onRemoveCard"
 		>
 			<h5>Are you sure want to remove this card ?</h5>
+		</b-modal>
+		<b-modal
+			:id="`OpenSea${$props.sc.id}`"
+			title="Open Sea"
+			centered
+			body-class="text-center"
+			ok-variant="success"
+			ok-title="Update"
+			cancel-title="No"
+			@ok="onRemoveCard"
+		>
+			<div>
+				<p>Current URL: {{ openSeaUrl }}</p>
+				<b-form-input>
+					
+				</b-form-input>
+			</div>
 		</b-modal>
 	</b-card>
 </template>
@@ -209,9 +229,9 @@ export default {
 
 		this.getContractStats()
 
-		if (this.$props.sc.marketplace === MARKETPLACE.OpenSea) {
-			this.getOpenSeaStats()
-		}
+		if(!this.isOpenSea) return
+
+		this.getOpenSeaStats().then(this.onUpdateOpenSeaStats)
 	},
 	computed: {
 		...mapGetters(['userId']),
@@ -226,8 +246,11 @@ export default {
 		addressCompact() {
 			return getCompactAddress(this.$props.sc.address)
 		},
+		isOpenSea() {
+			return this.$props.sc.marketplaceCollection && this.$props.sc.marketplace === MARKETPLACE.OpenSea
+		},
 		openSeaUrl() {
-			if(!this.$props.sc.marketplaceCollection || this.$props.sc.marketplace !== MARKETPLACE.OpenSea) {
+			if(!this.isOpenSea) {
 				return null
 			}
 
@@ -258,6 +281,16 @@ export default {
 			else {
 				this.$emit('create-site', this.$props.sc.id)
 			}
+		},
+		async onUpdateOpenSeaStats(stats) {
+			if(!stats) return
+
+			this.openSeaStats = data.stats
+			this.openSeaStats.floor_price = !!data.stats.floor_price
+				? data.stats.floor_price.toFixed(2)
+				: 'n/a'
+			this.openSeaStats.total_volume =
+				data.stats.total_volume > 0 ? data.stats.total_volume.toFixed(2) : 0
 		},
 		async onCloneContract() {
 			try {
@@ -312,8 +345,8 @@ export default {
 				console.error({ err })
 			}
 		},
-		getOpenSeaStats() {
-			if (!this.$props.sc.marketplaceCollection || !this.$props.sc.isDeployed) return
+		async getOpenSeaStats() {
+			if (!this.isOpenSea || !this.$props.sc.isDeployed) return
 
 			let openseaApiUrl
 			let retryCount = 0
@@ -353,17 +386,12 @@ export default {
 						return
 					}
 
-					this.openSeaStats = data.stats
-					this.openSeaStats.floor_price = !!data.stats.floor_price
-						? data.stats.floor_price.toFixed(2)
-						: 'n/a'
-					this.openSeaStats.total_volume =
-						data.stats.total_volume > 0 ? data.stats.total_volume.toFixed(2) : 0
+					return data.stats
 				})
 				.catch(console.error)
 			}
 
-			getData()
+			return getData()
 		}
 	},
 }
