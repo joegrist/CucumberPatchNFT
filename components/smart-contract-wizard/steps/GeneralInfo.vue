@@ -49,7 +49,7 @@
           <b-form-group
             label='Name'
             label-class='required'
-            description='Purely presentational, no special characters'
+            description='Purely presentational, no special characters, max 50'
           >
             <b-form-input
               id='contractName'
@@ -194,9 +194,8 @@ export default {
   },
     validations: {
       smartContractBuilder: {
-        // baseURL: { required },
         collectionSize: { required, numeric, minValue: minValue(1) },
-        name: { required, mustBeName, maxLength: maxLength(30) },
+        name: { required, mustBeName, maxLength: maxLength(50) },
         symbol: { required, alphaNum, maxLength: maxLength(10) },
         mintPrice: { required, decimal, minValue: minValue(0) },
         maxTokensPerTransaction: { numeric, minValue: minValue(1) },
@@ -206,7 +205,6 @@ export default {
   computed: {
     validation() {
       return {
-        // baseURL: !this.$v.smartContractBuilder.baseURL.$error,
         name: !this.$v.smartContractBuilder.name.$error,
         symbol: !this.$v.smartContractBuilder.symbol.$error,
         collectionSize: !this.$v.smartContractBuilder.collectionSize.$error,

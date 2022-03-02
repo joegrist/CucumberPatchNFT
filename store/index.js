@@ -54,9 +54,13 @@ export const mutations = {
 		state.accessToken = accessToken
 	},
     updateSmartContractBuilder(state, payload) {
-        state.smartContractBuilder.marketplaceCollection = {
-            ...state.smartContractBuilder.marketplaceCollection,
-            ...payload.marketplaceCollection,
+        if(payload.marketplaceCollection === null) {
+            state.smartContractBuilder.marketplaceCollection = null
+        } else {
+            state.smartContractBuilder.marketplaceCollection = {
+                ...state.smartContractBuilder.marketplaceCollection,
+                ...payload.marketplaceCollection,
+            }
         }
 
         delete payload.marketplaceCollection
