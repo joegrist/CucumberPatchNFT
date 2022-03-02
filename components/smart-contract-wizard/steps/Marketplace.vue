@@ -13,9 +13,7 @@
 							name="marketplace"
 							:options="marketplaces"
 							:value="smartContractBuilder.marketplace"
-							@change="
-								(val) => updateSmartContractBuilder({ marketplace: val, marketplaceCollection: { marketplace: val } })
-							"
+							@change="onMarketplaceChange"
 							@blur.native="$v.smartContractBuilder.marketplace.$touch()"
 							:class="{
 								'is-invalid': $v.smartContractBuilder.marketplace.$error,
@@ -206,7 +204,7 @@ export default {
 			marketplace: { required },
 			marketplaceCollection: {
 				name: { required: requiredIf(function(model) {
-					return model.marketplace === MARKETPLACE.OpenSea
+					return model !== null && model.marketplace === MARKETPLACE.OpenSea
 				})},
 				feeRecipient: { hasValidAddress: val => val ? ethers.utils.isAddress(val) : true }, 
 				royalties: { decimal, minValue: minValue(0), maxValue: maxValue(10) },
@@ -214,6 +212,14 @@ export default {
 		},
 	},
 	methods: {
+		onMarketplaceChange(val) {
+			console.log(+val, val === MARKETPLACE.Other)
+			if(+val === MARKETPLACE.Other) {
+				this.updateSmartContractBuilder({ marketplace: val, marketplaceCollection: null })
+			} else {
+				this.updateSmartContractBuilder({ marketplace: val, marketplaceCollection: { marketplace: val, feeRecipient: this.$wallet.account } })
+			}
+		},
 		onNameChange(name) {
 			this.updateSmartContractBuilder({ marketplaceCollection: { name } })
 			const formattedName = name.replace(/\s/g, '-').toLowerCase()
