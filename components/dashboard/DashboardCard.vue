@@ -178,9 +178,9 @@
 		>
 			<div>
 				 <b-form-group
-					label='Collection URL'
+					:label="`Collection URL on ${isTestnet(this.$props.sc.chainId) ? 'TESTNET' : 'MAINNET'}`"
 					label-class='required'
-					description='Your current collection URL'
+					:description="collectionNameDesc"
 				>
 					<b-form-input
 					id='link'
@@ -273,6 +273,14 @@ export default {
 		},
 		collectionUrl() {
 			return this.$props.sc.marketplaceCollection?.url || null
+		},
+		collectionNameDesc() {
+			const name = this.openSeaLinkUrl || ''
+			const parts = name.split('/')
+			const slug = parts[parts.length - 1]
+			return isTestnet(this.$props.sc.chainId) 
+				? `https://testnets.opensea.io/collection/${slug}`
+				: `https://opensea.io/collection/${slug}`
 		}
 	},
 	methods: {
@@ -302,7 +310,7 @@ export default {
 					title: 'OpenSea Link',
 					variant: 'success',
 				})
-				wait(1000).then(this.getOpenSeaStats)
+				wait(2000).then(this.getOpenSeaStats)
 			} catch (err) {
 				this.$bvToast.toast('Linking failed', {
 					title: 'OpenSea Link',
