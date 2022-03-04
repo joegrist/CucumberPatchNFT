@@ -35,6 +35,7 @@
 		</b-navbar>
 		<b-sidebar
 			v-model="isSidebarVisible"
+			@shown="_ => $store.dispatch('getCreditsCount')"
 			id="sidebar-1"
 			title="Account"
 			right

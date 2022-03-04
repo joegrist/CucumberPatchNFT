@@ -33,19 +33,8 @@ export const mutations = {
     setBusy(state, isBusy) {
         state.isBusy = isBusy
     },
-    setNetwork(state, network) {
-        state.network = network
-    },
-    setTx(state, tx) {
-        state.txInProgress = tx
-        state.txInProgressHash = tx?.hash
-    },
-    setTxResult(state, txResult) {
-        state.txResult = txResult
-    },
     updateUserCredits(state, count) {
         state.user.credits = count
-        localStorage.setItem('user', JSON.stringify(state.user))
     },
     setUser(state, user) {
         state.user = user
@@ -76,10 +65,14 @@ export const mutations = {
     setDashboardItems(state, payload) {
         state.dashboardItems = payload
     },
-    resetSmartContractBuilder(state, payload) {
+    resetSmartContractBuilder(state) {
         state.smartContractBuilder = { 
             marketplaceCollection: {}
         }
+    },
+    linkOpenSea(state, payload) {
+        const item = state.dashboardItems.find(x => x.id === payload.smartContractId)
+        item.marketplaceCollection = payload
     }
 }
 
@@ -114,12 +107,16 @@ export const actions = {
         await this.$axios.delete(`/smartcontracts/${id}`)
         commit('setDashboardItems', state.dashboardItems.filter(x => x.id !== id))
     },
+    async linkOpenSea({commit}, payload) {
+        const { data } = await this.$axios.post('/marketplaceCollections/link', payload)
+        commit('linkOpenSea', data)
+    },
     async getCreditsCount({commit, state}) {
         const { data: userCredits } = await this.$axios.get(`/users/${state.user.id}/credits`)
         commit('updateUserCredits', userCredits)
         return userCredits
     },
-    async login({commit, state}, payload) {
+    async login({commit}, payload) {
 		try {
 			
 			if(!this.$wallet.account) {

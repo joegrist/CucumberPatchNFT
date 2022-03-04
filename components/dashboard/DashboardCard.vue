@@ -34,9 +34,9 @@
 					><b-icon icon="cloud-upload" /> Minting Page</b-dd-item
 				>
 				<b-dd-item @click="onCloneContract"
-					><b-icon icon="files" /> Clone</b-dd-item
+					><b-icon icon="files" /> Clone Contract</b-dd-item
 				>
-				<b-dd-item v-if="isOpenSea" v-b-modal="`OpenSea${$props.sc.id}`"
+				<b-dd-item v-b-modal="`OpenSea${$props.sc.id}`"
 					><b-icon icon="link" /> Link OpenSea</b-dd-item
 				>
 			</template>
@@ -116,9 +116,14 @@
 					<span class="text-muted">Volume</span>
 				</b-col>
 				<b-col cols="12" class="text-center" style="padding: 0">
-					<b-link v-if="isOpenSea" :href="openSeaUrl || '#'" target="_blank">
+					<template v-if="isOpenSea">
+						<b-link :href="collectionUrl" target="_blank">
+							<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+						</b-link>
+					</template>
+					<template v-else>
 						<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
-					</b-link>
+					</template>
 				</b-col>
 				<b-col cols="6" class="text-center">
 					<span class="font-weight-bold">{{ openSeaStats.floor_price }}</span>
@@ -167,8 +172,9 @@
 			centered
 			ok-variant="success"
 			ok-title="Link"
-			cancel-title="Cancel"
+			:ok-disabled="$v.openSeaLinkUrl.$error"
 			@ok="onLinkOpenSea"
+			cancel-title="Cancel"
 		>
 			<div>
 				 <b-form-group
@@ -181,8 +187,14 @@
 					name='link'
 					v-model='openSeaLinkUrl'
 					type='url'
-					required
+					:class="{
+						'is-invalid': $v.openSeaLinkUrl.$error,
+					}"
+					@blur="$v.openSeaLinkUrl.$touch()"
 					></b-form-input>
+					<b-form-invalid-feedback :state="validation.openSeaLinkUrl">
+						Please correct "Collection URL"
+					</b-form-invalid-feedback>
 				</b-form-group>
 			</div>
 		</b-modal>
@@ -195,6 +207,7 @@ import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, getCompactAddress } from '@/utils'
+import { required } from 'vuelidate/lib/validators'
 
 const blockchainImage = {
 	[BLOCKCHAIN.Ethereum]: require('@/assets/images/ethereum.svg'),
@@ -210,7 +223,6 @@ const blockchainImage = {
 export default {
 	data() {
 		return {
-			smartContract: null,
 			blockchainImage,
 			revealed: 'n/a',
 			balance: 'n/a',
@@ -229,14 +241,14 @@ export default {
 	props: {
 		sc: Object,
 	},
+	validations: {
+		openSeaLinkUrl: { required }
+	},
 	mounted() {
 		if (!this.$props.sc.isDeployed) return
 
 		this.getContractStats()
-
-		if(!this.isOpenSea) return
-
-		this.getOpenSeaStats().then(this.onUpdateOpenSeaStats)
+		this.getOpenSeaStats()
 	},
 	computed: {
 		...mapGetters(['userId']),
@@ -252,23 +264,20 @@ export default {
 			return getCompactAddress(this.$props.sc.address)
 		},
 		isOpenSea() {
-			return this.$props.sc.marketplaceCollection && this.$props.sc.marketplace === MARKETPLACE.OpenSea
+			return this.$props.sc.marketplace === MARKETPLACE.OpenSea
 		},
-		openSeaUrl() {
-			if(!this.isOpenSea) {
-				return null
+		validation() {
+			return {
+				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error
 			}
-
-			const { name } = this.$props.sc.marketplaceCollection
-			const formattedName = name.replace(/\s/g, '-').toLowerCase()
-			return isTestnet(this.$props.sc.chainId)
-				? `https://testnets.opensea.io/collection/${formattedName}`
-				: `https://opensea.io/collection/${formattedName}`
+		},
+		collectionUrl() {
+			return this.$props.sc.marketplaceCollection?.url || null
 		}
 	},
 	methods: {
 		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
-		...mapActions(['removeDashboardCard', 'cloneDashboardCard']),
+		...mapActions(['removeDashboardCard', 'cloneDashboardCard', 'linkOpenSea']),
 		getCurrency,
 		isTestnet,
 		getExplorerUrl,
@@ -283,18 +292,20 @@ export default {
 
 			try {
 				const payload = {
-					id: this.$props.sc.marketplaceCollection?.id,
 					smartContractId: this.$props.sc.id,
 					url: this.openSeaLinkUrl
 				}
 
-				const { data } = await this.$axios.post('/marketplaceCollections/link', payload)
-				console.log(data)
-
+				await this.linkOpenSea(payload)
 				this.$bvModal.hide(`OpenSea${this.$props.sc.id}`)
+				this.$bvToast.toast('Linked successfully', {
+					title: 'OpenSea Link',
+					variant: 'success',
+				})
+				wait(1000).then(this.getOpenSeaStats)
 			} catch (err) {
 				this.$bvToast.toast('Linking failed', {
-					title: 'Collection Link',
+					title: 'OpenSea Link',
 					variant: 'danger',
 				})
 			} finally {
@@ -311,16 +322,6 @@ export default {
 			else {
 				this.$emit('create-site', this.$props.sc.id)
 			}
-		},
-		async onUpdateOpenSeaStats(stats) {
-			if(!stats) return
-
-			this.openSeaStats = data.stats
-			this.openSeaStats.floor_price = !!data.stats.floor_price
-				? data.stats.floor_price.toFixed(2)
-				: 'n/a'
-			this.openSeaStats.total_volume =
-				data.stats.total_volume > 0 ? data.stats.total_volume.toFixed(2) : 0
 		},
 		async onCloneContract() {
 			try {
@@ -382,16 +383,15 @@ export default {
 			let retryCount = 0
 			const fetchParams = {}
 
-			const { name } = this.$props.sc.marketplaceCollection
-			const formattedName = name.replace(/\s/g, '-').toLowerCase()
+			const name = this.$props.sc.marketplaceCollection.formattedName
 
 			if (isTestnet(this.$props.sc.chainId)) {
-				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${formattedName}/stats`
+				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${name}/stats`
 				fetchParams.headers = {
 					'X-API-KEY': ''
 				}
 			} else {
-				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
+				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${name}/stats`
 				fetchParams.headers = {
 					'X-API-KEY': process.env.OPENSEA_API_KEY,
 				}
@@ -416,7 +416,12 @@ export default {
 						return
 					}
 
-					return data.stats
+					this.openSeaStats = data.stats
+					this.openSeaStats.floor_price = !!data.stats.floor_price
+						? data.stats.floor_price.toFixed(2)
+						: 'n/a'
+					this.openSeaStats.total_volume =
+						data.stats.total_volume > 0 ? data.stats.total_volume.toFixed(2) : 0
 				})
 				.catch(console.error)
 			}
