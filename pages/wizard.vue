@@ -100,14 +100,6 @@ export default {
           component: Marketplace,
           completed: false
         },
-        // {
-        //   icon: 'looks_5',
-        //   name: 'verify',
-        //   title: 'Verify',
-        //   subtitle: 'Double check entered information',
-        //   component: Verify,
-        //   completed: false
-        // },
         {
           icon: 'looks_5',
           name: 'deploy',
@@ -124,6 +116,9 @@ export default {
     showModal() {
       return this.$wallet.account === null
     }
+  },
+  beforeDestroy() {
+    this.resetSmartContractBuilder()
   },
   methods: {
     ...mapMutations(['updateSmartContractBuilder', 'resetSmartContractBuilder']),
@@ -151,7 +146,6 @@ export default {
     // Executed when @stepper-finished event is triggered
     alert(payload) {
       if(this.smartContractBuilder?.id || confirm("You are about to lose all your changes. Are you sure you want to finish ?")) {
-        this.resetSmartContractBuilder()
         this.$router.push('/')
       }
     }

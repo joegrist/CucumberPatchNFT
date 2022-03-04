@@ -34,10 +34,13 @@
 					><b-icon icon="cloud-upload" /> Minting Page</b-dd-item
 				>
 				<b-dd-item @click="onCloneContract"
-					><b-icon icon="files" /> Clone</b-dd-item
+					><b-icon icon="files" /> Clone Contract</b-dd-item
+				>
+				<b-dd-item v-b-modal="`OpenSea${$props.sc.id}`"
+					><b-icon icon="link" /> Link OpenSea</b-dd-item
 				>
 			</template>
-			<b-dd-item variant="danger" v-b-modal="$props.sc.id"
+			<b-dd-item variant="danger" v-b-modal="`Remove${$props.sc.id}`"
 				><b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
@@ -113,8 +116,8 @@
 					<span class="text-muted">Volume</span>
 				</b-col>
 				<b-col cols="12" class="text-center" style="padding: 0">
-					<template v-if="openSeaUrl">
-						<b-link :href="openSeaUrl || '#'" target="_blank">
+					<template v-if="isOpenSea">
+						<b-link :href="collectionUrl" target="_blank">
 							<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
 						</b-link>
 					</template>
@@ -152,7 +155,7 @@
 			</b-row>
 		</b-container>
 		<b-modal
-			:id="$props.sc.id"
+			:id="`Remove${$props.sc.id}`"
 			title="Confirm"
 			centered
 			body-class="text-center"
@@ -163,6 +166,38 @@
 		>
 			<h5>Are you sure want to remove this card ?</h5>
 		</b-modal>
+		<b-modal
+			:id="`OpenSea${$props.sc.id}`"
+			title="Link your OpenSea collection"
+			centered
+			ok-variant="success"
+			ok-title="Link"
+			:ok-disabled="$v.openSeaLinkUrl.$error"
+			@ok="onLinkOpenSea"
+			cancel-title="Cancel"
+		>
+			<div>
+				 <b-form-group
+					label='Collection URL'
+					label-class='required'
+					description='Your current collection URL'
+				>
+					<b-form-input
+					id='link'
+					name='link'
+					v-model='openSeaLinkUrl'
+					type='url'
+					:class="{
+						'is-invalid': $v.openSeaLinkUrl.$error,
+					}"
+					@blur="$v.openSeaLinkUrl.$touch()"
+					></b-form-input>
+					<b-form-invalid-feedback :state="validation.openSeaLinkUrl">
+						Please correct "Collection URL"
+					</b-form-invalid-feedback>
+				</b-form-group>
+			</div>
+		</b-modal>
 	</b-card>
 </template>
 
@@ -172,6 +207,7 @@ import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, getCompactAddress } from '@/utils'
+import { required } from 'vuelidate/lib/validators'
 
 const blockchainImage = {
 	[BLOCKCHAIN.Ethereum]: require('@/assets/images/ethereum.svg'),
@@ -191,6 +227,7 @@ export default {
 			revealed: 'n/a',
 			balance: 'n/a',
 			minted: 0,
+			openSeaLinkUrl: null,
 			royalties: 'n/a',
 			openSeaStats: {
 				num_owners: 'n/a',
@@ -204,14 +241,14 @@ export default {
 	props: {
 		sc: Object,
 	},
+	validations: {
+		openSeaLinkUrl: { required }
+	},
 	mounted() {
 		if (!this.$props.sc.isDeployed) return
 
 		this.getContractStats()
-
-		if (this.$props.sc.marketplace === MARKETPLACE.OpenSea) {
-			this.getOpenSeaStats()
-		}
+		this.getOpenSeaStats()
 	},
 	computed: {
 		...mapGetters(['userId']),
@@ -226,27 +263,54 @@ export default {
 		addressCompact() {
 			return getCompactAddress(this.$props.sc.address)
 		},
-		openSeaUrl() {
-			if(!this.$props.sc.marketplaceCollection || this.$props.sc.marketplace !== MARKETPLACE.OpenSea) {
-				return null
+		isOpenSea() {
+			return this.$props.sc.marketplace === MARKETPLACE.OpenSea
+		},
+		validation() {
+			return {
+				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error
 			}
-
-			const { name } = this.$props.sc.marketplaceCollection
-			const formattedName = name.replace(/\s/g, '-').toLowerCase()
-			return isTestnet(this.$props.sc.chainId)
-				? `https://testnets.opensea.io/collection/${formattedName}`
-				: `https://opensea.io/collection/${formattedName}`
+		},
+		collectionUrl() {
+			return this.$props.sc.marketplaceCollection?.url || null
 		}
 	},
 	methods: {
 		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
-		...mapActions(['removeDashboardCard', 'cloneDashboardCard']),
+		...mapActions(['removeDashboardCard', 'cloneDashboardCard', 'linkOpenSea']),
 		getCurrency,
 		isTestnet,
 		getExplorerUrl,
 		onEdit() {
 			this.updateSmartContractBuilder({ ...this.$props.sc })
 			this.$router.push('/wizard')
+		},
+		async onLinkOpenSea(e) {
+			e.preventDefault()
+
+			this.setBusy(true)
+
+			try {
+				const payload = {
+					smartContractId: this.$props.sc.id,
+					url: this.openSeaLinkUrl
+				}
+
+				await this.linkOpenSea(payload)
+				this.$bvModal.hide(`OpenSea${this.$props.sc.id}`)
+				this.$bvToast.toast('Linked successfully', {
+					title: 'OpenSea Link',
+					variant: 'success',
+				})
+				wait(1000).then(this.getOpenSeaStats)
+			} catch (err) {
+				this.$bvToast.toast('Linking failed', {
+					title: 'OpenSea Link',
+					variant: 'danger',
+				})
+			} finally {
+				this.setBusy(false)
+			}
 		},
 		async onCreateMintPage() {
 			this.$emit('create-site', this.$props.sc.id)
@@ -312,23 +376,22 @@ export default {
 				console.error({ err })
 			}
 		},
-		getOpenSeaStats() {
-			if (!this.$props.sc.marketplaceCollection || !this.$props.sc.isDeployed) return
+		async getOpenSeaStats() {
+			if (!this.isOpenSea || !this.$props.sc.isDeployed) return
 
 			let openseaApiUrl
 			let retryCount = 0
 			const fetchParams = {}
 
-			const { name } = this.$props.sc.marketplaceCollection
-			const formattedName = name.replace(/\s/g, '-').toLowerCase()
+			const name = this.$props.sc.marketplaceCollection.formattedName
 
 			if (isTestnet(this.$props.sc.chainId)) {
-				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${formattedName}/stats`
+				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${name}/stats`
 				fetchParams.headers = {
 					'X-API-KEY': ''
 				}
 			} else {
-				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${formattedName}/stats`
+				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${name}/stats`
 				fetchParams.headers = {
 					'X-API-KEY': process.env.OPENSEA_API_KEY,
 				}
@@ -363,7 +426,7 @@ export default {
 				.catch(console.error)
 			}
 
-			getData()
+			return getData()
 		}
 	},
 }

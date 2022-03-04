@@ -1,6 +1,19 @@
 <template>
 	<b-form>
 		<b-container>
+			<b-row class="mb-3">
+				<b-col>
+					<b-form-checkbox
+						id="createdAlready"
+						name="createdAlready"
+						size="lg"
+						:checked="createdAlready"
+						@change="onCreatedAlreadyChange"
+					>
+						I've created the marketplace collection already
+					</b-form-checkbox>
+				</b-col>
+			</b-row>
 			<b-row>
 				<b-col>
 					<b-form-group
@@ -11,6 +24,7 @@
 						<b-form-select
 							id="marketplace"
 							name="marketplace"
+							:disabled="createdAlready"
 							:options="marketplaces"
 							:value="smartContractBuilder.marketplace"
 							@change="onMarketplaceChange"
@@ -25,23 +39,18 @@
 					</b-form-group>
 				</b-col>
 			</b-row>
-			<b-row v-if="smartContractBuilder.marketplace === MARKETPLACE.OpenSea">
-				<b-col>
-					<!-- <b-form-group>
-						<b-form-checkbox
-							id="openSeaRoyalties"
-							name="openSeaRoyalties"
-							:checked="true"
-							:disabled="true">
-							Open Sea royalties are enabled by default and the actual % can be
-							specified on Open Sea's colllection settings page
-						</b-form-checkbox>
-					</b-form-group> -->
-					<h4 class="text-center text-info">All this information can be later updated on OpenSea</h4>
-					<b-form-group 
+			<template v-if="smartContractBuilder.marketplace === MARKETPLACE.OpenSea">
+				<b-row class="mb-3">
+					<b-col>
+						<h4 class="text-center text-info">All this information can be later updated on OpenSea</h4>
+					</b-col>
+				</b-row>
+				<b-row>
+					<b-col sm="12" md="6">
+						<b-form-group 
 						label="Collection Name" 
 						label-class="required" 
-						description="This will be your collection's OpenSea identifier on TESTNET. For example if you name it 'doodles' your collection will be at https://testnets.opensea.io/collection/doodles">
+						:description="collectionNameDesc">
 						<b-form-input
 							id="collectionName"
 							name="collectionName"
@@ -60,24 +69,12 @@
 							<b-form-invalid-feedback :state="!nameIsTaken">
 								This name is already taken
 							</b-form-invalid-feedback>
-					</b-form-group>
-					<b-form-group label="Description">
-						<b-form-textarea
-							id="collectionDescription"
-							name="collectionDescription"
-							type="text"
-							placeholder="Doodles are characters that came from..."
-							:value="smartContractBuilder.marketplaceCollection.description"
-							@change="
-								(val) =>
-									updateSmartContractBuilder({
-										marketplaceCollection: { description: val },
-									})"
-							></b-form-textarea>
-					</b-form-group>
-					<b-form-group
+						</b-form-group>
+					</b-col>
+					<b-col sm="12" md="6">
+						<b-form-group
 						label="Project URL"
-						description="Where people can get more inforamtion about your collection like a website or a twitter page">
+						description="Your website, twitter, etc.">
 						<b-form-input
 							id="collectionExternaLink"
 							name="collectionExternaLink"
@@ -91,7 +88,11 @@
 							type="text"
 							></b-form-input>
 					</b-form-group>
-					<b-form-group
+					</b-col>
+				</b-row>
+				<b-row>
+					<b-col sm="12" md="6">
+						<b-form-group
 						label="Royalties (1-10%)"
 						description="How much you will get from each secondary sale. Max 10%.">
 						<b-form-input
@@ -114,7 +115,9 @@
 							Please correct "Royalties"
 						</b-form-invalid-feedback>
 					</b-form-group>
-					<b-form-group
+					</b-col>
+					<b-col sm="12" md="6">
+						<b-form-group
 						label="Royalties recipient"
 						description="Wallet address to send royalty payments to">
 						<b-form-input
@@ -137,8 +140,27 @@
 							Please correct "Fee Recipient"
 						</b-form-invalid-feedback>
 					</b-form-group>
-				</b-col>
-			</b-row>
+					</b-col>
+				</b-row>
+								<b-row>
+					<b-col>
+						<b-form-group label="Description">
+							<b-form-textarea
+								id="collectionDescription"
+								name="collectionDescription"
+								type="text"
+								placeholder="Doodles are characters that came from..."
+								:value="smartContractBuilder.marketplaceCollection.description"
+								@change="
+									(val) =>
+										updateSmartContractBuilder({
+											marketplaceCollection: { description: val },
+										})"
+								></b-form-textarea>
+						</b-form-group>
+					</b-col>
+				</b-row>
+			</template>
 		</b-container>
 	</b-form>
 </template>
@@ -155,6 +177,7 @@ export default {
 		return {
 			MARKETPLACE,
 			maxValue,
+			createdAlready: false,
 			nameIsTaken: false,
 			openSeaBlockchains: [BLOCKCHAIN.Ethereum, BLOCKCHAIN.Polygon],
 			marketplaces: []
@@ -198,6 +221,11 @@ export default {
 				},
 			}
 		},
+		collectionNameDesc() {
+			const name = this.smartContractBuilder.marketplaceCollection?.name || ''
+			const formattedName = name.replace(/\s/g, '-').toLowerCase()
+			return `https://testnets.opensea.io/collection/${formattedName}`
+		}
 	},
 	validations: {
 		smartContractBuilder: {
@@ -213,13 +241,23 @@ export default {
 	},
 	methods: {
 		onMarketplaceChange(val) {
-			console.log(+val, val === MARKETPLACE.Other)
-			if(+val === MARKETPLACE.Other) {
-				this.updateSmartContractBuilder({ marketplace: val, marketplaceCollection: null })
-			} else {
-				this.updateSmartContractBuilder({ marketplace: val, marketplaceCollection: { marketplace: val, feeRecipient: this.$wallet.account } })
+			const payload = +val === MARKETPLACE.Other
+				? { marketplace: val, marketplaceCollection: null }
+				: { marketplace: val, marketplaceCollection: { marketplace: val, feeRecipient: this.$wallet.account } }
+
+			this.updateSmartContractBuilder(payload)
+		},
+
+		onCreatedAlreadyChange(val) {
+			this.createdAlready = val
+			if(this.createdAlready) {
+				this.updateSmartContractBuilder({
+					marketplace: MARKETPLACE.Other,
+					marketplaceCollection: null
+				})
 			}
 		},
+
 		onNameChange(name) {
 			this.updateSmartContractBuilder({ marketplaceCollection: { name } })
 			const formattedName = name.replace(/\s/g, '-').toLowerCase()

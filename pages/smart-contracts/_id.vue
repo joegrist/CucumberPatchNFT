@@ -361,12 +361,13 @@ export default {
 				abi,
 				this.$wallet.provider.getSigner()
 			)
-
-			await this.onRefreshBalance()
-			const saleStatus = await this.contract.saleStatus()
-			this.saleStatus = SALE_STATUS[saleStatus]
-
 			this.isReady = !!(await this.contract.deployed())
+
+			if(this.isReady) {
+				await this.onRefreshBalance()
+				const saleStatus = await this.contract.saleStatus()
+				this.saleStatus = SALE_STATUS[saleStatus]
+			}
 		} catch (err) {
 			console.error(err)
 		} finally {
@@ -398,7 +399,7 @@ export default {
 		...mapGetters(['userId']),
 		canDeployMainnet() {
 			return (
-				this.$config.FF_MAINNET_DEPLOY && isTestnet(this.rawContract.chainId)
+				isTestnet(this.rawContract.chainId)
 			)
 		},
 		functions() {
@@ -585,6 +586,10 @@ export default {
 		async onMainnetDeploy() {
 			try {
 				if(!this.canDeployMainnet) return
+				if(!this.$config.FF_MAINNET_DEPLOY) {
+					//redirect to discord
+					window.open('https://discord.gg/NdEpB6ZYKn', '_blank')
+				}
 
 				const { id, chainId } = this.rawContract
 
