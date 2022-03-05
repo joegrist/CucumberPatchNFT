@@ -12,13 +12,13 @@ export default ({ $axios, store }) => {
     $axios.onResponse(() => {
       // store.commit('setBusy', false)
     })
-    $axios.onError(async err => {
-      // store.commit('setBusy', false)
-      console.log(err)
-      // TODO: check for auth failed requests and call login store action
-      // if(err.response.status === 401) {
-      //   await store.dispatch('login')
+    // $axios.onError(async err => {
+    //   // store.commit('setBusy', false)
+    //   console.log(err)
+    //   // TODO: check for auth failed requests and call login store action
+    //   // if(err.response.status === 401) {
+    //   //   await store.dispatch('login')
         
-      // }
-    })
+    //   // }
+    // })
   }
