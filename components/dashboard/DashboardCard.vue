@@ -203,7 +203,7 @@
 
 <script>
 import { ethers } from 'ethers'
-import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
+import { BLOCKCHAIN, MARKETPLACE, SMARTCONTRACT_STATUS } from '@/constants'
 import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, getCompactAddress } from '@/utils'
@@ -363,7 +363,10 @@ export default {
 		},
 		async getContractStats() {
 			try {
-				const { address, abi } = this.$props.sc
+				const { address, abi, status } = this.$props.sc
+				if(status < SMARTCONTRACT_STATUS.Testnet) {
+					return
+				}
 
 				const contract = new ethers.Contract(
 					address,
@@ -415,7 +418,6 @@ export default {
 					return response.json()
 				})
 				.then((data) => {
-					console.log('OpenSea stats', data.stats)
 					if (
 						data.detail?.startsWith('Request was throttled') ||
 						!data.stats ||

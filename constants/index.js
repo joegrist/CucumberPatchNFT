@@ -18,7 +18,14 @@ const BLOCKCHAIN = Object.freeze({
 	8: 'Avalanche',
 	9: 'Legacy',
 	10: 'Cronos',
-	11: 'Songbird'
+	11: 'Songbird',
+})
+
+const MARKETPLACE = Object.freeze({
+	Other: 0,
+	OpenSea: 1,
+	0: 'Other',
+	1: 'OpenSea',
 })
 
 const WEBSITE_STATUS = Object.freeze({
@@ -26,14 +33,19 @@ const WEBSITE_STATUS = Object.freeze({
 	Building: 1,
 	Ready: 2,
 	1: 'Building',
-	2: 'Ready'
+	2: 'Ready',
 })
 
-const MARKETPLACE = Object.freeze({
-	Other: 0,
-	OpenSea: 1,
-	0:'Other',
-	1:'OpenSea'
+const SMARTCONTRACT_STATUS = Object.freeze({
+	Unknown: 0,
+	Draft: 1,
+	Testnet: 2,
+	Mainnet: 3,
+	Deleted: 4,
+	1: 'Draft',
+	2: 'Testnet',
+	3: 'Mainnet',
+	4: 'Deleted',
 })
 
 const SALE_STATUS = Object.freeze({
@@ -42,7 +54,13 @@ const SALE_STATUS = Object.freeze({
 	Public: 2,
 	0: 'Paused',
 	1: 'Presale',
-	2: 'Public'
+	2: 'Public',
 })
 
-export { BLOCKCHAIN, WEBSITE_STATUS, MARKETPLACE, SALE_STATUS }
+export {
+	BLOCKCHAIN,
+	MARKETPLACE,
+	WEBSITE_STATUS,
+	SMARTCONTRACT_STATUS,
+	SALE_STATUS,
+}

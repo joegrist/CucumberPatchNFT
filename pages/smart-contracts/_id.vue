@@ -215,13 +215,25 @@
 								accept=".csv"
 								@input="onImportCsv"
 								placeholder="Choose or drop .csv file"
-								drop-placeholder="Drop file here..."></b-form-file>
+								drop-placeholder="Drop file here...">
+							</b-form-file>
+							<div v-if="invalidAddresses.length > 0">
+								<h5 class="text-danger">Invalid addresses</h5>
+								<ul>
+									<li v-for="(addr, idx) in invalidAddresses" :key="idx">{{ addr }}</li>
+								</ul>
+							</div>
 						</b-col>
 					</b-row>
 					<b-row class="mt-3 mb-1">
-						<b-col>
-							<b-button block variant="warning" @click="onWhitelistCommit"
-								>Commit List Update</b-button
+						<b-col cols="6">
+							<b-button block variant="warning" :disabled="isProcessingWhitelistCommit" @click="onWhitelistCommit"
+								>Commit List</b-button
+							>
+						</b-col>
+						<b-col cols="6">
+							<b-button block variant="danger" :disabled="isProcessingWhitelistCommit" @click="onClearWhitelist"
+								>Clear</b-button
 							>
 						</b-col>
 					</b-row>
@@ -300,7 +312,6 @@ import {
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
 import { loadScript } from '@paypal/paypal-js'
-import { VueCsvImport } from 'vue-csv-import'
 import { getMerkleRoot } from '@/utils'
 
 const basicFunctions = [
@@ -321,12 +332,10 @@ const FormatTypes = ethers.utils.FormatTypes
 
 export default {
 	middleware: 'authenticated',
-	components: {
-		VueCsvImport,
-	},
 	data: () => ({
 		FormatTypes,
 		SALE_STATUS,
+		invalidAddresses: [],
 		showAdvancedFunctions: false,
 		rawContract: {},
 		contract: {},
@@ -337,6 +346,7 @@ export default {
 		saleStatus: 'N/A',
 		busyState: {},
 		isReady: false,
+		isProcessingWhitelistCommit: false,
 		paypal: null,
 	}),
 	fetchOnServer: false,
@@ -349,6 +359,7 @@ export default {
 				`/users/${this.userId}/smartcontracts/${this.$route.params.id}`
 			)
 			this.rawContract = data
+			this.rawContract.whitelist = this.rawContract.whitelist.filter(a => a !== ethers.utils.AddressZero)
 
 			const { address, abi } = this.rawContract
 
@@ -434,30 +445,41 @@ export default {
 					}
 				)
 
-				const rootHash = getMerkleRoot(this.rawContract.whitelist)
-				const txResponse = await this.contract.setMerkleRoot(rootHash)
+				if(this.rawContract.whitelist.length === 0) {
+					this.rawContract.whitelist = [ethers.constants.AddressZero]
+				}
+				const merkleRoot = getMerkleRoot(this.rawContract.whitelist)
+				console.log(this.rawContract.whitelist, merkleRoot)
+				// const rootPayload = merkleRoot.length > 0 ? merkleRoot : ''
+				const txResponse = await this.contract.setMerkleRoot(merkleRoot)
+				this.isProcessingWhitelistCommit = true;
 
 				const msg = [this.createToastMessage(txResponse.hash)]
 				this.$bvToast.toast(msg, {
-					title: `Processing 'Commit List Update'`,
+					title: `Processing 'Commit List'`,
 					variant: 'success',
 				})
 				txResponse.wait().then(async (res) => {
-					console.log({ res })
+					this.isProcessingWhitelistCommit = false
 					this.$bvToast.toast(msg, {
-						title: 'Commit List Update',
+						title: 'Commit List',
 						variant: 'success',
 					})
 				})
 			} catch (err) {
-				console.log(err)
+				console.error(err)
 				this.$bvToast.toast('Whitelist commit failed', {
 					title: 'Whitelist',
 					variant: 'danger',
 				})
 			} finally {
+				this.isProcessingWhitelistCommit = false
 				this.setBusy(false)
 			}
+		},
+		async onClearWhitelist() {
+			this.invalidAddresses = []
+			this.rawContract.whitelist = []
 		},
 		async onImportCsv(file) {
 			if(file === null) return
@@ -481,7 +503,12 @@ export default {
 					title: 'Whitelist',
 					variant: 'success',
 				})
+				this.invalidAddresses = []
 			} catch (err) {
+				console.log({err})
+				if(err.response.data.errors?.invalidAddresses) {
+					this.invalidAddresses = err.response.data.errors?.invalidAddresses
+				}
 				this.$bvToast.toast('File upload failed', {
 					title: 'Whitelist',
 					variant: 'danger',
@@ -589,6 +616,7 @@ export default {
 				if(!this.$config.FF_MAINNET_DEPLOY) {
 					//redirect to discord
 					window.open('https://discord.gg/NdEpB6ZYKn', '_blank')
+					return
 				}
 
 				const { id, chainId } = this.rawContract
