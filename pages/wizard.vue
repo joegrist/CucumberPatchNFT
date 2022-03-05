@@ -9,20 +9,6 @@
       @stepper-finished='alert'
     >
     </horizontal-stepper>
-    <b-modal
-        id="metamaskConnect"
-        v-model="showModal"
-        title="Connect Wallet"
-        centered
-        no-close-on-backdrop
-        no-close-on-esc
-        hide-footer
-        hide-header-close
-    >
-        <div class="text-center">
-            <b-img width="200px" class="pointer" thumbnail src="@/assets/images/metamask-fox-stacked.svg" alt="metamask logo" @click="$wallet.connect"></b-img>
-        </div>
-    </b-modal>
   </div>
 </template>
 
@@ -112,10 +98,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['smartContractBuilder']),
-    showModal() {
-      return this.$wallet.account === null
-    }
+    ...mapState(['smartContractBuilder'])
   },
   beforeDestroy() {
     this.resetSmartContractBuilder()

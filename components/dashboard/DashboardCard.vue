@@ -290,7 +290,7 @@ export default {
 		isTestnet,
 		getExplorerUrl,
 		onEdit() {
-			this.updateSmartContractBuilder({ ...this.$props.sc })
+			this.updateSmartContractBuilder({ ...this.$props.sc, marketplaceCollection: {} })
 			this.$router.push('/wizard')
 		},
 		async onLinkOpenSea(e) {
