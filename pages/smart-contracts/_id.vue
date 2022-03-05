@@ -359,6 +359,7 @@ export default {
 				`/users/${this.userId}/smartcontracts/${this.$route.params.id}`
 			)
 			this.rawContract = data
+			this.rawContract.whitelist = this.rawContract.whitelist.filter(a => a !== ethers.utils.AddressZero)
 
 			const { address, abi } = this.rawContract
 
