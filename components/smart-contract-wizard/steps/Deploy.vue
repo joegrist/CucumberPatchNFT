@@ -58,14 +58,14 @@
               </li>
             </ul>
           </b-collapse>
-          <p class="mt-2">
+          <p class="mt-2" v-if="$wallet.account">
             <span class="font-weight-bold">Your wallet address: </span>
-            {{ this.$wallet.account }}
+            {{ $wallet.account }}
             <b-icon icon="files" class="pointer" @click="onAccountCopy"></b-icon>
           </p>
         </b-col>
       </b-row>
-      <b-row>
+      <b-row v-if="!hasEmail">
         <b-col>
           <b-form-group
             label='Your email address'
@@ -80,7 +80,7 @@
               @change='(val) => updateSmartContractBuilder({ email: val })'
               @blur='$v.smartContractBuilder.email.$touch()'
               :class="{
-								'is-invalid': $v.smartContractBuilder.email.$error,
+								'is-invalid': $v.smartContractBuilder.email.$anyError,
 							}"
               required
             ></b-form-input>
@@ -117,6 +117,19 @@
         </p>
       </div>
     </b-modal>
+    <b-modal
+        id="metamaskConnect"
+        v-model="showConnectWalletModal"
+        title="Connect Wallet"
+        centered
+        no-close-on-backdrop
+        no-close-on-esc
+        hide-footer
+    >
+        <div class="text-center">
+            <b-img width="200px" class="pointer" thumbnail src="@/assets/images/metamask-fox-stacked.svg" alt="metamask logo" @click="$wallet.connect"></b-img>
+        </div>
+    </b-modal>
   </b-form>
 </template>
 
@@ -126,7 +139,7 @@ import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
 import { FAUCETS, getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapState, mapActions, mapGetters, mapMutations } from 'vuex'
-import { required } from 'vuelidate/lib/validators'
+import { requiredIf } from 'vuelidate/lib/validators'
 import { isArray } from 'lodash-es'
 
 export default {
@@ -135,6 +148,7 @@ export default {
     return {
       FAUCETS,
 			MARKETPLACE,
+      showConnectWalletModal: false,
 			blockchainImage: {
 				[BLOCKCHAIN.Ethereum]: require('@/assets/images/blockchain/ethereum.svg'),
 				[BLOCKCHAIN.Solana]: require('@/assets/images/blockchain/solana.svg'),
@@ -171,7 +185,18 @@ export default {
   },
   validations: {
     smartContractBuilder: {
-      email: { required }
+      email: {
+        required: requiredIf(function (model) {
+					return !model.hasEmail
+				}),
+      }
+    }
+  },
+  watch: {
+    '$wallet.account': function(newVal, oldVal) {
+      if(newVal !== null) {
+        this.showConnectWalletModal = false
+      }
     }
   },
   computed: {
@@ -182,8 +207,11 @@ export default {
         email: !this.$v.smartContractBuilder.email.$error,
       }
     },
+    hasEmail() {
+      return this.$store.state.user?.email
+    },
     canDeploy() {
-      return !this.smartContractBuilder.isDeployed && !this.isBusy && this.smartContractBuilder.email
+      return !this.smartContractBuilder.isDeployed && !this.isBusy && !this.$v.smartContractBuilder.email.$anyError
     },
     summary() {
 			return Object.entries(this.smartContractBuilder)
@@ -212,8 +240,6 @@ export default {
     getExplorerUrl,
     goToDashboard() {
         this.resetBuilder()
-
-        console.log(this.smartContractBuilder)
         this.$router.push('/')
     },
     async onAccountCopy() {
@@ -231,6 +257,10 @@ export default {
     async saveDraft() {
       try {
 
+        if(!this.smartContractBuilder.email) {
+          this.$v.smartContractBuilder.email.$touch()
+          return
+        }
         if(!this.isLoggedIn) {
           const user = await this.login({
             email: this.email,
@@ -265,8 +295,14 @@ export default {
         })
       }
     },
+
     async deploy() {
       try {
+
+        if(!this.smartContractBuilder.email) {
+          this.$v.smartContractBuilder.email.$touch()
+          return
+        }
         if(!this.isLoggedIn) {
           const user = await this.login({
             email: this.email,
@@ -277,11 +313,16 @@ export default {
           }
         }
 
-        if(this.smartContractBuilder.chainId !== this.$wallet.chainId) {
-          await this.$wallet.switchNetwork(this.smartContractBuilder.chainId)
+        if(!this.$wallet.account) {
+          this.showConnectWalletModal = true
+          return
         }
 
         this.setBusy(true)
+
+        if(this.smartContractBuilder.chainId !== this.$wallet.chainId) {
+          await this.$wallet.switchNetwork(this.smartContractBuilder.chainId)
+        }
 
         const id = await this.saveDraft()
 

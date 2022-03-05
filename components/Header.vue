@@ -11,7 +11,7 @@
 				<b-navbar-nav>
 					<b-nav-item to="/wizard" class="gradient-text">Wizard</b-nav-item>
 					<b-nav-item
-						v-if="$store.getters.isLoggedIn"
+						v-if="isLoggedIn"
 						to="/"
 						class="gradient-text"
 						>Dashboard</b-nav-item
@@ -35,14 +35,14 @@
 		</b-navbar>
 		<b-sidebar
 			v-model="isSidebarVisible"
-			@shown="_ => $store.dispatch('getCreditsCount')"
+			@shown="_ => isLoggedIn && $store.dispatch('getCreditsCount')"
 			id="sidebar-1"
 			title="Account"
 			right
 			backdrop
 			z-index="100">
 			<div class="px-3 py-4">
-				<div v-if="!$wallet.account">
+				<div v-if="!$wallet.account" class="mb-2">
 					<b-button
 						class="bg-gradient-primary border-0 w-100"
 						:disabled="!!$wallet.account"
@@ -50,24 +50,32 @@
 						<strong>Connect Wallet</strong>
 					</b-button>
 				</div>
-				<div v-if="$store.getters.isLoggedIn">
+				<div v-if="$wallet.account">
 					<p>
-						Account:
+						Address:
 						<span class="pointer" @click="onAccountCopy"> {{ $wallet.accountCompact }} 
             				<b-icon icon="files" ></b-icon>
 						</span>
 					</p>
 					<p>Balance: {{ $wallet.balance }}</p>
 					<p class="text-capitalize">Network: {{ $wallet.networkName }}</p>
-					<p>Credits: {{ $store.state.user.credits }}</p>
 				</div>
+				<p v-if="isLoggedIn">Credits: {{ $store.state.user.credits }}</p>
 			</div>
 			<template #footer>
 				<b-button
+					v-if="isLoggedIn"
 					class="bg-gradient-primary border-0 rounded-0 w-100"
-					@click="logout"
+					@click="onLogout"
 					size="lg"
 					>Logout</b-button
+				>
+				<b-button
+					v-else
+					class="bg-gradient-primary border-0 rounded-0 w-100"
+					@click="onLogin"
+					size="lg"
+					>Login</b-button
 				>
 			</template>
 		</b-sidebar>
@@ -91,25 +99,29 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
 	data() {
 		return {
 			isSidebarVisible: false,
 		}
 	},
+	computed: {
+		...mapGetters(['isLoggedIn'])
+	},
 	methods: {
 		async onLogin() {
-			const user = await this.$store.dispatch('login')
-			if(user) this.$router.push('/')
+			await this.$store.dispatch('login')
+		},
+		onLogout() {
+			this.isSidebarVisible = false
+			this.$store.dispatch('logout')
+			this.$router.push('/wizard')
 		},
 		disconnect() {
 			this.isSidebarVisible = false
 			this.$wallet.disconnect()
-		},
-		logout() {
-			this.isSidebarVisible = false
-			this.$store.dispatch('logout')
-			this.$router.push('/wizard')
 		},
 		async onAccountCopy() {
 			await navigator.clipboard.writeText(this.$wallet.account)

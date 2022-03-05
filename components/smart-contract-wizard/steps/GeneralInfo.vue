@@ -119,7 +119,7 @@
         <b-col sm='12' md='6'>
           <b-form-group
             label='Max NFTs Per Person'
-            description='Maximum number of tokens someone can mint during public sale'
+            description='Total number of NFTs someone can mint during public sale'
           >
             <b-form-input
               id='maxTokensPerPerson'
@@ -142,7 +142,7 @@
         <b-col sm='12' md='6'>
           <b-form-group
             label='Max NFTs Per Transaction'
-            description='Maximum number of tokens someone can mint in one go. Helps prevent botting and give everyone a fair chance to mint.'
+            description='Maximum number of NFTs someone can mint in one go. Helps prevent botting and give everyone a fair chance to mint.'
           >
             <b-form-input
               id='maxTokensPerTransaction'
@@ -158,7 +158,7 @@
             />
           </b-form-group>
           <b-form-invalid-feedback :state="validation.maxTokensPerTransaction">
-            Please correct "Max Tokens Per Transaction". Enter 0 or leave empty.
+            Please correct "Max NFTs Per Transaction". Enter 0 or leave empty.
           </b-form-invalid-feedback>
         </b-col>
       </b-row>

@@ -112,22 +112,12 @@
 						required></b-form-select>
 				</b-form-group>
 			</b-col>
-			<b-col cols="12">
-				<template v-if="requireNetworkSwitch">
-					<p>
-						<b-button variant="warning" @click="callWalletFunc('switchNetwork')"
-							>Switch to {{ switchToName }}</b-button
-						>
-						before proceeding
-					</p>
-				</template>
-				<template v-else>
-					<p class="text-capitalize">
-						You are currently connected to:
-						<strong>{{ $wallet.networkName || '' }}</strong>✅
-					</p>
-				</template>
-			</b-col>
+			<!-- <b-col cols="12">
+				<p>
+					You are currently connected to:
+					<strong class="text-capitalize">{{ $wallet.networkName || '' }}</strong>
+				</p>
+			</b-col> -->
 		</b-row>
 	</b-container>
 </template>
@@ -194,17 +184,6 @@ export default {
 			chainId: { required },
 		},
 	},
-	mounted() {
-		// changing network in metamask requires reloading the page so in order to preserve user selected 
-		// blockchain before the page reload we store it in local storage
-		const blockchain = localStorage.getItem('blockchain')
-		if(blockchain) {
-			this.updateSmartContractBuilder({
-				...JSON.parse(blockchain)
-			})
-			localStorage.removeItem('blockchain')
-		}
-	},
 	computed: {
 		networkOptions() {
 			return this.networks
@@ -216,54 +195,23 @@ export default {
 					}
 				})
 		},
-		requireNetworkSwitch() {
-			return (
-				this.smartContractBuilder.chainId &&
-				this.$wallet?.chainId != this.smartContractBuilder.chainId
-			)
-		},
-		switchToName() {
-			return this.networks.find(
-				(n) => n.chainId === this.smartContractBuilder.chainId
-			)?.chainName
-		},
 	},
 	methods: {
 		onNetworkChange(chainId) {
 			this.$v.smartContractBuilder.chainId.$touch()
 			this.updateSmartContractBuilder({chainId})
-			if(this.$wallet.chainId != chainId) {
-				localStorage.setItem('blockchain', JSON.stringify({
-					blockchain: this.smartContractBuilder.blockchain,
-				}))
-				this.callWalletFunc('switchNetwork')
-			}
 		},
 		hoverCard(blockchain) {
 			this.hovered = blockchain
 		},
 		onSelectBlockchain(blockchain) {
-			this.updateSmartContractBuilder({ blockchain, chainId: null })
+			const chainId = this.networks.find((n) => n.blockchain === blockchain)?.chainId
+			this.updateSmartContractBuilder({ 
+				blockchain, 
+				chainId 
+			})
 			document.getElementById("chainId").scrollIntoView({behavior: 'smooth'})
-		},
-		async callWalletFunc(func) {
-			try {
-				if(func === 'switchNetwork') await this.$wallet.switchNetwork(this.smartContractBuilder.chainId)
-			} catch (err) {
-				console.error(err)
-				this.$bvToast.toast(err?.message || `${func} failed`, {
-					title: 'Wallet',
-					variant: 'danger'
-				})
-			}
-		},
+		}
 	},
 }
 </script>
-
-<style lang="scss">
-	.cryptodotcom {
-		// transform: scale(1.5) !important;
-
-	}
-</style>

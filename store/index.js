@@ -111,9 +111,11 @@ export const actions = {
         const { data } = await this.$axios.post('/marketplaceCollections/link', payload)
         commit('linkOpenSea', data)
     },
-    async getCreditsCount({commit, state}) {
+    async getCreditsCount({commit, state, getters }) {
         const { data: userCredits } = await this.$axios.get(`/users/${state.user.id}/credits`)
-        commit('updateUserCredits', userCredits)
+        if(getters.isLoggedIn) { // user might have logged out between the time request was send and response received
+            commit('updateUserCredits', userCredits)
+        }
         return userCredits
     },
     async login({commit}, payload) {
@@ -149,14 +151,16 @@ export const actions = {
 
             return authUser
 		} catch (err) {
-			console.error({err})
-			alert(err.message || "Login Error")
+			this._vm.$bvToast.toast(err.message || 'Login failed', {
+                title: 'Login',
+                variant: 'danger',
+            })
 
             return null
 		}
     },
 
-    logout({commit, state}) {
+    logout({commit}) {
         this.$wallet.disconnect()
         localStorage.removeItem('accessToken')
         localStorage.removeItem('user')
