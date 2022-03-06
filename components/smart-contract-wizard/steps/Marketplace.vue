@@ -231,8 +231,8 @@ export default {
 		smartContractBuilder: {
 			marketplace: { required },
 			marketplaceCollection: {
-				name: { required: requiredIf(function(model) {
-					return model !== null && model.marketplace === MARKETPLACE.OpenSea
+				name: { required: requiredIf(function() {
+					return this.smartContractBuilder.marketplace === MARKETPLACE.OpenSea
 				})},
 				feeRecipient: { hasValidAddress: val => val ? ethers.utils.isAddress(val) : true }, 
 				royalties: { decimal, minValue: minValue(0), maxValue: maxValue(10) },
