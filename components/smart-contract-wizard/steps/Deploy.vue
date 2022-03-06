@@ -186,8 +186,8 @@ export default {
   validations: {
     smartContractBuilder: {
       email: {
-        required: requiredIf(function (model) {
-					return !model.hasEmail
+        required: requiredIf(function () {
+					return !this.hasEmail
 				}),
       }
     }
@@ -257,7 +257,7 @@ export default {
     async saveDraft() {
       try {
 
-        if(!this.smartContractBuilder.email) {
+        if(!this.hasEmail && !this.smartContractBuilder.email) {
           this.$v.smartContractBuilder.email.$touch()
           return
         }
@@ -299,7 +299,7 @@ export default {
     async deploy() {
       try {
 
-        if(!this.smartContractBuilder.email) {
+        if(!this.hasEmail && !this.smartContractBuilder.email) {
           this.$v.smartContractBuilder.email.$touch()
           return
         }
