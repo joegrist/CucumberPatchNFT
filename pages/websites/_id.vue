@@ -6,14 +6,21 @@
 				<span class="text-success"
 					>Status: {{ WEBSITE_STATUS[site.status] }}</span
 				>
-				<b-button
-					v-if="site.status !== WEBSITE_STATUS.Ready"
+				<template v-if="site.status !== WEBSITE_STATUS.Ready">
+				<b-icon
+					v-if="isBusy"
+					class="pointer"
+					icon="bootstrap-reboot"
 					variant="success"
-					size="sm"
-					:disabled="isBusy"
-					@click="refreshStatus"
-					>{{ isBusy ? 'Refreshing...' : 'Refresh' }}
-				</b-button>
+					animation="spin"
+					:disabled="true" />
+				<b-icon
+					v-else
+					class="pointer"
+					icon="bootstrap-reboot"
+					variant="success"
+					@click="refreshStatus" />
+				</template>
 			</li>
 			<li v-if="site.status === WEBSITE_STATUS.Ready">
 				Current URL:

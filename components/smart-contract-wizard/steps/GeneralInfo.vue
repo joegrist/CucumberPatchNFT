@@ -129,7 +129,8 @@
               @blur="$v.smartContractBuilder.maxTokensPerPerson.$touch()"
               :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerPerson.$error}"
               type='number'
-              min='0'
+              step='1'
+              min='1'
               placeholder='20'
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.maxTokensPerPerson">
@@ -153,7 +154,7 @@
               :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerTransaction.$error}"
               type='number'
               step='1'
-              min='0'
+              min='1'
               placeholder='20'
             />
           </b-form-group>

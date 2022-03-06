@@ -37,7 +37,7 @@
 		</b-overlay>
 		<b-modal
 			id="siteModal"
-			title="Deploy Minting Website"
+			title="Deploy Minting Page"
 			size="lg"
 			centered
 			@hidden="newWebsite = {}"
@@ -48,7 +48,7 @@
 			:busy="isBusy">
 			<b-form>
 				<b-form-group
-					label="Website Name"
+					label="Name"
 					label-class="required"
 				>
 					<b-form-input
@@ -122,7 +122,7 @@
 							type="time"></b-form-input>
 					</b-form-group>
 				</div>
-				<div class="d-flex">
+				<!-- <div class="d-flex">
 					<b-form-group label="Twitter URL" class="pr-1 w-50">
 						<b-form-input
 							id="twitterUrl"
@@ -162,7 +162,7 @@
 							v-model="newWebsite.marketplaceURL"
 							type="url"></b-form-input>
 					</b-form-group>
-				</div>
+				</div> -->
 			</b-form>
 		</b-modal>
 	</div>
