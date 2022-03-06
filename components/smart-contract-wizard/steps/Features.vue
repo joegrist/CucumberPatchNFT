@@ -296,6 +296,8 @@ export default {
 				.reduce((acc, val) => acc + val, 0)
 		},
 		revenueSplitErrors() {
+			if(!this.smartContractBuilder.hasRevenueSplits) return []
+
 			const errors = []
 			const sumsTo100 = this.splitShareTotal === 100
 			const hasValidWallets = this.revenueSplits

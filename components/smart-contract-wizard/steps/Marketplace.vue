@@ -184,8 +184,13 @@ export default {
 		}
 	},
 	mounted() {
-		if(!this.smartContractBuilder.marketplaceCollection?.feeRecipient) {
-			this.updateSmartContractBuilder({ marketplaceCollection: { feeRecipient: this.$wallet.account } })
+		if(this.$wallet.account && !this.smartContractBuilder.marketplaceCollection?.feeRecipient) {
+			this.updateSmartContractBuilder({ 
+				marketplaceCollection: { 
+					...this.smartContractBuilder.marketplaceCollection || {},
+					feeRecipient: this.$wallet.account
+				}
+			})
 		}
 		this.marketplaces = [
 			{
@@ -193,17 +198,14 @@ export default {
 				value: MARKETPLACE.Other,
 			}
 		]
-		this.updateSmartContractBuilder({
-			marketplace: MARKETPLACE.Other
-		})
+
 		if(this.openSeaBlockchains.includes(this.smartContractBuilder.blockchain)) {
 			this.marketplaces.unshift({
 				text: 'OpenSea',
 				value: MARKETPLACE.OpenSea
 			})
-
 			// set OpenSea as default
-			if (!this.smartContractBuilder.marketplace) {
+			if (this.smartContractBuilder.marketplace === null || this.smartContractBuilder.marketplace === undefined) {
 				this.updateSmartContractBuilder({
 					marketplace: MARKETPLACE.OpenSea
 				})
