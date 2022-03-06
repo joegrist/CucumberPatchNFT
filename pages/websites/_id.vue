@@ -52,6 +52,19 @@
 					name="description"
 					v-model="site.description"></b-form-textarea>
 			</b-form-group>
+			<div class="d-flex flex-row mb-1">
+				<b-form-checkbox
+					id="isCounterHidden"
+					name="isCounterHidden"
+					switch
+					size="lg"
+					:checked="!site.isCounterHidden"
+					@input="val => site.isCounterHidden = !val"
+				></b-form-checkbox>
+				<div class="mt-1">
+					<label class="mb-0">Minted/Collection Size counter</label>
+				</div>
+			</div>
 			<div class="d-flex">
 				<b-form-group
 					label="Icon"
