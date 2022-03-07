@@ -84,15 +84,17 @@
         			@mouseout="hoverCard(null)" />
 			</b-col>
 			<b-col sm="12" md="4">
-				<b-img
-					:class="['mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Solana }]"
-					center
-					width="400px"
-					height="150px"
-					src="@/assets/images/blockchain/solana.svg" />
-				<h4 class="text-center text-muted position-relative" style="top: -45px">
-					Coming soon!
-				</h4>
+				<b-link href="mailto:drop@zerocodenft.com?subject=Solana Inquiry">
+					<b-img
+						:class="['mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Solana }]"
+						center
+						width="400px"
+						height="150px"
+						src="@/assets/images/blockchain/solana.svg" />
+					<h4 class="text-center text-muted position-relative" style="top: -45px">
+						Inquire!
+					</h4>
+				</b-link>
 			</b-col>
 		</b-row>
 		<b-row v-show="smartContractBuilder.blockchain">
