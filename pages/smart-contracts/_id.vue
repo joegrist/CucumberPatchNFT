@@ -613,7 +613,7 @@ export default {
 		async onMainnetDeploy() {
 			try {
 				if(!this.canDeployMainnet) return
-				if(!this.$config.FF_MAINNET_DEPLOY) {
+				if(!this.rawContract.isClearedForMainnet) {
 					//redirect to discord
 					window.open('https://discord.gg/NdEpB6ZYKn', '_blank')
 					return
