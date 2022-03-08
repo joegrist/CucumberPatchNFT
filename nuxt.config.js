@@ -5,8 +5,8 @@ const {
   API_URL,
   OPENSEA_API_KEY,
   PAYPAL_CLIENT_ID,
-  FF_MAINNET_DEPLOY,
-  FF_CREATE_SITE
+  FF_CREATE_SITE,
+  DISCORD_INVITE_URL
 } = process.env
 
 export default {
@@ -24,8 +24,8 @@ export default {
     API_URL,
     OPENSEA_API_KEY,
     PAYPAL_CLIENT_ID,
-    FF_MAINNET_DEPLOY,
-    FF_CREATE_SITE
+    FF_CREATE_SITE,
+    DISCORD_INVITE_URL
   },
 
   // privateRuntimeConfig: {
