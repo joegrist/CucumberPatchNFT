@@ -706,13 +706,6 @@ export default {
 
 				const txOverrides = {}
 
-				if (!func.constant) {
-					const gasPrice = await this.contract.signer.getGasPrice()
-					console.log('gasPrice', ethers.utils.formatUnits(gasPrice))
-
-					txOverrides.gasPrice = gasPrice
-				}
-
 				let txResponse
 
 				const hasFuncArgs = this.callFuncArgs[func.name]?.size > 0
@@ -731,8 +724,14 @@ export default {
 							const value =
 								Number(ethers.utils.formatEther(mintPrice)) * Number(args[0])
 							txOverrides.value = ethers.utils.parseEther(value.toString())
-						}
-						
+						}						
+					}
+
+					if (func.name === 'setPlaceholderUri') {
+						// update the smart contract itself
+						await this.$axios.patch(`/smartcontracts/${id}`, {
+							delayedRevealURL: args[0]
+						})
 					}
 
 					if (func.name === 'setPublicMintPrice') {
