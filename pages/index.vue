@@ -122,47 +122,6 @@
 							type="time"></b-form-input>
 					</b-form-group>
 				</div>
-				<!-- <div class="d-flex">
-					<b-form-group label="Twitter URL" class="pr-1 w-50">
-						<b-form-input
-							id="twitterUrl"
-							name="twitterUrl"
-							v-model="newWebsite.twitterUrl"
-							type="url"></b-form-input>
-					</b-form-group>
-					<b-form-group label="Discord URL" class="pl-1 w-50">
-						<b-form-input
-							id="discordURL"
-							name="discordURL"
-							v-model="newWebsite.discordURL"
-							type="url"></b-form-input>
-					</b-form-group>
-				</div>
-				<div class="d-flex">
-					<b-form-group label="Instagram URL" class="pr-1 w-50">
-						<b-form-input
-							id="instagramURL"
-							name="instagramURL"
-							v-model="newWebsite.instagramURL"
-							type="url"></b-form-input>
-					</b-form-group>
-					<b-form-group label="TikTok URL" class="pl-1 w-50">
-						<b-form-input
-							id="tikTokURL"
-							name="tikTokURL"
-							v-model="newWebsite.tikTokURL"
-							type="url"></b-form-input>
-					</b-form-group>
-				</div>
-				<div class="d-flex">
-					<b-form-group label="Marketplace URL" class="pl-1 w-50">
-						<b-form-input
-							id="marketplaceURL"
-							name="marketplaceURL"
-							v-model="newWebsite.marketplaceURL"
-							type="url"></b-form-input>
-					</b-form-group>
-				</div> -->
 			</b-form>
 		</b-modal>
 	</div>
@@ -207,12 +166,11 @@ export default {
 			const smartContract = this.dashboardItems.find(
 				(x) => x.id === smartContractId
 			)
-			if (
-				smartContract.marketplaceCollection?.marketpalce === MARKETPLACE.OpenSea
-			) {
-				this.newWebsite.marketplace = MARKETPLACE.OpenSea
+			if(!smartContract) return
+			if (smartContract.marketplace === MARKETPLACE.OpenSea) {
 				this.newWebsite.marketplaceURL = smartContract.marketplaceCollection.url
 			}
+
 			this.newWebsite.smartContractId = smartContractId
 			this.$bvModal.show('siteModal')
 		},
@@ -249,7 +207,6 @@ export default {
 					payload
 				)
 
-				this.$bvModal.hide('siteModal')
 				this.$bvToast.toast(
 					'Website submission successful! Please allow ~10 minutes for the website to get deployed.',
 					{
@@ -257,7 +214,8 @@ export default {
 						variant: 'success',
 					}
 				)
-
+				
+				this.$bvModal.hide('siteModal')
 				this.$router.push(`/websites/${createdSite.id}`)
 			} catch (err) {
 				console.error({ err })
