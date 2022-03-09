@@ -17,11 +17,11 @@
 					>Card Menu</span
 				>
 			</template>
-			<template v-if="$props.sc.isDeployed">
+			<template v-if="isDeployed">
 				<b-dd-text v-if="$props.sc.address" class="text-center">
 					<span class="text-muted">Block Expolorer</span><br />
 					<b-link target="_blank" :href="viewContractUrl"
-						>{{ addressCompact }} ></b-link
+						>{{ $props.sc.address | compactAddress }} ></b-link
 					>
 				</b-dd-text>
 				<b-dropdown-divider></b-dropdown-divider>
@@ -46,7 +46,7 @@
 		</b-dropdown>
 		<b-card-title class="text-center truncate-text px-3">
 			<b-link
-				v-if="$props.sc.isDeployed"
+				v-if="isDeployed"
 				class="text-dark"
 				:to="`/smart-contracts/${$props.sc.id}`"
 				>{{ $props.sc.name | startCase }}</b-link
@@ -55,7 +55,7 @@
 		</b-card-title>
 		
 		<b-card-sub-title class="text-center mb-2">{{
-			isTestnet($props.sc.chainId) ? 'Testnet' : 'Mainnet'
+			contractNetwork
 		}}</b-card-sub-title>
 
 		<b-container fluid>
@@ -65,11 +65,11 @@
 						:class="[
 							'font-weight-bold',
 							{
-								'text-success': $props.sc.isDeployed,
-								'text-info': !$props.sc.isDeployed,
+								'text-success': isDeployed,
+								'text-info': !isDeployed,
 							},
 						]"
-						>{{ $props.sc.isDeployed ? 'Live' : 'Draft' }}</span
+						>{{ isDeployed ? 'Live' : 'Draft' }}</span
 					>
 					<br />
 					<span class="text-muted">Status</span>
@@ -139,7 +139,7 @@
 			<b-row class="pb-0">
 				<b-col cols="6">
 					<b-button
-						v-if="$props.sc.isDeployed"
+						v-if="isDeployed"
 						variant="link"
 						size="sm"
 						:to="`/smart-contracts/${sc.id}`"
@@ -178,7 +178,7 @@
 		>
 			<div>
 				 <b-form-group
-					:label="`Collection URL on ${isTestnet(this.$props.sc.chainId) ? 'TESTNET' : 'MAINNET'}`"
+					:label="`Collection URL on ${contractNetwork}`"
 					label-class='required'
 					:description="collectionNameDesc"
 				>
@@ -204,9 +204,9 @@
 <script>
 import { ethers } from 'ethers'
 import { BLOCKCHAIN, MARKETPLACE, SMARTCONTRACT_STATUS } from '@/constants'
-import { getExplorerUrl, getCurrency, isTestnet } from '@/constants/metamask'
+import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
-import { wait, getCompactAddress } from '@/utils'
+import { wait } from '@/utils'
 import { required } from 'vuelidate/lib/validators'
 
 const blockchainImage = {
@@ -245,13 +245,17 @@ export default {
 		openSeaLinkUrl: { required }
 	},
 	mounted() {
-		if (!this.$props.sc.isDeployed) return
-
+		if (!this.isDeployed) return
 		this.getContractStats()
 		this.getOpenSeaStats()
 	},
 	computed: {
 		...mapGetters(['userId']),
+		validation() {
+			return {
+				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error
+			}
+		},
 		formattedBalance() {
 			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.$props.sc.chainId)}`
 		},
@@ -260,25 +264,31 @@ export default {
 				this.$props.sc.address
 			}`
 		},
-		addressCompact() {
-			return getCompactAddress(this.$props.sc.address)
-		},
 		isOpenSea() {
 			return this.$props.sc.marketplace === MARKETPLACE.OpenSea
 		},
-		validation() {
-			return {
-				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error
-			}
-		},
 		collectionUrl() {
 			return this.$props.sc.marketplaceCollection?.url || null
+		},
+		isDeployed() {
+			return this.$props.sc.status !== SMARTCONTRACT_STATUS.Draft
+		},
+		isTestnet() {
+			return this.$props.sc.status === SMARTCONTRACT_STATUS.Testnet
+		},
+		isMainnet() {
+			return this.$props.sc.status === SMARTCONTRACT_STATUS.Mainnet
+		},
+		contractNetwork() {
+			if(this.isTestnet) return 'Testnet'
+			if(this.isMainnet) return 'Mainnet'
+			return 'Draft'
 		},
 		collectionNameDesc() {
 			const name = this.openSeaLinkUrl || ''
 			const parts = name.split('/')
 			const slug = parts[parts.length - 1]
-			return isTestnet(this.$props.sc.chainId) 
+			return this.isTestnet
 				? `https://testnets.opensea.io/collection/${slug}`
 				: `https://opensea.io/collection/${slug}`
 		}
@@ -287,7 +297,6 @@ export default {
 		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
 		...mapActions(['removeDashboardCard', 'cloneDashboardCard', 'linkOpenSea']),
 		getCurrency,
-		isTestnet,
 		getExplorerUrl,
 		onEdit() {
 			this.updateSmartContractBuilder({ ...this.$props.sc, marketplaceCollection: {} })
@@ -388,7 +397,7 @@ export default {
 			}
 		},
 		async getOpenSeaStats() {
-			if (!this.isOpenSea || !this.$props.sc.isDeployed) return
+			if (!this.isOpenSea || !this.isDeployed) return
 
 			let openseaApiUrl
 			let retryCount = 0
@@ -396,7 +405,7 @@ export default {
 
 			const name = this.$props.sc.marketplaceCollection.formattedName
 
-			if (isTestnet(this.$props.sc.chainId)) {
+			if (this.isTestnet) {
 				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${name}/stats`
 				fetchParams.headers = {
 					'X-API-KEY': ''

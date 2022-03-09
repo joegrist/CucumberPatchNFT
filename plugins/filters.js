@@ -18,3 +18,12 @@ Vue.filter('yesNo', val => {
     }
     return val
 })
+Vue.filter('compactAddress', address => {
+    if(!address) return address
+    
+	const length = address.length
+    return `${address.substring(0, 4)}...${address.substring(
+        length - 4,
+        length
+    )}`
+})

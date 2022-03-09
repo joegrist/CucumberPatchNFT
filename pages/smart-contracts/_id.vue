@@ -4,7 +4,7 @@
 				<b-col sm="12" md="8">
 					<p class="lead font-weight-bold mb-1">
 						Deployed on {{ rawContract.blockchain | blockchainName }}
-						{{ isTestnet(rawContract.chainId) ? '(Testnet)' : '(Mainnet)' }} at
+						{{ rawContract.status === SMARTCONTRACT_STATUS.Testnet ? '(Testnet)' : '(Mainnet)' }} at
 						<br />
 						<b-link
 							:href="`${getExplorerUrl(rawContract.chainId)}/address/${
@@ -302,11 +302,10 @@
 <script>
 import Vue from 'vue'
 import { mapGetters, mapMutations, mapState } from 'vuex'
-import { SALE_STATUS } from '@/constants'
+import { SALE_STATUS, SMARTCONTRACT_STATUS } from '@/constants'
 import {
 	getExplorerUrl,
 	getCurrency,
-	isTestnet,
 	getMainnetConfig
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
@@ -325,15 +324,14 @@ const basicFunctions = [
 	'owner',
 	'reveal',
 	'totalSupply',
-	'setPublicMintPrice'
+	'setPublicMintPrice',
+	'setPlaceholderUri'
 ]
-
-const FormatTypes = ethers.utils.FormatTypes
 
 export default {
 	middleware: 'authenticated',
 	data: () => ({
-		FormatTypes,
+		SMARTCONTRACT_STATUS,
 		SALE_STATUS,
 		invalidAddresses: [],
 		showAdvancedFunctions: false,
@@ -409,9 +407,7 @@ export default {
 		...mapState(['isBusy']),
 		...mapGetters(['userId']),
 		canDeployMainnet() {
-			return (
-				isTestnet(this.rawContract.chainId)
-			)
+			return this.rawContract.status === SMARTCONTRACT_STATUS.Mainnet
 		},
 		functions() {
 			return Object.values(this.contract.interface?.functions || {}).sort(
@@ -429,7 +425,6 @@ export default {
 	},
 	methods: {
 		getExplorerUrl,
-		isTestnet,
 		getCurrency,
     	...mapMutations(['setBusy']),
 		whitelistValidator(tag) {
@@ -615,7 +610,7 @@ export default {
 				if(!this.canDeployMainnet) return
 				if(!this.rawContract.isClearedForMainnet) {
 					//redirect to discord
-					window.open('https://discord.gg/NdEpB6ZYKn', '_blank')
+					window.open(this.$config.DISCORD_INVITE_URL, '_blank')
 					return
 				}
 
