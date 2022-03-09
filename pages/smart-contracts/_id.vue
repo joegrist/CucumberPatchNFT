@@ -701,20 +701,15 @@ export default {
 
 				const txOverrides = {}
 
-				if (!func.constant) {
-					const gasPrice = await this.contract.signer.getGasPrice()
-					console.log('gasPrice', ethers.utils.formatUnits(gasPrice))
-
-					txOverrides.gasPrice = gasPrice
-				}
-
 				let txResponse
 
 				const hasFuncArgs = this.callFuncArgs[func.name]?.size > 0
+				let args
+
 				if (hasFuncArgs) {
 					// to preserve correct argument order we run mapping based on original function inputs order
 					// since we can't guarantee the correct order in callFuncArgs Map
-					let args = func.inputs.map((x) => {
+					args = func.inputs.map((x) => {
 						const value = this.callFuncArgs[func.name].get(x.name)
 						return isNumber(value) ? ethers.BigNumber.from(value) : value
 					})
@@ -723,11 +718,9 @@ export default {
 					if (func.payable) {
 						if (func.name === 'mint') {
 							const mintPrice = await this.contract.MINT_PRICE()
-							const value =
-								Number(ethers.utils.formatEther(mintPrice)) * Number(args[0])
+							const value = Number(ethers.utils.formatEther(mintPrice)) * Number(args[0])
 							txOverrides.value = ethers.utils.parseEther(value.toString())
 						}
-						
 					}
 
 					if (func.name === 'setPublicMintPrice') {
@@ -746,6 +739,12 @@ export default {
 				}
 
 				console.log({ txResponse })
+				
+				if (func.name === 'setPlaceholderUri') {
+					await this.$axios.patch(`/smartcontracts/${this.rawContract.id}`, {
+						delayedRevealURL: args[0]
+					})
+				}
 
 				if (func.constant) {
 					let value = txResponse.toString()
@@ -772,7 +771,6 @@ export default {
 						variant: 'success',
 					})
 					txResponse.wait().then(async (res) => {
-						console.log({ res })
 						this.$bvToast.toast(msg, {
 							title: `${startCase(func.name)} completed`,
 							variant: 'success',
