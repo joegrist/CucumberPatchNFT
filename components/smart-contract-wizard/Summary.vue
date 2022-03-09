@@ -39,8 +39,6 @@ const excludeList = [
 	'id',
 	'isDeployed',
 	'collectionMetadataURL',
-	'hasMintableRoylaties',
-	'hasRaribleRoylaties',
 	'abi',
 	'bytecode',
 	'address',
@@ -56,6 +54,8 @@ const excludeList = [
 	'revenueSplits',
 	'hasRaribleRoyalties',
 	'hasMintableRoyalties',
+	'isClearedForMainnet',
+	'ownerAddress'
 ]
 
 export default {
@@ -78,7 +78,21 @@ export default {
 	},
 	computed: {
 		summary() {
-			return Object.entries(this.smartContract)
+			const marketplace = Object.entries(this.smartContract.marketplaceCollection || {})
+				.reduce((acc, val) => {
+					const [k,v] = val
+					if(k === 'marketplace') return acc
+
+					const key = `Marketplace ${k}`
+					let value = v
+
+					if(k === 'royalties') value += '%'
+					
+					acc[key] = value
+					return acc
+				}, {})
+			
+			return Object.entries({...this.smartContract, ...marketplace})
 				.filter(([k, _]) => !excludeList.includes(k))
 				.map(([key, val]) => {
 					if (isArray(val)) {
