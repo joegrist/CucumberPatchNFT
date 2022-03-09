@@ -220,7 +220,7 @@ export const CHAINID_CONFIG_MAP = {
 export const FAUCETS = {
 	"43113": ["https://faucet.avax-test.network"],
 	"80001": ["https://faucet.polygon.technology"],
-	"4": ["https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"],
+	"4": ["https://rinkebyfaucet.com", "https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"],
 	"4002": ["https://faucet.fantom.network"],
 	"97": ["https://testnet.binance.org/faucet-smart"],
 	"338": ["https://cronos.crypto.org/faucet"],
