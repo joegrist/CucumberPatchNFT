@@ -203,7 +203,7 @@ export default {
 				}, new FormData())
 
 				const { data: createdSite } = await this.$axios.post(
-					'websites',
+					'/websites/widget',
 					payload
 				)
 

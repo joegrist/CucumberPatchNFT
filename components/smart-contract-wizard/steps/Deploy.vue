@@ -26,7 +26,7 @@
           <p v-if="$wallet.account">
             <span class="font-weight-bold">Your wallet address: </span>
             {{ $wallet.account }}
-            <b-icon icon="files" class="pointer" @click="onAccountCopy"></b-icon>
+            <b-icon icon="files" class="pointer" @click="copyToClipboard($wallet.account)"></b-icon>
           </p>
         </b-col>
       </b-row>
@@ -104,6 +104,7 @@ import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
 import { mapState, mapActions, mapGetters, mapMutations } from 'vuex'
 import { requiredIf } from 'vuelidate/lib/validators'
+import { copyToClipboard } from '@/utils'
 import Summary from '@/components/smart-contract-wizard/Summary'
 
 export default {
@@ -151,17 +152,11 @@ export default {
   methods: {
     ...mapActions(['login']),
     ...mapMutations(['setBusy']),
+    copyToClipboard,
     getExplorerUrl,
     goToDashboard() {
         this.resetBuilder()
         this.$router.push('/')
-    },
-    async onAccountCopy() {
-      await navigator.clipboard.writeText(this.$wallet.account)
-      this.$bvToast.toast('Address copied to clipboard', {
-          title: 'Wallet',
-          variant: 'info',
-      })
     },
     onHidden() {
       // Return focus to the button once hidden
