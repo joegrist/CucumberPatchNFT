@@ -191,21 +191,39 @@
 						v-model="site.tikTokURL"></b-form-input>
 				</b-form-group>
 			</div>
-			<b-form-group label="Marketplace URL">
-				<template #label>
-					Marketplace URL
-					<b-link
-						v-if="site.marketplaceURL"
-						:href="transformUrl(site.marketplaceURL)"
-						target="_blank"
-						><b-icon icon="box-arrow-up-right"
-					/></b-link>
-				</template>
-				<b-form-input
-					id="marketplaceURL"
-					name="marketplaceURL"
-					v-model="site.marketplaceURL"></b-form-input>
-			</b-form-group>
+			<div class="d-flex">
+				<b-form-group class="pr-1 w-50">
+					<template #label>
+						Marketplace URL
+						<b-link
+							v-if="site.marketplaceURL"
+							:href="transformUrl(site.marketplaceURL)"
+							target="_blank"
+							><b-icon icon="box-arrow-up-right"
+						/></b-link>
+					</template>
+					<b-form-input
+						id="marketplaceURL"
+						name="marketplaceURL"
+						v-model="site.marketplaceURL"></b-form-input>
+				</b-form-group>
+				<b-form-group class="w-50" description="Etherscan, snowtrace, etc.">
+					<template #label>
+						Block Explorer URL
+						<b-link
+							v-if="site.blockExplorerUrl"
+							:href="transformUrl(site.blockExplorerUrl)"
+							target="_blank"
+							><b-icon icon="box-arrow-up-right"
+						/></b-link>
+					</template>
+					<b-form-input
+						id="blockExplorerUrl"
+						name="blockExplorerUrl"
+						v-model="site.blockExplorerUrl">
+					</b-form-input>
+				</b-form-group>
+			</div>
 			<div class="d-flex justify-content-end">
 				<b-button
 					variant="danger"

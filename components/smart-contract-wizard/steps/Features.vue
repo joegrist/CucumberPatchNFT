@@ -141,7 +141,7 @@
 			</b-row> -->
 			<b-row>
 				<b-col>
-					<b-form-group>
+					<b-form-group description="If you are the 100% shareholder your wallet will be added automatically during deployment">
 						<b-form-checkbox
 							id="revenueSplitFeature"
 							name="revenueSplitFeature"
@@ -274,12 +274,12 @@ export default {
 	},
 	beforeDestroy() {
 		// we perform split revenue updates locally and only update store before leaving
-		const { wallet } = this.revenueSplits[0]
-		if(this.revenueSplits.length === 1 && wallet === this.$wallet.account) {
-			return // no revenue splits
-		} else {
-			this.updateBuilderRevenueSplits(this.revenueSplits)
-		}
+		this.updateBuilderRevenueSplits(this.revenueSplits)
+		// const { wallet } = this.revenueSplits[0]
+		// if(this.revenueSplits.length === 1 && wallet === this.$wallet.account) {
+		// 	this.updateSmartContractBuilder({ hasRevenueSplits: false })
+		// } else {
+		// }
 	},
 	computed: {
 		validation() {
