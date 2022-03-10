@@ -274,7 +274,9 @@ export default {
 	},
 	beforeDestroy() {
 		// we perform split revenue updates locally and only update store before leaving
-		this.updateBuilderRevenueSplits(this.revenueSplits)
+		if(this.smartContractBuilder.hasRevenueSplits) {
+			this.updateBuilderRevenueSplits(this.revenueSplits)
+		}
 		// const { wallet } = this.revenueSplits[0]
 		// if(this.revenueSplits.length === 1 && wallet === this.$wallet.account) {
 		// 	this.updateSmartContractBuilder({ hasRevenueSplits: false })
