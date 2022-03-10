@@ -11,7 +11,17 @@ const wait = (delay) => {
     return new Promise((resolve) => setTimeout(resolve, delay));
 }
 
+// this function is not fat arrowed on purpose: it needs parent scope to access this.$bvToast
+const copyToClipboard = async function(value) {
+    await navigator.clipboard.writeText(value)
+    this.$bvToast.toast('Copied to clipboard!', {
+        title: 'Clipboard',
+        variant: 'info',
+    })
+}
+
 export {
     getMerkleRoot,
-    wait
+    wait,
+    copyToClipboard
 }

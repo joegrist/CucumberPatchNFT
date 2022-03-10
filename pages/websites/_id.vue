@@ -1,45 +1,51 @@
 <template>
 	<b-container class="pt-3">
-		<h1 class="text-center">{{ site.title }} dApp</h1>
-		<ul>
-			<li>
-				<span class="text-success"
-					>Status: {{ WEBSITE_STATUS[site.status] }}</span
-				>
-				<template v-if="site.status !== WEBSITE_STATUS.Ready">
-				<b-icon
-					v-if="isBusy"
-					class="pointer"
-					icon="bootstrap-reboot"
-					variant="success"
-					animation="spin"
-					:disabled="true" />
-				<b-icon
-					v-else
-					class="pointer"
-					icon="bootstrap-reboot"
-					variant="success"
-					@click="refreshStatus" />
+		<h1 class="text-center">{{ site.title }} </h1>
+		<iframe v-if="showPreview" width="100%" height="800px" :title="site.name" :src="`${$config.MINT_SITE_URL}?siteId=${site.id}`"></iframe>
+		<h5 class="text-center text-muted mb-3">Mint Page Preview</h5>
+		<div>
+			<ul>
+				<template v-if="site.type === WEBSITE_TYPE.Full">
+					<li>
+						<span class="text-success"
+							>Status: {{ WEBSITE_STATUS[site.status] }}</span
+						>
+						<template v-if="site.status !== WEBSITE_STATUS.Ready">
+							<b-icon
+								v-if="isBusy"
+								class="pointer"
+								icon="bootstrap-reboot"
+								variant="success"
+								animation="spin"
+								:disabled="true" />
+							<b-icon
+								v-else
+								class="pointer"
+								icon="bootstrap-reboot"
+								variant="success"
+								@click="refreshStatus" />
+						</template>
+					</li>
+					<li v-if="site.status === WEBSITE_STATUS.Ready">
+						Site URL:
+						<b-link :href="site.url" target="_blank"
+							>{{ site.url }} <b-icon icon="box-arrow-up-right"
+						/></b-link>
+					</li>
+					<li v-else class="text-warning">
+						Site URL: building <b-spinner small></b-spinner>
+					</li>
 				</template>
-			</li>
-			<li v-if="site.status === WEBSITE_STATUS.Ready">
-				Current URL:
-				<b-link :href="site.url" target="_blank"
-					>{{ site.url }} <b-icon icon="box-arrow-up-right"
-				/></b-link>
-			</li>
-			<li v-else class="text-warning">
-				Current URL: building <b-spinner small></b-spinner>
-			</li>
-			<li>Created: {{ site.createdOn | toDate }}</li>
-			<li v-if="site.status === WEBSITE_STATUS.Ready">To use on your existing website as sub domain add a new CNAME record </li>
-			<li v-if="site.status === WEBSITE_STATUS.Ready">
-				<ul>
-					<li>Name: mint</li>
-					<li>Value: {{ site.url.replace('http://', '') }}</li>
-				</ul>
-			</li>
-		</ul>
+				<li>To embed on your site paste the following code into an HTML embed element
+						<br/>
+						<code>
+							{{ iframeCode }}
+						</code> <b-icon class="pointer" icon="files" @click="copyToClipboard(iframeCode)"></b-icon>
+						<br/>
+					into embed component
+				</li>
+			</ul>
+		</div>
 		<b-form @submit.prevent="onUpdate" class="mb-3">
 			<b-form-group
 				label="Website Name"
@@ -250,15 +256,18 @@
 </template>
 
 <script>
-import { WEBSITE_STATUS } from '@/constants'
+import { WEBSITE_STATUS, WEBSITE_TYPE } from '@/constants'
 import { mapGetters, mapMutations, mapState } from 'vuex'
+import { copyToClipboard } from '@/utils'
 
 export default {
 	middleware: 'authenticated',
 	data() {
 		return {
 			WEBSITE_STATUS,
+			WEBSITE_TYPE,
 			site: {},
+			showPreview: true
 		}
 	},
 	fetchOnServer: false,
@@ -274,11 +283,21 @@ export default {
 	},
 	computed: {
 		...mapState(['isBusy']),
-		...mapGetters(['userId'])
+		...mapGetters(['userId']),
+		iframeCode() {
+			return `
+				<iframe 
+					width="100%" 
+					height="800px"
+					allowfullscreen="true"
+					loading="lazy"
+					title="${this.site.title}"
+					src="https://mint.zerocodenft.com?siteId=${this.site.id}"></iframe>`
+		}
 	},
 	methods: {
 		...mapMutations(['setBusy']),
-
+		copyToClipboard,
 		transformUrl(url) {
 			return url?.startsWith('http') ? url : `https://${url}`
 		},
@@ -349,6 +368,12 @@ export default {
 				}, new FormData())
 
 				await this.$axios.put(`websites/${id}`, payload)
+
+				if(this.site.type === WEBSITE_TYPE.Embedded) {
+					// reload iframe
+					this.showPreview = false
+					setTimeout(() => this.showPreview = true, 1000)
+				}
 
 				this.$bvToast.toast(
 					'Website updated. Please give it 5-10 mins for the changes to take effect',

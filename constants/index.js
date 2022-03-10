@@ -57,10 +57,20 @@ const SALE_STATUS = Object.freeze({
 	2: 'Public',
 })
 
+const WEBSITE_TYPE = Object.freeze({
+	Full: 0,
+	Embedded: 1,
+	EmbeddedCompact: 2,
+	0: 'Full',
+	1: 'Embedded',
+	2: 'EmbeddedCompact',
+})
+
 export {
 	BLOCKCHAIN,
 	MARKETPLACE,
 	WEBSITE_STATUS,
 	SMARTCONTRACT_STATUS,
 	SALE_STATUS,
+	WEBSITE_TYPE
 }

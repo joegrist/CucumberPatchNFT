@@ -53,7 +53,7 @@
 				<div v-if="$wallet.account">
 					<p>
 						Address:
-						<span class="pointer" @click="onAccountCopy"> {{ $wallet.accountCompact }} 
+						<span class="pointer" @click="copyToClipboard($wallet.account)"> {{ $wallet.accountCompact }} 
             				<b-icon icon="files" ></b-icon>
 						</span>
 					</p>
@@ -100,6 +100,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { copyToClipboard } from '@/utils'
 
 export default {
 	data() {
@@ -111,6 +112,7 @@ export default {
 		...mapGetters(['isLoggedIn'])
 	},
 	methods: {
+		copyToClipboard,
 		async onLogin() {
 			await this.$store.dispatch('login')
 		},
@@ -122,14 +124,7 @@ export default {
 		disconnect() {
 			this.isSidebarVisible = false
 			this.$wallet.disconnect()
-		},
-		async onAccountCopy() {
-			await navigator.clipboard.writeText(this.$wallet.account)
-			this.$bvToast.toast('Address copied to clipboard', {
-				title: 'Wallet',
-				variant: 'info',
-			})
-		},
+		}
 	},
 }
 </script>
