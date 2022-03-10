@@ -369,11 +369,9 @@ export default {
 
 				await this.$axios.put(`websites/${id}`, payload)
 
-				if(this.site.type === WEBSITE_TYPE.Embedded) {
-					// reload iframe
-					this.showPreview = false
-					setTimeout(() => this.showPreview = true, 1000)
-				}
+				// reload iframe
+				this.showPreview = false
+				setTimeout(() => this.showPreview = true, 1000)
 
 				this.$bvToast.toast(
 					'Website updated. Please give it 5-10 mins for the changes to take effect',
