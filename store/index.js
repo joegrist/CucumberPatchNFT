@@ -6,6 +6,7 @@ export const state = () => ({
     txInProgressHash: null,
     txResult: null,
     isBusy: false,
+    isSidebarOpen: false,
     dashboardItems: [],
     smartContractBuilder: {
         baseURL: null,
@@ -27,9 +28,13 @@ export const state = () => ({
 export const getters = {
 	isLoggedIn: (state) => !!state.accessToken,
 	userId: (state) => state.user?.id,
+    userCredits: (state) => state.user?.credits
 }
   
 export const mutations = {
+    showSidebar(state, value) {
+        state.isSidebarOpen = value
+    },
     setBusy(state, isBusy) {
         state.isBusy = isBusy
     },
