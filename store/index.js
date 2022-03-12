@@ -28,7 +28,10 @@ export const state = () => ({
 export const getters = {
 	isLoggedIn: (state) => !!state.accessToken,
 	userId: (state) => state.user?.id,
-    userCredits: (state) => state.user?.credits
+    userCredits: (state) => state.user?.credits,
+    referral: (state) => state.user?.referral,
+    // referralCount: (state) => state.user?.referral?.count || 0,
+    // referralBalance: (state) => state.user.referral?.balance
 }
   
 export const mutations = {
@@ -82,6 +85,19 @@ export const mutations = {
 }
 
 export const actions = {
+    async loadUser({commit, state}, id) {
+        try {
+            const { data } = await this.$axios.get(`/users/${id}`)
+            console.log(data)
+            localStorage.setItem('user', JSON.stringify(data))
+			commit('setUser', data)
+        } catch (err) {
+            this._vm.$bvToast.toast(err.message || 'Refresh failed', {
+                title: 'Refresh',
+                variant: 'danger',
+            })
+        }
+    },
     async loadDashboardCards({commit, state}) {
         try {
             commit('setBusy', true)

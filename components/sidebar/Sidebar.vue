@@ -1,7 +1,7 @@
 <template>
     <b-sidebar
 			v-model="isSidebarOpen"
-			@shown="_ => isLoggedIn && $store.dispatch('getCreditsCount')"
+			@shown="onShown"
 			id="sidebar-1"
 			title="Account"
 			right
@@ -15,21 +15,33 @@
 						<strong>Connect Wallet</strong>
 					</b-button>
 				</div>
-				<div v-else>
-					<p>
-						Address:
-						<span class="pointer" @click="copyToClipboard($wallet.account)"> {{ $wallet.accountCompact }} 
-            				<b-icon icon="files" ></b-icon>
-						</span>
-					</p>
-					<p>Balance: {{ $wallet.balance }}</p>
-					<p class="text-capitalize">Network: {{ $wallet.networkName }}</p>
-				</div>
-				<div v-if="isLoggedIn" class="d-flex">
-					<span class="my-auto mr-2">Credits: {{ userCredits }}</span>
-					<!-- <b-button class="mx-2" size="sm" variant="primary">Buy</b-button> -->
-					<TransferCreditsButton />
-				</div>
+				<b-list-group flush>
+					<template v-if="$wallet.account">
+						<b-list-group-item>
+							Address:
+							<span class="pointer" @click="copyToClipboard($wallet.account)"> {{ $wallet.accountCompact }} 
+								<b-icon icon="files" ></b-icon>
+							</span>
+						</b-list-group-item>
+						<b-list-group-item>Balance: {{ $wallet.balance }}</b-list-group-item>
+						<b-list-group-item class="text-capitalize">Network: {{ $wallet.networkName }}</b-list-group-item>
+					</template>
+					<template v-if="isLoggedIn">
+						<b-list-group-item>
+							<span>Credits: {{ userCredits }}</span>
+							<TransferCreditsButton />
+						</b-list-group-item>
+					</template>
+					<template v-if="referral">
+						<b-list-group-item>Referrals: {{ referral.count }}</b-list-group-item>
+						<b-list-group-item>Referral Code:
+							<span class="pointer" @click="copyToClipboard(referral.code)"> {{ referral.code }} 
+								<b-icon icon="files" ></b-icon>
+							</span>
+						</b-list-group-item>
+						<b-list-group-item>Referral Balance: ${{ referral.balance.toFixed(2) }}</b-list-group-item>
+					</template>
+				</b-list-group>
 			</div>
 			<template #footer>
 				<b-button
@@ -60,7 +72,7 @@ export default {
         TransferCreditsButton
     },
 	computed: {
-        ...mapGetters(['isLoggedIn', 'userCredits']),
+        ...mapGetters(['userId', 'isLoggedIn', 'userCredits', 'referral']),
         isSidebarOpen: {
             get: function() {
                 return this.$store.state.isSidebarOpen
@@ -72,12 +84,16 @@ export default {
 	},
 	methods: {
 		...mapMutations(['showSidebar']),
-		...mapActions(['login', 'logout']),
+		...mapActions(['login', 'logout', 'loadUser']),
 		copyToClipboard,
 		onLogout() {
 			this.showSidebar(false)
 			this.logout()
 			this.$router.push('/wizard')
+		},
+		async onShown(){
+			if(!this.isLoggedIn) return
+			await this.loadUser(this.userId)
 		},
 		disconnect() {
 			this.showSidebar(false)
