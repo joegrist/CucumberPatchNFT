@@ -267,14 +267,18 @@
 		</b-modal>
 		<b-modal
 			id="payment"
-			title="Buy Deployment Voucher ($699)"
+			title="Buy Deployment Voucher"
 			size="md"
 			static
 			centered
 			scrollable
 			hide-footer
 			@hidden="onPaymentModalHidden">
-			<div id="payments-container"></div>
+			<div>
+				<h4 class="mb-3">Total: $799</h4>
+				<!-- <b-button class="mb-3 p-2 font-weight-bolder" block variant="info" @click="onFTXPay">Pay with FTX US</b-button> -->
+				<div id="paypal-container"></div>
+			</div>
 		</b-modal>
 		<b-modal
 			id="paymentSuccess"
@@ -407,7 +411,7 @@ export default {
 		...mapState(['isBusy']),
 		...mapGetters(['userId']),
 		canDeployMainnet() {
-			return this.rawContract.status === SMARTCONTRACT_STATUS.Mainnet
+			return this.rawContract.status === SMARTCONTRACT_STATUS.Testnet
 		},
 		functions() {
 			return Object.values(this.contract.interface?.functions || {}).sort(
@@ -427,6 +431,9 @@ export default {
 		getExplorerUrl,
 		getCurrency,
     	...mapMutations(['setBusy']),
+		onFTXPay() {
+			window.open('https://ftx.us/pay/request?subscribe=false&coin=USD&size=799&id=3260&memoIsRequired=false&memo=&notes=','_blank','resizable,width=700,height=900')
+		},
 		whitelistValidator(tag) {
 			return ethers.utils.isAddress(tag)
 		},
@@ -444,8 +451,6 @@ export default {
 					this.rawContract.whitelist = [ethers.constants.AddressZero]
 				}
 				const merkleRoot = getMerkleRoot(this.rawContract.whitelist)
-				console.log(this.rawContract.whitelist, merkleRoot)
-				// const rootPayload = merkleRoot.length > 0 ? merkleRoot : ''
 				const txResponse = await this.contract.setMerkleRoot(merkleRoot)
 				this.isProcessingWhitelistCommit = true;
 
@@ -462,7 +467,6 @@ export default {
 					})
 				})
 			} catch (err) {
-				console.error(err)
 				this.$bvToast.toast('Whitelist commit failed', {
 					title: 'Whitelist',
 					variant: 'danger',
@@ -539,7 +543,7 @@ export default {
 			args.set(param.name, value)
 		},
 		onPaymentModalHidden() {
-			const container = document.getElementById('payments-container')
+			const container = document.getElementById('paypal-container')
 			if (container.firstChild) {
 				container.removeChild(container.firstChild)
 			}
@@ -559,6 +563,11 @@ export default {
 									},
 								},
 							],
+							application_context: {
+								brand_name: 'Zero Code NFT',
+								shipping_preference: 'NO_SHIPPING',
+								user_action: 'PAY_NOW'
+							}
 						})
 					},
 					onApprove: (data, actions) => {
@@ -585,6 +594,8 @@ export default {
 								userId: this.userId,
 								smartContractId: smartContractId,
 							})
+							// const tran = await this.$axios.get(`/transactions/paypal/${id}`)
+							// console.log(tran)
 							this.$bvModal.hide('payment')
 							this.$bvModal.show('paymentSuccess')
 						})
@@ -603,7 +614,7 @@ export default {
 						})
 					},
 				})
-				.render('#payments-container')
+				.render('#paypal-container')
 		},
 		async onMainnetDeploy() {
 			try {
@@ -619,8 +630,8 @@ export default {
 				const userCredits = await this.$store.dispatch('getCreditsCount')
 				const hasToPay = +userCredits < 1
 
-				if (hasToPay) {
-					const amount = 699
+				if (!hasToPay) {
+					const amount = 799
 					this.handlePayment(id, amount)
 					return
 				}
