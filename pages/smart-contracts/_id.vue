@@ -276,6 +276,7 @@
 			@hidden="onPaymentModalHidden">
 			<div>
 				<h4 class="mb-3">Total: $799</h4>
+				<b-button class="mb-3 p-2 font-weight-bolder" block variant="primary" @click="payWithEth">Pay With ETH</b-button>
 				<!-- <b-button class="mb-3 p-2 font-weight-bolder" block variant="info" @click="onFTXPay">Pay with FTX US</b-button> -->
 				<div id="paypal-container"></div>
 			</div>
@@ -298,6 +299,21 @@
 					">
 					<b-icon icon="wallet2" /> Deploy to Mainnet
 				</b-button>
+			</div>
+		</b-modal>
+		<b-modal
+			id="ethPaymentSuccess"
+			title="Thank You!"
+			centered
+			no-close-on-backdrop
+			ok-only>
+			<div>
+				<p> We've received your payment. Please 
+					<b-link href="https://discord.gg/E2byPVZKKV" target="_blank">open a Discord ticket</b-link> or 
+					<b-link :href="`mailto:admin@zerocodenft.com?subject=ETH payment verification&body=${ethPayTxHash}`">send email</b-link> with the following
+					transaction hash so we can verify and clear you for mainnet deployment.
+				</p>
+				<p class="break-word">{{ ethPayTxHash }} <Copy :value="ethPayTxHash" /></p>
 			</div>
 		</b-modal>
 	</b-container>
@@ -350,6 +366,7 @@ export default {
 		isReady: false,
 		isProcessingWhitelistCommit: false,
 		paypal: null,
+		ethPayTxHash: null
 	}),
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
@@ -436,6 +453,36 @@ export default {
 		},
 		whitelistValidator(tag) {
 			return ethers.utils.isAddress(tag)
+		},
+		async payWithEth() {
+			try {
+				const data = await fetch('https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD')
+				const { USD: ethPrice } = await data.json()
+				const value = 799/ethPrice
+				const tx = {
+					from: this.$wallet.account,
+					to: '0x34Eca06DB779169003117e8999B5E008086f4cc3',
+					value: ethers.utils.parseEther(value.toString()),
+					nonce: this.$wallet.provider.getTransactionCount(this.$wallet.account, "latest"),
+				}
+				const txRes = await this.$wallet.provider.getSigner().sendTransaction(tx)
+				this.ethPayTxHash = txRes.hash
+				this.$bvModal.hide('payment')
+				this.$bvModal.show('ethPaymentSuccess')
+			} catch (err) {
+				const { data, reason, message, error } = err
+				this.$bvToast.toast(
+					error?.message ||
+						data?.message ||
+						reason ||
+						message ||
+						'Payment declined',
+					{
+						title: 'ETH Payment',
+						variant: 'danger',
+					}
+				)
+			}
 		},
 		async onWhitelistCommit() {
 			this.setBusy(true)

@@ -19,8 +19,8 @@
 					<template v-if="$wallet.account">
 						<b-list-group-item>
 							Address:
-							<span class="pointer" @click="copyToClipboard($wallet.account)"> {{ $wallet.accountCompact }} 
-								<b-icon icon="files" ></b-icon>
+							<span class="pointer"> {{ $wallet.accountCompact }}
+								<Copy :value="$wallet.account" />
 							</span>
 						</b-list-group-item>
 						<b-list-group-item>Balance: {{ $wallet.balance }}</b-list-group-item>
@@ -35,8 +35,8 @@
 					<template v-if="referral">
 						<b-list-group-item>Referrals: {{ referral.count }}</b-list-group-item>
 						<b-list-group-item>Referral Code:
-							<span class="pointer" @click="copyToClipboard(referral.code)"> {{ referral.code }} 
-								<b-icon icon="files" ></b-icon>
+							<span class="pointer"> {{ referral.code }} 
+								<Copy :value="referral.code" />
 							</span>
 						</b-list-group-item>
 						<b-list-group-item>Referral Balance: ${{ referral.balance.toFixed(2) }}</b-list-group-item>
@@ -54,7 +54,7 @@
 				<b-button
 					v-else
 					class="bg-gradient-primary border-0 rounded-0 w-100"
-					@click="onLogin"
+					@click="login"
 					size="lg"
 					>Login</b-button
 				>
@@ -65,7 +65,6 @@
 <script>
 import TransferCreditsButton from './TransferCreditsButton.vue'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import { copyToClipboard } from '@/utils'
 
 export default {
     components: {
@@ -85,7 +84,6 @@ export default {
 	methods: {
 		...mapMutations(['showSidebar']),
 		...mapActions(['login', 'logout', 'loadUser']),
-		copyToClipboard,
 		onLogout() {
 			this.showSidebar(false)
 			this.logout()
