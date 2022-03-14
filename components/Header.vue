@@ -20,9 +20,9 @@
 
 				<!-- Right aligned nav items -->
 				<b-navbar-nav class="ml-auto">
-					<span v-if="$wallet.account" class="mr-2 my-auto"
+					<!-- <span v-if="$wallet.account" class="mr-2 my-auto"
 						>{{ $wallet.balance }}
-					</span>
+					</span> -->
 					<b-avatar
 						button 
 						@click="showSidebar(true)"

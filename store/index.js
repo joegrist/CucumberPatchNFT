@@ -30,8 +30,6 @@ export const getters = {
 	userId: (state) => state.user?.id,
     userCredits: (state) => state.user?.credits,
     referral: (state) => state.user?.referral,
-    // referralCount: (state) => state.user?.referral?.count || 0,
-    // referralBalance: (state) => state.user.referral?.balance
 }
   
 export const mutations = {
@@ -85,10 +83,9 @@ export const mutations = {
 }
 
 export const actions = {
-    async loadUser({commit, state}, id) {
+    async loadUser({commit}, id) {
         try {
             const { data } = await this.$axios.get(`/users/${id}`)
-            console.log(data)
             localStorage.setItem('user', JSON.stringify(data))
 			commit('setUser', data)
         } catch (err) {

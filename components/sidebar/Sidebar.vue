@@ -90,8 +90,10 @@ export default {
 			this.$router.push('/wizard')
 		},
 		async onShown(){
-			if(!this.isLoggedIn) return
-			await this.loadUser(this.userId)
+			this.$wallet.refreshBalance()
+			if(this.isLoggedIn) {
+				await this.loadUser(this.userId)
+			}
 		},
 		disconnect() {
 			this.showSidebar(false)
