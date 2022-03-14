@@ -7,6 +7,10 @@
   cursor: pointer;
 }
 
+.break-word {
+  overflow-wrap: break-word;
+}
+
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   opacity: 0.5 !important;
 }

@@ -40,7 +40,8 @@
 						<br/>
 						<code>
 							{{ iframeCode }}
-						</code> <b-icon class="pointer" icon="files" @click="copyToClipboard(iframeCode)"></b-icon>
+						</code>
+						<Copy :value="iframeCode" />
 						<br/>
 					into embed component
 				</li>

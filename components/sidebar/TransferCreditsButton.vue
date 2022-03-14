@@ -89,7 +89,6 @@ export default {
         async onTransfer(e) {
             e.preventDefault()
             this.$v.$touch()
-            console.log(this.$v)
             if (this.$v.$invalid) {
                 return
             }

@@ -26,7 +26,7 @@
           <p v-if="$wallet.account">
             <span class="font-weight-bold">Your wallet address: </span>
             {{ $wallet.account }}
-            <b-icon icon="files" class="pointer" @click="copyToClipboard($wallet.account)"></b-icon>
+            <Copy :value="$wallet.account" />
           </p>
         </b-col>
       </b-row>
