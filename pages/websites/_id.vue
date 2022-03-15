@@ -103,14 +103,6 @@
 						drop-placeholder="Drop file here..."></b-form-file>
 				</b-form-group>
 			</div>
-			<!-- <b-form-group label="Desired website domain (URL)">
-				<b-form-input
-					id="desiredDomain"
-					name="desiredDomain"
-					v-model="site.desiredDomain"
-					placeholder="zerocodenft.com"
-					></b-form-input>
-			</b-form-group> -->
 			<div class="d-flex">
 				<b-form-group
 					label="Drop Date"

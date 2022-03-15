@@ -9,12 +9,13 @@
 
 			<b-collapse id="nav-collapse" is-nav>
 				<b-navbar-nav>
-					<b-nav-item to="/wizard" class="gradient-text">Wizard</b-nav-item>
+					<b-nav-item to="/wizard" class="gradient-text my-auto">Wizard</b-nav-item>
 					<b-nav-item v-if="isLoggedIn" to="/" class="gradient-text"
 						>Dashboard</b-nav-item
 					>
-					<b-nav-item v-else @click="login" class="gradient-text"
-						>Login</b-nav-item
+					<b-nav-item v-else class="gradient-text">
+						<LoginButton variant="link" />
+					</b-nav-item
 					>
 				</b-navbar-nav>
 
@@ -54,10 +55,12 @@
 <script>
 import Sidebar from '@/components/sidebar/Sidebar.vue'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import LoginButton from '@/components/auth/LoginButton.vue'
 
 export default {
 	components: {
-		Sidebar
+		Sidebar,
+		LoginButton
 	},
 	computed: {
 		...mapGetters(['isLoggedIn']),

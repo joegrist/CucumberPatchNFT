@@ -193,7 +193,7 @@ export default {
       }
     }
   },
-    validations: {
+  validations: {
       smartContractBuilder: {
         collectionSize: { required, numeric, minValue: minValue(1) },
         name: { required, mustBeName, maxLength: maxLength(50) },

@@ -46,18 +46,13 @@
 			<template #footer>
 				<b-button
 					v-if="isLoggedIn"
-					class="bg-gradient-primary border-0 rounded-0 w-100"
+					block
+					class="bg-gradient-primary border-0 rounded-0"
 					@click="onLogout"
 					size="lg"
 					>Logout</b-button
 				>
-				<b-button
-					v-else
-					class="bg-gradient-primary border-0 rounded-0 w-100"
-					@click="login"
-					size="lg"
-					>Login</b-button
-				>
+				<LoginButton v-else size="lg" block squared />
 			</template>
 		</b-sidebar>
 </template>
@@ -65,10 +60,12 @@
 <script>
 import TransferCreditsButton from './TransferCreditsButton.vue'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import LoginButton from '@/components/auth/LoginButton.vue'
 
 export default {
     components: {
-        TransferCreditsButton
+        TransferCreditsButton,
+		LoginButton
     },
 	computed: {
         ...mapGetters(['userId', 'isLoggedIn', 'userCredits', 'referral']),

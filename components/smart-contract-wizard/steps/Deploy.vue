@@ -1,5 +1,4 @@
 <template>
-  <b-form>
     <b-container>
 		<b-row>
 			<b-col cols="12" class="pb-3 pb-md-5">
@@ -17,9 +16,7 @@
           <b-collapse id="faucetList">
             <ul class="my-1 list-unstyled">
               <li v-for="faucetUrl in FAUCETS[$wallet.chainId]" :key="faucetUrl">
-                <b-link :href="faucetUrl" target="_blank">
-                  {{ faucetUrl }} <b-icon icon="box-arrow-up-right" />
-                </b-link>
+                <ExternalLink :href="faucetUrl" :text="faucetUrl" />
               </li>
             </ul>
           </b-collapse>
@@ -30,55 +27,22 @@
           </p>
         </b-col>
       </b-row>
-      <b-row v-if="!hasEmail">
-        <b-col>
-          <b-form-group
-            label='Your email address'
-            label-class='required'
-          >
-            <b-form-input
-              id='email'
-              name='email'
-              type='email'
-              placeholder='john.doe@gmail.com'
-              :value='smartContractBuilder.email'
-              @change='(val) => updateSmartContractBuilder({ email: val })'
-              @blur='$v.smartContractBuilder.email.$touch()'
-              :class="{
-								'is-invalid': $v.smartContractBuilder.email.$anyError,
-							}"
-              required
-            ></b-form-input>
-             <b-form-invalid-feedback :state="validation.email">
-              Please provide "Email"
-            </b-form-invalid-feedback>
-          </b-form-group>
-        </b-col>
-      </b-row>
       <b-row>
         <b-col>
           <div class="d-flex justify-content-center">
-            <b-button @click="saveDraft()" variant="outline-info" class="mr-3" :disabled='!canDeploy'>Save Draft</b-button>
-            <b-overlay
-              :show='isBusy'
-              rounded
-              opacity='0.6'
-              spinner-small
-              spinner-variant='primary'
-              class='d-inline-block'
-              @hidden='onHidden'
-            >
-              <b-button variant='outline-success' ref='deployBtn' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
-            </b-overlay>
+            <template v-if="isLoggedIn">
+              <b-button variant="outline-info" :disabled='!canDeploy' @click="saveDraft" class="mr-3">Save Draft</b-button>
+              <b-button variant='outline-success' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
+            </template>
+            <LoginButton v-else caption="Login to Deploy" />
           </div>
         </b-col>
       </b-row>
-    </b-container>
-    <b-modal id='deployment' title='Deployed' size='md' centered ok-only @ok="goToDashboard">
+    <b-modal id='deployed' title='Deployed' size='md' centered ok-only @ok="$router.push('/')">
       <div class='text-center'>
         <h3>Success!!</h3>
         <p>Contract has been deployed!<br> 
-          <b-link :href="`${getExplorerUrl(smartContractBuilder.chainId)}/address/${smartContractBuilder.address}`" target="_blank"> View on block explorer </b-link>
+          <b-link :href="explorerUrl" target="_blank"> View on block explorer </b-link>
         </p>
       </div>
     </b-modal>
@@ -95,90 +59,52 @@
             <b-img width="200px" class="pointer" thumbnail src="@/assets/images/metamask-fox-stacked.svg" alt="metamask logo" @click="$wallet.connect"></b-img>
         </div>
     </b-modal>
-  </b-form>
+  </b-container>
 </template>
 
 <script>
 import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
-import { mapState, mapActions, mapGetters, mapMutations } from 'vuex'
-import { requiredIf } from 'vuelidate/lib/validators'
-import { copyToClipboard } from '@/utils'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 import Summary from '@/components/smart-contract-wizard/Summary'
+import LoginButton from '@/components/auth/LoginButton'
 
 export default {
   mixins: [smartContractBuilderMixin],
   components: {
-    Summary
+    Summary,
+    LoginButton
   },
   data() {
     return {
       FAUCETS,
       showConnectWalletModal: false
     }
-  },
-  validations: {
-    smartContractBuilder: {
-      email: {
-        required: requiredIf(function () {
-					return !this.hasEmail
-				}),
-      }
-    }
-  },
+  },  
   watch: {
     '$wallet.account': function(newVal, oldVal) {
-      if(newVal !== null) {
-        this.showConnectWalletModal = false
-      }
+      this.showConnectWalletModal = newVal === null
     }
+  },
+  validations: {
+    smartContractBuilder: {}
   },
   computed: {
     ...mapState(['isBusy']),
     ...mapGetters(['isLoggedIn']),
-    validation() {
-      return {
-        email: !this.$v.smartContractBuilder.email.$error,
-      }
-    },
-    hasEmail() {
-      return this.$store.state.user?.email
+    explorerUrl() {
+      return `${getExplorerUrl(this.smartContractBuilder.chainId)}/address/${this.smartContractBuilder.address}`
     },
     canDeploy() {
-      return !this.smartContractBuilder.isDeployed && !this.isBusy && !this.$v.smartContractBuilder.email.$anyError
+      return !this.smartContractBuilder.isDeployed && !this.isBusy && this.isLoggedIn
     },
   },
   methods: {
-    ...mapActions(['login']),
     ...mapMutations(['setBusy']),
-    copyToClipboard,
-    getExplorerUrl,
-    goToDashboard() {
-        this.resetBuilder()
-        this.$router.push('/')
-    },
-    onHidden() {
-      // Return focus to the button once hidden
-      this.$refs.deployBtn.focus()
-    },
     
     async saveDraft() {
       try {
-
-        if(!this.hasEmail && !this.smartContractBuilder.email) {
-          this.$v.smartContractBuilder.email.$touch()
-          return
-        }
-        if(!this.isLoggedIn) {
-          const user = await this.login({
-            email: this.email,
-          })
-          if(!user) {
-            return
-          }
-        }
-
         const res = await this.$axios.post('/smartcontracts/save-draft', {
           ...this.smartContractBuilder,
           ownerAddress: this.$wallet.account
@@ -197,7 +123,6 @@ export default {
         return id
 
       } catch (err) {
-        console.error({err})
         this.$bvToast.toast('Failed to save the draft', {
           title: 'Error',
           variant: 'danger',
@@ -207,21 +132,6 @@ export default {
 
     async deploy() {
       try {
-
-        if(!this.hasEmail && !this.smartContractBuilder.email) {
-          this.$v.smartContractBuilder.email.$touch()
-          return
-        }
-        if(!this.isLoggedIn) {
-          const user = await this.login({
-            email: this.email,
-          })
-          if(!user) {
-            alert("Login failed. Please try again later or contact us on Discord.")
-            return
-          }
-        }
-
         if(!this.$wallet.account) {
           this.showConnectWalletModal = true
           return
@@ -259,10 +169,9 @@ export default {
 
         // console.log({ contract })
 
-        this.$bvModal.show('deployment')
-      } catch (e) {
-        console.error(e)
-        this.$bvToast.toast(e.message || 'Deployment failed', {
+        this.$bvModal.show('deployed')
+      } catch (err) {
+        this.$bvToast.toast(err.message || 'Deployment failed', {
           title: 'Error',
           variant: 'danger',
         })
