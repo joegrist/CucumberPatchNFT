@@ -13,19 +13,19 @@ const smartContractWizardMixin = {
 	watch: {
 		$v: {
 			handler: function (val) {
-				this.$emit('can-continue', { value: !val.$invalid })
+				this.$emit('can-continue', { value: !val?.$invalid })
 			},
 			deep: true,
 			immediate: true,
 		},
 		clickedNext(val) {
-			if (val === true) {
-				this.$v.smartContractBuilder.$touch()
+			if (val) {
+				this.$v.smartContractBuilder?.$touch()
 			}
 		},
 	},
 	methods: {
-		...mapMutations(['updateSmartContractBuilder', 'resetSmartContractBuilder', 'updateBuilderRevenueSplits']),
+		...mapMutations(['updateSmartContractBuilder', 'updateBuilderRevenueSplits']),
 		onFormReset(value) {
 			this.updateSmartContractBuilder(value)
 			// Trick to reset/clear native browser form validation state
@@ -33,9 +33,6 @@ const smartContractWizardMixin = {
 			this.$nextTick(() => {
 				this.showForm = true
 			})
-		},
-		resetBuilder() {
-			this.resetSmartContractBuilder()
 		}
 	},
 }

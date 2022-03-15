@@ -12,14 +12,23 @@ export default ({store}, inject) => {
         balance: null,
         provider: null,
 
+        get chainId() {
+            return this.network?.chainId
+        },
         get hexChainId() {
             return '0x' + this.network?.chainId?.toString(16)
         },
         get networkName() {
             return this.network?.name
         },
-        get chainId() {
-            return this.network?.chainId
+        get isConnected() {
+            return this.account
+        },
+        
+        async refreshBalance() {
+            if(!this.account || !this.provider) return
+            const balance = (await this.provider.getBalance(this.account)).toString()
+            this.balance = `${(+ethers.utils.formatEther(balance)).toFixed(3)} ${getCurrency(this.chainId)}`
         },
 
         async init() {
@@ -34,9 +43,7 @@ export default ({store}, inject) => {
             if(newAccount) {
                 this.account = newAccount
                 this.accountCompact = `${newAccount.substring(0, 4)}...${newAccount.substring(newAccount.length - 4)}`
-
-                const balance = (await this.provider.getBalance(newAccount)).toString()
-                this.balance = `${(+ethers.utils.formatEther(balance)).toFixed(3)} ${getCurrency(this.network.chainId)}`
+                this.refreshBalance()
             }
             else {
                 this.disconnect()
@@ -44,19 +51,23 @@ export default ({store}, inject) => {
         },
 
         async connect() {
-            if(!MetaMaskOnboarding.isMetaMaskInstalled()) {
-                const onboarding = new MetaMaskOnboarding()
-                onboarding.startOnboarding()
-                return
-            }
-        
-            wallet.network = await wallet.provider.getNetwork()
-
-            const [account] = await wallet.provider.send('eth_requestAccounts')
-            console.info('wallet connected', {account})
-
-            if(account) {
-                await wallet.setAccount(account)
+            try {
+                if(!MetaMaskOnboarding.isMetaMaskInstalled()) {
+                    const onboarding = new MetaMaskOnboarding()
+                    onboarding.startOnboarding()
+                    return
+                }
+            
+                wallet.network = await wallet.provider.getNetwork()
+    
+                const [account] = await wallet.provider.send('eth_requestAccounts')
+                console.info('wallet connected', {account})
+    
+                if(account) {
+                    await wallet.setAccount(account)
+                }
+            } catch (err) {
+                alert(err.message || 'Wallet connection failed')
             }
         },
 
@@ -112,10 +123,6 @@ export default ({store}, inject) => {
         window.ethereum.on('chainChanged', async (chainId) => {
             console.info('chainChanged', chainId)
             wallet.init()
-            // store.commit('setBusy', true)
-            // setTimeout(() => {
-            //     window.location.reload()
-            // }, 1000)
         })
 
         wallet.init()

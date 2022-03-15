@@ -30,8 +30,6 @@ export const getters = {
 	userId: (state) => state.user?.id,
     userCredits: (state) => state.user?.credits,
     referral: (state) => state.user?.referral,
-    // referralCount: (state) => state.user?.referral?.count || 0,
-    // referralBalance: (state) => state.user.referral?.balance
 }
   
 export const mutations = {
@@ -85,10 +83,9 @@ export const mutations = {
 }
 
 export const actions = {
-    async loadUser({commit, state}, id) {
+    async loadUser({commit}, id) {
         try {
             const { data } = await this.$axios.get(`/users/${id}`)
-            console.log(data)
             localStorage.setItem('user', JSON.stringify(data))
 			commit('setUser', data)
         } catch (err) {
@@ -132,52 +129,59 @@ export const actions = {
         const { data } = await this.$axios.post('/marketplaceCollections/link', payload)
         commit('linkOpenSea', data)
     },
-    async getCreditsCount({commit, state, getters }) {
+
+    async getCreditsCount({commit, state, getters}) {
         const { data: userCredits } = await this.$axios.get(`/users/${state.user.id}/credits`)
         if(getters.isLoggedIn) { // user might have logged out between the time request was send and response received
             commit('updateUserCredits', userCredits)
         }
         return userCredits
     },
-    async login({commit}, payload) {
+
+    async signUp({dispatch}, payload) {
+        try {
+            await this.$axios.post("/users", payload)
+            await dispatch('login')
+        } catch (err) {
+            this._vm.$bvToast.toast(err.message || 'Registration failed', {
+                title: 'Registration',
+                variant: 'danger',
+            })
+        }
+    },
+
+    async login({commit, dispatch}) {
 		try {
-			
-			if(!this.$wallet.account) {
-				await this.$wallet.connect()
-			}
-			
-			const { account: publicKey } = this.$wallet
-			
-			let { data: nonce } = await this.$axios.get("/users/nonce", { params: { publicKey }})
-		
+			if(!this.$wallet.isConnected) {
+                await this.$wallet.connect()
+            }
+            
+            const { account: publicKey } = this.$wallet
+            
+            const { data: nonce } = await this.$axios.get("/users/nonce", { params: { publicKey }})
+    
 			if(!nonce) {
-				const { data: createdUser } = await this.$axios.post("/users", { publicKey, ...payload })
-				// console.log({createdUser})
-				nonce = createdUser.nonce
+				throw new Error('User doesnt exist!')
 			}
-			
-			const signature = await this.$wallet.requestSignature(nonce)
-			const { data: authData } = await this.$axios.post("auth", {
-				publicKey,
-				signature,
-			})
-			// console.log( {authData} )
-		
-			const { accessToken, user: authUser } = authData
 
-			localStorage.setItem('accessToken', accessToken)
-			localStorage.setItem('user', JSON.stringify(authUser))
-			commit('setUser', authUser)
-			commit('setAccessToken', accessToken)
-
-            return authUser
+            const signature = await this.$wallet.requestSignature(nonce)
+            const { data: authData } = await this.$axios.post("auth", {
+                publicKey: this.$wallet.account,
+                signature,
+            })
+            // console.log( {authData} )
+        
+            const { accessToken, user: authUser } = authData
+    
+            localStorage.setItem('accessToken', accessToken)
+            localStorage.setItem('user', JSON.stringify(authUser))
+            commit('setUser', authUser)
+            commit('setAccessToken', accessToken)
 		} catch (err) {
 			this._vm.$bvToast.toast(err.message || 'Login failed', {
                 title: 'Login',
                 variant: 'danger',
             })
-
-            return null
 		}
     },
 

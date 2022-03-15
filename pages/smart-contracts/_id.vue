@@ -677,7 +677,7 @@ export default {
 				const userCredits = await this.$store.dispatch('getCreditsCount')
 				const hasToPay = +userCredits < 1
 
-				if (!hasToPay) {
+				if (hasToPay) {
 					const amount = 799
 					this.handlePayment(id, amount)
 					return

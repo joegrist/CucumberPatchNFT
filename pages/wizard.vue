@@ -20,7 +20,7 @@ import Features from '~/components/smart-contract-wizard/steps/Features.vue'
 import Marketplace from '~/components/smart-contract-wizard/steps/Marketplace.vue'
 import Deploy from '~/components/smart-contract-wizard/steps/Deploy.vue'
 import getSiteMeta from "@/scripts/siteMeta";
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 
 export default {
     head() {
@@ -98,7 +98,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(['smartContractBuilder'])
+    ...mapState(['smartContractBuilder']),
+    ...mapGetters(['isLoggedIn'])
   },
   beforeDestroy() {
     this.resetSmartContractBuilder()
@@ -128,6 +129,10 @@ export default {
 
     // Executed when @stepper-finished event is triggered
     alert(payload) {
+      if(!this.isLoggedIn) {
+        alert("Please login")
+        return
+      }
       if(this.smartContractBuilder?.id || confirm("You are about to lose all your changes. Are you sure you want to finish ?")) {
         this.$router.push('/')
       }

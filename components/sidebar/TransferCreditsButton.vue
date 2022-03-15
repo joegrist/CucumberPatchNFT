@@ -1,8 +1,8 @@
 <template>
     <div>
-        <b-button size="sm" variant="primary" :disabled="userCredits === 0" v-b-modal.transferCredits>Transfer</b-button>
+        <b-button size="sm" variant="primary" :disabled="userCredits === 0" v-b-modal="modalId">Transfer</b-button>
         <b-modal
-            id="transferCredits"
+            :id="modalId"
             ok-title="Send"
             ok-variant="success"
             @ok="onTransfer"
@@ -53,10 +53,12 @@ import {
     required,
 	minValue,
 } from 'vuelidate/lib/validators'
+import { nanoid } from 'nanoid'
 
 export default {
     data() {
         return {
+            modalId: nanoid(),
             transfer: {}
         }
     },
@@ -95,7 +97,7 @@ export default {
             try {
                 await this.$axios.post('/users/credits/transfer', this.transfer)
                 await this.$store.dispatch('getCreditsCount')
-                this.$bvModal.hide('transferCredits')
+                this.$bvModal.hide(this.modalId)
                 this.$bvToast.toast('Transfer successful', {
                     title: 'Credit Transfer',
                     variant: 'success',
