@@ -41,6 +41,11 @@
 						</b-list-group-item>
 						<b-list-group-item>Referral Balance: ${{ referral.balance.toFixed(2) }}</b-list-group-item>
 					</template>
+					<template v-else>
+						<b-list-group-item>
+							<BecomeAmbasssadorButton />
+						</b-list-group-item>
+					</template>
 				</b-list-group>
 			</div>
 			<template #footer>
@@ -61,9 +66,11 @@
 import TransferCreditsButton from './TransferCreditsButton.vue'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import LoginButton from '@/components/auth/LoginButton.vue'
+import BecomeAmbasssadorButton from './BecomeAmbassadorButton.vue'
 
 export default {
     components: {
+		BecomeAmbasssadorButton,
         TransferCreditsButton,
 		LoginButton
     },

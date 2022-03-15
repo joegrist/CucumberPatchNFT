@@ -103,7 +103,6 @@ export default {
                     variant: 'success',
                 })
             } catch (err) {
-                console.log({err})
                 this.$bvToast.toast(`${err.response?.status}: ${err.response?.data}` || 'Transfer failed', {
                     title: `Credit Transfer`,
                     variant: 'danger',

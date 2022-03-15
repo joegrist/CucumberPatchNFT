@@ -79,10 +79,17 @@ export const mutations = {
     linkOpenSea(state, payload) {
         const item = state.dashboardItems.find(x => x.id === payload.smartContractId)
         item.marketplaceCollection = payload
+    },
+    setAmbassador(state, payload) {
+        state.user.referral = payload
     }
 }
 
 export const actions = {
+    async becomeAmbassador({commit, getters}, payload) {
+        const { data } = await this.$axios.post(`/users/${getters.userId}/referral`, payload)
+        commit('setAmbassador', data)
+    },
     async loadUser({commit}, id) {
         try {
             const { data } = await this.$axios.get(`/users/${id}`)
@@ -130,8 +137,8 @@ export const actions = {
         commit('linkOpenSea', data)
     },
 
-    async getCreditsCount({commit, state, getters}) {
-        const { data: userCredits } = await this.$axios.get(`/users/${state.user.id}/credits`)
+    async getCreditsCount({commit, getters}) {
+        const { data: userCredits } = await this.$axios.get(`/users/${getters.id}/credits`)
         if(getters.isLoggedIn) { // user might have logged out between the time request was send and response received
             commit('updateUserCredits', userCredits)
         }
