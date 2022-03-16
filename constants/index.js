@@ -66,11 +66,25 @@ const WEBSITE_TYPE = Object.freeze({
 	2: 'EmbeddedCompact',
 })
 
+const CONTRACT_TYPE = Object.freeze({
+	Unknown: 0,
+	ERC721: 1,
+	ERC721A: 2,
+	ERC20: 3,
+	ERC1155: 4,
+	0: 'Unknown',
+	1: 'ERC721',
+	2: 'ERC721A',
+	3: 'ERC20',
+	4: 'ERC1155'
+})
+
 export {
 	BLOCKCHAIN,
 	MARKETPLACE,
 	WEBSITE_STATUS,
 	SMARTCONTRACT_STATUS,
 	SALE_STATUS,
-	WEBSITE_TYPE
+	WEBSITE_TYPE,
+	CONTRACT_TYPE
 }
