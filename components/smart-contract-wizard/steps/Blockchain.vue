@@ -100,13 +100,13 @@
 		<b-row v-show="smartContractBuilder.blockchain">
 			<b-col cols="12">
 				<b-form-group
-					label-class="required"
 					label="Network"
 					label-for="chainId"
-					description="Network to deploy the smart contract to">
+					description="Network to deploy the smart contract to. Only test network is available. This is intentional">
 					<b-form-select
 						id="chainId"
 						name="chainId"
+						:disabled="true"
 						:value="smartContractBuilder.chainId"
 						@change="onNetworkChange"
 						:class="{ 'is-invalid': $v.smartContractBuilder.chainId.$error }"

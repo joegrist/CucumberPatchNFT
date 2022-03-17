@@ -14,6 +14,7 @@
 
 <script>
 import HorizontalStepper from 'vue-stepper'
+import ContractType from '~/components/smart-contract-wizard/steps/ContractType.vue'
 import Blockchain from '~/components/smart-contract-wizard/steps/Blockchain.vue'
 import GeneralInfo from '~/components/smart-contract-wizard/steps/GeneralInfo.vue'
 import Features from '~/components/smart-contract-wizard/steps/Features.vue'
@@ -54,6 +55,14 @@ export default {
   data() {
     return {
       buildSteps: [
+        {
+          icon: 'looks_one',
+          name: 'contractType',
+          title: 'Contract Type',
+          subtitle: 'ERC721, ERC721A, etc.',
+          component: ContractType,
+          completed: false
+        },
         {
           icon: 'looks_one',
           name: 'blockchain',
