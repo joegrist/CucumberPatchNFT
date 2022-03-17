@@ -1,7 +1,7 @@
 <template>
 	<b-container class="pt-3">
 		<h1 class="text-center">{{ site.title }} </h1>
-		<iframe v-if="showPreview" width="100%" height="800px" :title="site.name" :src="`${$config.MINT_SITE_URL}?siteId=${site.id}`"></iframe>
+		<div v-if="showPreview" v-html="iframeCode"></div>
 		<h5 class="text-center text-muted mb-3">Mint Page Preview</h5>
 		<div>
 			<ul>
@@ -91,7 +91,7 @@
 					<b-form-input
 						id="dropDateInput"
 						name="dropDateInput"
-						v-model="site.dropDate"
+						v-model="site.dropDateInput"
 						type="date"
 					></b-form-input>
 				</b-form-group>
@@ -102,7 +102,7 @@
 					<b-form-input
 						id="dropTimeInput"
 						name="dropTimeInput"
-						v-model="site.dropTime"
+						v-model="site.dropTimeInput"
 						type="time"></b-form-input>
 				</b-form-group>
 			</div>
@@ -196,6 +196,12 @@
 <script>
 import { WEBSITE_STATUS, WEBSITE_TYPE } from '@/constants'
 import { mapGetters, mapMutations, mapState } from 'vuex'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
 
 export default {
 	middleware: 'authenticated',
@@ -213,9 +219,9 @@ export default {
 		const { data } = await this.$axios.get(`/websites/${this.$route.params.id}`)
 		this.site = data
 		if (this.site.dropDate) {
-			const [date, time] = this.site.dropDate.split('T')
-			this.site.dropDate = date
-			this.site.dropTime = time || '00:00'
+			const [date, time] = dayjs.utc(this.site.dropDate).tz(this.site.timeZone || dayjs.tz.guess()).format('YYYY-MM-DDTHH:mm:ss').split('T')
+			this.site.dropDateInput = date
+			this.site.dropTimeInput = time
 		}
 	},
 	computed: {
@@ -229,7 +235,7 @@ export default {
 					allowfullscreen="true"
 					loading="lazy"
 					title="${this.site.title}"
-					src="https://mint.zerocodenft.com?siteId=${this.site.id}"></iframe>`
+					src="${this.$config.MINT_SITE_URL}?siteId=${this.site.id}"></iframe>`
 		}
 	},
 	methods: {
@@ -262,12 +268,13 @@ export default {
 			this.setBusy(true)
 
 			try {
-				const { dropDate, dropTime, id } = this.site
+				const { dropDateInput, dropTimeInput, id } = this.site
 
 				const update = { ...this.site }
-				update.dropDate = dropDate
-				if (dropDate && dropTime) {
-					update.dropDate += `T${dropTime}`
+				update.dropTimeZone = dayjs.tz.guess()
+				update.dropDate = dropDateInput
+				if (dropDateInput && dropTimeInput) {
+					update.dropDate = new Date(`${dropDateInput}T${dropTimeInput}`).toUTCString()
 				}
 
 				const payload = Object.keys(update).reduce((formData, key) => {
@@ -282,7 +289,7 @@ export default {
 				setTimeout(() => this.showPreview = true, 1000)
 
 				this.$bvToast.toast(
-					'Website updated. Please give it 5-10 mins for the changes to take effect',
+					'Website updated successfully',
 					{
 						title: 'Website',
 						variant: 'success',
