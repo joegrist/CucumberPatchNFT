@@ -37,18 +37,18 @@
 		</b-overlay>
 		<b-modal
 			id="siteModal"
-			title="Deploy Minting Page"
+			title="Add Minting Page"
 			size="lg"
 			centered
 			@hidden="newWebsite = {}"
 			@ok="onDeploySite"
-			ok-title="Deploy"
+			ok-title="Create"
 			ok-variant="success"
 			no-close-on-backdrop
 			:busy="isBusy">
 			<b-form>
 				<b-form-group
-					label="Name"
+					label="Title"
 					label-class="required"
 				>
 					<b-form-input
@@ -59,22 +59,6 @@
 						placeholder="Bored Apes Yacht Club"
 						required></b-form-input>
 				</b-form-group>
-				<b-form-group label="Description">
-					<b-form-textarea
-						id="description"
-						name="description"
-						v-model="newWebsite.description"></b-form-textarea>
-				</b-form-group>
-				<!-- <b-form-group
-					label="Desired website domain (URL)">
-					<b-form-input
-						id="desiredDomain"
-						name="desiredDomain"
-						v-model="newWebsite.desiredDomain"
-						type="url"
-						placeholder="zerocodenft.com"
-						></b-form-input>
-				</b-form-group> -->
 				<div class="d-flex">
 					<b-form-group
 						label="Icon"

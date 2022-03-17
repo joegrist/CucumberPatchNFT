@@ -10,30 +10,10 @@
 						<span class="text-success"
 							>Status: {{ WEBSITE_STATUS[site.status] }}</span
 						>
-						<template v-if="site.status !== WEBSITE_STATUS.Ready">
-							<b-icon
-								v-if="isBusy"
-								class="pointer"
-								icon="bootstrap-reboot"
-								variant="success"
-								animation="spin"
-								:disabled="true" />
-							<b-icon
-								v-else
-								class="pointer"
-								icon="bootstrap-reboot"
-								variant="success"
-								@click="refreshStatus" />
-						</template>
 					</li>
-					<li v-if="site.status === WEBSITE_STATUS.Ready">
+					<li>
 						Site URL:
-						<b-link :href="site.url" target="_blank"
-							>{{ site.url }} <b-icon icon="box-arrow-up-right"
-						/></b-link>
-					</li>
-					<li v-else class="text-warning">
-						Site URL: building <b-spinner small></b-spinner>
+						<ExternalLink :href="site.url" :text="site.url" />
 					</li>
 				</template>
 				<li>To embed on your site paste the following code into an HTML embed element
@@ -43,13 +23,13 @@
 						</code>
 						<Copy :value="iframeCode" />
 						<br/>
-					into embed component
+						<ExternalLink href="https://www.youtube.com/watch?v=uo7mtt510hg&t=7s" text="See video" icon="youtube" />
 				</li>
 			</ul>
 		</div>
 		<b-form @submit.prevent="onUpdate" class="mb-3">
 			<b-form-group
-				label="Website Name"
+				label="Title"
 				label-class="required"
 				>
 				<b-form-input
@@ -106,14 +86,14 @@
 			<div class="d-flex">
 				<b-form-group
 					label="Drop Date"
-					description="Sets the countdown timer"
+					description="Sets the countdown timer, enter your local time"
 					class="pr-1 w-50">
 					<b-form-input
 						id="dropDateInput"
 						name="dropDateInput"
 						v-model="site.dropDate"
 						type="date"
-						:min="new Date().toISOString().split('T')[0]"></b-form-input>
+					></b-form-input>
 				</b-form-group>
 				<b-form-group
 					label="Drop Time"
@@ -129,28 +109,17 @@
 			<div class="d-flex">
 				<b-form-group class="pr-1 w-50">
 					<template #label>
-						Twitter URL
-						<b-link
-							v-if="site.twitterURL"
-							:href="transformUrl(site.twitterURL)"
-							target="_blank"
-							><b-icon icon="box-arrow-up-right"
-						/></b-link>
+						<ExternalLink :href="site.twitterURL" text="Twitter URL" />
 					</template>
 					<b-form-input
 						id="twitterURL"
 						name="twitterURL"
+						type="url"
 						v-model="site.twitterURL"></b-form-input>
 				</b-form-group>
 				<b-form-group class="w-50">
 					<template #label>
-						Discord URL
-						<b-link
-							v-if="site.discordURL"
-							:href="transformUrl(site.discordURL)"
-							target="_blank"
-							><b-icon icon="box-arrow-up-right"
-						/></b-link>
+						<ExternalLink :href="site.discordURL" text="Discord URL" />
 					</template>
 					<b-form-input
 						id="discordURL"
@@ -161,13 +130,7 @@
 			<div class="d-flex">
 				<b-form-group class="pr-1 w-50">
 					<template #label>
-						Instagram URL
-						<b-link
-							v-if="site.instagramURL"
-							:href="transformUrl(site.instagramURL)"
-							target="_blank"
-							><b-icon icon="box-arrow-up-right"
-						/></b-link>
+						<ExternalLink :href="site.instagramURL" text="Instagram URL" />
 					</template>
 					<b-form-input
 						id="instagramURL"
@@ -176,13 +139,7 @@
 				</b-form-group>
 				<b-form-group class="w-50">
 					<template #label>
-						TikTok URL
-						<b-link
-							v-if="site.tikTokURL"
-							:href="transformUrl(site.tikTokURL)"
-							target="_blank"
-							><b-icon icon="box-arrow-up-right"
-						/></b-link>
+						<ExternalLink :href="site.tikTokURL" text="TikTok URL" />
 					</template>
 					<b-form-input
 						id="tikTokURL"
@@ -193,13 +150,7 @@
 			<div class="d-flex">
 				<b-form-group class="pr-1 w-50">
 					<template #label>
-						Marketplace URL
-						<b-link
-							v-if="site.marketplaceURL"
-							:href="transformUrl(site.marketplaceURL)"
-							target="_blank"
-							><b-icon icon="box-arrow-up-right"
-						/></b-link>
+						<ExternalLink :href="site.marketplaceURL" text="Marketplace URL" />
 					</template>
 					<b-form-input
 						id="marketplaceURL"
@@ -208,13 +159,7 @@
 				</b-form-group>
 				<b-form-group class="w-50" description="Etherscan, snowtrace, etc.">
 					<template #label>
-						Block Explorer URL
-						<b-link
-							v-if="site.blockExplorerUrl"
-							:href="transformUrl(site.blockExplorerUrl)"
-							target="_blank"
-							><b-icon icon="box-arrow-up-right"
-						/></b-link>
+						<ExternalLink :href="site.blockExplorerUrl" text="Block Explorer URL" />
 					</template>
 					<b-form-input
 						id="blockExplorerUrl"
@@ -251,7 +196,6 @@
 <script>
 import { WEBSITE_STATUS, WEBSITE_TYPE } from '@/constants'
 import { mapGetters, mapMutations, mapState } from 'vuex'
-import { copyToClipboard } from '@/utils'
 
 export default {
 	middleware: 'authenticated',
@@ -290,35 +234,6 @@ export default {
 	},
 	methods: {
 		...mapMutations(['setBusy']),
-		copyToClipboard,
-		transformUrl(url) {
-			return url?.startsWith('http') ? url : `https://${url}`
-		},
-		async refreshStatus() {
-			try {
-				this.setBusy(true)
-
-				const { data } = await this.$axios.get(
-					`/users/${this.userId}/websites/${this.site.id}/status`
-				)
-				this.site.status = data
-
-				setTimeout(() => {
-					this.$bvToast.toast('Status refreshed!', {
-						title: 'Website',
-						variant: 'success',
-					})
-					this.setBusy(false)
-				}, 2000)
-			} catch (err) {
-				this.$bvToast.toast('Refresh failed', {
-					title: 'Website',
-					variant: 'danger',
-				})
-			} finally {
-				this.setBusy(false)
-			}
-		},
 		async onDelete() {
 			try {
 				this.setBusy(true)
