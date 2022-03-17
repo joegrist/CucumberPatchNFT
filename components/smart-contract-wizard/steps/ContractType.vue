@@ -48,7 +48,7 @@ const contractTypes = [
 		description: `
                         Known as <a href="https://www.azuki.com/erc721a" target="blank">Azuki contract</a>, 
                         suitable when you expect your users to mint NFTs in small batches thus saving them on gas fees.
-                        Might increase the transfer fees (e.g sending NFTs to someone) for bigger batches.`,
+                        Under certain circumstances this might increase the transfer gas fee (e.g. when sending NFTs to someone).`,
 		isAvailable: true,
 	},
 	{

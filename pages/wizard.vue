@@ -64,7 +64,7 @@ export default {
           completed: false
         },
         {
-          icon: 'looks_one',
+          icon: 'looks_two',
           name: 'blockchain',
           title: 'Blockchain',
           subtitle: 'Blockchain to deploy smart contract to',
@@ -72,7 +72,7 @@ export default {
           completed: false
         },
         {
-          icon: 'looks_two',
+          icon: 'looks_3',
           name: 'generalInfo',
           title: 'General Info',
           subtitle: 'Smart contract name, symbol, etc.',
@@ -80,7 +80,7 @@ export default {
           completed: false
         },
         {
-          icon: 'looks_3',
+          icon: 'looks_4',
           name: 'features',
           title: 'Features',
           subtitle: 'Delayed reveal, whitelist, etc.',
@@ -88,7 +88,7 @@ export default {
           completed: false
         },
         {
-          icon: 'looks_4',
+          icon: 'looks_5',
           name: 'marketplace',
           title: 'Marketplace',
           subtitle: 'Collection name, royalties, etc.',
@@ -96,7 +96,7 @@ export default {
           completed: false
         },
         {
-          icon: 'looks_5',
+          icon: 'looks_6',
           name: 'deploy',
           title: 'Deploy',
           subtitle: 'Verify and publish the smart contract',
