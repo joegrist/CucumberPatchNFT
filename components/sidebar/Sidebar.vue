@@ -41,7 +41,7 @@
 						</b-list-group-item>
 						<b-list-group-item>Referral Balance: ${{ referral.balance.toFixed(2) }}</b-list-group-item>
 					</template>
-					<template v-else>
+					<template v-if="isLoggedIn && !referral">
 						<b-list-group-item>
 							<BecomeAmbasssadorButton />
 						</b-list-group-item>
