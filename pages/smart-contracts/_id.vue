@@ -21,6 +21,12 @@
 							@click="onMainnetDeploy">
 							<b-icon icon="wallet2" /> Deploy to Mainnet
 						</b-button>
+						<b-button
+							class="bg-gradient-primary border-0"
+							:disabled="rawContract.isVerified"
+						 	@click="onVerify">
+							Verify Code
+						</b-button>
 					</b-overlay>
 				</b-col>
 				<b-col sm="12" md="4" class="d-flex flex-column">
@@ -451,6 +457,21 @@ export default {
 		onFTXPay() {
 			window.open('https://ftx.us/pay/request?subscribe=false&coin=USD&size=799&id=3260&memoIsRequired=false&memo=&notes=','_blank','resizable,width=700,height=900')
 		},
+		async onVerify() {
+			try {
+				await this.$axios.patch(`${this.rawContract.id}/verify`)
+				this.rawContract.isVerified = true
+				this.$bvToast.toast('Verified! Please allow a 10-15 minutes to reflect on etherscan', {
+					title: 'Code Verification',
+					variant: 'success',
+				})
+			} catch (err) {
+				this.$bvToast.toast('Smart contract code verification falied', {
+					title: 'Code Verification',
+					variant: 'danger',
+				})
+			}
+		},
 		whitelistValidator(tag) {
 			return ethers.utils.isAddress(tag)
 		},
@@ -666,11 +687,11 @@ export default {
 		async onMainnetDeploy() {
 			try {
 				if(!this.canDeployMainnet) return
-				if(!this.rawContract.isClearedForMainnet) {
-					//redirect to discord
-					window.open(this.$config.DISCORD_INVITE_URL, '_blank')
-					return
-				}
+				// if(!this.rawContract.isClearedForMainnet) {
+				// 	//redirect to discord
+				// 	window.open(this.$config.DISCORD_INVITE_URL, '_blank')
+				// 	return
+				// }
 
 				const { id, chainId } = this.rawContract
 
