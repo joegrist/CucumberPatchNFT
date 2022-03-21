@@ -22,10 +22,11 @@
 							<b-icon icon="wallet2" /> Deploy to Mainnet
 						</b-button>
 						<b-button
+							v-if="rawContract.status === SMARTCONTRACT_STATUS.Mainnet"
 							class="bg-gradient-primary border-0"
 							:disabled="rawContract.isVerified"
 						 	@click="onVerify">
-							Verify Code
+							{{ rawContract.isVerified ? '✅ Verified' : 'Verify Code' }}
 						</b-button>
 					</b-overlay>
 				</b-col>
