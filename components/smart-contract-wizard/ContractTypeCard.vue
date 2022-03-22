@@ -2,9 +2,12 @@
     <b-card :class="['rounded contract-type-card', { pointer: isAvailable}]" :header="title" header-class="text-center font-weight-bold" header-bg-variant="transparent">
 		<b-card-body>
             <p v-html="description"></p>
-            <b-link v-if="!isAvailable" href="mailto:drop@zerocodenft.com?subject=ERC20 Inquiry">
-                <h4 class="text-muted">Inquire!</h4>
-            </b-link>
+            <b-button v-if="!isAvailable" variant="link" href="mailto:drop@zerocodenft.com?subject=ERC20 Inquiry">
+                Inquire
+            </b-button>
+            <!-- <b-button variant="primary" @click="$emit('selected')">
+                Select
+            </b-button> -->
 		</b-card-body>
 	</b-card>
 </template>

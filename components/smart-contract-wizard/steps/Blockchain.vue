@@ -212,7 +212,7 @@ export default {
 				blockchain, 
 				chainId 
 			})
-			document.getElementById("chainId").scrollIntoView({behavior: 'smooth'})
+			this.goNext()
 		}
 	},
 }

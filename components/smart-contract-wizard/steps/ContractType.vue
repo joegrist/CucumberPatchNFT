@@ -2,7 +2,7 @@
 	<b-container fluid class="px-0 px-md-5">
 		<b-row>
 			<b-col>
-				<h1 class="text-center mb-3">Contract Type</h1>
+				<h1 class="text-center mb-3">Pick Contract Type</h1>
 			</b-col>
 		</b-row>
 		<b-row class="mb-5">
@@ -16,6 +16,7 @@
 				@mouseout="hoverCard(null)">
 				<ContractTypeCard
 					v-bind="type"
+					@selected="onCardSelected(type)"
 					:class="[
 						{
 							shadow:
@@ -93,6 +94,7 @@ export default {
 			this.updateSmartContractBuilder({
 				contractType: type.id,
 			})
+			this.goNext()
 		},
 	},
 }

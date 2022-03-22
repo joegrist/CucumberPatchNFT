@@ -22,9 +22,8 @@
 							<b-icon icon="wallet2" /> Deploy to Mainnet
 						</b-button>
 						<b-button
-							v-if="rawContract.status === SMARTCONTRACT_STATUS.Mainnet"
 							class="bg-gradient-primary border-0"
-							:disabled="rawContract.isVerified"
+							:disabled="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet || rawContract.isVerified"
 						 	@click="onVerify">
 							{{ rawContract.isVerified ? '✅ Verified' : 'Verify Code' }}
 						</b-button>
@@ -329,7 +328,7 @@
 <script>
 import Vue from 'vue'
 import { mapGetters, mapMutations, mapState } from 'vuex'
-import { SALE_STATUS, SMARTCONTRACT_STATUS } from '@/constants'
+import { SALE_STATUS, SMARTCONTRACT_STATUS, BLOCKCHAIN } from '@/constants'
 import {
 	getExplorerUrl,
 	getCurrency,
@@ -459,6 +458,10 @@ export default {
 			window.open('https://ftx.us/pay/request?subscribe=false&coin=USD&size=799&id=3260&memoIsRequired=false&memo=&notes=','_blank','resizable,width=700,height=900')
 		},
 		async onVerify() {
+			if(!this.rawContract.blockchain === BLOCKCHAIN.Ethereum) {
+				alert("Only Ethereum contracts are supported for now")
+				return
+			}
 			try {
 				await this.$axios.patch(`${this.rawContract.id}/verify`)
 				this.rawContract.isVerified = true

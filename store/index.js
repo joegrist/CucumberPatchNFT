@@ -124,8 +124,8 @@ export const actions = {
 			commit('setBusy', false)
         }
     },
-    async cloneDashboardCard(actionObj, id) {
-        await this.$axios.post(`/smartcontracts/${id}/clone`)
+    async cloneDashboardCard(actionObj, { id, name }) {
+        await this.$axios.post(`/smartcontracts/${id}/clone`, { name })
         await actionObj.dispatch('loadDashboardCards')
     },
     async removeDashboardCard({commit, state}, id) {

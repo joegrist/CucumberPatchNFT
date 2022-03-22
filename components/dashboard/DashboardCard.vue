@@ -33,7 +33,7 @@
 				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE" @click="onCreateMintPage"
 					><b-icon icon="cloud-upload" /> Minting Page</b-dd-item
 				>
-				<b-dd-item @click="onCloneContract"
+				<b-dd-item v-b-modal="`Clone${sc.id}`"
 					><b-icon icon="files" /> Clone Contract</b-dd-item
 				>
 				<b-dd-item v-b-modal="`OpenSea${$props.sc.id}`"
@@ -167,6 +167,35 @@
 			<h5>Are you sure want to remove this card ?</h5>
 		</b-modal>
 		<b-modal
+			:id="`Clone${sc.id}`"
+			title="Clone Contract"
+			centered
+			ok-variant="success"
+			ok-title="Clone"
+			cancel-title="Cancel"
+			@ok="onCloneContract"
+		>
+			<b-form>
+				<b-form-group
+					label="Title"
+					label-class='required'
+				>
+					<b-form-input
+						id='cloneContractTitle'
+						name='cloneContractTitle'
+						v-model='cloneContractTitle'
+						type='text'
+						:class="{
+							'is-invalid': $v.cloneContractTitle.$error,
+						}"
+					></b-form-input>
+					<b-form-invalid-feedback :state="validation.cloneContractTitle">
+						Please correct "Title"
+					</b-form-invalid-feedback>
+				</b-form-group>
+			</b-form>
+		</b-modal>
+		<b-modal
 			:id="`OpenSea${$props.sc.id}`"
 			title="Link your OpenSea collection"
 			centered
@@ -229,6 +258,7 @@ export default {
 			minted: 0,
 			openSeaLinkUrl: null,
 			royalties: 'n/a',
+			cloneContractTitle: null,
 			openSeaStats: {
 				num_owners: 'n/a',
 				floor_price: 'n/a',
@@ -242,7 +272,8 @@ export default {
 		sc: Object,
 	},
 	validations: {
-		openSeaLinkUrl: { required }
+		openSeaLinkUrl: { required },
+		cloneContractTitle: { required },
 	},
 	mounted() {
 		if (!this.isDeployed) return
@@ -253,7 +284,8 @@ export default {
 		...mapGetters(['userId']),
 		validation() {
 			return {
-				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error
+				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error,
+				cloneContractTitle: !this.$v.cloneContractTitle.$error
 			}
 		},
 		formattedBalance() {
@@ -299,7 +331,7 @@ export default {
 		getCurrency,
 		getExplorerUrl,
 		onEdit() {
-			this.updateSmartContractBuilder({ ...this.$props.sc, marketplaceCollection: {} })
+			this.updateSmartContractBuilder({ ...this.sc, marketplaceCollection: {} })
 			this.$router.push('/wizard')
 		},
 		async onLinkOpenSea(e) {
@@ -340,11 +372,17 @@ export default {
 				this.$emit('create-site', this.$props.sc.id)
 			}
 		},
-		async onCloneContract() {
+		async onCloneContract(e) {
+			e.preventDefault()
+			this.$v.cloneContractTitle.$touch()
+			if(this.$v.cloneContractTitle.$invalid) return
 			try {
 				this.setBusy(true)
-				await this.cloneDashboardCard(this.$props.sc.id)
+				await this.cloneDashboardCard({ id: this.sc.id, name: this.cloneContractTitle })
+				this.$bvModal.hide(`Clone${this.sc.id}`)
+				this.cloneContractTitle = null
 			} catch (err) {
+				console.error(err)
 				this.$bvToast.toast('Clone failed', {
 					title: 'Smart Contract',
 					variant: 'danger',

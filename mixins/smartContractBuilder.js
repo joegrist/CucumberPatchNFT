@@ -33,6 +33,9 @@ const smartContractWizardMixin = {
 			this.$nextTick(() => {
 				this.showForm = true
 			})
+		},
+		goNext() {
+			document.getElementsByClassName('stepper-button next')[0].click()
 		}
 	},
 }

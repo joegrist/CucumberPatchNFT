@@ -9,7 +9,9 @@
         <b-col class='text-center'>
           <h2> Attention! </h2>
           <p> You will be using your own metamask wallet to pay the deployment fees and this wallet will thus be the owner of the smart contract.
-            This is only a testnet deployment meaning you won't be spending real currency but you should still have test tokens to cover the deployment fees.</p>
+            This is only a <b>testnet deployment</b> meaning you won't be spending real currency but you should still have test tokens to cover the deployment fees.
+            You will still be able to deploy this contract to the mainnet at a later stage.
+          </p>
           <b-button v-if="FAUCETS[$wallet.chainId]" class="mb-2" variant="link" v-b-toggle.faucetList>
             Faucet list to get FREE test tokens (click to expand)
           </b-button>
@@ -41,9 +43,11 @@
     <b-modal id='deployed' title='Deployed' size='md' centered ok-only @ok="$router.push('/')">
       <div class='text-center'>
         <h3>Success!!</h3>
-        <p>Contract has been deployed!<br> 
+        <p>Contract has been deployed!
+          <br> 
           <b-link :href="explorerUrl" target="_blank"> View on block explorer </b-link>
         </p>
+        <b-link href="https://forms.gle/nJrJRzh98FHhqmN4A" target="_blank"> Take a 2 minute survey! </b-link>
       </div>
     </b-modal>
     <b-modal
