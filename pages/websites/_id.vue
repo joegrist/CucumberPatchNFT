@@ -81,29 +81,29 @@
 							<label class="mb-0">Minted/Collection Size counter</label>
 						</div>
 					</div>
+					<div class="d-flex">
+						<b-form-group
+							label="Drop Date"
+							description="Sets the countdown timer, enter your local time"
+							class="pr-1 w-50">
+							<b-form-input
+								id="dropDateInput"
+								name="dropDateInput"
+								v-model="site.dropDateInput"
+								type="date"></b-form-input>
+						</b-form-group>
+						<b-form-group
+							label="Drop Time"
+							description="Sets the countdown timer"
+							class="w-50">
+							<b-form-input
+								id="dropTimeInput"
+								name="dropTimeInput"
+								v-model="site.dropTimeInput"
+								type="time"></b-form-input>
+						</b-form-group>
+					</div>
 					<div v-show="iframe.view === ''">
-						<div class="d-flex">
-							<b-form-group
-								label="Drop Date"
-								description="Sets the countdown timer, enter your local time"
-								class="pr-1 w-50">
-								<b-form-input
-									id="dropDateInput"
-									name="dropDateInput"
-									v-model="site.dropDateInput"
-									type="date"></b-form-input>
-							</b-form-group>
-							<b-form-group
-								label="Drop Time"
-								description="Sets the countdown timer"
-								class="w-50">
-								<b-form-input
-									id="dropTimeInput"
-									name="dropTimeInput"
-									v-model="site.dropTimeInput"
-									type="time"></b-form-input>
-							</b-form-group>
-						</div>
 						<div class="d-flex">
 							<b-form-group
 								label="Icon"
@@ -247,7 +247,7 @@ export default {
 			iframe: {
 				view: 'tabs',
 				width: 100,
-				height: 170,
+				height: 206,
 			},
 			viewOptions: [
 				{ value: 'tabs', text: 'Tabs' },
