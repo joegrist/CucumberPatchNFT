@@ -61,30 +61,6 @@
 				</b-form-group>
 				<div class="d-flex">
 					<b-form-group
-						label="Icon"
-						description="Your site's icon. Max 1 MB in size"
-						class="pr-1 w-50">
-						<b-form-file
-							v-model="newWebsite.icon"
-							name="icon"
-							accept="image/*"
-							placeholder="Choose a file or drop it here..."
-							drop-placeholder="Drop file here..."></b-form-file>
-					</b-form-group>
-					<b-form-group
-						label="Background Image"
-						description="Your site's background. Max 1 MB in size"
-						class="pr-1 w-50">
-						<b-form-file
-							v-model="newWebsite.backgroundImage"
-							name="backgroundImage"
-							accept="image/*"
-							placeholder="Choose a file or drop it here..."
-							drop-placeholder="Drop file here..."></b-form-file>
-					</b-form-group>
-				</div>
-				<div class="d-flex">
-					<b-form-group
 						label="Drop Date"
 						description="Sets the countdown timer. Can be updated later"
 						class="pr-1 w-50">
