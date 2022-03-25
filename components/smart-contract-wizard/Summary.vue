@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { BLOCKCHAIN, MARKETPLACE } from '@/constants'
+import { BLOCKCHAIN, MARKETPLACE, CONTRACT_TYPE } from '@/constants'
 import { getCurrency } from '@/constants/metamask'
 import { isArray } from 'lodash-es'
 
@@ -55,7 +55,9 @@ const excludeList = [
 	'hasRaribleRoyalties',
 	'hasMintableRoyalties',
 	'isClearedForMainnet',
-	'ownerAddress'
+	'ownerAddress',
+	'clonedFrom',
+	'status'
 ]
 
 export default {
@@ -100,6 +102,9 @@ export default {
 					}
 					if (key === 'marketplace') {
 						val = MARKETPLACE[val]
+					}
+					if (key === 'contractType') {
+						val = CONTRACT_TYPE[val]
 					}
 					if (key.includes('Price')) {
 						val = `${val} ${getCurrency(this.smartContract.chainId)}`
