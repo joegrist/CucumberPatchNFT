@@ -138,7 +138,7 @@ export const actions = {
     },
 
     async getCreditsCount({commit, getters}) {
-        const { data: userCredits } = await this.$axios.get(`/users/${getters.id}/credits`)
+        const { data: userCredits } = await this.$axios.get(`/users/${getters.userId}/credits`)
         if(getters.isLoggedIn) { // user might have logged out between the time request was send and response received
             commit('updateUserCredits', userCredits)
         }
