@@ -11,7 +11,7 @@
               id='baseURL'
               name='baseURL'
               :value='smartContractBuilder.baseURL'
-              @change="(val) => updateSmartContractBuilder({ baseURL: val && val.endsWith('/') ? val : `${val}/` })"
+              @change="(val) => updateSmartContractBuilder({ baseURL: val && !val.endsWith('/') ? `${val}/` : val })"
               type='text'
               placeholder='ipfs://*************************/'
             ></b-form-input>
