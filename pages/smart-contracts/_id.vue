@@ -225,8 +225,11 @@
 							</b-form-file>
 							<div v-if="invalidAddresses.length > 0">
 								<h5 class="text-danger">Invalid addresses</h5>
-								<ul>
-									<li v-for="(addr, idx) in invalidAddresses" :key="idx">{{ addr }}</li>
+								<ul class="p-0">
+									<li class="d-flex" v-for="(addr, idx) in invalidAddresses" :key="idx">
+										{{ addr }}
+										<b-icon class="my-auto" icon="trash" variant="danger" @click="onRemoveInvalidAddress(addr)"></b-icon>
+									</li>
 								</ul>
 							</div>
 						</b-col>
@@ -478,6 +481,10 @@ export default {
 		},
 		whitelistValidator(tag) {
 			return ethers.utils.isAddress(tag)
+		},
+		onRemoveInvalidAddress(a){
+			this.invalidAddresses = this.invalidAddresses.filter(x => x !== a)
+			this.rawContract.whitelist = this.rawContract.whitelist.filter(x => x !== a)
 		},
 		async payWithEth() {
 			try {
