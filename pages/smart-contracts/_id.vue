@@ -512,6 +512,21 @@ export default {
 		async onWhitelistCommit() {
 			this.setBusy(true)
 			try {
+
+				this.rawContract.whitelist.forEach(a =>{
+					if(!ethers.utils.isAddress(a)) {
+						this.invalidAddresses.push(a)
+					}
+				})
+
+				if(this.invalidAddresses.length > 0) {
+					this.$bvToast.toast('Whitelist contains invalid addresses. Please remove and resubmit', {
+						title: 'Whitelist',
+						variant: 'danger',
+					})
+					return
+				}
+
 				await this.$axios.patch(
 					`/smartcontracts/${this.rawContract.id}/whitelist`,
 					{
@@ -539,6 +554,7 @@ export default {
 					})
 				})
 			} catch (err) {
+				console.log({err})
 				this.$bvToast.toast('Whitelist commit failed', {
 					title: 'Whitelist',
 					variant: 'danger',
