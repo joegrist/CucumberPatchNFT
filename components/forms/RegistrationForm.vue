@@ -57,20 +57,17 @@
 				Please correct "Referral Code"
 			</b-form-invalid-feedback>
 		</b-form-group>
-		<!-- <b-form-group label="Phone Number">
+		<b-form-group label="Phone Number">
 			<b-form-input
 				id="phoneNum"
 				name="phoneNum"
 				type="text"
 				v-model="form.phoneNum"
-				:class="{
-					'is-invalid': $v.form.phoneNum.$anyError,
-				}"
 				></b-form-input>
-			<b-form-invalid-feedback :state="state.phoneNum">
+			<!-- <b-form-invalid-feedback :state="state.phoneNum">
 				Please correct "Phone Number"
-			</b-form-invalid-feedback>
-		</b-form-group> -->
+			</b-form-invalid-feedback> -->
+		</b-form-group>
 		<b-button type="submit" block variant="success">Register</b-button>
 	</b-form>
 </template>
@@ -83,7 +80,9 @@ export default {
 	data() {
 		return {
 			form: {
-				publicKey: this.$wallet.account
+				publicKey: this.$wallet.account,
+				referralCode: this.$route.query['ref'],
+				tags: ['website-lead']
 			},
 		}
 	},
@@ -112,10 +111,8 @@ export default {
             if (this.$v.form.$invalid) {
 				return
             }
-			else {
-				await this.signUp(this.form)
-				this.$emit('done')
-			}
+			await this.signUp(this.form)
+			this.$emit('done')
 		}
 	}
 }

@@ -65,7 +65,7 @@
 <script>
 import TransferCreditsButton from './TransferCreditsButton.vue'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import LoginButton from '@/components/auth/LoginButton.vue'
+import LoginButton from '@/components/login/LoginButton.vue'
 import BecomeAmbasssadorButton from './BecomeAmbassadorButton.vue'
 
 export default {
@@ -91,7 +91,7 @@ export default {
 		onLogout() {
 			this.showSidebar(false)
 			this.logout()
-			this.$router.push('/wizard')
+			this.$router.push('/')
 		},
 		async onShown(){
 			this.$wallet.refreshBalance()

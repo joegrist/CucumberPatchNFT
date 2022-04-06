@@ -72,7 +72,7 @@ import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import Summary from '@/components/smart-contract-wizard/Summary'
-import LoginButton from '@/components/auth/LoginButton'
+import LoginButton from '@/components/login/LoginButton'
 
 export default {
   mixins: [smartContractBuilderMixin],

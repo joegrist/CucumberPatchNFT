@@ -55,7 +55,7 @@
 <script>
 import Sidebar from '@/components/sidebar/Sidebar.vue'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import LoginButton from '@/components/auth/LoginButton.vue'
+import LoginButton from '@/components/login/LoginButton.vue'
 
 export default {
 	components: {
