@@ -34,7 +34,7 @@
           <div class="d-flex justify-content-center">
             <template v-if="isLoggedIn">
               <b-button variant="outline-info" :disabled='!canDeploy' @click="saveDraft" class="mr-3">Save Draft</b-button>
-              <b-button variant='outline-success' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
+              <b-button variant='outline-primary' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
             </template>
             <LoginButton v-else variant="primary" caption="Login to Deploy" />
           </div>
