@@ -105,6 +105,12 @@ export default {
 	async fetch() {
 		await this.loadDashboardCards()
 	},
+	created(){
+		const refCode = this.$route.query['ref']
+		if(refCode) {
+			sessionStorage.setItem('ref', refCode)
+		}
+	},
 	computed: {
 		...mapState(['dashboardItems', 'isBusy']),
 		...mapGetters(['userId']),

@@ -11,6 +11,6 @@
         min-height: 106px;
         background-image: url("@/assets/images/auth/header.svg");
         background-color: #261E35;
-        background-size: 100%;
+        background-size: cover;
     }
 </style>

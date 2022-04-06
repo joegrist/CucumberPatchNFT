@@ -6,10 +6,8 @@
 				name="firstName"
 				type="text"
 				v-model="form.firstName"
-				:class="{
-					'is-invalid': $v.form.firstName.$anyError,
-				}"
-				required></b-form-input>
+				:state="validateState('firstName')">
+			</b-form-input>
 			<b-form-invalid-feedback :state="state.firstName">
 				Please correct "First Name"
 			</b-form-invalid-feedback>
@@ -20,10 +18,8 @@
 				name="lastName"
 				type="text"
 				v-model="form.lastName"
-				:class="{
-					'is-invalid': $v.form.lastName.$anyError,
-				}"
-				required></b-form-input>
+				:state="validateState('lastName')">
+			</b-form-input>
 			<b-form-invalid-feedback :state="state.lastName">
 				Please correct "Last Name"
 			</b-form-invalid-feedback>
@@ -33,12 +29,9 @@
 				id="email"
 				name="email"
 				type="email"
-				placeholder="john.doe@gmail.com"
 				v-model="form.email"
-				:class="{
-					'is-invalid': $v.form.email.$anyError,
-				}"
-				required></b-form-input>
+				:state="validateState('email')">
+			</b-form-input>
 			<b-form-invalid-feedback :state="state.email">
 				Please correct "Email"
 			</b-form-invalid-feedback>
@@ -47,14 +40,16 @@
 			<b-form-input
 				id="referralCode"
 				name="referralCode"
+				debounce="500"
 				type="text"
 				v-model="form.referralCode"
-				:class="{
-					'is-invalid': $v.form.referralCode.$anyError,
-				}"
-				></b-form-input>
-			<b-form-invalid-feedback :state="state.referralCode">
+				:state="validateState('referralCode')"
+			></b-form-input>
+			<b-form-invalid-feedback v-if="$v.form.referralCode.$anyError">
 				Please correct "Referral Code"
+			</b-form-invalid-feedback>
+			<b-form-invalid-feedback v-if="!$v.form.referralCode.exists">
+				Referral Code is invalid or doesn't exist
 			</b-form-invalid-feedback>
 		</b-form-group>
 		<b-form-group label="Phone Number">
@@ -68,12 +63,13 @@
 				Please correct "Phone Number"
 			</b-form-invalid-feedback> -->
 		</b-form-group>
-		<b-button type="submit" block variant="success">Register</b-button>
+		<b-button type="submit" block variant="primary">Register</b-button>
 	</b-form>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import { validateState } from '@/utils'
 import { required, alpha, alphaNum, email } from 'vuelidate/lib/validators'
 
 export default {
@@ -81,7 +77,7 @@ export default {
 		return {
 			form: {
 				publicKey: this.$wallet.account,
-				referralCode: this.$route.query['ref'],
+				referralCode: this.$route.query['ref'] || sessionStorage.getItem('ref'),
 				tags: ['website-lead']
 			},
 		}
@@ -91,7 +87,18 @@ export default {
 			email: { required, email },
 			firstName: { required, alpha },
 			lastName: { required, alpha },
-			referralCode: { alphaNum },
+			referralCode: {
+				alphaNum,
+				async exists(code) {
+					if (code === '') return true
+					const { data: exists } = await this.$axios.get('/referrals/exists', {
+						params: {
+							code
+						}
+					})
+					return exists
+				}
+			},
 		},
 	},
 	computed: {
@@ -100,19 +107,24 @@ export default {
 				email: !this.$v.form.email.$anyError,
 				firstName: !this.$v.form.firstName.$anyError,
 				lastName: !this.$v.form.lastName.$anyError,
-				referralCode: !this.$v.form.referralCode.$anyError,
 			}
 		},
 	},
 	methods: {
 		...mapActions(['signUp']),
+		validateState,
 		async onSubmit() {
 			this.$v.$touch()
             if (this.$v.form.$invalid) {
+				console.log(this.$v.form.referralCode)
 				return
             }
-			await this.signUp(this.form)
-			this.$emit('done')
+			try {
+				await this.signUp(this.form)
+				this.$emit('done')
+			} catch (err) {
+				console.error({err})
+			}
 		}
 	}
 }

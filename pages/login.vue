@@ -8,10 +8,12 @@
             facilitate the launch of your NFT collection
         </h6>
         <div class="d-flex">
-            <LoginButton variant="primary" class="text-white" caption="Login with Metamask" />
+            <LoginButton variant="primary" caption="Login with Metamask" redirect="/" />
             <b-button variant="link" href="https://discord.gg/NdEpB6ZYKn" target="_blank">Join Discord</b-button>
         </div>
-        <b-button variant="link" size="sm" class="text-left" to="/wizard">Skip for now >></b-button>
+        <div class="mt-1">
+            <b-link class="text-muted text-skip" to="/wizard">Skip for now >></b-link>
+        </div>
     </section>
 </template>
 
@@ -32,5 +34,8 @@ export default {
         color: white;
         height: calc(100vh - 106px - 200px);
         background-color: #261E35;
+    }
+    .text-skip {
+        font-size: 0.7rem;
     }
 </style>
