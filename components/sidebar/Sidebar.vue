@@ -10,7 +10,7 @@
 			<div class="px-3 py-4">
 				<div v-if="!$wallet.account" class="mb-2">
 					<b-button
-						class="bg-gradient-primary border-0 w-100"
+						variant="primary"
 						@click="$wallet.connect">
 						<strong>Connect Wallet</strong>
 					</b-button>

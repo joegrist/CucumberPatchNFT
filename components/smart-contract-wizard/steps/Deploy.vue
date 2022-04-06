@@ -36,7 +36,7 @@
               <b-button variant="outline-info" :disabled='!canDeploy' @click="saveDraft" class="mr-3">Save Draft</b-button>
               <b-button variant='outline-success' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
             </template>
-            <LoginButton v-else caption="Login to Deploy" />
+            <LoginButton v-else variant="primary" caption="Login to Deploy" />
           </div>
         </b-col>
       </b-row>
