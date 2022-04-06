@@ -102,9 +102,10 @@
 			<b-row v-else class="mt-4">
 				<b-col>
 					<b-row class="mb-2">
-						<b-col cols="6">
+						<b-col cols="6" class="d-flex">
 							<h4 class="m-0">Update Smart Contract</h4>
-						</b-col>
+							<b-button size="sm" variant="link" @click="downloadTextFile('abi.txt', JSON.stringify(JSON.parse(rawContract.abi),null,2))">[ABI]</b-button>
+						</b-col> 
 						<b-col cols="6" class="d-flex justify-content-end my-auto">
 							<span class="pr-2">Advanced</span>
 							<b-form-checkbox
@@ -340,7 +341,7 @@ import {
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
 import { loadScript } from '@paypal/paypal-js'
-import { getMerkleRoot } from '@/utils'
+import { getMerkleRoot, downloadTextFile } from '@/utils'
 
 const basicFunctions = [
 	'airdrop',
@@ -456,6 +457,7 @@ export default {
 	methods: {
 		getExplorerUrl,
 		getCurrency,
+		downloadTextFile,
     	...mapMutations(['setBusy']),
 		onFTXPay() {
 			window.open('https://ftx.us/pay/request?subscribe=false&coin=USD&size=799&id=3260&memoIsRequired=false&memo=&notes=','_blank','resizable,width=700,height=900')
