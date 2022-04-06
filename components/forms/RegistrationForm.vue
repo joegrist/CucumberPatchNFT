@@ -54,12 +54,12 @@
 		</b-form-group>
 		<b-form-group label="Phone Number">
 			<b-form-input
-				id="phoneNum"
-				name="phoneNum"
+				id="phoneNumber"
+				name="phoneNumber"
 				type="text"
-				v-model="form.phoneNum"
+				v-model="form.phoneNumber"
 				></b-form-input>
-			<!-- <b-form-invalid-feedback :state="state.phoneNum">
+			<!-- <b-form-invalid-feedback :state="state.phoneNumber">
 				Please correct "Phone Number"
 			</b-form-invalid-feedback> -->
 		</b-form-group>

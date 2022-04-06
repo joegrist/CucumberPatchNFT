@@ -36,7 +36,7 @@
 						<b-list-group-item>Referrals: {{ referral.count }}</b-list-group-item>
 						<b-list-group-item>Referral Code:
 							<span class="pointer"> {{ referral.code }} 
-								<Copy :value="referral.code" />
+								<Copy :value="`https://app.zerocodenft.com?${referral.code}`" />
 							</span>
 						</b-list-group-item>
 						<b-list-group-item>Referral Balance: ${{ referral.balance.toFixed(2) }}</b-list-group-item>
@@ -91,7 +91,7 @@ export default {
 		onLogout() {
 			this.showSidebar(false)
 			this.logout()
-			this.$router.push('/')
+			this.$router.push('/login')
 		},
 		async onShown(){
 			this.$wallet.refreshBalance()
