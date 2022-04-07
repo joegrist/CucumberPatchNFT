@@ -159,7 +159,7 @@
 			title="Confirm"
 			centered
 			body-class="text-center"
-			ok-variant="success"
+			ok-variant="primary"
 			ok-title="Yes"
 			cancel-title="No"
 			@ok="onRemoveCard"
@@ -170,7 +170,7 @@
 			:id="`Clone${sc.id}`"
 			title="Clone Contract"
 			centered
-			ok-variant="success"
+			ok-variant="primary"
 			ok-title="Clone"
 			cancel-title="Cancel"
 			@ok="onCloneContract"
@@ -183,11 +183,9 @@
 					<b-form-input
 						id='cloneContractTitle'
 						name='cloneContractTitle'
-						v-model='cloneContractTitle'
 						type='text'
-						:class="{
-							'is-invalid': $v.cloneContractTitle.$error,
-						}"
+						v-model='cloneContractTitle'
+						:state="validateState('cloneContractTitle')"
 					></b-form-input>
 					<b-form-invalid-feedback :state="validation.cloneContractTitle">
 						Please correct "Title"
@@ -199,7 +197,7 @@
 			:id="`OpenSea${$props.sc.id}`"
 			title="Link your OpenSea collection"
 			centered
-			ok-variant="success"
+			ok-variant="primary"
 			ok-title="Link"
 			:ok-disabled="$v.openSeaLinkUrl.$error"
 			@ok="onLinkOpenSea"
@@ -214,11 +212,9 @@
 					<b-form-input
 					id='link'
 					name='link'
-					v-model='openSeaLinkUrl'
 					type='url'
-					:class="{
-						'is-invalid': $v.openSeaLinkUrl.$error,
-					}"
+					v-model='openSeaLinkUrl'
+					:state="validateState('openSeaLinkUrl')"
 					@blur="$v.openSeaLinkUrl.$touch()"
 					></b-form-input>
 					<b-form-invalid-feedback :state="validation.openSeaLinkUrl">
@@ -235,7 +231,7 @@ import { ethers } from 'ethers'
 import { BLOCKCHAIN, MARKETPLACE, SMARTCONTRACT_STATUS } from '@/constants'
 import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
-import { wait } from '@/utils'
+import { wait, validateState } from '@/utils'
 import { required } from 'vuelidate/lib/validators'
 
 const blockchainImage = {
@@ -330,6 +326,7 @@ export default {
 		...mapActions(['removeDashboardCard', 'cloneDashboardCard', 'linkOpenSea']),
 		getCurrency,
 		getExplorerUrl,
+		validateState,
 		onEdit() {
 			this.updateSmartContractBuilder({ ...this.sc, marketplaceCollection: {} })
 			this.$router.push('/wizard')

@@ -47,6 +47,9 @@ export default {
 
 			if(nonce) {
 				await this.login()
+				if(this.redirect) {
+					this.$router.push(this.redirect)
+				}
 			} else {
 				this.$bvModal.show(this.modalId)
 			}

@@ -1,264 +1,317 @@
 <template>
 	<b-container class="mt-5">
-			<b-row class="mb-3">
-				<b-col sm="12" md="8">
-					<p class="lead font-weight-bold mb-1">
-						Deployed on {{ rawContract.blockchain | blockchainName }}
-						{{ rawContract.status === SMARTCONTRACT_STATUS.Testnet ? '(Testnet)' : '(Mainnet)' }} at
-						<br />
-						<b-link
-							:href="`${getExplorerUrl(rawContract.chainId)}/address/${
-								rawContract.address
-							}`"
-							target="_blank"
-							>{{ rawContract.address }}</b-link
-						>
-					</p>
-					<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
-						<b-button
-							:disabled="!canDeployMainnet"
-							variant="primary"
-							@click="onMainnetDeploy">
-							<b-icon icon="wallet2" /> Deploy to Mainnet
-						</b-button>
-						<!-- <b-button
+		<b-alert :show="isOwnerMismatch" variant="warning">
+			Connected wallet address {{ $wallet.accountCompact }} is not the smart contract owner. Please switch to {{ compactOwnerAddress }} to perform updates.
+		</b-alert>
+		<b-tabs content-class="mt-3">
+			<b-tab title="Smart Contract" active>
+				<b-row class="mb-3">
+					<b-col sm="12" md="8">
+						<p class="lead font-weight-bold mb-1">
+							Deployed on {{ rawContract.blockchain | blockchainName }}
+							{{
+								rawContract.status === SMARTCONTRACT_STATUS.Testnet
+									? '(Testnet)'
+									: '(Mainnet)'
+							}}
+							at
+							<br />
+							<b-link
+								:href="`${getExplorerUrl(rawContract.chainId)}/address/${
+									rawContract.address
+								}`"
+								target="_blank"
+								>{{ rawContract.address }}</b-link
+							>
+						</p>
+						<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
+							<b-button
+								:disabled="!canDeployMainnet"
+								variant="primary"
+								@click="onMainnetDeploy">
+								<b-icon icon="wallet2" /> Deploy to Mainnet
+							</b-button>
+							<!-- <b-button
 							class="bg-gradient-primary border-0"
 							:disabled="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet || rawContract.isVerified"
 						 	@click="onVerify">
 							{{ rawContract.isVerified ? '✅ Verified' : 'Verify Code' }}
 						</b-button> -->
-					</b-overlay>
-				</b-col>
-				<b-col sm="12" md="4" class="d-flex flex-column">
-					<div class="lead font-weight-bold">
-						Sale Status:
-						<span
-							:class="{
-								'text-warning': saleStatus === 'Paused',
-								'text-dark': saleStatus === 'Presale',
-								'text-success': saleStatus === 'Public',
-							}"
-							>{{ saleStatus }}</span
-						>
-						<b-icon
-							v-if="isBusy"
-							class="pointer"
-							font-scale="0.9"
-							icon="bootstrap-reboot"
-							variant="success"
-							animation="spin"
-							:disabled="true" />
-						<b-icon
-							v-else
-							class="pointer"
-							font-scale="0.9"
-							icon="bootstrap-reboot"
-							variant="success"
-							@click="callFuncByName('saleStatus')" />
-					</div>
-					<div class="lead font-weight-bold mb-1">
-						Contract Balance: {{ contractBalance }}
-						{{ getCurrency(rawContract.chainId) }}
-						<b-icon
-							v-if="isBusy"
-							class="pointer"
-							font-scale="0.9"
-							icon="bootstrap-reboot"
-							variant="success"
-							animation="spin"
-							:disabled="true" />
-						<b-icon
-							v-else
-							class="pointer"
-							font-scale="0.9"
-							icon="bootstrap-reboot"
-							variant="success"
-							@click="onRefreshBalance(true)" />
-					</div>
-					<b-button
-						variant="success"
-						:disabled="contractBalance === 0"
-						@click="callFuncByName('withdraw')"
-						>Withdraw</b-button
-					>
-				</b-col>
-			</b-row>
-			<b-row v-if="isOnWrongNetwork">
-				<b-col class="d-flex flex-column align-items-center mt-3">
-					<h3>Detected network is different than this smart contract</h3>
-					<b-button variant="warning" @click="switchNetwork">
-						Switch network
-					</b-button>
-				</b-col>
-			</b-row>
-			<b-row v-else-if="!isReady">
-				<b-col>
-					<h3 class="pt-3">
-						Contract deployment is still in progress, please check back in a
-						minute
-					</h3>
-				</b-col>
-			</b-row>
-			<b-row v-else class="mt-4">
-				<b-col>
-					<b-row class="mb-2">
-						<b-col cols="6" class="d-flex">
-							<h4 class="m-0">Update Smart Contract</h4>
-							<b-button size="sm" variant="link" @click="downloadTextFile('abi.txt', JSON.stringify(JSON.parse(rawContract.abi),null,2))">[ABI]</b-button>
-						</b-col> 
-						<b-col cols="6" class="d-flex justify-content-end my-auto">
-							<span class="pr-2">Advanced</span>
-							<b-form-checkbox
-								v-model="showAdvancedFunctions"
-								name="check-button"
-								switch />
-						</b-col>
-					</b-row>
-					<b-row>
-						<b-col>
-							<ul class="list-unstyled">
-								<li
-									class="mb-2 border rounded"
-									v-for="(func, idx) in filteredFunctions"
-									:key="idx"
-									role="tab">
-									<div
-										class="d-flex justify-content-between p-2"
-										v-b-toggle="`${func.name + idx}`">
-										<template v-if="func.constant">
-											<b-badge pill size="sm" variant="success" class="my-auto"
-												>Eco</b-badge
-											>
-										</template>
-										<template v-else>
-											<b-badge pill size="sm" variant="warning" class="my-auto"
-												>Gas</b-badge
-											>
-										</template>
-										<span variant="link">
-											{{ func.name | startCase }}
-										</span>
-										<b-icon icon="chevron-down" class="my-auto" />
-									</div>
-									<b-collapse
-										:id="func.name + idx"
-										class="p-2"
-										accordion="eco-accordion"
-										role="tabpanel">
-										<ul
-											v-if="
-												func.inputs.length > 0 && func.name !== 'setSaleStatus'
-											"
-											class="mb-2">
-											<li
-												v-for="(param, idx) in func.inputs.filter(
-													(x) => !x.name.startsWith('_')
-												)"
-												:key="idx">
-												<span> {{ param.name }} </span>
-												<b-input
-													@change="(val) => onParamChange(val, func, param)" />
-											</li>
-										</ul>
-										<div>
-											<b-overlay
-												:show="busyState[func.name]"
-												rounded
-												class="w-100"
-												opacity="0.5"
-												spinner-small>
-												<b-button-group
-													v-if="func.name === 'setSaleStatus'"
-													class="w-100">
-													<b-button
-														variant="warning"
-														@click="onUpdateSaleStatus(SALE_STATUS.Paused)"
-														>Pause Sales</b-button
-													>
-													<b-button
-														v-if="rawContract.hasWhitelist"
-														variant="dark"
-														@click="onUpdateSaleStatus(SALE_STATUS.Presale)"
-														>Start Presale</b-button
-													>
-													<b-button
-														variant="success"
-														@click="onUpdateSaleStatus(SALE_STATUS.Public)"
-														>Start Public Sale</b-button
-													>
-												</b-button-group>
-												<b-button
-													v-else
-													class="w-100"
-													variant="success"
-													@click="callFunc(func)"
-													>Call</b-button
-												>
-											</b-overlay>
-										</div>
-										<div
-											v-show="responses[func.name]"
-											class="font-weight-bold mt-2">
-											{{ formatFuncResponse(func) }}
-										</div>
-									</b-collapse>
-								</li>
-							</ul>
-						</b-col>
-					</b-row>
-				</b-col>
-				<b-col v-if="rawContract.hasWhitelist" cols="4" class="mb-3">
-					<b-row class="mb-2">
-						<b-col>
-							<h4 class="m-0">Whitelist</h4>
-							<b-link href="/whitelist-csv-example.csv" download
-								>Download example</b-link
+						</b-overlay>
+					</b-col>
+					<b-col sm="12" md="4" class="d-flex flex-column">
+						<div class="lead font-weight-bold">
+							Sale Status:
+							<span
+								:class="{
+									'text-warning': saleStatus === 'Paused',
+									'text-dark': saleStatus === 'Presale',
+									'text-success': saleStatus === 'Public',
+								}"
+								>{{ saleStatus }}</span
 							>
-						</b-col>
-					</b-row>
-					<b-row no-gutters>
-						<b-col>
-							<b-form-file
-								accept=".csv"
-								@input="onImportCsv"
-								placeholder="Choose or drop .csv file"
-								drop-placeholder="Drop file here...">
-							</b-form-file>
-							<div v-if="invalidAddresses.length > 0">
-								<h5 class="text-danger">Invalid addresses</h5>
-								<ul class="p-0">
-									<li class="d-flex" v-for="(addr, idx) in invalidAddresses" :key="idx">
-										{{ addr }}
-										<b-icon class="my-auto" icon="trash" variant="danger" @click="onRemoveInvalidAddress(addr)"></b-icon>
+							<b-icon
+								v-if="isBusy"
+								class="pointer"
+								font-scale="0.9"
+								icon="bootstrap-reboot"
+								variant="success"
+								animation="spin"
+								:disabled="true" />
+							<b-icon
+								v-else
+								class="pointer"
+								font-scale="0.9"
+								icon="bootstrap-reboot"
+								variant="success"
+								@click="callFuncByName('saleStatus')" />
+						</div>
+						<div class="lead font-weight-bold mb-1">
+							Contract Balance: {{ contractBalance }}
+							{{ getCurrency(rawContract.chainId) }}
+							<b-icon
+								v-if="isBusy"
+								class="pointer"
+								font-scale="0.9"
+								icon="bootstrap-reboot"
+								variant="success"
+								animation="spin"
+								:disabled="true" />
+							<b-icon
+								v-else
+								class="pointer"
+								font-scale="0.9"
+								icon="bootstrap-reboot"
+								variant="success"
+								@click="onRefreshBalance(true)" />
+						</div>
+						<b-button
+							variant="success"
+							:disabled="contractBalance === 0"
+							@click="callFuncByName('withdraw')"
+							>Withdraw</b-button
+						>
+					</b-col>
+				</b-row>
+				<b-row v-if="isOnWrongNetwork">
+					<b-col class="d-flex flex-column align-items-center mt-3">
+						<h3>Detected network is different than this smart contract</h3>
+						<b-button variant="warning" @click="switchNetwork">
+							Switch network
+						</b-button>
+					</b-col>
+				</b-row>
+				<b-row v-else-if="!isReady">
+					<b-col>
+						<h3 class="pt-3">
+							Contract deployment is still in progress, please check back in a
+							few minutes
+						</h3>
+					</b-col>
+				</b-row>
+				<b-row v-else>
+					<b-col sm="12">
+						<b-row class="mb-2">
+							<b-col cols="6" class="d-flex">
+								<h4 class="m-0">Update Smart Contract</h4>
+								<b-button
+									size="sm"
+									variant="link"
+									@click="
+										downloadTextFile(
+											'abi.txt',
+											JSON.stringify(JSON.parse(rawContract.abi), null, 2)
+										)
+									"
+									>[ABI]</b-button
+								>
+							</b-col>
+							<b-col cols="6" class="d-flex justify-content-end my-auto">
+								<span class="pr-2">Advanced</span>
+								<b-form-checkbox
+									v-model="showAdvancedFunctions"
+									name="check-button"
+									switch />
+							</b-col>
+						</b-row>
+						<b-row>
+							<b-col>
+								<ul class="list-unstyled">
+									<li
+										class="mb-2 border rounded"
+										v-for="(func, idx) in filteredFunctions"
+										:key="idx"
+										role="tab">
+										<div
+											class="d-flex justify-content-between p-2"
+											v-b-toggle="`${func.name + idx}`">
+											<template v-if="func.constant">
+												<b-badge
+													pill
+													size="sm"
+													variant="success"
+													class="my-auto"
+													>Eco</b-badge
+												>
+											</template>
+											<template v-else>
+												<b-badge
+													pill
+													size="sm"
+													variant="warning"
+													class="my-auto"
+													>Gas</b-badge
+												>
+											</template>
+											<span variant="link">
+												{{ func.name | startCase }}
+											</span>
+											<b-icon icon="chevron-down" class="my-auto" />
+										</div>
+										<b-collapse
+											:id="func.name + idx"
+											class="p-2"
+											accordion="eco-accordion"
+											role="tabpanel">
+											<ul
+												v-if="
+													func.inputs.length > 0 &&
+													func.name !== 'setSaleStatus'
+												"
+												class="mb-2">
+												<li
+													v-for="(param, idx) in func.inputs.filter(
+														(x) => !x.name.startsWith('_')
+													)"
+													:key="idx">
+													<span> {{ param.name }} </span>
+													<b-input
+														@change="
+															(val) => onParamChange(val, func, param)
+														" />
+												</li>
+											</ul>
+											<div>
+												<b-overlay
+													:show="busyState[func.name]"
+													rounded
+													class="w-100"
+													opacity="0.5"
+													spinner-small>
+													<b-button-group
+														v-if="func.name === 'setSaleStatus'"
+														class="w-100">
+														<b-button
+															variant="warning"
+															@click="onUpdateSaleStatus(SALE_STATUS.Paused)"
+															>Pause Sales</b-button
+														>
+														<b-button
+															v-if="rawContract.hasWhitelist"
+															variant="dark"
+															@click="onUpdateSaleStatus(SALE_STATUS.Presale)"
+															>Start Presale</b-button
+														>
+														<b-button
+															variant="success"
+															@click="onUpdateSaleStatus(SALE_STATUS.Public)"
+															>Start Public Sale</b-button
+														>
+													</b-button-group>
+													<b-button
+														v-else
+														class="w-100"
+														variant="success"
+														@click="callFunc(func)"
+														>Call</b-button
+													>
+												</b-overlay>
+											</div>
+											<div
+												v-show="responses[func.name]"
+												class="font-weight-bold mt-2">
+												{{ formatFuncResponse(func) }}
+											</div>
+										</b-collapse>
 									</li>
 								</ul>
-							</div>
-						</b-col>
-					</b-row>
-					<b-row class="mt-3 mb-1">
-						<b-col cols="6">
-							<b-button block variant="warning" :disabled="isProcessingWhitelistCommit" @click="onWhitelistCommit"
-								>Commit List</b-button
-							>
-						</b-col>
-						<b-col cols="6">
-							<b-button block variant="danger" :disabled="isProcessingWhitelistCommit" @click="onClearWhitelist"
-								>Clear</b-button
-							>
-						</b-col>
-					</b-row>
-					<b-row>
-						<b-col>
-							<b-form-tags
-								v-model="rawContract.whitelist"
-								invalid-tag-text="Address is invalid"
-								:tag-validator="whitelistValidator"
-								placeholder="Enter Wallet Address">
-							</b-form-tags>
-						</b-col>
-					</b-row>
-				</b-col>
-			</b-row>
+							</b-col>
+						</b-row>
+					</b-col>
+				</b-row>
+			</b-tab>
+			<b-tab v-if="rawContract.hasWhitelist" title="Whitelist">
+				<b-row>
+					<b-col class="mb-3">
+						<b-row class="mb-2">
+							<b-col>
+								<h4 class="m-0">Whitelist</h4>
+								<b-link href="/whitelist-csv-example.csv" download
+									>Download example</b-link
+								>
+							</b-col>
+						</b-row>
+						<b-row no-gutters>
+							<b-col>
+								<b-form-file
+									accept=".csv"
+									@input="onImportCsv"
+									placeholder="Choose or drop .csv file"
+									drop-placeholder="Drop file here...">
+								</b-form-file>
+								<div v-if="invalidAddresses.length > 0">
+									<h5 class="text-danger">Invalid addresses</h5>
+									<ul class="p-0">
+										<li
+											class="d-flex"
+											v-for="(addr, idx) in invalidAddresses"
+											:key="idx">
+											{{ addr }}
+											<b-icon
+												class="my-auto"
+												icon="trash"
+												variant="danger"
+												@click="onRemoveInvalidAddress(addr)"></b-icon>
+										</li>
+									</ul>
+								</div>
+							</b-col>
+						</b-row>
+						<b-row class="mt-3 mb-1">
+							<b-col cols="6">
+								<b-button
+									block
+									variant="warning"
+									:disabled="isProcessingWhitelistCommit"
+									@click="onWhitelistCommit"
+									>Commit List</b-button
+								>
+							</b-col>
+							<b-col cols="6">
+								<b-button
+									block
+									variant="danger"
+									:disabled="isProcessingWhitelistCommit"
+									@click="onClearWhitelist"
+									>Clear</b-button
+								>
+							</b-col>
+						</b-row>
+						<b-row>
+							<b-col>
+								<b-form-tags
+									v-model="rawContract.whitelist"
+									invalid-tag-text="Address is invalid"
+									:tag-validator="whitelistValidator"
+									placeholder="Enter Wallet Address">
+								</b-form-tags>
+							</b-col>
+						</b-row>
+					</b-col>
+				</b-row>
+			</b-tab>
+		</b-tabs>
+
 		<b-modal
 			id="deployment"
 			title="Deployed!"
@@ -286,7 +339,13 @@
 			@hidden="onPaymentModalHidden">
 			<div>
 				<h4 class="mb-3">Total: $799</h4>
-				<b-button class="mb-3 p-2 font-weight-bolder" block variant="primary" @click="payWithEth">Pay With ETH</b-button>
+				<b-button
+					class="mb-3 p-2 font-weight-bolder"
+					block
+					variant="primary"
+					@click="payWithEth"
+					>Pay With ETH</b-button
+				>
 				<!-- <b-button class="mb-3 p-2 font-weight-bolder" block variant="info" @click="onFTXPay">Pay with FTX US</b-button> -->
 				<div id="paypal-container"></div>
 			</div>
@@ -318,12 +377,22 @@
 			no-close-on-backdrop
 			ok-only>
 			<div>
-				<p> We've received your payment. Please 
-					<b-link href="https://discord.gg/E2byPVZKKV" target="_blank">open a Discord ticket</b-link> or 
-					<b-link :href="`mailto:admin@zerocodenft.com?subject=ETH payment verification&body=${ethPayTxHash}`">send email</b-link> with the following
-					transaction hash so we can verify and clear you for mainnet deployment.
+				<p>
+					We've received your payment. Please
+					<b-link href="https://discord.gg/E2byPVZKKV" target="_blank"
+						>open a Discord ticket</b-link
+					>
+					or
+					<b-link
+						:href="`mailto:admin@zerocodenft.com?subject=ETH payment verification&body=${ethPayTxHash}`"
+						>send email</b-link
+					>
+					with the following transaction hash so we can verify and clear you for
+					mainnet deployment.
 				</p>
-				<p class="break-word">{{ ethPayTxHash }} <Copy :value="ethPayTxHash" /></p>
+				<p class="break-word">
+					{{ ethPayTxHash }} <Copy :value="ethPayTxHash" />
+				</p>
 			</div>
 		</b-modal>
 	</b-container>
@@ -336,7 +405,7 @@ import { SALE_STATUS, SMARTCONTRACT_STATUS, BLOCKCHAIN } from '@/constants'
 import {
 	getExplorerUrl,
 	getCurrency,
-	getMainnetConfig
+	getMainnetConfig,
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
@@ -355,7 +424,7 @@ const basicFunctions = [
 	'reveal',
 	'totalSupply',
 	'setPublicMintPrice',
-	'setPlaceholderUri'
+	'setPlaceholderUri',
 ]
 
 export default {
@@ -376,7 +445,7 @@ export default {
 		isReady: false,
 		isProcessingWhitelistCommit: false,
 		paypal: null,
-		ethPayTxHash: null
+		ethPayTxHash: null,
 	}),
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
@@ -388,7 +457,9 @@ export default {
 				`/users/${this.userId}/smartcontracts/${this.$route.params.id}`
 			)
 			this.rawContract = data
-			this.rawContract.whitelist = this.rawContract.whitelist.filter(a => a !== ethers.utils.AddressZero)
+			this.rawContract.whitelist = this.rawContract.whitelist.filter(
+				(a) => a !== ethers.utils.AddressZero
+			)
 
 			const { address, abi } = this.rawContract
 
@@ -403,7 +474,7 @@ export default {
 			)
 			this.isReady = !!(await this.contract.deployed())
 
-			if(this.isReady) {
+			if (this.isReady) {
 				await this.onRefreshBalance()
 				const saleStatus = await this.contract.saleStatus()
 				this.saleStatus = SALE_STATUS[saleStatus]
@@ -440,6 +511,14 @@ export default {
 		canDeployMainnet() {
 			return this.rawContract.status === SMARTCONTRACT_STATUS.Testnet
 		},
+		isOwnerMismatch() {
+			if(!this.rawContract?.ownerAddress || !this.$wallet.account) return false
+			return ethers.utils.getAddress(this.$wallet.account) !== ethers.utils.getAddress(this.rawContract.ownerAddress)
+		},
+		compactOwnerAddress() {
+			const addr = this.rawContract?.ownerAddress || ''
+			return `${addr.substring(0, 4)}...${addr.substring(addr.length - 4)}`
+		},
 		functions() {
 			return Object.values(this.contract.interface?.functions || {}).sort(
 				(a, b) => a.name.localeCompare(b.name)
@@ -452,28 +531,35 @@ export default {
 		},
 		isOnWrongNetwork() {
 			return this.$wallet.chainId !== +this.rawContract.chainId
-		}
+		},
 	},
 	methods: {
 		getExplorerUrl,
 		getCurrency,
 		downloadTextFile,
-    	...mapMutations(['setBusy']),
+		...mapMutations(['setBusy']),
 		onFTXPay() {
-			window.open('https://ftx.us/pay/request?subscribe=false&coin=USD&size=799&id=3260&memoIsRequired=false&memo=&notes=','_blank','resizable,width=700,height=900')
+			window.open(
+				'https://ftx.us/pay/request?subscribe=false&coin=USD&size=799&id=3260&memoIsRequired=false&memo=&notes=',
+				'_blank',
+				'resizable,width=700,height=900'
+			)
 		},
 		async onVerify() {
-			if(!this.rawContract.blockchain === BLOCKCHAIN.Ethereum) {
-				alert("Only Ethereum contracts are supported for now")
+			if (!this.rawContract.blockchain === BLOCKCHAIN.Ethereum) {
+				alert('Only Ethereum contracts are supported for now')
 				return
 			}
 			try {
 				await this.$axios.patch(`${this.rawContract.id}/verify`)
 				this.rawContract.isVerified = true
-				this.$bvToast.toast('Verified! Please allow a 10-15 minutes to reflect on etherscan', {
-					title: 'Code Verification',
-					variant: 'success',
-				})
+				this.$bvToast.toast(
+					'Verified! Please allow a 10-15 minutes to reflect on etherscan',
+					{
+						title: 'Code Verification',
+						variant: 'success',
+					}
+				)
 			} catch (err) {
 				this.$bvToast.toast('Smart contract code verification falied', {
 					title: 'Code Verification',
@@ -484,22 +570,31 @@ export default {
 		whitelistValidator(tag) {
 			return ethers.utils.isAddress(tag)
 		},
-		onRemoveInvalidAddress(a){
-			this.invalidAddresses = this.invalidAddresses.filter(x => x !== a)
-			this.rawContract.whitelist = this.rawContract.whitelist.filter(x => x !== a)
+		onRemoveInvalidAddress(a) {
+			this.invalidAddresses = this.invalidAddresses.filter((x) => x !== a)
+			this.rawContract.whitelist = this.rawContract.whitelist.filter(
+				(x) => x !== a
+			)
 		},
 		async payWithEth() {
 			try {
-				const data = await fetch('https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD')
+				const data = await fetch(
+					'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD'
+				)
 				const { USD: ethPrice } = await data.json()
-				const value = 799/ethPrice
+				const value = 799 / ethPrice
 				const tx = {
 					from: this.$wallet.account,
 					to: '0x34Eca06DB779169003117e8999B5E008086f4cc3',
 					value: ethers.utils.parseEther(value.toString()),
-					nonce: this.$wallet.provider.getTransactionCount(this.$wallet.account, "latest"),
+					nonce: this.$wallet.provider.getTransactionCount(
+						this.$wallet.account,
+						'latest'
+					),
 				}
-				const txRes = await this.$wallet.provider.getSigner().sendTransaction(tx)
+				const txRes = await this.$wallet.provider
+					.getSigner()
+					.sendTransaction(tx)
 				this.ethPayTxHash = txRes.hash
 				this.$bvModal.hide('payment')
 				this.$bvModal.show('ethPaymentSuccess')
@@ -521,18 +616,20 @@ export default {
 		async onWhitelistCommit() {
 			this.setBusy(true)
 			try {
-
-				this.rawContract.whitelist.forEach(a =>{
-					if(!ethers.utils.isAddress(a)) {
+				this.rawContract.whitelist.forEach((a) => {
+					if (!ethers.utils.isAddress(a)) {
 						this.invalidAddresses.push(a)
 					}
 				})
 
-				if(this.invalidAddresses.length > 0) {
-					this.$bvToast.toast('Whitelist contains invalid addresses. Please remove and resubmit', {
-						title: 'Whitelist',
-						variant: 'danger',
-					})
+				if (this.invalidAddresses.length > 0) {
+					this.$bvToast.toast(
+						'Whitelist contains invalid addresses. Please remove and resubmit',
+						{
+							title: 'Whitelist',
+							variant: 'danger',
+						}
+					)
 					return
 				}
 
@@ -543,12 +640,12 @@ export default {
 					}
 				)
 
-				if(this.rawContract.whitelist.length === 0) {
+				if (this.rawContract.whitelist.length === 0) {
 					this.rawContract.whitelist = [ethers.constants.AddressZero]
 				}
 				const merkleRoot = getMerkleRoot(this.rawContract.whitelist)
 				const txResponse = await this.contract.setMerkleRoot(merkleRoot)
-				this.isProcessingWhitelistCommit = true;
+				this.isProcessingWhitelistCommit = true
 
 				const msg = [this.createToastMessage(txResponse.hash)]
 				this.$bvToast.toast(msg, {
@@ -563,7 +660,7 @@ export default {
 					})
 				})
 			} catch (err) {
-				console.log({err})
+				console.log({ err })
 				this.$bvToast.toast('Whitelist commit failed', {
 					title: 'Whitelist',
 					variant: 'danger',
@@ -578,31 +675,34 @@ export default {
 			this.rawContract.whitelist = []
 		},
 		async onImportCsv(file) {
-			if(file === null) return
+			if (file === null) return
 
 			try {
 				const form = new FormData()
 				form.append('file', file)
-	
+
 				const { data } = await this.$axios.post(
 					`/smartcontracts/${this.rawContract.id}/whitelist`,
 					form
 				)
 
 				this.rawContract.whitelist = data
-	
-				this.$bvToast.toast('You MUST commit the list to save it into the smart contract for it to take effect!', {
-					title: 'Whitelist',
-					variant: 'warning',
-				})
+
+				this.$bvToast.toast(
+					'You MUST commit the list to save it into the smart contract for it to take effect!',
+					{
+						title: 'Whitelist',
+						variant: 'warning',
+					}
+				)
 				this.$bvToast.toast('File successfully uploaded', {
 					title: 'Whitelist',
 					variant: 'success',
 				})
 				this.invalidAddresses = []
 			} catch (err) {
-				console.log({err})
-				if(err.response.data.errors?.invalidAddresses) {
+				console.log({ err })
+				if (err.response.data.errors?.invalidAddresses) {
 					this.invalidAddresses = err.response.data.errors?.invalidAddresses
 				}
 				this.$bvToast.toast('File upload failed', {
@@ -663,8 +763,8 @@ export default {
 							application_context: {
 								brand_name: 'Zero Code NFT',
 								shipping_preference: 'NO_SHIPPING',
-								user_action: 'PAY_NOW'
-							}
+								user_action: 'PAY_NOW',
+							},
 						})
 					},
 					onApprove: (data, actions) => {
@@ -715,7 +815,7 @@ export default {
 		},
 		async onMainnetDeploy() {
 			try {
-				if(!this.canDeployMainnet) return
+				if (!this.canDeployMainnet) return
 				// if(!this.rawContract.isClearedForMainnet) {
 				// 	//redirect to discord
 				// 	window.open(this.$config.DISCORD_INVITE_URL, '_blank')
@@ -734,11 +834,11 @@ export default {
 				}
 
 				const mainnetConfig = getMainnetConfig(chainId)
-				if(!mainnetConfig) {
-					alert("Mainnet configuration not found.")
+				if (!mainnetConfig) {
+					alert('Mainnet configuration not found.')
 					return
 				}
-				
+
 				await this.$wallet.switchNetwork(mainnetConfig.chainId)
 
 				this.setBusy(true)
@@ -826,7 +926,8 @@ export default {
 					if (func.payable) {
 						if (func.name === 'mint') {
 							const mintPrice = await this.contract.MINT_PRICE()
-							const value = Number(ethers.utils.formatEther(mintPrice)) * Number(args[0])
+							const value =
+								Number(ethers.utils.formatEther(mintPrice)) * Number(args[0])
 							txOverrides.value = ethers.utils.parseEther(value.toString())
 						}
 					}
@@ -841,16 +942,15 @@ export default {
 						...args,
 						txOverrides
 					)
-
 				} else {
 					txResponse = await this.contract[func.name](txOverrides)
 				}
 
 				console.log({ txResponse })
-				
+
 				if (func.name === 'setPlaceholderUri') {
 					await this.$axios.patch(`/smartcontracts/${this.rawContract.id}`, {
-						delayedRevealURL: args[0]
+						delayedRevealURL: args[0],
 					})
 				}
 
