@@ -17,7 +17,7 @@
 					<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
 						<b-button
 							:disabled="!canDeployMainnet"
-							class="bg-gradient-primary border-0"
+							variant="primary"
 							@click="onMainnetDeploy">
 							<b-icon icon="wallet2" /> Deploy to Mainnet
 						</b-button>
@@ -300,7 +300,7 @@
 			<div>
 				<b-button
 					:disabled="isBusy"
-					class="bg-gradient-primary border-0 w-100"
+					variant="primary"
 					@click="
 						() => {
 							this.$bvModal.hide('paymentSuccess')

@@ -35,7 +35,7 @@ const smartContractWizardMixin = {
 			})
 		},
 		goNext() {
-			document.getElementsByClassName('stepper-button next')[0].click()
+			setTimeout(() => document.getElementsByClassName('stepper-button next')[0]?.click(), 250)
 		}
 	},
 }

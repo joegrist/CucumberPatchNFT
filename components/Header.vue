@@ -13,9 +13,7 @@
 					<b-nav-item v-if="isLoggedIn" to="/" class="gradient-text"
 						>Dashboard</b-nav-item
 					>
-					<b-nav-item v-else class="gradient-text">
-						<LoginButton variant="link" />
-					</b-nav-item
+					<b-nav-item v-else class="gradient-text" to="/login">Login</b-nav-item
 					>
 				</b-navbar-nav>
 
@@ -55,7 +53,7 @@
 <script>
 import Sidebar from '@/components/sidebar/Sidebar.vue'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import LoginButton from '@/components/auth/LoginButton.vue'
+import LoginButton from '@/components/login/LoginButton.vue'
 
 export default {
 	components: {

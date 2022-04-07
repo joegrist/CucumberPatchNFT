@@ -11,6 +11,12 @@ const wait = (delay) => {
     return new Promise((resolve) => setTimeout(resolve, delay));
 }
 
+// this function is not fat arrowed on purpose: it needs parent scope to access this.$v
+function validateState(formControlName) {
+    const { $dirty, $error } = this.$v.form[formControlName];
+    return $dirty ? !$error : null;
+}
+
 // this function is not fat arrowed on purpose: it needs parent scope to access this.$bvToast
 const copyToClipboard = async function(value) {
     await navigator.clipboard.writeText(value)
@@ -40,6 +46,7 @@ const downloadTextFile = (filename, text) => {
 export {
     getMerkleRoot,
     wait,
+    validateState,
     copyToClipboard,
     scrollTo,
     downloadTextFile

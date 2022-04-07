@@ -12,7 +12,7 @@
 					debounce="500"
 					placeholder="Start typing the smart contract name.." />
 				<b-input-group-append>
-					<b-button class="bg-gradient-primary border-0" to="/wizard"
+					<b-button variant="primary" class="border-0" to="/wizard"
 						>Add New</b-button
 					>
 				</b-input-group-append>
@@ -29,7 +29,7 @@
 			<div v-else class="text-center pt-2">
 				<h1>You Don't Have Any Contracts Yet</h1>
 				<b-button
-					class="bg-gradient-primary border-0 w-50"
+					variant="primary"
 					@click="$router.push('/wizard')"
 					>Create One</b-button
 				>
@@ -104,6 +104,12 @@ export default {
 	fetchKey: 'dashboard',
 	async fetch() {
 		await this.loadDashboardCards()
+	},
+	created(){
+		const refCode = this.$route.query['ref']
+		if(refCode) {
+			sessionStorage.setItem('ref', refCode)
+		}
 	},
 	computed: {
 		...mapState(['dashboardItems', 'isBusy']),

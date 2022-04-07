@@ -1,13 +1,13 @@
 <template>
 	<div>
-		<b-button v-if="$attrs.variant" v-bind="$attrs" class="text-decoration-none" style="color:inherit" @click="tryLogin">{{
+		<b-button v-if="$attrs.variant" v-bind="$attrs" class="text-decoration-none text-white" style="color:inherit" @click="tryLogin">{{
 			caption
 		}}</b-button>
-		<b-button v-else v-bind="$attrs" class="bg-gradient-primary border-0" @click="tryLogin">{{
+		<b-button v-else v-bind="$attrs" class="bg-gradient-primary border-0 text-white" @click="tryLogin">{{
 			caption
 		}}</b-button>
 		<b-modal :id="modalId" title="Register" centered hide-footer>
-			<RegistrationForm @done="$bvModal.hide(modalId)" />
+			<RegistrationForm @done="onRegistrationDone" />
 		</b-modal>
 	</div>
 </template>
@@ -25,7 +25,8 @@ export default {
 		caption: {
 			type: String,
 			default: 'Login',
-		}
+		},
+		redirect: String
 	},
 	data() {
 		return {
@@ -50,6 +51,12 @@ export default {
 				this.$bvModal.show(this.modalId)
 			}
 		},
+		onRegistrationDone() {
+			this.$bvModal.hide(this.modalId)
+			if(this.redirect) {
+				this.$router.push(this.redirect)
+			}
+		}
 	}
 }
 </script>

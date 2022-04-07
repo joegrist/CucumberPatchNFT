@@ -10,7 +10,7 @@
 			<div class="px-3 py-4">
 				<div v-if="!$wallet.account" class="mb-2">
 					<b-button
-						class="bg-gradient-primary border-0 w-100"
+						variant="primary"
 						@click="$wallet.connect">
 						<strong>Connect Wallet</strong>
 					</b-button>
@@ -36,7 +36,7 @@
 						<b-list-group-item>Referrals: {{ referral.count }}</b-list-group-item>
 						<b-list-group-item>Referral Code:
 							<span class="pointer"> {{ referral.code }} 
-								<Copy :value="referral.code" />
+								<Copy :value="`https://app.zerocodenft.com?${referral.code}`" />
 							</span>
 						</b-list-group-item>
 						<b-list-group-item>Referral Balance: ${{ referral.balance.toFixed(2) }}</b-list-group-item>
@@ -65,7 +65,7 @@
 <script>
 import TransferCreditsButton from './TransferCreditsButton.vue'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import LoginButton from '@/components/auth/LoginButton.vue'
+import LoginButton from '@/components/login/LoginButton.vue'
 import BecomeAmbasssadorButton from './BecomeAmbassadorButton.vue'
 
 export default {
@@ -91,7 +91,7 @@ export default {
 		onLogout() {
 			this.showSidebar(false)
 			this.logout()
-			this.$router.push('/wizard')
+			this.$router.push('/login')
 		},
 		async onShown(){
 			this.$wallet.refreshBalance()

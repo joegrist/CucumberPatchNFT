@@ -34,9 +34,9 @@
           <div class="d-flex justify-content-center">
             <template v-if="isLoggedIn">
               <b-button variant="outline-info" :disabled='!canDeploy' @click="saveDraft" class="mr-3">Save Draft</b-button>
-              <b-button variant='outline-success' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
+              <b-button variant='outline-primary' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
             </template>
-            <LoginButton v-else caption="Login to Deploy" />
+            <LoginButton v-else variant="primary" caption="Login to Deploy" />
           </div>
         </b-col>
       </b-row>
@@ -72,7 +72,7 @@ import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import Summary from '@/components/smart-contract-wizard/Summary'
-import LoginButton from '@/components/auth/LoginButton'
+import LoginButton from '@/components/login/LoginButton'
 
 export default {
   mixins: [smartContractBuilderMixin],

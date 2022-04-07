@@ -122,6 +122,8 @@ export default {
 
   bootstrapVue: {
     icons: true,
+    bootstrapCSS: false,
+    bootstrapVueCSS: false
   },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -180,5 +182,12 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    loaders: {
+      scss: {
+        sassOptions: {
+          quietDeps: true
+        }
+      }
+    }
   }
 }
