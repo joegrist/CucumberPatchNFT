@@ -1,7 +1,7 @@
 <template>
     <b-navbar id="loginHeader">
         <b-navbar-brand href="https://zerocodenft.com">
-            <b-img src="logo-white.png" width="120px" />
+            <b-img src="/logo-white.png" width="120px" />
         </b-navbar-brand>
     </b-navbar>
 </template>
