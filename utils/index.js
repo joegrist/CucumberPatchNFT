@@ -1,5 +1,6 @@
 import { MerkleTree } from 'merkletreejs'
 import { ethers } from 'ethers'
+import { get } from 'lodash-es'
 
 const getMerkleRoot = (whitelist) => {
     const leafNodes = whitelist.map(a => ethers.utils.keccak256(a))
@@ -12,8 +13,8 @@ const wait = (delay) => {
 }
 
 // this function is not fat arrowed on purpose: it needs parent scope to access this.$v
-function validateState(formControlName) {
-    const { $dirty, $error } = this.$v.form[formControlName];
+function validateState(path) {
+    const { $dirty, $error } = get(this.$v, path, {});
     return $dirty ? !$error : null;
 }
 

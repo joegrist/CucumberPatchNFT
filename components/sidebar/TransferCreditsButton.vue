@@ -4,7 +4,7 @@
         <b-modal
             :id="modalId"
             ok-title="Send"
-            ok-variant="success"
+            ok-variant="primary"
             @ok="onTransfer"
 			title="Transfer Credits"
 			centered

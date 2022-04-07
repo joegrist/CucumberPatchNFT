@@ -43,7 +43,7 @@
 			@hidden="newWebsite = {}"
 			@ok="onDeploySite"
 			ok-title="Create"
-			ok-variant="success"
+			ok-variant="primary"
 			no-close-on-backdrop
 			:busy="isBusy">
 			<b-form>

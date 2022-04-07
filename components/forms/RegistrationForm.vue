@@ -6,7 +6,7 @@
 				name="firstName"
 				type="text"
 				v-model="form.firstName"
-				:state="validateState('firstName')">
+				:state="validateState('form.firstName')">
 			</b-form-input>
 			<b-form-invalid-feedback :state="state.firstName">
 				Please correct "First Name"
@@ -18,7 +18,7 @@
 				name="lastName"
 				type="text"
 				v-model="form.lastName"
-				:state="validateState('lastName')">
+				:state="validateState('form.lastName')">
 			</b-form-input>
 			<b-form-invalid-feedback :state="state.lastName">
 				Please correct "Last Name"
@@ -30,7 +30,7 @@
 				name="email"
 				type="email"
 				v-model="form.email"
-				:state="validateState('email')">
+				:state="validateState('form.email')">
 			</b-form-input>
 			<b-form-invalid-feedback :state="state.email">
 				Please correct "Email"
@@ -43,7 +43,7 @@
 				debounce="500"
 				type="text"
 				v-model="form.referralCode"
-				:state="validateState('referralCode')"
+				:state="validateState('form.referralCode')"
 			></b-form-input>
 			<b-form-invalid-feedback v-if="$v.form.referralCode.$anyError">
 				Please correct "Referral Code"
@@ -90,7 +90,7 @@ export default {
 			referralCode: {
 				alphaNum,
 				async exists(code) {
-					if (code === '') return true
+					if (!code) return true
 					const { data: exists } = await this.$axios.get('/referrals/exists', {
 						params: {
 							code

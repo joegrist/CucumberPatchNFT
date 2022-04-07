@@ -45,7 +45,7 @@ const contractTypes = [
 	},
 	{
 		id: CONTRACT_TYPE.ERC721A,
-		title: 'ERC721A (Experimental)',
+		title: 'ERC721A (Azuki)',
 		description: `
 			Known as <a href="https://www.azuki.com/erc721a" target="blank">Azuki contract</a>, 
 			suitable when you expect your users to mint NFTs in small batches thus saving them on gas fees.

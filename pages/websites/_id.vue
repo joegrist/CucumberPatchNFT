@@ -218,7 +218,7 @@
 			title="Confirm"
 			centered
 			body-class="text-center"
-			ok-variant="success"
+			ok-variant="primary"
 			ok-title="Yes"
 			cancel-title="No"
 			@ok="onDelete">
@@ -279,6 +279,7 @@ export default {
 					width="${this.iframe.width}%" 
 					height="${this.iframe.height}px"
 					allowfullscreen="true"
+					style="border:none;"
 					loading="lazy"
 					title="${this.site.title}"
 					src="${this.$config.MINT_SITE_URL}/${this.iframe.view}?siteId=${this.site.id}"></iframe>`
