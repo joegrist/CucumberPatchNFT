@@ -206,7 +206,7 @@
 							:disabled="isBusy || site.status !== WEBSITE_STATUS.Ready"
 							>Delete</b-button
 						>
-						<b-button class="ml-2" type="submit" variant="success"
+						<b-button class="ml-2" type="submit" variant="primary"
 							>Update</b-button
 						>
 					</div>
@@ -289,12 +289,12 @@ export default {
 		...mapMutations(['setBusy']),
 		async onDelete() {
 			try {
-				this.setBusy(true)
+				this.setBusy({isBusy: true})
 				await this.$axios.delete(`/websites/${this.site.id}`)
-				this.setBusy(false)
+				this.setBusy({isBusy: false})
 				this.$router.push('/')
 			} catch (err) {
-				this.setBusy(false)
+				this.setBusy({isBusy: false})
 				this.$bvToast.toast('Website delete failed', {
 					title: 'Website',
 					variant: 'danger',
@@ -312,7 +312,7 @@ export default {
 				return
 			}
 
-			this.setBusy(true)
+			this.setBusy({isBusy: true})
 
 			try {
 				const { dropDateInput, dropTimeInput, id } = this.site
@@ -347,7 +347,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy(false)
+				this.setBusy({isBusy: false})
 			}
 		},
 	},

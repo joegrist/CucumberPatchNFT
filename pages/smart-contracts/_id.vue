@@ -24,20 +24,23 @@
 								>{{ rawContract.address }}</b-link
 							>
 						</p>
-						<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
-							<b-button
-								:disabled="!canDeployMainnet"
-								variant="primary"
-								@click="onMainnetDeploy">
-								<b-icon icon="wallet2" /> Deploy to Mainnet
-							</b-button>
-							<!-- <b-button
-							class="bg-gradient-primary border-0"
-							:disabled="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet || rawContract.isVerified"
-						 	@click="onVerify">
-							{{ rawContract.isVerified ? '✅ Verified' : 'Verify Code' }}
-						</b-button> -->
-						</b-overlay>
+						<div class="d-flex">
+							<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
+								<b-button
+									v-if="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet"
+									:disabled="!canDeployMainnet"
+									variant="primary"
+									@click="onMainnetDeploy">
+									<b-icon icon="wallet2" /> Deploy to Mainnet
+								</b-button>
+								<!-- <b-button
+								class="bg-gradient-primary border-0"
+								:disabled="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet || rawContract.isVerified"
+								@click="onVerify">
+								{{ rawContract.isVerified ? '✅ Verified' : 'Verify Code' }}
+							</b-button> -->
+							</b-overlay>
+						</div>
 					</b-col>
 					<b-col sm="12" md="4" class="d-flex flex-column">
 						<div class="lead font-weight-bold">
@@ -321,10 +324,10 @@
 			@hidden="$router.push(`/`)">
 			<div class="text-center">
 				<h3 class="text-success">Success!!</h3>
-				<p>
-					Contract has been deployed! Address: {{ deployedContract.address }}
-				</p>
-				<p>Please allow some time for the MetaMask transaction to clear.</p>
+				<b-link :href="deployedExplorerUrl" target="_blank">
+					Contract has been deployed!
+				</b-link>
+				<p>Please allow some time for the transaction to clear.</p>
 				<b-button variant="link" to="/">Go To Dashboard</b-button>
 			</div>
 		</b-modal>
@@ -406,6 +409,7 @@ import {
 	getExplorerUrl,
 	getCurrency,
 	getMainnetConfig,
+	testMainChainIdMap
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
@@ -446,12 +450,13 @@ export default {
 		isProcessingWhitelistCommit: false,
 		paypal: null,
 		ethPayTxHash: null,
+		currentOwner: null
 	}),
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
 	async fetch() {
 		try {
-			this.setBusy(true)
+			this.setBusy({isBusy: true})
 
 			const { data } = await this.$axios.get(
 				`/users/${this.userId}/smartcontracts/${this.$route.params.id}`
@@ -478,11 +483,15 @@ export default {
 				await this.onRefreshBalance()
 				const saleStatus = await this.contract.saleStatus()
 				this.saleStatus = SALE_STATUS[saleStatus]
+				this.currentOwner = await this.contract.owner()
+			}
+			else {
+				this.currentOwner = this.rawContract.owner
 			}
 		} catch (err) {
 			console.error(err)
 		} finally {
-			this.setBusy(false)
+			this.setBusy({isBusy: false})
 		}
 
 		// console.log(
@@ -508,12 +517,17 @@ export default {
 	computed: {
 		...mapState(['isBusy']),
 		...mapGetters(['userId']),
+		deployedExplorerUrl() {
+			if(!this.deployedContract?.address) return
+			const mainnetChainId = testMainChainIdMap[this.rawContract.chainId]
+			return `${getExplorerUrl(mainnetChainId)}/address/${this.deployedContract.address}`
+		},
 		canDeployMainnet() {
 			return this.rawContract.status === SMARTCONTRACT_STATUS.Testnet
 		},
 		isOwnerMismatch() {
-			if(!this.rawContract?.ownerAddress || !this.$wallet.account) return false
-			return ethers.utils.getAddress(this.$wallet.account) !== ethers.utils.getAddress(this.rawContract.ownerAddress)
+			if(!this.currentOwner || !this.$wallet.account) return false
+			return ethers.utils.getAddress(this.$wallet.account) !== ethers.utils.getAddress(this.currentOwner)
 		},
 		compactOwnerAddress() {
 			const addr = this.rawContract?.ownerAddress || ''
@@ -614,7 +628,7 @@ export default {
 			}
 		},
 		async onWhitelistCommit() {
-			this.setBusy(true)
+			this.setBusy({isBusy: true})
 			try {
 				this.rawContract.whitelist.forEach((a) => {
 					if (!ethers.utils.isAddress(a)) {
@@ -667,7 +681,7 @@ export default {
 				})
 			} finally {
 				this.isProcessingWhitelistCommit = false
-				this.setBusy(false)
+				this.setBusy({isBusy: false})
 			}
 		},
 		async onClearWhitelist() {
@@ -712,12 +726,12 @@ export default {
 			}
 		},
 		async onRefreshBalance(showNotification = false) {
-			this.setBusy(true)
+			this.setBusy({isBusy: true})
 			const balance =
 				(await this.$wallet.provider.getBalance(this.rawContract.address)) ||
 				'0'
 			this.contractBalance = +ethers.utils.formatEther(balance)
-			this.setBusy(false)
+			this.setBusy({isBusy: false})
 			showNotification &&
 				this.$bvToast.toast('Balance successfully refreshed', {
 					title: 'Balance',
@@ -841,7 +855,7 @@ export default {
 
 				await this.$wallet.switchNetwork(mainnetConfig.chainId)
 
-				this.setBusy(true)
+				this.setBusy({isBusy: true})
 
 				const { data } = await this.$axios.get(
 					`/smartcontracts/${id}/compiled`,
@@ -883,7 +897,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy(false)
+				this.setBusy({isBusy: false})
 			}
 		},
 		onUpdateSaleStatus(value) {
@@ -894,10 +908,10 @@ export default {
 			}
 		},
 		callFuncByName(name) {
-			this.setBusy(true)
+			this.setBusy({isBusy: true})
 			const func = this.functions.find((val) => val.name === name)
 			func && this.callFunc(func)
-			this.setBusy(false)
+			this.setBusy({isBusy: false})
 		},
 		async callFunc(func) {
 			try {
@@ -951,6 +965,12 @@ export default {
 				if (func.name === 'setPlaceholderUri') {
 					await this.$axios.patch(`/smartcontracts/${this.rawContract.id}`, {
 						delayedRevealURL: args[0],
+					})
+				}
+
+				if (func.name === 'transferOwnership') {
+					await this.$axios.patch(`/smartcontracts/${this.rawContract.id}`, {
+						ownerAddress: args[0],
 					})
 				}
 

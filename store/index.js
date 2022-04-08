@@ -6,6 +6,7 @@ export const state = () => ({
     txInProgressHash: null,
     txResult: null,
     isBusy: false,
+    isBusyMessage: null,
     isSidebarOpen: false,
     dashboardItems: [],
     smartContractBuilder: {
@@ -36,8 +37,9 @@ export const mutations = {
     showSidebar(state, value) {
         state.isSidebarOpen = value
     },
-    setBusy(state, isBusy) {
+    setBusy(state, {isBusy, message}) {
         state.isBusy = isBusy
+        state.isBusyMessage = message
     },
     updateUserCredits(state, count) {
         state.user.credits = count

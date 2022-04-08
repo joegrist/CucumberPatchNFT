@@ -44,7 +44,7 @@
 				><b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
-		<b-card-title class="text-center truncate-text px-3">
+		<b-card-title class="text-center truncate-text px-3 mb-0 pb-2">
 			<b-link
 				v-if="isDeployed"
 				class="text-dark"
@@ -288,7 +288,7 @@ export default {
 			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.$props.sc.chainId)}`
 		},
 		viewContractUrl() {
-			return `${this.getExplorerUrl(this.$props.sc.chainId)}/address/${
+			return `${this.getExplorerUrl(this.sc.chainId)}/address/${
 				this.$props.sc.address
 			}`
 		},
@@ -334,7 +334,7 @@ export default {
 		async onLinkOpenSea(e) {
 			e.preventDefault()
 
-			this.setBusy(true)
+			this.setBusy({isBusy: true})
 
 			try {
 				const payload = {
@@ -355,7 +355,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy(false)
+				this.setBusy({isBusy: false})
 			}
 		},
 		async onCreateMintPage() {
@@ -374,7 +374,7 @@ export default {
 			this.$v.cloneContractTitle.$touch()
 			if(this.$v.cloneContractTitle.$invalid) return
 			try {
-				this.setBusy(true)
+				this.setBusy({isBusy: true})
 				await this.cloneDashboardCard({ id: this.sc.id, name: this.cloneContractTitle })
 				this.$bvModal.hide(`Clone${this.sc.id}`)
 				this.cloneContractTitle = null
@@ -385,12 +385,12 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy(false)
+				this.setBusy({isBusy: false})
 			}
 		},
 		async onRemoveCard() {
 			try {
-				this.setBusy(true)
+				this.setBusy({isBusy: true})
 				await this.removeDashboardCard(this.$props.sc.id)
 				this.$bvToast.toast('Card removed', {
 					title: 'Dashboard',
@@ -402,7 +402,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy(false)
+				this.setBusy({isBusy: false})
 			}
 		},
 		async getContractStats() {

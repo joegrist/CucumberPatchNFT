@@ -141,7 +141,7 @@ export default {
           return
         }
 
-        this.setBusy(true)
+        this.setBusy({isBusy: true, message: 'Wait for the Metamask popup to deploy'})
 
         if(this.smartContractBuilder.chainId !== this.$wallet.chainId) {
           await this.$wallet.switchNetwork(this.smartContractBuilder.chainId)
@@ -180,7 +180,7 @@ export default {
           variant: 'danger',
         })
       } finally {
-        this.setBusy(false)
+        this.setBusy({isBusy: false})
       }
     }
   }

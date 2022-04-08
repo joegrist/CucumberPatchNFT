@@ -154,7 +154,7 @@ export default {
 				return
 			}
 
-			this.setBusy(true)
+			this.setBusy({isBusy: true})
 
 			try {
 				const { dropDateInput, dropTimeInput } = this.newWebsite
@@ -190,7 +190,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy(false)
+				this.setBusy({isBusy: false})
 			}
 		},
 	},
