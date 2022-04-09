@@ -280,7 +280,7 @@
 								</div>
 							</b-col>
 						</b-row>
-						<b-row class="mt-3 mb-1">
+						<b-row class="my-2">
 							<b-col cols="6">
 								<b-button
 									block

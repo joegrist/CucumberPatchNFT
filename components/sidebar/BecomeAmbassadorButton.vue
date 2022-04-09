@@ -1,14 +1,14 @@
 <template>
 	<div>
 		<b-button size="sm" variant="primary" v-b-modal="modalId"
-			>Become Ambassador!</b-button
+			>Refer and Earn!</b-button
 		>
-		<b-modal :id="modalId" centered title="Become an Ambassador" hide-footer>
+		<b-modal :id="modalId" centered title="Earn 25% commission" hide-footer>
             <b-form novalidate @submit.prevent="onSubmit">
                 <b-form-group
-                    label="Ambassador code"
+                    label="Referral code"
                     label-class="required"
-                    description="Alphanumeric, min 3 characters code you would like to use as your referral code">
+                    description="Alphanumeric, min 3 characters. Code you would like to use as your referral code">
                     <b-form-input
                         name="ambassadorCode"
                         debounce="500"
@@ -70,12 +70,12 @@ export default {
                 })
                 this.$bvModal.hide(this.modalId)
                 this.$bvToast.toast('Submission accepted', {
-                    title: 'Become Ambassador',
+                    title: 'Referral Code',
                     variant: 'success',
                 })
             } catch (err) {
                 this.$bvToast.toast('Submission failed', {
-                    title: 'Become Ambassador',
+                    title: 'Referral Code',
                     variant: 'danger',
                 })
             }
