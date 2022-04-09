@@ -238,6 +238,9 @@ dayjs.extend(timezone)
 
 export default {
 	middleware: 'authenticated',
+    props: {
+        smartContractId: String
+    },
 	data() {
 		return {
 			WEBSITE_STATUS,
@@ -256,10 +259,8 @@ export default {
 			],
 		}
 	},
-	fetchOnServer: false,
-	fetchKey: 'website-id',
-	async fetch() {
-		const { data } = await this.$axios.get(`/websites/${this.$route.params.id}`)
+	async mounted() {
+		const { data } = await this.$axios.get(`/smartcontracts/${this.smartContractId}/website`)
 		this.site = data
 		if (this.site.dropDate) {
 			const [date, time] = dayjs

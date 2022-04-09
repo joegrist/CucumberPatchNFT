@@ -106,7 +106,7 @@
 				</b-row>
 				<b-row v-else-if="!isReady">
 					<b-col>
-						<h3 class="pt-3">
+						<h3 class="pt-3 text-center">
 							Contract deployment is still in progress, please check back in a
 							few minutes
 						</h3>
@@ -243,7 +243,7 @@
 					</b-col>
 				</b-row>
 			</b-tab>
-			<b-tab v-if="rawContract.hasWhitelist" title="Whitelist">
+			<b-tab v-if="rawContract.hasWhitelist" title="Whitelist" lazy>
 				<b-row>
 					<b-col class="mb-3">
 						<b-row class="mb-2">
@@ -312,6 +312,9 @@
 						</b-row>
 					</b-col>
 				</b-row>
+			</b-tab>
+			<b-tab title="Mint Page" lazy>
+				<MintPage :smartContractId="rawContract.id" />
 			</b-tab>
 		</b-tabs>
 
@@ -415,6 +418,7 @@ import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
 import { loadScript } from '@paypal/paypal-js'
 import { getMerkleRoot, downloadTextFile } from '@/utils'
+import MintPage from '@/components/smart-contract-dashboard/MintPage'
 
 const basicFunctions = [
 	'airdrop',
@@ -433,6 +437,9 @@ const basicFunctions = [
 
 export default {
 	middleware: 'authenticated',
+	components: {
+		MintPage
+	},
 	data: () => ({
 		SMARTCONTRACT_STATUS,
 		SALE_STATUS,
