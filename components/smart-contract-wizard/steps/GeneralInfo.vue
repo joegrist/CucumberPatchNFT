@@ -118,23 +118,23 @@
         </b-col>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Max NFTs Per Person'
-            description='Total number of NFTs someone can mint during public sale'
+            label='First X Free'
+            description='E.g. first 500 to be minted will be free, just gas fee'
           >
             <b-form-input
-              id='maxTokensPerPerson'
-              name='maxTokensPerPerson'
-              :value='smartContractBuilder.maxTokensPerPerson'
-              @change='(val) => updateSmartContractBuilder({ maxTokensPerPerson: val ? +val:null })'
-              @blur="$v.smartContractBuilder.maxTokensPerPerson.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerPerson.$error}"
+              id='firstXFree'
+              name='firstXFree'
+              :value='smartContractBuilder.firstXFree'
+              @change='(val) => updateSmartContractBuilder({ firstXFree: val ? +val:null })'
+              @blur="$v.smartContractBuilder.firstXFree.$touch()"
+              :class="{'is-invalid': $v.smartContractBuilder.firstXFree.$error}"
               type='number'
               step='1'
-              min='1'
-              placeholder='20'
+              min='0'
+              placeholder='500'
             ></b-form-input>
-            <b-form-invalid-feedback :state="validation.maxTokensPerPerson">
-              Please correct "Max NFTs Per Person". Enter 0 or leave empty.
+            <b-form-invalid-feedback :state="validation.firstXFree">
+              Please correct "First X Free". Enter 0 or leave empty.
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
@@ -154,13 +154,35 @@
               :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerTransaction.$error}"
               type='number'
               step='1'
-              min='1'
+              min='0'
               placeholder='20'
             />
           </b-form-group>
           <b-form-invalid-feedback :state="validation.maxTokensPerTransaction">
             Please correct "Max NFTs Per Transaction". Enter 0 or leave empty.
           </b-form-invalid-feedback>
+        </b-col>
+        <b-col sm='12' md='6'>
+          <b-form-group
+            label='Max NFTs Per Person'
+            description='Total number of NFTs someone can mint during public sale'
+          >
+            <b-form-input
+              id='maxTokensPerPerson'
+              name='maxTokensPerPerson'
+              :value='smartContractBuilder.maxTokensPerPerson'
+              @change='(val) => updateSmartContractBuilder({ maxTokensPerPerson: val ? +val:null })'
+              @blur="$v.smartContractBuilder.maxTokensPerPerson.$touch()"
+              :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerPerson.$error}"
+              type='number'
+              step='1'
+              min='0'
+              placeholder='20'
+            ></b-form-input>
+            <b-form-invalid-feedback :state="validation.maxTokensPerPerson">
+              Please correct "Max NFTs Per Person". Enter 0 or leave empty.
+            </b-form-invalid-feedback>
+          </b-form-group>
         </b-col>
       </b-row>
       <b-row>
@@ -199,8 +221,9 @@ export default {
         name: { required, mustBeName, maxLength: maxLength(50) },
         symbol: { required, alphaNum, maxLength: maxLength(10) },
         mintPrice: { required, decimal, minValue: minValue(0) },
-        maxTokensPerTransaction: { numeric, minValue: minValue(1) },
-        maxTokensPerPerson: { numeric, minValue: minValue(1) }
+        firstXFree: { numeric, minValue: minValue(0) },
+        maxTokensPerTransaction: { numeric, minValue: minValue(0) },
+        maxTokensPerPerson: { numeric, minValue: minValue(0) }
       }
   },
   computed: {
@@ -210,8 +233,9 @@ export default {
         symbol: !this.$v.smartContractBuilder.symbol.$error,
         collectionSize: !this.$v.smartContractBuilder.collectionSize.$error,
         mintPrice: !this.$v.smartContractBuilder.mintPrice.$error,
+        firstXFree: !this.$v.smartContractBuilder.firstXFree.$error,
         maxTokensPerPerson: !this.$v.smartContractBuilder.maxTokensPerPerson.$error,
-        maxTokensPerTransaction: !this.$v.smartContractBuilder.maxTokensPerTransaction.$error,
+        maxTokensPerTransaction: !this.$v.smartContractBuilder.maxTokensPerTransaction.$error
       }
     }
   },
