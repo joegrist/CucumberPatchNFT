@@ -30,9 +30,6 @@
 					:to="`/websites/${$props.sc.website.id}`"
 					><b-icon icon="pencil-square" /> Minting Page</b-dd-item
 				>
-				<b-dd-item v-if="!$props.sc.website && $config.FF_CREATE_SITE" @click="onCreateMintPage"
-					><b-icon icon="cloud-upload" /> Minting Page</b-dd-item
-				>
 				<b-dd-item v-b-modal="`Clone${sc.id}`"
 					><b-icon icon="files" /> Clone Contract</b-dd-item
 				>
@@ -356,17 +353,6 @@ export default {
 				})
 			} finally {
 				this.setBusy({isBusy: false})
-			}
-		},
-		async onCreateMintPage() {
-			this.$emit('create-site', this.$props.sc.id)
-
-			const pagesCount = this.$axios.get(`/users/${this.userId}/websites/count`)
-			if(pagesCount >= 2) {
-				alert("You've reached minting pages limit (2). Please remove other pages first or contact us to upgrade your account")
-			}
-			else {
-				this.$emit('create-site', this.$props.sc.id)
 			}
 		},
 		async onCloneContract(e) {
