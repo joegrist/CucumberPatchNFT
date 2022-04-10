@@ -31,9 +31,10 @@
 </template>
 
 <script>
-import { BLOCKCHAIN, MARKETPLACE, CONTRACT_TYPE } from '@/constants'
+import { MARKETPLACE, CONTRACT_TYPE } from '@/constants'
 import { getCurrency } from '@/constants/metamask'
 import { isArray } from 'lodash-es'
+import BlockchainImage from '@/mixins/blockchainImage'
 
 const excludeList = [
 	'id',
@@ -61,22 +62,9 @@ const excludeList = [
 ]
 
 export default {
+	mixins: [BlockchainImage],
 	props: {
 		smartContract: Object
-	},
-	data() {
-		return {
-			blockchainImage: {
-				[BLOCKCHAIN.Ethereum]: require('@/assets/images/blockchain/ethereum.svg'),
-				[BLOCKCHAIN.Solana]: require('@/assets/images/blockchain/solana.svg'),
-				[BLOCKCHAIN.Fantom]: require('@/assets/images/blockchain/fantom.svg'),
-				[BLOCKCHAIN.Polygon]: require('@/assets/images/blockchain/polygon.svg'),
-				[BLOCKCHAIN.Avalanche]: require('@/assets/images/blockchain/avalanche.svg'),
-				[BLOCKCHAIN.BinanceSmartChain]: require('@/assets/images/blockchain/binance.svg'),
-				[BLOCKCHAIN.Cronos]: require('@/assets/images/blockchain/cronos.svg'),
-				[BLOCKCHAIN.Songbird]: require('@/assets/images/blockchain/songbird.svg'),
-			},
-		}
 	},
 	computed: {
 		summary() {

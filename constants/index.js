@@ -10,6 +10,7 @@ const BLOCKCHAIN = Object.freeze({
 	Legacy: 9,
 	Cronos: 10,
 	Songbird: 11,
+	Thinkium: 12,
 	1: 'Ethereum',
 	2: 'Solana',
 	3: 'Fantom',
@@ -19,6 +20,7 @@ const BLOCKCHAIN = Object.freeze({
 	9: 'Legacy',
 	10: 'Cronos',
 	11: 'Songbird',
+	12: 'Thinkium'
 })
 
 const MARKETPLACE = Object.freeze({
