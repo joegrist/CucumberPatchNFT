@@ -1,3 +1,6 @@
+import { nanoid } from 'nanoid'
+import Vue from 'vue'
+
 export const state = () => ({
 	user: JSON.parse(localStorage.getItem('user') || '{}'),
 	accessToken: localStorage.getItem('accessToken'),
@@ -9,6 +12,7 @@ export const state = () => ({
     isBusyMessage: null,
     isSidebarOpen: false,
     dashboardItems: [],
+    alerts: [],
     smartContractBuilder: {
         baseURL: null,
         blockchain: null,
@@ -34,6 +38,33 @@ export const getters = {
 }
   
 export const mutations = {
+    addAlert(state, payload) {
+        console.log(payload)
+        const defaults = {
+            id: nanoid(),
+            variant: "warning",
+            show: 5
+        }
+        const alert = {
+            ...defaults,
+            ...payload
+        }
+        let existingIdx = state.alerts.findIndex(a => a.id === payload.id)
+        console.log('addAlert', existingIdx, alert)
+        if(existingIdx === -1) {
+            state.alerts.push(alert)
+            existingIdx = state.alerts.length - 1
+        }
+        Vue.set(state.alerts, existingIdx, alert)
+    },
+    removeAlert(state, id) {
+        // console.log('removeAlert', id)
+        const idx = state.alerts.findIndex(a => a.id === id)
+        state.alerts.splice(idx)
+    },
+    clearAlerts(state) {
+        state.alerts = []
+    },
     showSidebar(state, value) {
         state.isSidebarOpen = value
     },
