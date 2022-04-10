@@ -22,7 +22,6 @@ export const AVALANCHE_TESTNET_PARAMS = {
 	blockExplorerUrls: ['https://testnet.snowtrace.io']
 }
 
-
 export const POLYGON_MAINNET_PARAMS = {
 	chainId: '0x89',
 	chainName: 'Polygon Mainnet',
@@ -60,7 +59,10 @@ export const FANTOM_TESTNET_CONFIG = {
 		symbol: 'FTM',
 		decimals: 18,
 	},
-	rpcUrls: ['https://xapi.testnet.fantom.network/lachesis', 'https://rpc.testnet.fantom.network'],
+	rpcUrls: [
+		'https://xapi.testnet.fantom.network/lachesis',
+		'https://rpc.testnet.fantom.network'
+	],
 	blockExplorerUrls: ['https://testnet.ftmscan.com']
 }
 
@@ -172,6 +174,30 @@ export const SONGBIRD_MAINNET = {
 	blockExplorerUrls: ['https://songbird-explorer.flare.network'],
 }
 
+export const THINKIUM_TESTNET = {
+	chainId: '0xEA61',
+	chainName: 'Thinkium Testnet',
+	nativeCurrency: {
+		name: 'Thinkium',
+		symbol: 'TKM',
+		decimals: 18
+	},
+	rpcUrls: ['https://test1.thinkiumrpc.net'],
+	blockExplorerUrls: ['http://browser.thinkiumdev.net'],
+}
+
+export const THINKIUM_MAINNET = {
+	chainId: '0x11171',
+	chainName: 'Thinkium Mainnet',
+	nativeCurrency: {
+		name: 'Thinkium',
+		symbol: 'TKM',
+		decimals: 18
+	},
+	rpcUrls: ['https://proxy1.thinkiumrpc.net'],
+	blockExplorerUrls: ['https://www.thinkiumscan.net'],
+}
+
 // get corresponding mainnet config based on testnet chainID
 export function getMainnetConfig(testnetChainId) {
 	if(['0x4', '4'].includes(testnetChainId)) return ETHEREUM_MAINNET
@@ -181,6 +207,7 @@ export function getMainnetConfig(testnetChainId) {
 	if(['0x38', '56'].includes(testnetChainId)) return BSC_MAINNET
 	if(['0x19', '25'].includes(testnetChainId)) return CRONOS_MAINNET
 	if(['0x13', '19'].includes(testnetChainId)) return SONGBIRD_MAINNET
+	if(['0xEA61','60001'].includes(testnetChainId)) return THINKIUM_MAINNET
 
 	throw new Error("Matching mainnet config not found")
 }
@@ -192,7 +219,8 @@ export const testMainChainIdMap = {
 	'43113': 43114,
 	'4002': 250,
 	'338': 25,
-	'16': 19
+	'16': 19,
+	'60001': 70001
 }
 
 export const CHAINID_CONFIG_MAP = {
@@ -210,6 +238,8 @@ export const CHAINID_CONFIG_MAP = {
 	'338': CRONOS_TESTNET,
 	'19': SONGBIRD_MAINNET,
 	'16': SONGBIRD_TESTNET,
+	'60001': THINKIUM_TESTNET,
+	'70001': THINKIUM_MAINNET,
 
 	'0x1': ETHEREUM_MAINNET,
 	'0x4': ETHEREUM_RINKEBY,
@@ -224,7 +254,9 @@ export const CHAINID_CONFIG_MAP = {
 	'0x19': CRONOS_MAINNET,
 	'0x152': CRONOS_TESTNET,
 	'0x13': SONGBIRD_MAINNET,
-	'0x10': SONGBIRD_TESTNET
+	'0x10': SONGBIRD_TESTNET,
+	'0xEA61': THINKIUM_TESTNET,
+	'0x11171': THINKIUM_MAINNET,
 }
 
 export const FAUCETS = {
@@ -234,11 +266,29 @@ export const FAUCETS = {
 	"4002": ["https://faucet.fantom.network"],
 	"97": ["https://testnet.binance.org/faucet-smart"],
 	"338": ["https://cronos.crypto.org/faucet"],
-	"16": ["https://faucet.towolabs.com"]
+	"16": ["https://faucet.towolabs.com"],
+	"60001": ["https://www.thinkiumdev.net/DApp%20Development/Faucet.html"]
 }
 
 export const isTestnet = (chainId) => {
-	return ['43113', '80001', '4', '4002', '97', '338', '16', '0xA869', '0x13881', '0x4', '0xFA2', '0x61', '0x152', '0x10'].includes(chainId)
+	return [
+		'43113',
+		'80001',
+		'4',
+		'4002',
+		'97',
+		'338',
+		'16',
+		'60001',
+		'0xA869',
+		'0x13881',
+		'0x4',
+		'0xFA2', 
+		'0x61', 
+		'0x152', 
+		'0x10', 
+		'0xEA61'
+	].includes(chainId)
 }
 
 export const getMainnetChain = (testnetChainId) => {

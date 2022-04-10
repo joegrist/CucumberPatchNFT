@@ -61,7 +61,7 @@
 					@mouseover="hoverCard(BLOCKCHAIN.BinanceSmartChain)"
         			@mouseout="hoverCard(null)" />
 			</b-col>
-			<b-col sm="12" md="4" class="">
+			<b-col sm="12" md="4">
 				<b-img
 					:class="['pointer mw-100 px-4 cryptodotcom', { 'shadow': hovered === BLOCKCHAIN.Cronos || smartContractBuilder.blockchain === BLOCKCHAIN.Cronos }]"
 					center
@@ -81,6 +81,17 @@
 					src="@/assets/images/blockchain/songbird.svg"
 					@click="onSelectBlockchain(BLOCKCHAIN.Songbird)"
 					@mouseover="hoverCard(BLOCKCHAIN.Songbird)"
+        			@mouseout="hoverCard(null)" />
+			</b-col>
+			<b-col sm="12" md="4" title="THINKIUM">
+				<b-img
+					:class="['pointer mw-100 py-3', { 'shadow': hovered === BLOCKCHAIN.Thinkium || smartContractBuilder.blockchain === BLOCKCHAIN.Thinkium }]"
+					center
+					width="400px"
+					height="150px"
+					src="@/assets/images/blockchain/thinkium.svg"
+					@click="onSelectBlockchain(BLOCKCHAIN.Thinkium)"
+					@mouseover="hoverCard(BLOCKCHAIN.Thinkium)"
         			@mouseout="hoverCard(null)" />
 			</b-col>
 			<b-col sm="12" md="4">
@@ -177,6 +188,12 @@ export default {
 					blockchain: BLOCKCHAIN.Songbird,
 					chainName: 'Songbird Testnet',
 					symbol: 'CFLR',
+				},
+				{
+					chainId: '60001',
+					blockchain: BLOCKCHAIN.Thinkium,
+					chainName: 'Thinkium Testnet',
+					symbol: 'TKM',
 				},
 			],
 		}

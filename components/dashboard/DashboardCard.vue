@@ -2,7 +2,7 @@
 	<b-card class="shadow-sm py-3" no-body>
 		<b-avatar
 			class="p-2 border card-logo"
-			:src="blockchainImage[$props.sc.blockchain]"
+			:src="blockchainIcon[$props.sc.blockchain]"
 			size="lg"></b-avatar>
 		<b-dropdown
 			size="lg"
@@ -225,27 +225,20 @@
 
 <script>
 import { ethers } from 'ethers'
-import { BLOCKCHAIN, MARKETPLACE, SMARTCONTRACT_STATUS } from '@/constants'
+import { MARKETPLACE, SMARTCONTRACT_STATUS } from '@/constants'
 import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState } from '@/utils'
 import { required } from 'vuelidate/lib/validators'
-
-const blockchainImage = {
-	[BLOCKCHAIN.Ethereum]: require('@/assets/images/ethereum.svg'),
-	[BLOCKCHAIN.Solana]: require('@/assets/images/solana.svg'),
-	[BLOCKCHAIN.Fantom]: require('@/assets/images/fantom.svg'),
-	[BLOCKCHAIN.Polygon]: require('@/assets/images/polygon.svg'),
-	[BLOCKCHAIN.Avalanche]: require('@/assets/images/avalanche.svg'),
-	[BLOCKCHAIN.BinanceSmartChain]: require('@/assets/images/binance.svg'),
-	[BLOCKCHAIN.Cronos]: require('@/assets/images/cronos.svg'),
-	[BLOCKCHAIN.Songbird]: require('@/assets/images/songbird.svg')
-}
+import BlockchainImage from '@/mixins/blockchainImage'
 
 export default {
+	mixins: [BlockchainImage],
+	props: {
+		sc: Object,
+	},
 	data() {
 		return {
-			blockchainImage,
 			revealed: 'n/a',
 			balance: 'n/a',
 			minted: 0,
@@ -260,9 +253,6 @@ export default {
 				total_volume: 'n/a',
 			},
 		}
-	},
-	props: {
-		sc: Object,
 	},
 	validations: {
 		openSeaLinkUrl: { required },
