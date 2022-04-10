@@ -99,7 +99,7 @@ export default {
 		...mapState(['isBusy']),
 	},
 	methods: {
-		...mapMutations(['setBusy']),
+		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
 		whitelistValidator(tag) {
 			return ethers.utils.isAddress(tag)
 		},
@@ -109,6 +109,7 @@ export default {
 		},
 		async onWhitelistCommit() {
 			this.setBusy({ isBusy: true })
+
 			try {
 				this.whitelist.forEach((a) => {
 					if (!ethers.utils.isAddress(a)) {
@@ -154,6 +155,9 @@ export default {
 					title: `Processing 'Commit List'`,
 					variant: 'success',
 				})
+				this.removeAlert({
+					id: "whitelistMustCommit"
+				})
 				txResponse.wait().then(async (res) => {
 					this.isProcessingWhitelistCommit = false
 					this.$bvToast.toast(msg, {
@@ -197,6 +201,13 @@ export default {
 						variant: 'warning',
 					}
 				)
+
+				this.addAlert({
+					id: "whitelistMustCommit",
+					show: true,
+					text: "You MUST commit the list to save it into the smart contract for it to take effect!"
+				})
+
 				this.$bvToast.toast('File successfully uploaded', {
 					title: 'Whitelist',
 					variant: 'success',

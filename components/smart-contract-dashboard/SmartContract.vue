@@ -344,9 +344,9 @@ const basicFunctions = [
 
 export default {
 	middleware: 'authenticated',
-    props: {
-        smartContract: Object
-    },
+	props: {
+		smartContract: Object,
+	},
 	data: () => ({
 		SMARTCONTRACT_STATUS,
 		SALE_STATUS,
@@ -369,8 +369,8 @@ export default {
 			this.setBusy({ isBusy: true })
 
 			this.rawContract = this.smartContract
-
-			const { address, abi } = this.rawContract
+			const { address, abi, ownerAddress } = this.rawContract
+			this.currentOwner = ownerAddress
 
 			if (this.isOnWrongNetwork) {
 				await this.switchNetwork()
@@ -388,13 +388,23 @@ export default {
 				const saleStatus = await this.contract.saleStatus()
 				this.saleStatus = SALE_STATUS[saleStatus]
 				this.currentOwner = await this.contract.owner()
-			} else {
-				this.currentOwner = this.rawContract.owner
 			}
+			this.checkOwner(this.$wallet.account)
 		} catch (err) {
 			console.error(err)
 		} finally {
 			this.setBusy({ isBusy: false })
+		}
+
+		try {
+			this.paypal = await loadScript({
+				'client-id': this.$config.PAYPAL_CLIENT_ID,
+				'debug': false,
+				'disable-funding': 'credit',
+				'enable-funding': 'venmo',
+			})
+		} catch (err) {
+			console.error('paypal init error', err)
 		}
 
 		// console.log(
@@ -405,17 +415,10 @@ export default {
 		// 	this.isReady
 		// )
 	},
-	async mounted() {
-		try {
-			this.paypal = await loadScript({
-				'client-id': this.$config.PAYPAL_CLIENT_ID,
-				'debug': false,
-				'disable-funding': 'credit',
-				'enable-funding': 'venmo',
-			})
-		} catch (err) {
-			console.error('init error', err)
-		}
+	watch: {
+		'$wallet.account': {
+			handler: 'checkOwner'
+		},
 	},
 	computed: {
 		...mapState(['isBusy']),
@@ -429,17 +432,6 @@ export default {
 		},
 		canDeployMainnet() {
 			return this.rawContract.status === SMARTCONTRACT_STATUS.Testnet
-		},
-		isOwnerMismatch() {
-			if (!this.currentOwner || !this.$wallet.account) return false
-			return (
-				ethers.utils.getAddress(this.$wallet.account) !==
-				ethers.utils.getAddress(this.currentOwner)
-			)
-		},
-		compactOwnerAddress() {
-			const addr = this.rawContract?.ownerAddress || ''
-			return `${addr.substring(0, 4)}...${addr.substring(addr.length - 4)}`
 		},
 		functions() {
 			return Object.values(this.contract.interface?.functions || {}).sort(
@@ -456,10 +448,28 @@ export default {
 		},
 	},
 	methods: {
+		...mapMutations(['setBusy', 'addAlert']),
 		getExplorerUrl,
 		getCurrency,
 		downloadTextFile,
-		...mapMutations(['setBusy']),
+		checkOwner(newVal, oldVal) {
+			// console.log('here', newVal, this.currentOwner)
+			if (!newVal || !this.currentOwner) return
+
+			const mismatch =
+				ethers.utils.getAddress(newVal) !==
+				ethers.utils.getAddress(this.currentOwner)
+
+			if (mismatch) {
+				const addr = this.rawContract.ownerAddress
+				const addrTo = `${addr.substring(0, 4)}...${addr.substring(addr.length - 4)}`
+				this.addAlert({
+					id: 'smartContractOwnerMismatch',
+					show: true,
+					text: `Connected wallet address ${this.$wallet.accountCompact} is not the smart contract owner. Please switch to ${addrTo} to perform updates.`,
+				})
+			}
+		},
 		onFTXPay() {
 			window.open(
 				'https://ftx.us/pay/request?subscribe=false&coin=USD&size=799&id=3260&memoIsRequired=false&memo=&notes=',

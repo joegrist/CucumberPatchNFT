@@ -43,6 +43,10 @@ export default {
   //   FF_MAINNET_DEPLOY
   // },
 
+  router: {
+    middleware: 'alerts'
+  },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'Zero Code NFT Wizard',
