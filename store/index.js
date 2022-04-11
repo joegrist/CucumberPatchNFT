@@ -39,7 +39,6 @@ export const getters = {
   
 export const mutations = {
     addAlert(state, payload) {
-        console.log(payload)
         const defaults = {
             id: nanoid(),
             variant: "warning",
@@ -50,7 +49,6 @@ export const mutations = {
             ...payload
         }
         let existingIdx = state.alerts.findIndex(a => a.id === payload.id)
-        console.log('addAlert', existingIdx, alert)
         if(existingIdx === -1) {
             state.alerts.push(alert)
             existingIdx = state.alerts.length - 1
