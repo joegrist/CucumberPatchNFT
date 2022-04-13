@@ -78,7 +78,7 @@ export default {
 						channel: $nuxt.$config.DISCORD_CHANNEL,
             notifications: true,
             indicator: true,
-            glyph: ['chat_white.svg', '30px']
+            glyph: ['/chat_white.svg', '30px']
 					})
 				},
 			},
