@@ -1,197 +1,206 @@
-import getSiteMeta from "./scripts/siteMeta";
+import getSiteMeta from './scripts/siteMeta'
 import axios from 'axios'
 
-const { 
-  API_URL,
-  OPENSEA_API_KEY,
-  PAYPAL_CLIENT_ID,
-  FF_CREATE_SITE,
-  DISCORD_INVITE_URL,
-  MINT_SITE_URL
+const {
+	API_URL,
+	OPENSEA_API_KEY,
+	PAYPAL_CLIENT_ID,
+	FF_CREATE_SITE,
+	DISCORD_INVITE_URL,
+	MINT_SITE_URL,
+  DISCORD_SERVER,
+  DISCORD_CHANNEL
 } = process.env
 
 export default {
-  // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-  ssr: false,
+	// Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
+	ssr: false,
 
-  server: {
-    port: 9000
-  },
+	server: {
+		port: 9000,
+	},
 
-  // Target: https://go.nuxtjs.dev/config-target
-  target: 'static',
+	// Target: https://go.nuxtjs.dev/config-target
+	target: 'static',
 
-  publicRuntimeConfig: {
-    API_URL,
-    OPENSEA_API_KEY,
-    PAYPAL_CLIENT_ID,
-    FF_CREATE_SITE,
-    DISCORD_INVITE_URL,
-    MINT_SITE_URL
-  },
+	publicRuntimeConfig: {
+		API_URL,
+		OPENSEA_API_KEY,
+		PAYPAL_CLIENT_ID,
+		FF_CREATE_SITE,
+		DISCORD_INVITE_URL,
+		MINT_SITE_URL,
+    DISCORD_SERVER,
+    DISCORD_CHANNEL
+	},
 
-  // privateRuntimeConfig: {
-  //   OPENSEA_API_KEY,
-  //   NETLIFY_API_TOKEN,
-  //   PAYPAL_CLIENT_ID,
-  // },
+	// privateRuntimeConfig: {
+	//   OPENSEA_API_KEY,
+	//   NETLIFY_API_TOKEN,
+	//   PAYPAL_CLIENT_ID,
+	// },
 
-  // env: {
-  //   API_URL,
-  //   OPENSEA_API_KEY,
-  //   PAYPAL_CLIENT_ID,
-  //   FF_MAINNET_DEPLOY
-  // },
+	// env: {
+	//   API_URL,
+	//   OPENSEA_API_KEY,
+	//   PAYPAL_CLIENT_ID,
+	//   FF_MAINNET_DEPLOY
+	// },
 
-  router: {
-    middleware: 'alerts'
-  },
+	router: {
+		middleware: 'alerts',
+	},
 
-  // Global page headers: https://go.nuxtjs.dev/config-head
-  head: {
-    title: 'Zero Code NFT Wizard',
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' }, // mobile responsive https://search.google.com/test/mobile-friendly
-      { name: 'format-detection', content: 'telephone=no' },
-      { hid: 'description', name: 'description', content: 'Drop your NFT collection with ZERO coding skills' },
-      { property: "og:site_name", content: "Zero Code NFT Wizard" },
-      ...getSiteMeta()
-    ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/zero-code-icon.png' }
-    ]
-  },
+	// Global page headers: https://go.nuxtjs.dev/config-head
+	head: {
+		title: 'Zero Code NFT Wizard',
+		meta: [
+			{ charset: 'utf-8' },
+			{ name: 'viewport', content: 'width=device-width, initial-scale=1' }, // mobile responsive https://search.google.com/test/mobile-friendly
+			{ name: 'format-detection', content: 'telephone=no' },
+			{
+				hid: 'description',
+				name: 'description',
+				content: 'Drop your NFT collection with ZERO coding skills',
+			},
+			{ property: 'og:site_name', content: 'Zero Code NFT Wizard' },
+			...getSiteMeta(),
+		],
+		link: [{ rel: 'icon', type: 'image/x-icon', href: '/zero-code-icon.png' }],
+		script: [
+			{
+				src: 'https://cdn.jsdelivr.net/npm/@widgetbot/crate@3',
+				async: true,
+				defer: true,
+				callback: () => {
+					new Crate({
+						server: $nuxt.$config.DISCORD_SERVER,
+						channel: $nuxt.$config.DISCORD_CHANNEL
+					})
+				},
+			},
+		],
+	},
 
-  sitemap: {
-    hostname: 'https://app.zerocodenft.com',
-    exclude: [
-      '/admin/**'
-    ],
-    defaults: {
-      changefreq: 'daily',
-      priority: 1,
-      lastmod: new Date()
-    }
-  },
+	sitemap: {
+		hostname: 'https://app.zerocodenft.com',
+		exclude: ['/admin/**'],
+		defaults: {
+			changefreq: 'daily',
+			priority: 1,
+			lastmod: new Date(),
+		},
+	},
 
-  // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [
-    '@/assets/styles/main.scss'
-  ],
+	// Global CSS: https://go.nuxtjs.dev/config-css
+	css: ['@/assets/styles/main.scss'],
 
-  styleResources: {
-    scss: [
-      '@/assets/styles/variables.scss',
-    ]
-  },
+	styleResources: {
+		scss: ['@/assets/styles/variables.scss'],
+	},
 
-  // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-    '@/plugins/axios',
-    // '@/plugins/netlify',
-    '@/plugins/vuelidate',
-    '@/plugins/filters',
-    '@/plugins/wallet'
-  ],
+	// Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
+	plugins: [
+		'@/plugins/axios',
+		// '@/plugins/netlify',
+		'@/plugins/vuelidate',
+		'@/plugins/filters',
+		'@/plugins/wallet',
+	],
 
-  // Auto import components: https://go.nuxtjs.dev/config-components
-  components: [
-    '@/components',
-    '@/components/dashboard'
-  ],
+	// Auto import components: https://go.nuxtjs.dev/config-components
+	components: ['@/components', '@/components/dashboard'],
 
-  // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
-  buildModules: [
-  ],
+	// Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
+	buildModules: [],
 
-  // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [
-    // https://go.nuxtjs.dev/bootstrap
-    'bootstrap-vue/nuxt',
-    // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios',
-    // https://go.nuxtjs.dev/pwa
-    '@nuxtjs/pwa',
-    '@nuxtjs/sitemap',
-    // '@nuxtjs/recaptcha',
-    '@nuxtjs/style-resources'
-  ],
+	// Modules: https://go.nuxtjs.dev/config-modules
+	modules: [
+		// https://go.nuxtjs.dev/bootstrap
+		'bootstrap-vue/nuxt',
+		// https://go.nuxtjs.dev/axios
+		'@nuxtjs/axios',
+		// https://go.nuxtjs.dev/pwa
+		'@nuxtjs/pwa',
+		'@nuxtjs/sitemap',
+		// '@nuxtjs/recaptcha',
+		'@nuxtjs/style-resources',
+	],
 
-  // recaptcha: {
-  //   siteKey: RECAPTCHA_KEY,
-  //   version: 3,
-  //   size: 'compact'
-  // },
+	// recaptcha: {
+	//   siteKey: RECAPTCHA_KEY,
+	//   version: 3,
+	//   size: 'compact'
+	// },
 
-  bootstrapVue: {
-    icons: true,
-    bootstrapCSS: false,
-    bootstrapVueCSS: false
-  },
+	bootstrapVue: {
+		icons: true,
+		bootstrapCSS: false,
+		bootstrapVueCSS: false,
+	},
 
-  // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {
-    baseURL: API_URL
-  },
+	// Axios module configuration: https://go.nuxtjs.dev/config-axios
+	axios: {
+		baseURL: API_URL,
+	},
 
-  // PWA module configuration: https://go.nuxtjs.dev/pwa
-  pwa: {
-    icon: {
-      source:'/static/zero-code-icon.png',
-      fileName:'zero-code-icon.png'
-    },
-    manifest: {
-      name: 'Zero Code NFT',
-      short_name: 'ZCNFT',
-    },
-    meta: {
-      name: 'Zero Code NFT',
-      ogHost: 'https://app.zerocodenft.com',
-      twitterCard: 'summary_large_image',
-      twitterSite: 'Drop your NFT collection with ZERO code!',
-      twitterCreator: 'zero_code_nft'
-    }
-  },
+	// PWA module configuration: https://go.nuxtjs.dev/pwa
+	pwa: {
+		icon: {
+			source: '/static/zero-code-icon.png',
+			fileName: 'zero-code-icon.png',
+		},
+		manifest: {
+			name: 'Zero Code NFT',
+			short_name: 'ZCNFT',
+		},
+		meta: {
+			name: 'Zero Code NFT',
+			ogHost: 'https://app.zerocodenft.com',
+			twitterCard: 'summary_large_image',
+			twitterSite: 'Drop your NFT collection with ZERO code!',
+			twitterCreator: 'zero_code_nft',
+		},
+	},
 
-  generate: {
-    fallback: 'index.html',
-    // support to generate dynamic _id routes
-    routes: async () => {
-      try {
-        const contracts = await axios.get(`${API_URL}/smartcontracts/ids`)
-        const websites = await axios.get(`${API_URL}/websites/ids`)
-        const result = []
+	generate: {
+		fallback: true,
+		// support to generate dynamic _id routes
+		routes: async () => {
+			try {
+				const contracts = await axios.get(`${API_URL}/smartcontracts/ids`)
+				const websites = await axios.get(`${API_URL}/websites/ids`)
+				const result = []
 
-        console.log('***********************here', contracts, websites)
-        
-        if(contracts?.data) {
-          contracts.data.forEach((id) => {
-            result.push(`/smart-contracts/${id}`)
-          })
-        }
-        if(websites?.data) {
-          websites.data.forEach((id) => {
-            result.push(`/websites/${id}`)
-          })
-        }
+				console.log('***********************here', contracts, websites)
 
-        return result
-      } catch(e) {
-        console.error(e)
-        return []
-      }
-    },
-  },
+				if (contracts?.data) {
+					contracts.data.forEach((id) => {
+						result.push(`/smart-contracts/${id}`)
+					})
+				}
+				if (websites?.data) {
+					websites.data.forEach((id) => {
+						result.push(`/websites/${id}`)
+					})
+				}
 
-  // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-    loaders: {
-      scss: {
-        sassOptions: {
-          quietDeps: true
-        }
-      }
-    }
-  }
+				return result
+			} catch (e) {
+				console.error(e)
+				return []
+			}
+		},
+	},
+
+	// Build Configuration: https://go.nuxtjs.dev/config-build
+	build: {
+		loaders: {
+			scss: {
+				sassOptions: {
+					quietDeps: true,
+				},
+			},
+		},
+	},
 }
