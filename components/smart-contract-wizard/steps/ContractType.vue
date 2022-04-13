@@ -47,9 +47,10 @@ const contractTypes = [
 		id: CONTRACT_TYPE.ERC721A,
 		title: 'ERC721A (Azuki)',
 		description: `
-			Known as <a href="https://www.azuki.com/erc721a" target="blank">Azuki contract</a>, 
-			suitable when you expect your users to mint NFTs in small batches thus saving them on gas fees.
-			Under certain circumstances this might increase the transfer gas fee (e.g. when sending NFTs to someone).`,
+			Known as <a href="https://www.azuki.com/erc721a" target="blank">Azuki smart contract</a>, 
+			suitable when you expect your customers to mint NFTs in small batches thus saving them on gas fees.
+			Under certain circumstances this might increase the transfer gas fee (e.g. when sending NFTs to someone after mint).
+			<br/><a href="https://www.youtube.com/watch?v=ZnHNXne-P60" target="blank">More info</a>`,
 		isAvailable: true,
 	},
 	{

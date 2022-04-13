@@ -4,9 +4,12 @@
       <b-row>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='IPFS Metadata URL'
             description='URL to the endpoint (folder) that contains metadata .json files'
           >
+            <template  #label>
+              IPFS Metadata URL
+              <ExternalLink href="https://youtu.be/hNRHFv9B-X4?t=71" icon="youtube" text="What's this?" />
+            </template>
             <b-form-input
               id='baseURL'
               name='baseURL'
@@ -119,7 +122,7 @@
         <b-col sm='12' md='6'>
           <b-form-group
             label='First X Free'
-            description='E.g. first 500 to be minted will be free, just gas fee'
+            description='E.g. first 500 to be minted will be free, minters only pay the gas fees'
           >
             <b-form-input
               id='firstXFree'

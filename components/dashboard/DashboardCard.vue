@@ -2,7 +2,7 @@
 	<b-card class="shadow-sm py-3" no-body>
 		<b-avatar
 			class="p-2 border card-logo"
-			:src="blockchainIcon[$props.sc.blockchain]"
+			:src="blockchainIcon[sc.blockchain]"
 			size="lg"></b-avatar>
 		<b-dropdown
 			size="lg"
@@ -18,26 +18,26 @@
 				>
 			</template>
 			<template v-if="isDeployed">
-				<b-dd-text v-if="$props.sc.address" class="text-center">
+				<b-dd-text v-if="sc.address" class="text-center">
 					<span class="text-muted">Block Expolorer</span><br />
 					<b-link target="_blank" :href="viewContractUrl"
-						>{{ $props.sc.address | compactAddress }} ></b-link
+						>{{ sc.address | compactAddress }} ></b-link
 					>
 				</b-dd-text>
 				<b-dropdown-divider></b-dropdown-divider>
 				<b-dd-item
-					v-if="$props.sc.website"
-					:to="`/websites/${$props.sc.website.id}`"
+					v-if="sc.website"
+					:to="`/websites/${sc.website.id}`"
 					><b-icon icon="pencil-square" /> Minting Page</b-dd-item
 				>
 				<b-dd-item v-b-modal="`Clone${sc.id}`"
 					><b-icon icon="files" /> Clone Contract</b-dd-item
 				>
-				<b-dd-item v-b-modal="`OpenSea${$props.sc.id}`"
+				<b-dd-item v-b-modal="`OpenSea${sc.id}`"
 					><b-icon icon="link" /> Link OpenSea</b-dd-item
 				>
 			</template>
-			<b-dd-item variant="danger" v-b-modal="`Remove${$props.sc.id}`"
+			<b-dd-item variant="danger" v-b-modal="`Remove${sc.id}`"
 				><b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
@@ -45,10 +45,10 @@
 			<b-link
 				v-if="isDeployed"
 				class="text-dark"
-				:to="`/smart-contracts/${$props.sc.id}`"
-				>{{ $props.sc.name | startCase }}</b-link
+				:to="`/smart-contracts/${sc.id}`"
+				>{{ sc.name | startCase }}</b-link
 			>
-			<span v-else>{{ $props.sc.name | startCase }}</span>
+			<span v-else>{{ sc.name | startCase }}</span>
 		</b-card-title>
 		
 		<b-card-sub-title class="text-center mb-2">{{
@@ -78,9 +78,9 @@
 				</b-col>
 				<b-col cols="6" class="text-center">
 					<span class="font-weight-bold"
-						>{{ minted }} / {{ $props.sc.collectionSize }}</span
+						>{{ minted }} / {{ sc.collectionSize }}</span
 					>
-					<span v-if="minted === $props.sc.collectionSize">🎉</span>
+					<span v-if="minted === sc.collectionSize">🎉</span>
 					<br />
 					<span class="text-muted">Minted</span>
 				</b-col>
@@ -107,7 +107,7 @@
 					<span class="font-weight-bold">{{
 						openSeaStats.total_volume === 'n/a'
 							? 'n/a'
-							: `${openSeaStats.total_volume} ${getCurrency($props.sc.chainId)}`
+							: `${openSeaStats.total_volume} ${getCurrency(sc.chainId)}`
 					}}</span>
 					<br />
 					<span class="text-muted">Volume</span>
@@ -147,12 +147,12 @@
 					>
 				</b-col>
 				<b-col cols="6" class="text-muted d-flex justify-content-end my-auto">
-					{{ $props.sc.createdOn | toDate }}
+					{{ sc.createdOn | toDate }}
 				</b-col>
 			</b-row>
 		</b-container>
 		<b-modal
-			:id="`Remove${$props.sc.id}`"
+			:id="`Remove${sc.id}`"
 			title="Confirm"
 			centered
 			body-class="text-center"
@@ -191,7 +191,7 @@
 			</b-form>
 		</b-modal>
 		<b-modal
-			:id="`OpenSea${$props.sc.id}`"
+			:id="`OpenSea${sc.id}`"
 			title="Link your OpenSea collection"
 			centered
 			ok-variant="primary"
@@ -272,27 +272,27 @@ export default {
 			}
 		},
 		formattedBalance() {
-			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.$props.sc.chainId)}`
+			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.sc.chainId)}`
 		},
 		viewContractUrl() {
 			return `${this.getExplorerUrl(this.sc.chainId)}/address/${
-				this.$props.sc.address
+				this.sc.address
 			}`
 		},
 		isOpenSea() {
-			return this.$props.sc.marketplace === MARKETPLACE.OpenSea
+			return this.sc.marketplace === MARKETPLACE.OpenSea
 		},
 		collectionUrl() {
-			return this.$props.sc.marketplaceCollection?.url || null
+			return this.sc.marketplaceCollection?.url || null
 		},
 		isDeployed() {
-			return this.$props.sc.status !== SMARTCONTRACT_STATUS.Draft
+			return this.sc.status !== SMARTCONTRACT_STATUS.Draft
 		},
 		isTestnet() {
-			return this.$props.sc.status === SMARTCONTRACT_STATUS.Testnet
+			return this.sc.status === SMARTCONTRACT_STATUS.Testnet
 		},
 		isMainnet() {
-			return this.$props.sc.status === SMARTCONTRACT_STATUS.Mainnet
+			return this.sc.status === SMARTCONTRACT_STATUS.Mainnet
 		},
 		contractNetwork() {
 			if(this.isTestnet) return 'Testnet'
@@ -325,12 +325,12 @@ export default {
 
 			try {
 				const payload = {
-					smartContractId: this.$props.sc.id,
+					smartContractId: this.sc.id,
 					url: this.openSeaLinkUrl
 				}
 
 				await this.linkOpenSea(payload)
-				this.$bvModal.hide(`OpenSea${this.$props.sc.id}`)
+				this.$bvModal.hide(`OpenSea${this.sc.id}`)
 				this.$bvToast.toast('Linked successfully', {
 					title: 'OpenSea Link',
 					variant: 'success',
@@ -367,7 +367,7 @@ export default {
 		async onRemoveCard() {
 			try {
 				this.setBusy({isBusy: true})
-				await this.removeDashboardCard(this.$props.sc.id)
+				await this.removeDashboardCard(this.sc.id)
 				this.$bvToast.toast('Card removed', {
 					title: 'Dashboard',
 					variant: 'success',
@@ -383,7 +383,7 @@ export default {
 		},
 		async getContractStats() {
 			try {
-				const { address, abi, status } = this.$props.sc
+				const { address, abi, status } = this.sc
 				if(status < SMARTCONTRACT_STATUS.Testnet) {
 					return
 				}
@@ -395,12 +395,12 @@ export default {
 				)
 
 				const contractBalance = await this.$wallet.provider.getBalance(
-					this.$props.sc.address
+					this.sc.address
 				)
 
 				this.balance = +ethers.utils.formatEther(contractBalance)
 				this.minted = +(await contract.totalSupply())
-				this.revealed = this.$props.sc.hasDelayedReveal
+				this.revealed = this.sc.hasDelayedReveal
 					? await contract.canReveal()
 					: 'n/a'
 			} catch (err) {
@@ -414,7 +414,7 @@ export default {
 			let retryCount = 0
 			const fetchParams = {}
 
-			const name = this.$props.sc.marketplaceCollection.formattedName
+			const name = this.sc.marketplaceCollection.formattedName
 
 			if (this.isTestnet) {
 				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${name}/stats`

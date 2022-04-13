@@ -6,9 +6,9 @@
 		<b-modal :id="modalId" centered title="Earn 25% commission" hide-footer>
             <b-form novalidate @submit.prevent="onSubmit">
                 <b-form-group
-                    label="Referral code"
+                    label="Create your referral code"
                     label-class="required"
-                    description="Alphanumeric, min 3 characters. Code you would like to use as your referral code">
+                    description="Earns 25% commission. Alphanumeric, min 3 characters.">
                     <b-form-input
                         name="ambassadorCode"
                         debounce="500"
