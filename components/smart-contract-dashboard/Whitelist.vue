@@ -1,23 +1,57 @@
 <template>
 	<b-container fluid>
-		<b-row>
-			<b-col class="mb-3">
-				<b-row class="mb-2">
-					<b-col>
-						<h4 class="m-0">Whitelist</h4>
-						<b-link href="/whitelist-csv-example.csv" download
-							>Download example</b-link
+		<b-row class="mb-2">
+			<b-col sm="12" md="8">
+				<h4 class="m-0">Whitelist</h4>
+				<b-link href="/whitelist-csv-example.csv" download
+					>Download example</b-link
+				>
+			</b-col>
+			<b-col sm="12" md="4">
+				<b-row class="my-2">
+					<b-col cols="6">
+						<b-button
+							block
+							:variant="commitBtnVariant"
+							:disabled="isProcessingWhitelistCommit"
+							@click="onWhitelistCommit"
+							>Commit List</b-button
+						>
+					</b-col>
+					<b-col cols="6">
+						<b-button
+							block
+							variant="danger"
+							:disabled="isProcessingWhitelistCommit || whitelist.length === 0"
+							@click="onClearWhitelist"
+							>Clear</b-button
 						>
 					</b-col>
 				</b-row>
+			</b-col>
+		</b-row>
+		<b-row>
+			<b-col sm="12" md="8">
+				<b-form-group label="Enter addresses manually">
+					<b-form-tags
+						v-model="whitelist"
+						invalid-tag-text="Address is invalid"
+						:tag-validator="whitelistValidator"
+						placeholder="Enter Wallet Address">
+					</b-form-tags>
+				</b-form-group>
+			</b-col>
+			<b-col sm="12" md="4" class="mb-3">
 				<b-row no-gutters>
 					<b-col>
+					<b-form-group label="Upload a file">
 						<b-form-file
 							accept=".csv"
 							@input="onImportCsv"
 							placeholder="Choose or drop .csv file"
 							drop-placeholder="Drop file here...">
 						</b-form-file>
+					</b-form-group>
 						<div v-if="invalidAddresses.length > 0">
 							<h5 class="text-danger">Invalid addresses</h5>
 							<ul class="p-0">
@@ -36,36 +70,6 @@
 						</div>
 					</b-col>
 				</b-row>
-				<b-row class="my-2">
-					<b-col cols="6">
-						<b-button
-							block
-							variant="warning"
-							:disabled="isProcessingWhitelistCommit"
-							@click="onWhitelistCommit"
-							>Commit List</b-button
-						>
-					</b-col>
-					<b-col cols="6">
-						<b-button
-							block
-							variant="danger"
-							:disabled="isProcessingWhitelistCommit"
-							@click="onClearWhitelist"
-							>Clear</b-button
-						>
-					</b-col>
-				</b-row>
-				<b-row>
-					<b-col>
-						<b-form-tags
-							v-model="whitelist"
-							invalid-tag-text="Address is invalid"
-							:tag-validator="whitelistValidator"
-							placeholder="Enter Wallet Address">
-						</b-form-tags>
-					</b-col>
-				</b-row>
 			</b-col>
 		</b-row>
 	</b-container>
@@ -75,9 +79,7 @@
 import { ethers } from 'ethers'
 import { getMerkleRoot } from '@/utils'
 import { mapMutations, mapState } from 'vuex'
-import {
-	getExplorerUrl,
-} from '@/constants/metamask'
+import { getExplorerUrl } from '@/constants/metamask'
 
 export default {
 	props: {
@@ -88,6 +90,7 @@ export default {
 			whitelist: this.smartContract.whitelist,
 			invalidAddresses: [],
 			isProcessingWhitelistCommit: false,
+			commitBtnVariant: 'primary',
 		}
 	},
 	mounted() {
@@ -128,10 +131,11 @@ export default {
 					return
 				}
 
-				if (this.whitelist.length === 0) {
-					this.whitelist = [ethers.constants.AddressZero]
-				}
-				const merkleRoot = getMerkleRoot(this.whitelist)
+				const wlToCommit = this.whitelist.length === 0
+					? [ethers.constants.AddressZero]
+					: this.whitelist
+
+				const merkleRoot = getMerkleRoot(wlToCommit)
 
 				const { address, abi } = this.smartContract
 				const contract = new ethers.Contract(
@@ -146,18 +150,21 @@ export default {
 				await this.$axios.patch(
 					`/smartcontracts/${this.smartContract.id}/whitelist`,
 					{
-						whitelist: this.whitelist,
+						whitelist: this.whitelist
 					}
 				)
 
 				const msg = [this.createToastMessage(txResponse.hash)]
+				
 				this.$bvToast.toast(msg, {
 					title: `Processing 'Commit List'`,
 					variant: 'success',
 				})
+				this.commitBtnVariant = 'primary'
 				this.removeAlert({
-					id: "whitelistMustCommit"
+					id: 'whitelistMustCommit',
 				})
+
 				txResponse.wait().then(async (res) => {
 					this.isProcessingWhitelistCommit = false
 					this.$bvToast.toast(msg, {
@@ -179,6 +186,7 @@ export default {
 		async onClearWhitelist() {
 			this.invalidAddresses = []
 			this.whitelist = []
+			this.commitBtnVariant = 'warning'
 		},
 		async onImportCsv(file) {
 			if (file === null) return
@@ -194,18 +202,12 @@ export default {
 
 				this.whitelist = data
 
-				this.$bvToast.toast(
-					'You MUST commit the list to save it into the smart contract for it to take effect!',
-					{
-						title: 'Whitelist',
-						variant: 'warning',
-					}
-				)
+				this.commitBtnVariant = 'warning'
 
 				this.addAlert({
-					id: "whitelistMustCommit",
+					id: 'whitelistMustCommit',
 					show: true,
-					text: "You MUST commit the list to save it into the smart contract for it to take effect!"
+					text: 'You MUST commit the list to save it into the smart contract for it to take effect!',
 				})
 
 				this.$bvToast.toast('File successfully uploaded', {
@@ -233,9 +235,7 @@ export default {
 					{
 						props: {
 							target: '_blank',
-							href: `${getExplorerUrl(
-								this.smartContract.chainId
-							)}/tx/${hash}`,
+							href: `${getExplorerUrl(this.smartContract.chainId)}/tx/${hash}`,
 						},
 					},
 					['View on block explorer >']
