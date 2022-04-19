@@ -15,6 +15,7 @@
 				@mouseover="hoverCard(type.id)"
 				@mouseout="hoverCard(null)">
 				<ContractTypeCard
+					class="mb-4"
 					v-bind="type"
 					@selected="onCardSelected(type)"
 					:class="[
@@ -50,12 +51,18 @@ const contractTypes = [
 			Known as <a href="https://www.azuki.com/erc721a" target="blank">Azuki smart contract</a>, 
 			suitable when you expect your customers to mint NFTs in small batches thus saving them on gas fees.
 			Under certain circumstances this might increase the transfer gas fee (e.g. when sending NFTs to someone after mint).
-			<br/><a href="https://www.youtube.com/watch?v=ZnHNXne-P60" target="blank">More info</a>`,
+			<a href="https://www.youtube.com/watch?v=ZnHNXne-P60" target="blank">More info</a>`,
 		isAvailable: true,
 	},
 	{
+		id: CONTRACT_TYPE.ERC721,
+		title: 'ERC721 OmniChain (Custom order)',
+		description: 'Spread out your NFT collection across 7 different blockchains. Allows NFTs to be transferred between these chains.',
+		isAvailable: false,
+	},
+	{
 		id: CONTRACT_TYPE.ERC20,
-		title: 'ERC20 (Coming soon)',
+		title: 'ERC20 (Custom order)',
 		description: 'Typical fungible token contract.',
 		isAvailable: false,
 	},
@@ -92,6 +99,7 @@ export default {
 		},
 		onCardSelected(type) {
 			if (!type.isAvailable) return
+
 			this.updateSmartContractBuilder({
 				contractType: type.id,
 			})
