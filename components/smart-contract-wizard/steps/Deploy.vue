@@ -12,12 +12,12 @@
             This is only a <b>testnet deployment</b> meaning you won't be spending real currency but you should still have test tokens to cover the deployment fees.
             You will still be able to deploy this contract to the mainnet at a later stage.
           </p>
-          <b-button v-if="FAUCETS[$wallet.chainId]" class="mb-2" variant="link" v-b-toggle.faucetList>
+          <b-button v-if="FAUCETS[smartContractBuilder.chainId]" class="mb-2" variant="link" v-b-toggle.faucetList>
             Faucet list to get FREE test tokens (click to expand)
           </b-button>
           <b-collapse id="faucetList">
             <ul class="my-1 list-unstyled">
-              <li v-for="faucetUrl in FAUCETS[$wallet.chainId]" :key="faucetUrl">
+              <li v-for="faucetUrl in FAUCETS[smartContractBuilder.chainId]" :key="faucetUrl">
                 <ExternalLink :href="faucetUrl" :text="faucetUrl" />
               </li>
             </ul>

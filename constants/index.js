@@ -1,26 +1,29 @@
 const BLOCKCHAIN = Object.freeze({
+	// ORDER IS IMPORTANT, ADD HIGHEST NUM +1
 	Ethereum: 1,
-	Solana: 2,
-	Fantom: 3,
-	BinanceSmartChain: 4,
-	Cardano: 5,
 	Polygon: 6,
-	Flow: 7,
+	BinanceSmartChain: 4,
+	Fantom: 3,
+	// Cardano: 5,
+	// Flow: 7,
 	Avalanche: 8,
-	Legacy: 9,
+	// Legacy: 9,
+	Arbitrum: 13,
 	Cronos: 10,
-	Songbird: 11,
 	Thinkium: 12,
+	Songbird: 11,
+	Solana: 2,
 	1: 'Ethereum',
 	2: 'Solana',
 	3: 'Fantom',
 	4: 'BinanceSmartChain',
 	6: 'Polygon',
 	8: 'Avalanche',
-	9: 'Legacy',
+	// 9: 'Legacy',
 	10: 'Cronos',
 	11: 'Songbird',
-	12: 'Thinkium'
+	12: 'Thinkium',
+	13: 'Arbitrum'
 })
 
 const MARKETPLACE = Object.freeze({
