@@ -40,7 +40,7 @@ export default {
 	async fetch() {
 		try {
 			const { data } = await this.$axios.get(
-				`/users/${this.userId}/smartcontracts/${this.$route.params.id}`
+				`/users/${this.userId}/smartcontracts/${this.$route.query['id']}`
 			)
 			this.rawContract = data
 		} catch (err) {

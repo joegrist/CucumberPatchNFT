@@ -232,7 +232,7 @@
 			size="md"
 			centered
 			ok-only
-			@hidden="$router.push(`/`)">
+			@hidden="$router.push(`/smartcontract?id=${deployedContract.id}`)">
 			<div class="text-center">
 				<h3 class="text-success">Success!!</h3>
 				<b-link :href="deployedExplorerUrl" target="_blank">
@@ -242,79 +242,12 @@
 				<b-button variant="link" to="/">Go To Dashboard</b-button>
 			</div>
 		</b-modal>
-		<b-modal
-			id="payment"
-			title="Buy Deployment Voucher"
-			size="md"
-			static
-			centered
-			scrollable
-			hide-footer
-			@hidden="onPaymentModalHidden">
-			<div>
-				<h4 class="mb-3">Total: $799</h4>
-				<b-button
-					class="mb-3 p-2 font-weight-bolder"
-					block
-					variant="primary"
-					@click="payWithEth"
-					>Pay With ETH</b-button
-				>
-				<!-- <b-button class="mb-3 p-2 font-weight-bolder" block variant="info" @click="onFTXPay">Pay with FTX US</b-button> -->
-				<div id="paypal-container"></div>
-			</div>
-		</b-modal>
-		<b-modal
-			id="paymentSuccess"
-			title="Thank You!"
-			size="sm"
-			centered
-			hide-footer>
-			<div>
-				<b-button
-					:disabled="isBusy"
-					variant="primary"
-					@click="
-						() => {
-							this.$bvModal.hide('paymentSuccess')
-							this.onMainnetDeploy()
-						}
-					">
-					<b-icon icon="wallet2" /> Deploy to Mainnet
-				</b-button>
-			</div>
-		</b-modal>
-		<b-modal
-			id="ethPaymentSuccess"
-			title="Thank You!"
-			centered
-			no-close-on-backdrop
-			ok-only>
-			<div>
-				<p>
-					We've received your payment. Please
-					<b-link href="https://discord.gg/E2byPVZKKV" target="_blank"
-						>open a Discord ticket</b-link
-					>
-					or
-					<b-link
-						:href="`mailto:admin@zerocodenft.com?subject=ETH payment verification&body=${ethPayTxHash}`"
-						>send email</b-link
-					>
-					with the following transaction hash so we can verify and clear you for
-					mainnet deployment.
-				</p>
-				<p class="break-word">
-					{{ ethPayTxHash }} <Copy :value="ethPayTxHash" />
-				</p>
-			</div>
-		</b-modal>
 	</b-container>
 </template>
 
 <script>
 import Vue from 'vue'
-import { mapGetters, mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import { SALE_STATUS, SMARTCONTRACT_STATUS, BLOCKCHAIN } from '@/constants'
 import {
 	getExplorerUrl,
@@ -324,7 +257,6 @@ import {
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
-import { loadScript } from '@paypal/paypal-js'
 import { downloadTextFile } from '@/utils'
 
 const basicFunctions = [
@@ -360,8 +292,6 @@ export default {
 		saleStatus: 'N/A',
 		busyState: {},
 		isReady: false,
-		paypal: null,
-		ethPayTxHash: null,
 		currentOwner: null,
 	}),
 	async mounted() {
@@ -396,17 +326,6 @@ export default {
 			this.setBusy({ isBusy: false })
 		}
 
-		try {
-			this.paypal = await loadScript({
-				'client-id': this.$config.PAYPAL_CLIENT_ID,
-				'debug': false,
-				'disable-funding': 'credit',
-				'enable-funding': 'venmo',
-			})
-		} catch (err) {
-			console.error('paypal init error', err)
-		}
-
 		// console.log(
 		// 	'loaded smart-contract',
 		// 	this.rawContract,
@@ -422,7 +341,6 @@ export default {
 	},
 	computed: {
 		...mapState(['isBusy']),
-		...mapGetters(['userId']),
 		deployedExplorerUrl() {
 			if (!this.deployedContract?.address) return
 			const mainnetChainId = testMainChainIdMap[this.rawContract.chainId]
@@ -470,13 +388,6 @@ export default {
 				})
 			}
 		},
-		onFTXPay() {
-			window.open(
-				'https://ftx.us/pay/request?subscribe=false&coin=USD&size=799&id=3260&memoIsRequired=false&memo=&notes=',
-				'_blank',
-				'resizable,width=700,height=900'
-			)
-		},
 		async onVerify() {
 			if (!this.rawContract.blockchain === BLOCKCHAIN.Ethereum) {
 				alert('Only Ethereum contracts are supported for now')
@@ -497,43 +408,6 @@ export default {
 					title: 'Code Verification',
 					variant: 'danger',
 				})
-			}
-		},
-		async payWithEth() {
-			try {
-				const data = await fetch(
-					'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD'
-				)
-				const { USD: ethPrice } = await data.json()
-				const value = 799 / ethPrice
-				const tx = {
-					from: this.$wallet.account,
-					to: '0x34Eca06DB779169003117e8999B5E008086f4cc3',
-					value: ethers.utils.parseEther(value.toString()),
-					nonce: this.$wallet.provider.getTransactionCount(
-						this.$wallet.account,
-						'latest'
-					),
-				}
-				const txRes = await this.$wallet.provider
-					.getSigner()
-					.sendTransaction(tx)
-				this.ethPayTxHash = txRes.hash
-				this.$bvModal.hide('payment')
-				this.$bvModal.show('ethPaymentSuccess')
-			} catch (err) {
-				const { data, reason, message, error } = err
-				this.$bvToast.toast(
-					error?.message ||
-						data?.message ||
-						reason ||
-						message ||
-						'Payment declined',
-					{
-						title: 'ETH Payment',
-						variant: 'danger',
-					}
-				)
 			}
 		},
 		async onRefreshBalance(showNotification = false) {
@@ -564,80 +438,6 @@ export default {
 			const args = (this.callFuncArgs[func.name] ??= new Map())
 			args.set(param.name, value)
 		},
-		onPaymentModalHidden() {
-			const container = document.getElementById('paypal-container')
-			if (container.firstChild) {
-				container.removeChild(container.firstChild)
-			}
-		},
-		async handlePayment(smartContractId, amount) {
-			this.$bvModal.show('payment')
-			await paypal
-				.Buttons({
-					createOrder: function (data, actions) {
-						// console.log('createOrder', data)
-						// Set up the transaction
-						return actions.order.create({
-							purchase_units: [
-								{
-									amount: {
-										value: amount,
-									},
-								},
-							],
-							application_context: {
-								brand_name: 'Zero Code NFT',
-								shipping_preference: 'NO_SHIPPING',
-								user_action: 'PAY_NOW',
-							},
-						})
-					},
-					onApprove: (data, actions) => {
-						// console.log('onApprove', data)
-						// This function captures the funds from the transaction.
-						return actions.order.capture().then(async (details) => {
-							// This function shows a transaction success message to your buyer.
-							// console.log({ details })
-							const {
-								id: orderId,
-								address,
-								email_address,
-								name,
-								payer_id,
-							} = details.payer
-							await this.$axios.post('transactions', {
-								paymentMethod: 'PayPal',
-								amount: amount,
-								orderId: orderId,
-								countryCode: address.country_code,
-								payerId: payer_id,
-								payerName: `${name.given_name} ${name.surname}`,
-								payerEmail: email_address,
-								userId: this.userId,
-								smartContractId: smartContractId,
-							})
-							// const tran = await this.$axios.get(`/transactions/paypal/${id}`)
-							// console.log(tran)
-							this.$bvModal.hide('payment')
-							this.$bvModal.show('paymentSuccess')
-						})
-					},
-					onCancel: () => {
-						this.$bvModal.hide('payment')
-						this.onPaymentModalHidden()
-					},
-					onError: (err) => {
-						console.error({ err })
-						// this.$bvModal.hide("payment")
-						// this.onPaymentModalHidden()
-						this.$bvToast.toast(err.message || 'Payment failed', {
-							title: 'PayPal',
-							variant: 'danger',
-						})
-					},
-				})
-				.render('#paypal-container')
-		},
 		async onMainnetDeploy() {
 			try {
 				if (!this.canDeployMainnet) return
@@ -653,8 +453,7 @@ export default {
 				const hasToPay = +userCredits < 1
 
 				if (hasToPay) {
-					const amount = 799
-					this.handlePayment(id, amount)
+					this.$router.push(`/checkout?smId=${id}`)
 					return
 				}
 

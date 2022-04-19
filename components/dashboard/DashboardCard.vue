@@ -45,7 +45,7 @@
 			<b-link
 				v-if="isDeployed"
 				class="text-dark"
-				:to="`/smart-contracts/${sc.id}`"
+				:to="`/smartcontract?id=${sc.id}`"
 				>{{ sc.name | startCase }}</b-link
 			>
 			<span v-else>{{ sc.name | startCase }}</span>
@@ -139,7 +139,7 @@
 						v-if="isDeployed"
 						variant="link"
 						size="sm"
-						:to="`/smart-contracts/${sc.id}`"
+						:to="`/smartcontract?id=${sc.id}`"
 						>Manage contract ></b-button
 					>
 					<b-button v-else variant="link" size="sm" @click="onEdit"

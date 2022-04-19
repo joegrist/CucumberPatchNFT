@@ -40,7 +40,7 @@
 			no-close-on-esc
 			hide-footer
 			hide-header-close>
-			<h5 v-if="$store.state.isBusyMessage">{{ $store.state.isBusyMessage }}</h5>
+			<h4 v-if="$store.state.isBusyMessage" v-html="$store.state.isBusyMessage" class="break-word"></h4>
 			<b-spinner
 				style="width: 3rem; height: 3rem"
 				class="m-3"
