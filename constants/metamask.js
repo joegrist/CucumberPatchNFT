@@ -222,6 +222,30 @@ export const ARBITRUM_TESTNET = {
 	blockExplorerUrls: ['https://testnet.arbiscan.io'],
 }
 
+export const OPTIMISM_MAINNET = {
+	chainId: '0xA',
+	chainName: 'Optimistic Ethereum (Mainnet)',
+	nativeCurrency: {
+		name: 'Ethereum',
+		symbol: 'ETH',
+		decimals: 18
+	},
+	rpcUrls: ['https://mainnet.optimism.io'],
+	blockExplorerUrls: ['https://optimistic.etherscan.io'],
+}
+
+export const OPTIMISM_TESTNET = {
+	chainId: '0x45',
+	chainName: 'Optimistic Ethereum Testnet',
+	nativeCurrency: {
+		name: 'Ethereum',
+		symbol: 'ETH',
+		decimals: 18
+	},
+	rpcUrls: ['https://kovan.optimism.io'],
+	blockExplorerUrls: ['https://kovan-optimistic.etherscan.io'],
+}
+
 export const testMainChainIdMap = {
 	'4': 1,
 	'97': 56,
@@ -231,7 +255,8 @@ export const testMainChainIdMap = {
 	'338': 25,
 	'16': 19,
 	'60001': 70001,
-	'421611': 42161
+	'421611': 42161,
+	'69': 10
 }
 
 // const CHAINS_INFO = {
@@ -292,6 +317,8 @@ export const CHAINID_CONFIG_MAP = {
 	'70001': THINKIUM_MAINNET,
 	'421611': ARBITRUM_TESTNET,
 	'42161': ARBITRUM_MAINNET,
+	'69': OPTIMISM_TESTNET,
+	'10': OPTIMISM_MAINNET,
 
 	'0x1': ETHEREUM_MAINNET,
 	'0x4': ETHEREUM_RINKEBY,
@@ -310,7 +337,9 @@ export const CHAINID_CONFIG_MAP = {
 	'0xEA61': THINKIUM_TESTNET,
 	'0x11171': THINKIUM_MAINNET,
 	'0x66EEB': ARBITRUM_TESTNET,
-	'0xA4B1': ARBITRUM_MAINNET
+	'0xA4B1': ARBITRUM_MAINNET,
+	'0x45': OPTIMISM_TESTNET,
+	'0xA': OPTIMISM_MAINNET
 }
 
 export const FAUCETS = {
@@ -322,7 +351,8 @@ export const FAUCETS = {
 	"338": ["https://cronos.crypto.org/faucet"],
 	"16": ["https://faucet.towolabs.com"],
 	"60001": ["https://www.thinkiumdev.net/DApp%20Development/Faucet.html"],
-	"421611": ["https://rinkebyfaucet.com", "https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"]
+	"421611": ["https://rinkebyfaucet.com", "https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"],
+	'69': ["https://optimismfaucet.xyz"]
 }
 
 const toHex = (chainId) => {
@@ -343,6 +373,7 @@ export function getMainnetConfig(testnetChainId) {
 	if(['0x13', '19'].includes(testnetChainId)) return SONGBIRD_MAINNET
 	if(['0xEA61','60001'].includes(testnetChainId)) return THINKIUM_MAINNET
 	if(['0x66EEB', '421611'].includes(testnetChainId)) return ARBITRUM_MAINNET
+	if (['0x45', '69'].includes(testnetChainId)) return OPTIMISM_MAINNET
 
 	throw new Error("Matching mainnet config not found")
 }
