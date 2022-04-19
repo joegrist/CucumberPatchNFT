@@ -53,6 +53,11 @@ const SMARTCONTRACT_STATUS = Object.freeze({
 	4: 'Deleted',
 })
 
+const PAYMENT_METHOD = Object.freeze({
+	PayPal: 1,
+	ETH: 2
+})
+
 const SALE_STATUS = Object.freeze({
 	Paused: 0,
 	Presale: 1,
@@ -91,5 +96,6 @@ export {
 	SMARTCONTRACT_STATUS,
 	SALE_STATUS,
 	WEBSITE_TYPE,
-	CONTRACT_TYPE
+	CONTRACT_TYPE,
+	PAYMENT_METHOD
 }
