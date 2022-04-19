@@ -69,6 +69,8 @@ const blockchainToTestChainIdMap = {
 	[BLOCKCHAIN.Cronos]: 338,
 	[BLOCKCHAIN.Songbird]: 16,
 	[BLOCKCHAIN.Thinkium]: 60001,
+	[BLOCKCHAIN.Arbitrum]: 421611,
+	// [BLOCKCHAIN.Optimism]: 69
 }
 
 export default {

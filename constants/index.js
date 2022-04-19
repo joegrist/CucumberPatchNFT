@@ -1,5 +1,5 @@
 const BLOCKCHAIN = Object.freeze({
-	// ORDER IS IMPORTANT
+	// ORDER IS IMPORTANT, ADD HIGHEST NUM +1
 	Ethereum: 1,
 	Polygon: 6,
 	BinanceSmartChain: 4,
@@ -8,6 +8,7 @@ const BLOCKCHAIN = Object.freeze({
 	// Flow: 7,
 	Avalanche: 8,
 	// Legacy: 9,
+	Arbitrum: 13,
 	Cronos: 10,
 	Thinkium: 12,
 	Songbird: 11,
@@ -22,6 +23,7 @@ const BLOCKCHAIN = Object.freeze({
 	10: 'Cronos',
 	11: 'Songbird',
 	12: 'Thinkium',
+	13: 'Arbitrum'
 })
 
 const MARKETPLACE = Object.freeze({
