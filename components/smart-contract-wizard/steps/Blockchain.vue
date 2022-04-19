@@ -6,109 +6,30 @@
 			</b-col>
 		</b-row>
 		<b-row>
-			<b-col sm="12" md="4">
-				<b-img
-					:class="['pointer mw-100 rounded p-4', { 'shadow': hovered === BLOCKCHAIN.Ethereum || smartContractBuilder.blockchain === BLOCKCHAIN.Ethereum }]"
-					center
-					width="400px"
-					height="150px"
-					src="@/assets/images/blockchain/ethereum.svg"
-					@click="onSelectBlockchain(BLOCKCHAIN.Ethereum)"
-					@mouseover="hoverCard(BLOCKCHAIN.Ethereum)"
-        			@mouseout="hoverCard(null)" />
-			</b-col>
-			<b-col sm="12" md="4">
-				<b-img
-					:class="['pointer mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Avalanche || smartContractBuilder.blockchain === BLOCKCHAIN.Avalanche }]"
-					center
-					width="400px"
-					height="150px"
-					src="@/assets/images/blockchain/avalanche.svg"
-					@click="onSelectBlockchain(BLOCKCHAIN.Avalanche)"
-					@mouseover="hoverCard(BLOCKCHAIN.Avalanche)"
-        			@mouseout="hoverCard(null)" />
-			</b-col>
-			<b-col sm="12" md="4">
-				<b-img
-					:class="['pointer mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Polygon || smartContractBuilder.blockchain === BLOCKCHAIN.Polygon }]"
-					center
-					width="400px"
-					height="150px"
-					src="@/assets/images/blockchain/polygon.svg"
-					@click="onSelectBlockchain(BLOCKCHAIN.Polygon)"
-					@mouseover="hoverCard(BLOCKCHAIN.Polygon)"
-        			@mouseout="hoverCard(null)" />
-			</b-col>
-			<b-col sm="12" md="4">
-				<b-img
-					:class="['pointer mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Fantom || smartContractBuilder.blockchain === BLOCKCHAIN.Fantom }]"
-					center
-					width="400px"
-					height="150px"
-					src="@/assets/images/blockchain/fantom.svg"
-					@click="onSelectBlockchain(BLOCKCHAIN.Fantom)"
-					@mouseover="hoverCard(BLOCKCHAIN.Fantom)"
-        			@mouseout="hoverCard(null)" />
-			</b-col>
-			<b-col sm="12" md="4">
-				<b-img
-					:class="['pointer mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.BinanceSmartChain || smartContractBuilder.blockchain === BLOCKCHAIN.BinanceSmartChain }]"
-					center
-					width="400px"
-					height="150px"
-					src="@/assets/images/blockchain/binance.svg"
-					@click="onSelectBlockchain(BLOCKCHAIN.BinanceSmartChain)"
-					@mouseover="hoverCard(BLOCKCHAIN.BinanceSmartChain)"
-        			@mouseout="hoverCard(null)" />
-			</b-col>
-			<b-col sm="12" md="4">
-				<b-img
-					:class="['pointer mw-100 px-4 cryptodotcom', { 'shadow': hovered === BLOCKCHAIN.Cronos || smartContractBuilder.blockchain === BLOCKCHAIN.Cronos }]"
-					center
-					width="400px"
-					height="150px"
-					src="@/assets/images/blockchain/cronos.svg"
-					@click="onSelectBlockchain(BLOCKCHAIN.Cronos)"
-					@mouseover="hoverCard(BLOCKCHAIN.Cronos)"
-        			@mouseout="hoverCard(null)" />
-			</b-col>
-			<b-col sm="12" md="4">
-				<b-img
-					:class="['pointer mw-100 py-3', { 'shadow': hovered === BLOCKCHAIN.Songbird || smartContractBuilder.blockchain === BLOCKCHAIN.Songbird }]"
-					center
-					width="400px"
-					height="150px"
-					src="@/assets/images/blockchain/songbird.svg"
-					@click="onSelectBlockchain(BLOCKCHAIN.Songbird)"
-					@mouseover="hoverCard(BLOCKCHAIN.Songbird)"
-        			@mouseout="hoverCard(null)" />
-			</b-col>
-			<b-col sm="12" md="4" title="THINKIUM">
-				<b-img
-					:class="['pointer mw-100 py-3', { 'shadow': hovered === BLOCKCHAIN.Thinkium || smartContractBuilder.blockchain === BLOCKCHAIN.Thinkium }]"
-					center
-					width="400px"
-					height="150px"
-					src="@/assets/images/blockchain/thinkium.svg"
-					@click="onSelectBlockchain(BLOCKCHAIN.Thinkium)"
-					@mouseover="hoverCard(BLOCKCHAIN.Thinkium)"
-        			@mouseout="hoverCard(null)" />
-			</b-col>
-			<b-col sm="12" md="4">
-				<b-link href="mailto:drop@zerocodenft.com?subject=Solana Inquiry">
+			<b-col sm="12" md="4" v-for="blockchain in supportedBlockchains" :key="blockchain.id">
+				<b-link v-if="!blockchain.available" href="mailto:drop@zerocodenft.com?subject=Unsupported Chain Inquiry">
 					<b-img
-						:class="['mw-100 p-4', { 'shadow': hovered === BLOCKCHAIN.Solana }]"
+						:class="[blockchain.class, { 'shadow': hasShadow(blockchain.id) }]"
 						center
-						width="400px"
-						height="150px"
-						src="@/assets/images/blockchain/solana.svg" />
+						:width="blockchain.width"
+						:height="blockchain.height"
+						:src="blockchain.imageSrc" />
 					<h4 class="text-center text-muted position-relative" style="top: -45px">
 						Inquire!
 					</h4>
 				</b-link>
+				<b-img v-else
+					:class="[blockchain.class, { 'shadow': hasShadow(blockchain.id) }]"
+					center
+					:width="blockchain.width"
+					:height="blockchain.height"
+					:src="blockchain.imageSrc"
+					@click="onSelectBlockchain(blockchain.id)"
+					@mouseover="hoverCard(blockchain.id)"
+        			@mouseout="hoverCard(null)" />
 			</b-col>
 		</b-row>
-		<b-row v-show="smartContractBuilder.blockchain">
+		<!-- <b-row v-show="smartContractBuilder.blockchain">
 			<b-col cols="12">
 				<b-form-group
 					label="Network"
@@ -125,109 +46,69 @@
 						required></b-form-select>
 				</b-form-group>
 			</b-col>
-			<!-- <b-col cols="12">
+			<b-col cols="12">
 				<p>
 					You are currently connected to:
 					<strong class="text-capitalize">{{ $wallet.networkName || '' }}</strong>
 				</p>
-			</b-col> -->
-		</b-row>
+			</b-col>
+		</b-row> -->
 	</b-container>
 </template>
 
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { BLOCKCHAIN } from '@/constants'
-import { required } from 'vuelidate/lib/validators'
+
+const blockchainToTestChainIdMap = {
+	[BLOCKCHAIN.Ethereum]: 4,
+	[BLOCKCHAIN.Fantom]: 4002,
+	[BLOCKCHAIN.BinanceSmartChain]: 97,
+	[BLOCKCHAIN.Polygon]: 80001,
+	[BLOCKCHAIN.Avalanche]: 43113,
+	[BLOCKCHAIN.Cronos]: 338,
+	[BLOCKCHAIN.Songbird]: 16,
+	[BLOCKCHAIN.Thinkium]: 60001,
+}
 
 export default {
 	mixins: [smartContractBuilderMixin],
 	data() {
 		return {
-			hovered: null,
-			BLOCKCHAIN: BLOCKCHAIN,
-			networks: [
-				{
-					chainId: '4',
-					blockchain: BLOCKCHAIN.Ethereum,
-					chainName: 'Rinkeby',
-					symbol: 'ETH',
-				},
-				{
-					chainId: '80001',
-					blockchain: BLOCKCHAIN.Polygon,
-					chainName: 'Polygon Testnet',
-					symbol: 'MATIC',
-				},
-				{
-					chainId: '43113',
-					blockchain: BLOCKCHAIN.Avalanche,
-					chainName: 'Avalanche Testnet C-Chain',
-					symbol: 'AVAX',
-				},
-				{
-					chainId: '4002',
-					blockchain: BLOCKCHAIN.Fantom,
-					chainName: 'Fantom Testnet',
-					symbol: 'FTM',
-				},
-				{
-					chainId: '97',
-					blockchain: BLOCKCHAIN.BinanceSmartChain,
-					chainName: 'Binance Smart Chain Testnet',
-					symbol: 'BNB',
-				},
-				{
-					chainId: '338',
-					blockchain: BLOCKCHAIN.Cronos,
-					chainName: 'Cronos Testnet',
-					symbol: 'TCRO',
-				},
-				{
-					chainId: '16',
-					blockchain: BLOCKCHAIN.Songbird,
-					chainName: 'Songbird Testnet',
-					symbol: 'CFLR',
-				},
-				{
-					chainId: '60001',
-					blockchain: BLOCKCHAIN.Thinkium,
-					chainName: 'Thinkium Testnet',
-					symbol: 'TKM',
-				},
-			],
+			hovered: null
 		}
 	},
-	validations: {
-		smartContractBuilder: {
-			chainId: { required },
-		},
-	},
 	computed: {
-		networkOptions() {
-			return this.networks
-				.filter((n) => n.blockchain === this.smartContractBuilder.blockchain)
-				.map((n) => {
+		supportedBlockchains() {
+			return Object.keys(BLOCKCHAIN)
+				.filter(k => isNaN(k))
+				.map(k => {
 					return {
-						value: n.chainId,
-						text: n.chainName,
+						id: BLOCKCHAIN[k],
+						class: `pointer mw-100 ${(k === 'Arbitrum' || k === 'Thinkium') ? '' : 'p-3'}`,
+						width: "400px",
+						height: "150px",
+						imageSrc: require(`@/assets/images/blockchain/${k.toLowerCase()}.svg`),
+						available: k !== 'Solana'
 					}
-				})
-		},
+			})
+		}
 	},
 	methods: {
-		onNetworkChange(chainId) {
-			this.$v.smartContractBuilder.chainId.$touch()
-			this.updateSmartContractBuilder({chainId})
+		hasShadow(blockchain) {
+			return this.hovered === blockchain || this.smartContractBuilder.blockchain === blockchain
 		},
+		// onNetworkChange(chainId) {
+		// 	this.$v.smartContractBuilder.chainId.$touch()
+		// 	this.updateSmartContractBuilder({chainId})
+		// },
 		hoverCard(blockchain) {
 			this.hovered = blockchain
 		},
 		onSelectBlockchain(blockchain) {
-			const chainId = this.networks.find((n) => n.blockchain === blockchain)?.chainId
 			this.updateSmartContractBuilder({ 
-				blockchain, 
-				chainId 
+				chainId: blockchainToTestChainIdMap[blockchain],
+				blockchain
 			})
 			this.goNext()
 		}

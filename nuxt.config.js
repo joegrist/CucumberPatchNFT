@@ -8,8 +8,8 @@ const {
 	FF_CREATE_SITE,
 	DISCORD_INVITE_URL,
 	MINT_SITE_URL,
-  DISCORD_SERVER,
-  DISCORD_CHANNEL
+	DISCORD_SERVER,
+	DISCORD_CHANNEL,
 } = process.env
 
 export default {
@@ -30,8 +30,8 @@ export default {
 		FF_CREATE_SITE,
 		DISCORD_INVITE_URL,
 		MINT_SITE_URL,
-    DISCORD_SERVER,
-    DISCORD_CHANNEL
+		DISCORD_SERVER,
+		DISCORD_CHANNEL,
 	},
 
 	// privateRuntimeConfig: {
@@ -76,9 +76,9 @@ export default {
 					new Crate({
 						server: $nuxt.$config.DISCORD_SERVER,
 						channel: $nuxt.$config.DISCORD_CHANNEL,
-            notifications: true,
-            indicator: true,
-            glyph: ['/chat_white.svg', '30px']
+						notifications: true,
+						indicator: true,
+						glyph: ['/chat_white.svg', '30px'],
 					})
 				},
 			},
