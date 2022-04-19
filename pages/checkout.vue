@@ -69,7 +69,7 @@ export default {
 		    ethPayTxHash: null,
             smartContractId: null,
             isBusy: false,
-            total: 0
+            total: 799
         }
     },
     async mounted() {
