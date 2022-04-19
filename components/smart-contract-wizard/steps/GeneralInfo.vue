@@ -25,9 +25,9 @@
         </b-col>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='Collection Size'
+            label='Overall Collection Size'
             label-class='required'
-            description='Maximum number of tokens that can be ever minted'
+            description='Maximum number of NFTs that can be ever minted in this collection'
           >
             <b-form-input
               id='collectionSize'
@@ -98,9 +98,9 @@
       <b-row>
         <b-col sm='12' md='6'>
           <b-form-group
-            :label="`Mint Price (${getCurrency(smartContractBuilder.chainId)})`"
+            :label="`Price per NFT in ${getCurrency(smartContractBuilder.chainId)}`"
             label-class='required'
-            description='Price per NFT'
+            description='Mint price during public sale'
           >
             <b-form-input
               id='mintPrice'
@@ -111,7 +111,6 @@
               :class="{'is-invalid': $v.smartContractBuilder.mintPrice.$error}"
               type='number'
               step='any'
-              placeholder='0.05'
               required
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.mintPrice">
@@ -121,8 +120,8 @@
         </b-col>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='First X Free'
-            description='E.g. first 500 to be minted will be free, minters only pay the gas fees'
+            label='First X Free (experimental)'
+            description='E.g. first 500 NFTs to be minted will be free, minters only pay the gas fees'
           >
             <b-form-input
               id='firstXFree'

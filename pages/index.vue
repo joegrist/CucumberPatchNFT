@@ -27,7 +27,7 @@
 				/>
 			</b-card-group>
 			<div v-else class="text-center pt-2">
-				<h1>You Don't Have Any Contracts Yet</h1>
+				<h1>You Don't Have Any Projects Yet</h1>
 				<b-button
 					variant="primary"
 					@click="$router.push('/wizard')"

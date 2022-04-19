@@ -37,21 +37,25 @@ export default {
 	methods: {
 		...mapActions(['login', 'signup']),
 		async tryLogin() {
-			if(!this.$wallet.isConnected) {
-				await this.$wallet.connect()
-			}
-			
-			const { account: publicKey } = this.$wallet
-			
-			const { data: nonce } = await this.$axios.get("/users/nonce", { params: { publicKey }})
-
-			if(nonce) {
-				await this.login()
-				if(this.redirect) {
-					this.$router.push(this.redirect)
+			try {
+				if(!this.$wallet.isConnected) {
+					await this.$wallet.connect()
 				}
-			} else {
-				this.$bvModal.show(this.modalId)
+				
+				const { account: publicKey } = this.$wallet
+				
+				const { data: nonce } = await this.$axios.get("/users/nonce", { params: { publicKey }})
+	
+				if(nonce) {
+					await this.login()
+					if(this.redirect) {
+						this.$router.push(this.redirect)
+					}
+				} else {
+					this.$bvModal.show(this.modalId)
+				}
+			} catch (err) {
+				console.error(err)
 			}
 		},
 		onRegistrationDone() {

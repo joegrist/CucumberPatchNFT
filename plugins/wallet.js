@@ -51,23 +51,19 @@ export default ({store}, inject) => {
         },
 
         async connect() {
-            try {
-                if(!MetaMaskOnboarding.isMetaMaskInstalled()) {
-                    const onboarding = new MetaMaskOnboarding()
-                    onboarding.startOnboarding()
-                    return
-                }
-            
-                wallet.network = await wallet.provider.getNetwork()
-    
-                const [account] = await wallet.provider.send('eth_requestAccounts')
-                console.info('wallet connected', {account})
-    
-                if(account) {
-                    await wallet.setAccount(account)
-                }
-            } catch (err) {
-                alert(err.message || 'Wallet connection failed')
+            if(!MetaMaskOnboarding.isMetaMaskInstalled()) {
+                const onboarding = new MetaMaskOnboarding()
+                onboarding.startOnboarding()
+                return
+            }
+        
+            wallet.network = await wallet.provider.getNetwork()
+
+            const [account] = await wallet.provider.send('eth_requestAccounts')
+            console.info('wallet connected', {account})
+
+            if(account) {
+                await wallet.setAccount(account)
             }
         },
 

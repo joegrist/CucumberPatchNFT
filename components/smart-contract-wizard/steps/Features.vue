@@ -64,8 +64,8 @@
 			<b-row>
 				<b-col sm="12" md="6">
 					<b-form-group
-						label="Price"
-						description="Can be the same as public sale price or zero to allow free mint"
+						:label="`Price per NFT in ${getCurrency(smartContractBuilder.chainId)}`"
+						description="Can be the same as public sale price or even zero to allow free mint"
 						:label-class="{ required: smartContractBuilder.hasWhitelist }"
 						:disabled="!smartContractBuilder.hasWhitelist">
 						<b-form-input
@@ -85,7 +85,7 @@
 							type="number"
 							step="any"
 							min="0"
-							placeholder="0.03"></b-form-input>
+							></b-form-input>
 						<b-form-invalid-feedback :state="validation.whitelistPrice">
 							Please correct "Presale Price"
 						</b-form-invalid-feedback>
@@ -94,7 +94,7 @@
 				<b-col sm="12" md="6">
 					<b-form-group
 						label="Max NFTs Per Person"
-						description="Maximum number of tokens someone can mint during whitelist sale"
+						description="Maximum number of tokens someone can mint during whitelist sale, independent of public"
 						:label-class="{ required: smartContractBuilder.hasWhitelist }"
 						:disabled="!smartContractBuilder.hasWhitelist">
 						<b-form-input
@@ -121,24 +121,6 @@
 					</b-form-group>
 				</b-col>
 			</b-row>
-			<!-- <b-row>
-				<b-col>
-					<b-form-group
-						label="List of wallet addresses"
-						description="Paste address and press Enter to save. Can be uploaded later on">
-						<b-form-tags
-							id="whitelist"
-							name="whitelist"
-							invalid-tag-text="Address is invalid"
-							:tag-validator="whitelistValidator"
-							:disabled="!smartContractBuilder.hasWhitelist"
-							:value="smartContractBuilder.whitelist"
-							@input="(val) => updateSmartContractBuilder({ whitelist: val })"
-							placeholder="0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199">
-						</b-form-tags>
-					</b-form-group>
-				</b-col>
-			</b-row> -->
 			<b-row>
 				<b-col>
 					<b-form-group description="If you are the 100% shareholder your wallet will be added automatically during deployment">
@@ -238,6 +220,7 @@ import {
 	minValue,
 	maxValue,
 } from 'vuelidate/lib/validators'
+import { getCurrency } from '@/constants/metamask'
 
 export default {
 	mixins: [smartContractBuilderMixin],
@@ -265,6 +248,31 @@ export default {
 			},
 		}
 	},
+	validations: {
+		smartContractBuilder: {
+			delayedRevealURL: {
+				required: requiredIf(function () {
+					return this.smartContractBuilder.hasDelayedReveal
+				}),
+			},
+			whitelistPrice: {
+				required: requiredIf(function () {
+					return this.smartContractBuilder.hasWhitelist
+				}),
+				decimal,
+				minValue: minValue(0),
+			},
+			maxTokensPerPersonOnWhitelist: {
+				required: requiredIf(function () {
+					return this.smartContractBuilder.hasWhitelist
+				}),
+				minValue: minValue(1)
+			}
+		},
+		revenueSplitErrors: {
+			maxValue: maxValue(0),
+		},
+	},
 	mounted() {
 		const splits = this.$store.state.smartContractBuilder.revenueSplits
 		if (splits?.length) {
@@ -277,11 +285,6 @@ export default {
 		if(this.smartContractBuilder.hasRevenueSplits) {
 			this.updateBuilderRevenueSplits(this.revenueSplits)
 		}
-		// const { wallet } = this.revenueSplits[0]
-		// if(this.revenueSplits.length === 1 && wallet === this.$wallet.account) {
-		// 	this.updateSmartContractBuilder({ hasRevenueSplits: false })
-		// } else {
-		// }
 	},
 	computed: {
 		validation() {
@@ -316,32 +319,8 @@ export default {
 			return errors
 		},
 	},
-	validations: {
-		smartContractBuilder: {
-			delayedRevealURL: {
-				required: requiredIf(function () {
-					return this.smartContractBuilder.hasDelayedReveal
-				}),
-			},
-			whitelistPrice: {
-				required: requiredIf(function () {
-					return this.smartContractBuilder.hasWhitelist
-				}),
-				decimal,
-				minValue: minValue(0),
-			},
-			maxTokensPerPersonOnWhitelist: {
-				required: requiredIf(function () {
-					return this.smartContractBuilder.hasWhitelist
-				}),
-				minValue: minValue(1)
-			}
-		},
-		revenueSplitErrors: {
-			maxValue: maxValue(0),
-		},
-	},
 	methods: {
+		getCurrency,
 		onAddSplit() {
 			const otherShares = this.revenueSplits
 				.map((x) => x.share)
