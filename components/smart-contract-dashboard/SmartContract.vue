@@ -232,7 +232,7 @@
 			size="md"
 			centered
 			ok-only
-			@hidden="$router.push(`/smartcontract?id=${deployedContract.id}`)">
+			@hidden="$router.push('/')">
 			<div class="text-center">
 				<h3 class="text-success">Success!!</h3>
 				<b-link :href="deployedExplorerUrl" target="_blank">
