@@ -86,7 +86,7 @@ export const ETHEREUM_RINKEBY = {
 		symbol: 'ETH',
 		decimals: 18
 	},
-	rpcUrls: [],
+	rpcUrls: ["https://eth-rinkeby.alchemyapi.io/v2/eY57F0-qi9WoMojLu9bc3xQuByUU4S-c"],
 	blockExplorerUrls: ['https://rinkeby.etherscan.io']
 }
 
