@@ -369,9 +369,9 @@ export function getMainnetConfig(testnetChainId) {
 	if(['0x89', '80001'].includes(testnetChainId)) return POLYGON_MAINNET_PARAMS
 	if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
 	if(['0x38', '56'].includes(testnetChainId)) return BSC_MAINNET
-	if(['0x19', '25'].includes(testnetChainId)) return CRONOS_MAINNET
+	if(['0x152', '338'].includes(testnetChainId)) return CRONOS_MAINNET
 	if(['0x10', '16'].includes(testnetChainId)) return SONGBIRD_MAINNET
-	if(['0xEA61','60001'].includes(testnetChainId)) return THINKIUM_MAINNET
+	if(['0xEA61', '60001'].includes(testnetChainId)) return THINKIUM_MAINNET
 	if(['0x66EEB', '421611'].includes(testnetChainId)) return ARBITRUM_MAINNET
 	if (['0x45', '69'].includes(testnetChainId)) return OPTIMISM_MAINNET
 
