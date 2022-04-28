@@ -135,24 +135,20 @@ export const actions = {
     },
     async loadDashboardCards({commit, state}) {
         try {
-            commit('setBusy', true)
+            commit('setBusy', {
+                isBusy: true,
+                message: 'Loading Dashboard...'
+            })
 	
 			const { data: contracts } = await this.$axios.get(
 				`/users/${state.user.id}/smartcontracts`
 			)
-			const { data: websites } = await this.$axios.get(
-				`/users/${state.user.id}/websites`
-			)
-	
-			contracts.forEach((sc) => {
-				sc.website = websites.find((x) => sc.id === x.smartContractId)
-			})
 	
 			commit('setDashboardItems', contracts)
         } catch(err) {
 			console.error(err)
 		} finally {
-			commit('setBusy', false)
+			commit('setBusy', {isBusy: false})
         }
     },
     async cloneDashboardCard(actionObj, { id, name }) {

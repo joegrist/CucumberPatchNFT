@@ -18,23 +18,21 @@
 				</b-input-group-append>
 			</b-input-group>
 		</div>
-		<b-overlay :show="isBusy" opacity="1">
-			<b-card-group v-if="dashboardItems.length > 0" columns>
-				<DashboardCard
-					v-for="sc in filteredItems"
-					:key="sc.id"
-					:sc="sc"
-				/>
-			</b-card-group>
-			<div v-else class="text-center pt-2">
-				<h1>You Don't Have Any Projects Yet</h1>
-				<b-button
-					variant="primary"
-					@click="$router.push('/wizard')"
-					>Create One</b-button
-				>
-			</div>
-		</b-overlay>
+		<b-card-group v-if="dashboardItems.length > 0" columns>
+			<DashboardCard
+				v-for="sc in filteredItems"
+				:key="sc.id"
+				:sc="sc"
+			/>
+		</b-card-group>
+		<div v-else class="text-center pt-2">
+			<h1>You Don't Have Any Projects Yet</h1>
+			<b-button
+				variant="primary"
+				@click="$router.push('/wizard')"
+				>Create One</b-button
+			>
+		</div>
 	</div>
 </template>
 
@@ -66,13 +64,11 @@ export default {
 		...mapGetters(['userId']),
 		filteredItems() {
 			const term = this.searchTerm.toLowerCase()
-			const filtered = this.dashboardItems.filter(
+			return this.dashboardItems.filter(
 				(x) =>
 					x.name.toLowerCase().includes(term) ||
 					x.symbol.toLowerCase().includes(term)
 			)
-			// console.log(this.dashboardItems, term, filtered)
-			return filtered
 		},
 	},
 	methods: {
