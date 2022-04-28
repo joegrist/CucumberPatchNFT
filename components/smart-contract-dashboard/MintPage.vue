@@ -1,69 +1,66 @@
 <template>
 	<b-container class="pt-2">
 		<b-form @submit.prevent="onUpdate" class="mb-1">
-		<b-row class="mb-3">
-			<b-col sm="12" md="9">
-				<h1>{{ site.title }}</h1>
-			</b-col>
-			<b-col sm="12" md="3" class="my-auto">
-				<b-button type="submit" variant="primary" block
-					>Save</b-button
-				>
-			</b-col>
-		</b-row>
-		<b-row v-if="site.type !== WEBSITE_TYPE.Full">
-			<b-col cols="9" style="overflow: auto" class="text-center">
-				<div v-if="showPreview" v-html="iframeCode"></div>
-				<h5 class="text-center text-muted mb-3">Preview window</h5>
-			</b-col>
-			<b-col cols="3">
-				<b-form-group label="Template">
-					<b-form-select
-						v-model="site.template"
-						:options="viewOptions"></b-form-select>
-				</b-form-group>
-				<b-form-group :label="`Width (${site.windowWidth}%)`">
-					<b-form-input
-						v-model="site.windowWidth"
-						type="range"
-						max="100"></b-form-input>
-				</b-form-group>
-				<b-form-group :label="`Height (${site.windowHeight}px)`">
-					<b-form-input
-						v-model="site.windowHeight"
-						type="range"
-						max="2000"></b-form-input>
-				</b-form-group>
-				Embed code <Copy :value="iframeCode" />
-				<br />
-				<div class="border rounded p-2">
-					<code>
-						{{ iframeCode }}
-					</code>
-				</div>
-				<ExternalLink
-					href="https://www.youtube.com/watch?v=uo7mtt510hg&t=7s"
-					text="How to video"
-					icon="youtube" />
-			</b-col>
-		</b-row>
-		<b-row>
-			<b-col>
-				<div>
-					<ul>
-						<template v-if="site.type === WEBSITE_TYPE.Full">
-							<li>
-								Site URL:
-								<ExternalLink :href="site.url" :text="site.url" />
-							</li>
-						</template>
-					</ul>
-				</div>
-			</b-col>
-		</b-row>
-		<b-row>
-			<b-col>
-				
+			<b-row class="mb-3">
+				<b-col sm="12" md="9">
+					<h1>{{ site.title }}</h1>
+				</b-col>
+				<b-col sm="12" md="3" class="my-auto">
+					<b-button type="submit" variant="primary" block>Save</b-button>
+				</b-col>
+			</b-row>
+			<b-row v-if="site.type !== WEBSITE_TYPE.Full">
+				<b-col cols="9" style="overflow: auto" class="text-center">
+					<div v-if="showPreview" v-html="iframeCode"></div>
+					<h5 class="text-center text-muted mb-3">Preview window</h5>
+				</b-col>
+				<b-col cols="3">
+					<b-form-group label="Template">
+						<b-form-select
+							v-model="site.template"
+							:options="viewOptions"></b-form-select>
+					</b-form-group>
+					<b-form-group :label="`Width (${site.windowWidth}%)`">
+						<b-form-input
+							v-model="site.windowWidth"
+							type="range"
+							max="100"></b-form-input>
+					</b-form-group>
+					<b-form-group :label="`Height (${site.windowHeight}px)`">
+						<b-form-input
+							v-model="site.windowHeight"
+							type="range"
+							max="2000"></b-form-input>
+					</b-form-group>
+					Embed code <Copy :value="iframeCode" />
+					<br />
+					<div class="border rounded p-2">
+						<code>
+							{{ iframeCode }}
+						</code>
+					</div>
+					<ExternalLink
+						href="https://www.youtube.com/watch?v=uo7mtt510hg&t=7s"
+						text="How to video"
+						icon="youtube" />
+				</b-col>
+			</b-row>
+			<b-row>
+				<b-col>
+					<div>
+						<ul>
+							<template v-if="site.type === WEBSITE_TYPE.Full">
+								<li>
+									Site URL:
+									<ExternalLink :href="site.url" :text="site.url" />
+								</li>
+							</template>
+						</ul>
+					</div>
+				</b-col>
+			</b-row>
+			<b-row>
+				<b-col>
 					<b-form-group label="Title" label-class="required">
 						<b-form-input
 							id="title"
@@ -73,7 +70,9 @@
 							placeholder="Bored Apes Yacht Club"
 							required></b-form-input>
 					</b-form-group>
-					<b-form-group v-show="site.template === WEBSITE_TEMPLATE.Full" label="Description">
+					<b-form-group
+						v-show="site.template === WEBSITE_TEMPLATE.Full"
+						label="Description">
 						<b-form-textarea
 							id="description"
 							name="description"
@@ -209,8 +208,8 @@
 							</b-form-group>
 						</div>
 					</div>
-			</b-col>
-		</b-row>
+				</b-col>
+			</b-row>
 		</b-form>
 	</b-container>
 </template>
@@ -226,9 +225,9 @@ dayjs.extend(timezone)
 
 export default {
 	middleware: 'authenticated',
-    props: {
-        smartContractId: String
-    },
+	props: {
+		smartContractId: String,
+	},
 	data() {
 		return {
 			WEBSITE_STATUS,
@@ -244,7 +243,9 @@ export default {
 		}
 	},
 	async mounted() {
-		const { data } = await this.$axios.get(`/smartcontracts/${this.smartContractId}/website`)
+		const { data } = await this.$axios.get(
+			`/smartcontracts/${this.smartContractId}/website`
+		)
 		this.site = data
 		this.site.windowWidth = this.site.windowWidth ?? 100
 		this.site.windowHeight = this.site.windowHeight ?? 550
@@ -273,19 +274,21 @@ export default {
 					style="border:none;"
 					loading="lazy"
 					title="${this.site.title}"
-					src="${this.$config.MINT_SITE_URL}/${WEBSITE_TEMPLATE[this.site.template]}?siteId=${this.site.id}"></iframe>`
+					src="${this.$config.MINT_SITE_URL}/${
+				WEBSITE_TEMPLATE[this.site.template]
+			}?siteId=${this.site.id}"></iframe>`
 		},
 	},
 	methods: {
 		...mapMutations(['setBusy']),
 		async onDelete() {
 			try {
-				this.setBusy({isBusy: true})
+				this.setBusy({ isBusy: true })
 				await this.$axios.delete(`/websites/${this.site.id}`)
-				this.setBusy({isBusy: false})
+				this.setBusy({ isBusy: false })
 				this.$router.push('/')
 			} catch (err) {
-				this.setBusy({isBusy: false})
+				this.setBusy({ isBusy: false })
 				this.$bvToast.toast('Website delete failed', {
 					title: 'Website',
 					variant: 'danger',
@@ -303,7 +306,7 @@ export default {
 				return
 			}
 
-			this.setBusy({isBusy: true})
+			this.setBusy({ isBusy: true })
 
 			try {
 				const { dropDateInput, dropTimeInput, id } = this.site
@@ -338,7 +341,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy({isBusy: false})
+				this.setBusy({ isBusy: false })
 			}
 		},
 	},
