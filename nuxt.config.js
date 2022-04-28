@@ -169,31 +169,31 @@ export default {
 	generate: {
 		fallback: true,
 		// support to generate dynamic _id routes
-		routes: async () => {
-			try {
-				const contracts = await axios.get(`${API_URL}/smartcontracts/ids`)
-				const websites = await axios.get(`${API_URL}/websites/ids`)
-				const result = []
+		// routes: async () => {
+		// 	try {
+		// 		const contracts = await axios.get(`${API_URL}/smartcontracts/ids`)
+		// 		const websites = await axios.get(`${API_URL}/websites/ids`)
+		// 		const result = []
 
-				console.log('***********************here', contracts, websites)
+		// 		console.log('***********************here', contracts, websites)
 
-				if (contracts?.data) {
-					contracts.data.forEach((id) => {
-						result.push(`/smart-contracts/${id}`)
-					})
-				}
-				if (websites?.data) {
-					websites.data.forEach((id) => {
-						result.push(`/websites/${id}`)
-					})
-				}
+		// 		if (contracts?.data) {
+		// 			contracts.data.forEach((id) => {
+		// 				result.push(`/smart-contracts/${id}`)
+		// 			})
+		// 		}
+		// 		if (websites?.data) {
+		// 			websites.data.forEach((id) => {
+		// 				result.push(`/websites/${id}`)
+		// 			})
+		// 		}
 
-				return result
-			} catch (e) {
-				console.error(e)
-				return []
-			}
-		},
+		// 		return result
+		// 	} catch (e) {
+		// 		console.error(e)
+		// 		return []
+		// 	}
+		// },
 	},
 
 	// Build Configuration: https://go.nuxtjs.dev/config-build

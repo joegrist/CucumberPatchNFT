@@ -69,6 +69,17 @@ const SALE_STATUS = Object.freeze({
 	2: 'Public',
 })
 
+const WEBSITE_TEMPLATE = Object.freeze({
+	Unknown: 0,
+	Tabs: 1,
+	Button: 2,
+	Full: 3,
+	0: 'Unknown',
+	1: 'Tabs',
+	2: 'Button',
+	3: 'Full'
+})
+
 const WEBSITE_TYPE = Object.freeze({
 	Full: 0,
 	Embedded: 1,
@@ -99,5 +110,6 @@ export {
 	SALE_STATUS,
 	WEBSITE_TYPE,
 	CONTRACT_TYPE,
-	PAYMENT_METHOD
+	PAYMENT_METHOD,
+	WEBSITE_TEMPLATE
 }

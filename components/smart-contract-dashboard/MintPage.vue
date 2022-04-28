@@ -1,59 +1,66 @@
 <template>
 	<b-container class="pt-2">
-		<h1 class="text-center my-3">{{ site.title }}</h1>
-		<b-row v-if="site.type !== WEBSITE_TYPE.Full">
-			<b-col cols="9" style="overflow: auto" class="text-center">
-				<div v-if="showPreview" v-html="iframeCode"></div>
-				<h5 class="text-center text-muted mb-3">Preview window</h5>
-			</b-col>
-			<b-col cols="3">
-				<b-form-group label="Template">
-					<b-form-select
-						v-model="iframe.view"
-						:options="viewOptions"></b-form-select>
-				</b-form-group>
-				<b-form-group :label="`Width (${iframe.width}%)`">
-					<b-form-input
-						v-model="iframe.width"
-						type="range"
-						max="100"></b-form-input>
-				</b-form-group>
-				<b-form-group :label="`Height (${iframe.height}px)`">
-					<b-form-input
-						v-model="iframe.height"
-						type="range"
-						max="2000"></b-form-input>
-				</b-form-group>
-				Embed code <Copy :value="iframeCode" />
-				<br />
-				<div class="border rounded p-2">
-					<code>
-						{{ iframeCode }}
-					</code>
-				</div>
-				<ExternalLink
-					href="https://www.youtube.com/watch?v=uo7mtt510hg&t=7s"
-					text="How to video"
-					icon="youtube" />
-			</b-col>
-		</b-row>
-		<b-row>
-			<b-col>
-				<div>
-					<ul>
-						<template v-if="site.type === WEBSITE_TYPE.Full">
-							<li>
-								Site URL:
-								<ExternalLink :href="site.url" :text="site.url" />
-							</li>
-						</template>
-					</ul>
-				</div>
-			</b-col>
-		</b-row>
-		<b-row>
-			<b-col>
-				<b-form @submit.prevent="onUpdate" class="mb-3">
+		<b-form @submit.prevent="onUpdate" class="mb-1">
+			<b-row class="mb-3">
+				<b-col sm="12" md="9">
+					<h1>{{ site.title }}</h1>
+				</b-col>
+				<b-col sm="12" md="3" class="my-auto">
+					<b-button type="submit" variant="primary" block>Save</b-button>
+				</b-col>
+			</b-row>
+			<b-row v-if="site.type !== WEBSITE_TYPE.Full">
+				<b-col cols="9" style="overflow: auto" class="text-center">
+					<div v-if="showPreview" v-html="iframeCode"></div>
+					<h5 class="text-center text-muted mb-3">Preview window</h5>
+				</b-col>
+				<b-col cols="3">
+					<b-form-group label="Template">
+						<b-form-select
+							v-model="site.template"
+							:options="viewOptions"></b-form-select>
+					</b-form-group>
+					<b-form-group :label="`Width (${site.windowWidth}%)`">
+						<b-form-input
+							v-model="site.windowWidth"
+							type="range"
+							max="100"></b-form-input>
+					</b-form-group>
+					<b-form-group :label="`Height (${site.windowHeight}px)`">
+						<b-form-input
+							v-model="site.windowHeight"
+							type="range"
+							max="2000"></b-form-input>
+					</b-form-group>
+					Embed code <Copy :value="iframeCode" />
+					<br />
+					<div class="border rounded p-2">
+						<code>
+							{{ iframeCode }}
+						</code>
+					</div>
+					<ExternalLink
+						href="https://www.youtube.com/watch?v=uo7mtt510hg&t=7s"
+						text="How to video"
+						icon="youtube" />
+				</b-col>
+			</b-row>
+			<b-row>
+				<b-col>
+					<div>
+						<ul>
+							<template v-if="site.type === WEBSITE_TYPE.Full">
+								<li>
+									Site URL:
+									<ExternalLink :href="site.url" :text="site.url" />
+								</li>
+							</template>
+						</ul>
+					</div>
+				</b-col>
+			</b-row>
+			<b-row>
+				<b-col>
 					<b-form-group label="Title" label-class="required">
 						<b-form-input
 							id="title"
@@ -63,7 +70,9 @@
 							placeholder="Bored Apes Yacht Club"
 							required></b-form-input>
 					</b-form-group>
-					<b-form-group v-show="iframe.view === ''" label="Description">
+					<b-form-group
+						v-show="site.template === WEBSITE_TEMPLATE.Full"
+						label="Description">
 						<b-form-textarea
 							id="description"
 							name="description"
@@ -103,7 +112,7 @@
 								type="time"></b-form-input>
 						</b-form-group>
 					</div>
-					<div v-show="iframe.view === ''">
+					<div v-show="site.template === WEBSITE_TEMPLATE.Full">
 						<div class="d-flex">
 							<b-form-group
 								label="Icon"
@@ -199,36 +208,14 @@
 							</b-form-group>
 						</div>
 					</div>
-					<div class="d-flex justify-content-end">
-						<!-- <b-button
-							variant="danger"
-							v-b-modal="site.id"
-							:disabled="isBusy || site.status !== WEBSITE_STATUS.Ready"
-							>Delete</b-button
-						> -->
-						<b-button class="ml-2" type="submit" variant="primary"
-							>Update</b-button
-						>
-					</div>
-				</b-form>
-			</b-col>
-		</b-row>
-		<b-modal
-			:id="site.id"
-			title="Confirm"
-			centered
-			body-class="text-center"
-			ok-variant="primary"
-			ok-title="Yes"
-			cancel-title="No"
-			@ok="onDelete">
-			<h5>Are you sure want to delete this page ?</h5>
-		</b-modal>
+				</b-col>
+			</b-row>
+		</b-form>
 	</b-container>
 </template>
 
 <script>
-import { WEBSITE_STATUS, WEBSITE_TYPE } from '@/constants'
+import { WEBSITE_STATUS, WEBSITE_TYPE, WEBSITE_TEMPLATE } from '@/constants'
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -238,30 +225,33 @@ dayjs.extend(timezone)
 
 export default {
 	middleware: 'authenticated',
-    props: {
-        smartContractId: String
-    },
+	props: {
+		smartContractId: String,
+	},
 	data() {
 		return {
 			WEBSITE_STATUS,
 			WEBSITE_TYPE,
+			WEBSITE_TEMPLATE,
 			site: {},
 			showPreview: true,
-			iframe: {
-				view: 'tabs',
-				width: 100,
-				height: 550,
-			},
 			viewOptions: [
-				{ value: 'tabs', text: 'Tabs' },
-				{ value: 'button', text: 'Button' },
-				{ value: '', text: 'Full' },
+				{ value: WEBSITE_TEMPLATE.Tabs, text: 'Tabs' },
+				{ value: WEBSITE_TEMPLATE.Button, text: 'Button' },
+				{ value: WEBSITE_TEMPLATE.Full, text: 'Full' },
 			],
 		}
 	},
 	async mounted() {
-		const { data } = await this.$axios.get(`/smartcontracts/${this.smartContractId}/website`)
+		const { data } = await this.$axios.get(
+			`/smartcontracts/${this.smartContractId}/website`
+		)
 		this.site = data
+		this.site.windowWidth = this.site.windowWidth ?? 100
+		this.site.windowHeight = this.site.windowHeight ?? 550
+		this.site.template = this.site.template ?? WEBSITE_TEMPLATE.Tabs
+		console.log(this.site.template)
+
 		if (this.site.dropDate) {
 			const [date, time] = dayjs
 				.utc(this.site.dropDate)
@@ -278,25 +268,27 @@ export default {
 		iframeCode() {
 			return `
 				<iframe 
-					width="${this.iframe.width}%" 
-					height="${this.iframe.height}px"
+					width="${this.site.windowWidth}%" 
+					height="${this.site.windowHeight}px"
 					allowfullscreen="true"
 					style="border:none;"
 					loading="lazy"
 					title="${this.site.title}"
-					src="${this.$config.MINT_SITE_URL}/${this.iframe.view}?siteId=${this.site.id}"></iframe>`
+					src="${this.$config.MINT_SITE_URL}/${
+				WEBSITE_TEMPLATE[this.site.template]
+			}?siteId=${this.site.id}"></iframe>`
 		},
 	},
 	methods: {
 		...mapMutations(['setBusy']),
 		async onDelete() {
 			try {
-				this.setBusy({isBusy: true})
+				this.setBusy({ isBusy: true })
 				await this.$axios.delete(`/websites/${this.site.id}`)
-				this.setBusy({isBusy: false})
+				this.setBusy({ isBusy: false })
 				this.$router.push('/')
 			} catch (err) {
-				this.setBusy({isBusy: false})
+				this.setBusy({ isBusy: false })
 				this.$bvToast.toast('Website delete failed', {
 					title: 'Website',
 					variant: 'danger',
@@ -314,7 +306,7 @@ export default {
 				return
 			}
 
-			this.setBusy({isBusy: true})
+			this.setBusy({ isBusy: true })
 
 			try {
 				const { dropDateInput, dropTimeInput, id } = this.site
@@ -349,7 +341,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy({isBusy: false})
+				this.setBusy({ isBusy: false })
 			}
 		},
 	},

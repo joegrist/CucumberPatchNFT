@@ -27,7 +27,7 @@
 				<b-dropdown-divider></b-dropdown-divider>
 				<b-dd-item
 					v-if="sc.website"
-					:to="`/websites/${sc.website.id}`"
+					:to="`/website?scId=${sc.id}`"
 					><b-icon icon="pencil-square" /> Minting Page</b-dd-item
 				>
 				<b-dd-item v-b-modal="`Clone${sc.id}`"
