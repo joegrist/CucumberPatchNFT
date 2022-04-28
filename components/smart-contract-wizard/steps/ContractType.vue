@@ -9,8 +9,8 @@
 			<b-col
 				sm="12"
 				md="4"
-				v-for="type in types"
-				:key="type.id"
+				v-for="(type, idx) in types"
+				:key="idx"
 				@click="onCardSelected(type)"
 				@mouseover="hoverCard(type.id)"
 				@mouseout="hoverCard(null)">
