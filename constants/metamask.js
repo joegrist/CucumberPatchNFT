@@ -135,7 +135,7 @@ export const CRONOS_TESTNET = {
 		decimals: 18
 	},
 	rpcUrls: ['https://cronos-testnet-3.crypto.org:8545/'],
-	blockExplorerUrls: ['https://cronos.crypto.org/explorer'],
+	blockExplorerUrls: ['https://cronos.org/explorer/testnet3'],
 }
 
 export const CRONOS_MAINNET = {
@@ -147,7 +147,7 @@ export const CRONOS_MAINNET = {
 		decimals: 18
 	},
 	rpcUrls: ['https://evm-cronos.crypto.org'],
-	blockExplorerUrls: ['https://cronos.crypto.org/explorer'],
+	blockExplorerUrls: ['https://cronos.org/explorer'],
 }
 
 export const SONGBIRD_TESTNET = {

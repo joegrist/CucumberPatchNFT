@@ -26,7 +26,6 @@
 				</b-dd-text>
 				<b-dropdown-divider></b-dropdown-divider>
 				<b-dd-item
-					v-if="sc.website"
 					:to="`/website?scId=${sc.id}`"
 					><b-icon icon="pencil-square" /> Minting Page</b-dd-item
 				>

@@ -9,14 +9,14 @@
 							? '(Testnet)'
 							: '(Mainnet)'
 					}}
-					at
 					<br />
+					Address: 
 					<b-link
 						:href="`${getExplorerUrl(rawContract.chainId)}/address/${
 							rawContract.address
 						}`"
 						target="_blank"
-						>{{ rawContract.address }}</b-link
+						>{{ rawContract.address | compactAddress }}</b-link
 					>
 				</p>
 				<div class="d-flex">
