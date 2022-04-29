@@ -4,7 +4,7 @@
 			<b-col>
 				<b-tabs v-if="rawContract" content-class="mt-3">
 					<b-tab title="Smart Contract" active>
-						<SmartContract :smartContract="rawContract" />
+						<SmartContract :smartContract="rawContract" :deploy="shouldDeploy" />
 					</b-tab>
 					<b-tab v-if="rawContract.hasWhitelist" title="Whitelist" lazy>
 						<Whitelist :smartContract="rawContract" />
@@ -34,6 +34,7 @@ export default {
 	},
 	data: () => ({
 		rawContract: null,
+		shouldDeploy: false
 	}),
 	fetchOnServer: false,
 	fetchKey: 'smart-contracts-id',
@@ -42,6 +43,7 @@ export default {
 			const { data } = await this.$axios.get(
 				`/users/${this.userId}/smartcontracts/${this.$route.query['id']}`
 			)
+			this.shouldDeploy = this.$route.query['deploy'] === 'true'
 			this.rawContract = data
 		} catch (err) {
 			console.error(err)

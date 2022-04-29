@@ -8,8 +8,7 @@
         <b-row>
             <b-col sm="12" md="6">
                 <h3 class="mb-3">Total: ${{total}}</h3>
-                <p> x1 Smart Contract Deployment</p>
-                <!-- <h3 class="mb-3">Payment Options</h3> -->
+                <p> x1 Smart Contract Deployment Voucher</p>
                 <b-overlay :show="isBusy">
                     <b-button
                         class="mb-3 p-3 font-weight-bolder"
@@ -26,7 +25,6 @@
         <b-modal
 			id="paymentSuccess"
 			title="Thank You!"
-			size="sm"
 			centered
             hide-header-close
             no-close-on-esc
@@ -46,7 +44,7 @@
 					@click="
 						() => {
 							this.$bvModal.hide('paymentSuccess')
-							this.$router.push(`/smartcontract?id=${this.smartContractId}`)
+							this.$router.push(this.returnUrl)
 						}"
                     >
 					Awesome!
@@ -69,13 +67,16 @@ export default {
 		    ethPayTxHash: null,
             smartContractId: null,
             isBusy: false,
-            total: 799
+            total: 799,
+			returnUrl: '/'
         }
     },
     async mounted() {
         try {
             this.smartContractId = this.$route.query['smId']
-            if(!this.smartContractId) return
+            if(!this.smartContractId) this.$router.push('/')
+
+			this.returnUrl = `/smartcontract?id=${this.smartContractId}&deploy=true`
             
 			await loadScript({
 				'client-id': this.$config.PAYPAL_CLIENT_ID,

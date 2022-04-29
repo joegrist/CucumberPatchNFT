@@ -278,6 +278,7 @@ export default {
 	middleware: 'authenticated',
 	props: {
 		smartContract: Object,
+		deploy: Boolean
 	},
 	data: () => ({
 		SMARTCONTRACT_STATUS,
@@ -292,15 +293,21 @@ export default {
 		saleStatus: 'N/A',
 		busyState: {},
 		isReady: false,
-		currentOwner: null,
+		currentOwner: null
 	}),
 	async mounted() {
 		try {
-			this.setBusy({ isBusy: true })
-
+			
 			this.rawContract = this.smartContract
 			const { address, abi, ownerAddress } = this.rawContract
 			this.currentOwner = ownerAddress
+
+			if(this.deploy) { // trigger deploy right away
+				this.onMainnetDeploy()
+				return
+			}
+
+			this.setBusy({ isBusy: true })
 
 			if (this.isOnWrongNetwork) {
 				await this.switchNetwork()
@@ -465,7 +472,7 @@ export default {
 
 				await this.$wallet.switchNetwork(mainnetConfig.chainId)
 
-				this.setBusy({ isBusy: true })
+				this.setBusy({ isBusy: true, message: 'Confirm metamask transaction to deploy' })
 
 				const { data } = await this.$axios.get(
 					`/smartcontracts/${id}/compiled`,
