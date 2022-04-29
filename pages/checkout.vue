@@ -245,9 +245,6 @@ export default {
 				'resizable,width=700,height=900'
 			)
 		},
-        pay() {
-            this.$bvModal.show('ethPaymentSuccess')
-        }
     }
 }
 </script>

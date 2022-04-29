@@ -22,7 +22,7 @@
 				<b-col>
 					<b-form-group
 						label="Placeholder URL"
-						description="URL to the .json file that contains generic metadata"
+						description="URL to the .json file containing pre-reveal metadata"
 						:label-class="{ required: smartContractBuilder.hasDelayedReveal }"
 						:disabled="!smartContractBuilder.hasDelayedReveal">
 						<b-form-input

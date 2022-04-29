@@ -348,10 +348,10 @@ export const FAUCETS = {
 	"4": ["https://rinkebyfaucet.com", "https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"],
 	"4002": ["https://faucet.fantom.network"],
 	"97": ["https://testnet.binance.org/faucet-smart"],
-	"338": ["https://cronos.crypto.org/faucet"],
+	"338": ["https://cronos.org/faucet"],
 	"16": ["https://faucet.towolabs.com"],
 	"60001": ["https://www.thinkiumdev.net/DApp%20Development/Faucet.html"],
-	"421611": ["https://rinkebyfaucet.com", "https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"],
+	"421611": ["https://rinkebyfaucet.com", "https://faucets.chain.link/rinkeby", "https://faucet.rinkeby.io"],
 	'69': ["https://optimismfaucet.xyz"]
 }
 

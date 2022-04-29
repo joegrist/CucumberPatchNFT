@@ -139,7 +139,7 @@ export default {
     // Executed when @stepper-finished event is triggered
     alert(payload) {
       if(!this.isLoggedIn) {
-        alert("Please login to save progress!")
+        alert("Please click 'Login to Deploy' to save progress!")
         return
       }
       if(this.smartContractBuilder?.id || confirm("You are about to lose all your changes. Are you sure you want to finish ?")) {
