@@ -329,6 +329,10 @@ export default {
 			this.checkOwner(this.$wallet.account)
 		} catch (err) {
 			console.error(err)
+			this.$bvToast.toast(err.message || 'Smart contract load failed', {
+				title: 'Smart Contract',
+				variant: 'danger',
+			})
 		} finally {
 			this.setBusy({ isBusy: false })
 		}

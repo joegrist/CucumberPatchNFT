@@ -36,7 +36,7 @@
 						<b-list-group-item>Referrals: {{ referral.count }}</b-list-group-item>
 						<b-list-group-item>Referral Code:
 							<span class="pointer"> {{ referral.code }} 
-								<Copy :value="`https://app.zerocodenft.com?${referral.code}`" />
+								<Copy :value="`https://app.zerocodenft.com?ref=${referral.code}`" />
 							</span>
 						</b-list-group-item>
 						<b-list-group-item>Referral Balance: ${{ referral.balance.toFixed(2) }}</b-list-group-item>
