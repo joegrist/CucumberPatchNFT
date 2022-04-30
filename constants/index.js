@@ -14,6 +14,7 @@ const BLOCKCHAIN = Object.freeze({
 	Optimism: 14,
 	Songbird: 11,
 	Solana: 2,
+	Harmony: 15,
 	1: 'Ethereum',
 	2: 'Solana',
 	3: 'Fantom',
@@ -26,6 +27,7 @@ const BLOCKCHAIN = Object.freeze({
 	12: 'Thinkium',
 	13: 'Arbitrum',
 	14: 'Optimism',
+	15: 'Harmony'
 })
 
 const MARKETPLACE = Object.freeze({

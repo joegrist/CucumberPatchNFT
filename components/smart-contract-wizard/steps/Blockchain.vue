@@ -70,7 +70,8 @@ const blockchainToTestChainIdMap = {
 	[BLOCKCHAIN.Songbird]: 16,
 	[BLOCKCHAIN.Thinkium]: 60001,
 	[BLOCKCHAIN.Arbitrum]: 421611,
-	[BLOCKCHAIN.Optimism]: 69
+	[BLOCKCHAIN.Optimism]: 69,
+	[BLOCKCHAIN.Harmony]: 1666700000,
 }
 
 export default {
