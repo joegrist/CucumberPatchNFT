@@ -39,7 +39,7 @@
 								<Copy :value="`https://app.zerocodenft.com?ref=${referral.code}`" />
 							</span>
 						</b-list-group-item>
-						<b-list-group-item>Referral Balance: ${{ referral.balance.toFixed(2) }}</b-list-group-item>
+						<b-list-group-item>Referral Balance: Ξ{{ referral.balanceEth.toFixed(2) }}</b-list-group-item>
 					</template>
 					<template v-if="isLoggedIn && !referral">
 						<b-list-group-item>

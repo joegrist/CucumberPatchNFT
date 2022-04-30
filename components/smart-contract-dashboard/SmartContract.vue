@@ -26,7 +26,7 @@
 							:disabled="!canDeployMainnet"
 							variant="primary"
 							@click="onMainnetDeploy">
-							<b-icon icon="wallet2" /> Deploy to Mainnet
+							<b-icon v-if="!rawContract.isClearedForMainnet" icon="wallet2" /> Deploy to Mainnet
 						</b-button>
 						<!-- <b-button
 								class="bg-gradient-primary border-0"
@@ -65,7 +65,7 @@
 						@click="callFuncByName('saleStatus')" />
 				</div>
 				<div class="lead font-weight-bold mb-1">
-					Contract Balance: {{ contractBalance }}
+					Earnings: {{ contractBalance }}
 					{{ getCurrency(rawContract.chainId) }}
 					<b-icon
 						v-if="isBusy"
@@ -458,20 +458,22 @@ export default {
 				// 	return
 				// }
 
-				const { id, chainId } = this.rawContract
+				const { id, chainId, isClearedForMainnet } = this.rawContract
 
 				const userCredits = await this.$store.dispatch('getCreditsCount')
-				const hasToPay = +userCredits < 1
+				const isPaid = userCredits > 0 || isClearedForMainnet
 
-				if (hasToPay) {
+				if (!isPaid) {
 					this.$router.push(`/checkout?smId=${id}`)
 					return
 				}
 
 				const mainnetConfig = getMainnetConfig(chainId)
 				if (!mainnetConfig) {
-					alert('Mainnet configuration not found.')
-					return
+					this.$bvToast.toast('Mainnet configuration not found.', {
+						title: 'Contract Deployment',
+						variant: 'danger',
+					})
 				}
 
 				await this.$wallet.switchNetwork(mainnetConfig.chainId)
@@ -514,7 +516,7 @@ export default {
 			} catch (err) {
 				console.error({ err })
 				this.$bvToast.toast(err.message || 'Deployment failed', {
-					title: 'Mainnet Deployment',
+					title: 'Contract Deployment',
 					variant: 'danger',
 				})
 			} finally {

@@ -115,10 +115,11 @@
 					<template v-if="isOpenSea">
 						<b-link :href="collectionUrl" target="_blank">
 							<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+							<span class="text-muted">Open</span>
 						</b-link>
 					</template>
 					<template v-else>
-						<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+						<span>Marketplace N/A</span>
 					</template>
 				</b-col>
 				<b-col cols="6" class="text-center">
@@ -133,9 +134,10 @@
 				</b-col>
 			</b-row>
 			<b-row class="pb-0">
-				<b-col cols="6">
+				<b-col sm="12" md="6">
 					<b-button
 						v-if="isDeployed"
+						class="font-weight-bold"
 						variant="link"
 						size="sm"
 						:to="`/smartcontract?id=${sc.id}`"
@@ -145,7 +147,7 @@
 						>Edit/Deploy ></b-button
 					>
 				</b-col>
-				<b-col cols="6" class="text-muted d-flex justify-content-end my-auto">
+				<b-col sm="12" md="6" class="text-muted d-flex justify-content-end my-auto">
 					{{ sc.createdOn | toDate }}
 				</b-col>
 			</b-row>
