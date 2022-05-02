@@ -275,7 +275,7 @@ export default {
 					loading="lazy"
 					title="${this.site.title}"
 					src="${this.$config.MINT_SITE_URL}/${
-				WEBSITE_TEMPLATE[this.site.template]
+				this.site.template === WEBSITE_TEMPLATE.Full ? '' : WEBSITE_TEMPLATE[this.site.template]
 			}?siteId=${this.site.id}"></iframe>`
 		},
 	},
