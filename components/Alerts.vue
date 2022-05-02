@@ -1,5 +1,5 @@
 <template>
-	<b-container class="mt-2">
+	<b-container :class="{'mt-2': alerts.length > 0 }">
 		<b-row v-for="alert in alerts" :key="alert.id">
 			<b-col>
 				<b-alert

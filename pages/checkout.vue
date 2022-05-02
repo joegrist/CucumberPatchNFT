@@ -1,25 +1,43 @@
 <template>
-    <b-container class="mt-5">
-        <b-row>
+    <b-container class="mt-5 px-5" fluid>
+        <b-row align-h="center" class="mb-4">
             <b-col>
-                <h1 class="mb-3 text-center">Checkout</h1>
+                <h1 class="text-center">Checkout</h1>
             </b-col>
         </b-row>
-        <b-row>
-            <b-col sm="12" md="6">
-                <h3 class="mb-3">Total: ${{total}}</h3>
-                <p> x1 Smart Contract Deployment Voucher</p>
+        <b-row align-h="center">
+            <b-col sm="12" md="4">
+                <h3 class="mb-3">Standard Deployment {{ total || 'Loading...' }} eth</h3>
+                <p> x1 Smart Contract Deployment </p>
                 <b-overlay :show="isBusy">
                     <b-button
-                        class="mb-3 p-3 font-weight-bolder"
-                        block
+						:disabled="!total"
+                        class="mb-3 font-weight-bolder"
+                        size="lg"
+						block
                         variant="primary"
                         @click="payWithEth"
                         >Pay With ETH</b-button
                     >
                 </b-overlay>
+				</b-col>
+			<b-col sm="12" md="2" class="text-center"> <h3>OR</h3> </b-col>
+			<b-col sm="12" md="4">
+				<h3 class="mb-0">Custom Deployment</h3>
+				<span class="text-muted">starting from 0.5 eth</span>
+				<p class="pt-3"> For bespoke project we offer: </p>
+				<ul>
+					<li>Smart contract deployed and verified by our team</li>
+					<li>OpenSea or other marketplace royalties split</li>
+					<li>Dedicated launch day support</li>
+					<li>White label solution (no "Powered by Zero Code NFT" signs)</li>
+					<li>Custom designed dApp (website)</li>
+				</ul>
+				<b-button size="lg" variant="primary" href="https://discord.gg/NdEpB6ZYKn" target="_blank"><b-icon icon="discord"></b-icon></b-button>
+				<b-button size="lg" variant="primary" href="http://twitter.com/zero_code_nft" target="_blank"><b-icon icon="twitter"></b-icon></b-button>
+				<b-button size="lg" variant="primary" :href="`mailto:drop@zerocodenft.com?subject=Custom Deployment for ${smartContractId}`" target="_blank"><b-icon icon="envelope"></b-icon></b-button>
 				<!-- <b-button class="mb-3 p-2 font-weight-bolder" block variant="info" @click="onFTXPay">Pay with FTX US</b-button> -->
-				<div id="paypal-container"></div>
+				<!-- <div id="paypal-container"></div> -->
             </b-col>
         </b-row>
         <b-modal
@@ -35,7 +53,7 @@
                 <div v-if="ethPayTxHash">
                     Ethereum transaction hash:
                     <p class="break-word">
-                        {{ ethPayTxHash }} <Copy :value="ethPayTxHash" />
+                        {{ ethPayTxHash | compactAddress }} <Copy :value="ethPayTxHash" />
                     </p>
                 </div>
 				<b-button
@@ -56,10 +74,10 @@
 
 <script>
 
-import { loadScript } from '@paypal/paypal-js'
+// import { loadScript } from '@paypal/paypal-js'
 import { ethers } from 'ethers'
 import { mapGetters, mapMutations } from 'vuex'
-import { PAYMENT_METHOD } from '@/constants'
+import { PAYMENT_METHOD, ZERO_CODE_ETH_ADDRESS } from '@/constants'
 
 export default {
     data() {
@@ -67,27 +85,31 @@ export default {
 		    ethPayTxHash: null,
             smartContractId: null,
             isBusy: false,
-            total: 799,
+			total: null,
 			returnUrl: '/'
         }
     },
-    async mounted() {
+    async created() {
         try {
             this.smartContractId = this.$route.query['smId']
             if(!this.smartContractId) this.$router.push('/')
 
 			this.returnUrl = `/smartcontract?id=${this.smartContractId}&deploy=true`
+
+			const { data } = await this.$axios.get(`/smartcontracts/${this.smartContractId}/total`)
+
+			this.total = data.totalEth
             
-			await loadScript({
-				'client-id': this.$config.PAYPAL_CLIENT_ID,
-                debug: false,
-				// 'debug': process.env.ENVIRONMENT !== 'production',
-				'disable-funding': 'credit',
-				'enable-funding': 'venmo',
-			})
-            this.renderPayPalButtons(this.smartContractId)
+			// await loadScript({
+			// 	'client-id': this.$config.PAYPAL_CLIENT_ID,
+            //     debug: false,
+			// 	// 'debug': process.env.ENVIRONMENT !== 'production',
+			// 	'disable-funding': 'credit',
+			// 	'enable-funding': 'venmo',
+			// })
+            // this.renderPayPalButtons(this.smartContractId)
 		} catch (err) {
-			console.error('paypal init error', err)
+			console.error('init error', err)
 		}
     },
     computed: {
@@ -95,79 +117,78 @@ export default {
     },
     methods: {
 		...mapMutations(['setBusy']),
-        onPaymentModalHidden() {
-			const container = document.getElementById('paypal-container')
-			if (container.firstChild) {
-				container.removeChild(container.firstChild)
-			}
-		},
-        async renderPayPalButtons() {
-            const total = this.total
-			paypal
-				.Buttons({
-                    createOrder: function (data, actions) {
-                        // console.log('createOrder', data)
-						// Set up the transaction
-						return actions.order.create({
-							purchase_units: [
-								{
-									amount: {
-										value: total,
-									},
-								},
-							],
-							application_context: {
-								brand_name: 'Zero Code NFT',
-								shipping_preference: 'NO_SHIPPING',
-								user_action: 'PAY_NOW',
-							},
-						})
-					},
-					onApprove: (data, actions) => {
-						// console.log('onApprove', data)
-						// This function captures the funds from the transaction.
-						return actions.order.capture().then(async (details) => {
-							// This function shows a transaction success message to your buyer.
-							// console.log({ details })
-							const {
-								id: orderId,
-								address,
-								email_address,
-								name,
-								payer_id,
-							} = details.payer
-							await this.$axios.post('transactions', {
-								paymentMethod: PAYMENT_METHOD.PayPal,
-								amount: this.total,
-								orderId: orderId,
-								countryCode: address.country_code,
-								payerId: payer_id,
-								payerName: `${name.given_name} ${name.surname}`,
-								payerEmail: email_address,
-								userId: this.userId,
-								smartContractId: this.smartContractId
-							})
-							// const tran = await this.$axios.get(`/transactions/paypal/${id}`)
-							// console.log(tran)
-							this.$bvModal.show('paymentSuccess')
-						})
-					},
-					onCancel: () => {
-						// this.$bvModal.hide('payment')
-						// this.onPaymentModalHidden()
-					},
-					onError: (err) => {
-						console.error({ err })
-						// this.$bvModal.hide("payment")
-						// this.onPaymentModalHidden()
-						this.$bvToast.toast(err.message || 'Payment failed', {
-							title: 'PayPal',
-							variant: 'danger',
-						})
-					},
-				})
-                .render('#paypal-container')
-		},
+        // onPaymentModalHidden() {
+		// 	const container = document.getElementById('paypal-container')
+		// 	if (container.firstChild) {
+		// 		container.removeChild(container.firstChild)
+		// 	}
+		// },
+        // async renderPayPalButtons() {
+        //     const total = this.total
+		// 	paypal
+		// 		.Buttons({
+        //             createOrder: function (data, actions) {
+        //                 // console.log('createOrder', data)
+		// 				// Set up the transaction
+		// 				return actions.order.create({
+		// 					purchase_units: [
+		// 						{
+		// 							amount: {
+		// 								value: total,
+		// 							},
+		// 						},
+		// 					],
+		// 					application_context: {
+		// 						brand_name: 'Zero Code NFT',
+		// 						shipping_preference: 'NO_SHIPPING',
+		// 						user_action: 'PAY_NOW',
+		// 					},
+		// 				})
+		// 			},
+		// 			onApprove: (data, actions) => {
+		// 				// console.log('onApprove', data)
+		// 				// This function captures the funds from the transaction.
+		// 				return actions.order.capture().then(async (details) => {
+		// 					// This function shows a transaction success message to your buyer.
+		// 					// console.log({ details })
+		// 					const {
+		// 						id: orderId,
+		// 						address,
+		// 						email_address,
+		// 						name,
+		// 						payer_id,
+		// 					} = details.payer
+		// 					await this.$axios.post('transactions', {
+		// 						paymentMethod: PAYMENT_METHOD.PayPal,
+		// 						amount: this.total,
+		// 						orderId: orderId,
+		// 						countryCode: address.country_code,
+		// 						payerId: payer_id,
+		// 						payerName: `${name.given_name} ${name.surname}`,
+		// 						payerEmail: email_address,
+		// 						smartContractId: this.smartContractId
+		// 					})
+		// 					// const tran = await this.$axios.get(`/transactions/paypal/${id}`)
+		// 					// console.log(tran)
+		// 					this.$bvModal.show('paymentSuccess')
+		// 				})
+		// 			},
+		// 			onCancel: () => {
+		// 				// this.$bvModal.hide('payment')
+		// 				// this.onPaymentModalHidden()
+		// 			},
+		// 			onError: (err) => {
+		// 				console.error({ err })
+		// 				// this.$bvModal.hide("payment")
+		// 				// this.onPaymentModalHidden()
+		// 				this.$bvToast.toast(err.message || 'Payment failed', {
+		// 					title: 'PayPal',
+		// 					variant: 'danger',
+		// 				})
+		// 			},
+		// 		})
+        //         .render('#paypal-container')
+		// },
         async payWithEth() {
 			try {
                 this.isBusy = true
@@ -175,15 +196,17 @@ export default {
                 if(this.$wallet.chainId !== 1) {
                     await this.$wallet.switchNetwork(1)
                 }
-				const data = await fetch(
-					'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD'
-				)
-				const { USD: ethPrice } = await data.json()
-				const value = this.total / ethPrice
+
+				
+				// const data = await fetch(
+				// 	'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD'
+				// )
+				// const { USD: ethPrice } = await data.json()
+				// const value = this.total / ethPrice
 				const tx = {
 					from: this.$wallet.account,
-					to: '0x34Eca06DB779169003117e8999B5E008086f4cc3',
-					value: ethers.utils.parseEther(value.toString()),
+					to: ZERO_CODE_ETH_ADDRESS,
+					value: ethers.utils.parseEther(this.total.toString()),
 					nonce: this.$wallet.provider.getTransactionCount(
 						this.$wallet.account,
 						'latest'
@@ -196,7 +219,7 @@ export default {
 
                 this.setBusy({ 
                     isBusy: true, 
-                    message: `Confirming ETH transaction... <br/> Hash: ${txRes.hash} <br/> DO NOT CLOSE THIS WINDOW!`
+                    message: `Confirming ETH transaction... <br/> DO NOT CLOSE THIS WINDOW! <br/> Hash: ${txRes.hash}`
                 })
 
                 txRes.wait().then(async res => {
@@ -212,7 +235,6 @@ export default {
                         payerId: this.userId,
                         payerName: `${user.firstName} ${user.lastName}`,
                         payerEmail: user.email,
-                        userId: user.id,
                         smartContractId: this.smartContractId
                     })
 
@@ -238,13 +260,13 @@ export default {
                 this.isBusy = false
             }
 		},
-        onFTXPay() {
-			window.open(
-				`https://ftx.us/pay/request?subscribe=false&coin=USD&size=${this.total}&id=3260&memoIsRequired=false&memo=&notes=`,
-				'_blank',
-				'resizable,width=700,height=900'
-			)
-		},
+        // onFTXPay() {
+		// 	window.open(
+		// 		`https://ftx.us/pay/request?subscribe=false&coin=USD&size=${this.total}&id=3260&memoIsRequired=false&memo=&notes=`,
+		// 		'_blank',
+		// 		'resizable,width=700,height=900'
+		// 	)
+		// },
     }
 }
 </script>
