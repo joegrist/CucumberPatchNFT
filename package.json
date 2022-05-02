@@ -6,6 +6,8 @@
   "description": "Seamless solution to create a smart contract & facilitate the launch of your NFT collection!",
   "scripts": {
     "dev": "nuxt",
+    "stag": "SET NODE_ENV=staging && nuxt --dotenv .env.staging",
+    "prod": "SET NODE_ENV=production && nuxt --dotenv .env.production",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate"

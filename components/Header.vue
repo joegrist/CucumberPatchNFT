@@ -22,6 +22,13 @@
 					<!-- <span v-if="$wallet.account" class="mr-2 my-auto"
 						>{{ $wallet.balance }}
 					</span> -->
+					<b-button
+						v-if="isLoggedIn"
+						variant="link"
+						class="gradient-text"
+						@click="onLogout"
+						>Logout</b-button
+					>
 					<b-avatar
 						button 
 						@click="showSidebar(true)"
@@ -66,7 +73,11 @@ export default {
 	},
 	methods: {
 		...mapMutations(['showSidebar']),
-		...mapActions(['login'])
+		...mapActions(['login', 'logout']),
+		onLogout() {
+			this.logout()
+			this.$router.push('/login')
+		}
 	},
 }
 </script>

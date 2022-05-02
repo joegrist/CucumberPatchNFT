@@ -1,11 +1,9 @@
 import getSiteMeta from './scripts/siteMeta'
-import axios from 'axios'
 
 const {
 	API_URL,
 	OPENSEA_API_KEY,
 	PAYPAL_CLIENT_ID,
-	FF_CREATE_SITE,
 	DISCORD_INVITE_URL,
 	MINT_SITE_URL,
 	DISCORD_SERVER,
@@ -27,25 +25,11 @@ export default {
 		API_URL,
 		OPENSEA_API_KEY,
 		PAYPAL_CLIENT_ID,
-		FF_CREATE_SITE,
 		DISCORD_INVITE_URL,
 		MINT_SITE_URL,
 		DISCORD_SERVER,
 		DISCORD_CHANNEL,
 	},
-
-	// privateRuntimeConfig: {
-	//   OPENSEA_API_KEY,
-	//   NETLIFY_API_TOKEN,
-	//   PAYPAL_CLIENT_ID,
-	// },
-
-	// env: {
-	//   API_URL,
-	//   OPENSEA_API_KEY,
-	//   PAYPAL_CLIENT_ID,
-	//   FF_MAINNET_DEPLOY
-	// },
 
 	router: {
 		middleware: 'alerts',
