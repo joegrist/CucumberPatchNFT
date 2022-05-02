@@ -12,6 +12,7 @@
 			<b-row v-if="site.type !== WEBSITE_TYPE.Full">
 				<b-col cols="9" style="overflow: auto" class="text-center">
 					<div v-if="showPreview" v-html="iframeCode"></div>
+					<b-link :href="directURL" target="_blank">{{ directURL }}</b-link>
 					<h5 class="text-center text-muted mb-3">Preview window</h5>
 				</b-col>
 				<b-col cols="3">
@@ -278,6 +279,9 @@ export default {
 				this.site.template === WEBSITE_TEMPLATE.Full ? '' : WEBSITE_TEMPLATE[this.site.template]
 			}?siteId=${this.site.id}"></iframe>`
 		},
+		directURL() {
+			return `${this.$config.MINT_SITE_URL}/${this.site.template === WEBSITE_TEMPLATE.Full ? '' : WEBSITE_TEMPLATE[this.site.template]}?siteId=${this.site.id}`
+		}
 	},
 	methods: {
 		...mapMutations(['setBusy']),
