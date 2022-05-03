@@ -56,7 +56,6 @@
                     </p>
                 </div>
 				<b-button
-					:disabled="isBusy"
 					variant="primary"
 					@click="
 						() => {
@@ -75,7 +74,7 @@
 
 // import { loadScript } from '@paypal/paypal-js'
 import { ethers } from 'ethers'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 import { PAYMENT_METHOD, ZERO_CODE_ETH_ADDRESS } from '@/constants'
 
 export default {
@@ -83,7 +82,6 @@ export default {
         return {
 		    ethPayTxHash: null,
             smartContractId: null,
-            isBusy: false,
 			total: null,
 			returnUrl: '/'
         }
@@ -112,6 +110,7 @@ export default {
 		}
     },
     computed: {
+		...mapState(['isBusy']),
 		...mapGetters(['userId'])
     },
     methods: {
@@ -190,12 +189,11 @@ export default {
 		// },
         async payWithEth() {
 			try {
-                this.isBusy = true
+				this.setBusy({isBusy: true})
 
                 if(this.$wallet.chainId !== 1) {
                     await this.$wallet.switchNetwork(1)
                 }
-
 				
 				// const data = await fetch(
 				// 	'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD'
@@ -216,13 +214,14 @@ export default {
 					.getSigner()
 					.sendTransaction(tx)
 
-                this.setBusy({ 
+                this.setBusy({
                     isBusy: true, 
                     message: `Confirming ETH transaction... <br/> DO NOT CLOSE THIS WINDOW! <br/> Hash: ${txRes.hash}`
                 })
 
                 const confirmedTx = await txRes.wait()
 				console.log({confirmedTx})
+
 				this.ethPayTxHash = confirmedTx.transactionHash
 
 				const user = this.$store.state.user
@@ -237,7 +236,6 @@ export default {
 					smartContractId: this.smartContractId
 				})
 
-				this.setBusy({isBusy:false})
 				this.$bvModal.show('paymentSuccess')
 
 				// this.$bvModal.hide('payment')
