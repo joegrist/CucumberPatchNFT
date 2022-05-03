@@ -36,7 +36,6 @@
 				<b-button size="lg" variant="primary" href="https://discord.gg/NdEpB6ZYKn" target="_blank"><b-icon icon="discord"></b-icon></b-button>
 				<b-button size="lg" variant="primary" href="http://twitter.com/zero_code_nft" target="_blank"><b-icon icon="twitter"></b-icon></b-button>
 				<b-button size="lg" variant="primary" :href="`mailto:drop@zerocodenft.com?subject=Custom Deployment for ${smartContractId}`" target="_blank"><b-icon icon="envelope"></b-icon></b-button>
-				<!-- <b-button class="mb-3 p-2 font-weight-bolder" block variant="info" @click="onFTXPay">Pay with FTX US</b-button> -->
 				<!-- <div id="paypal-container"></div> -->
             </b-col>
         </b-row>
@@ -222,25 +221,24 @@ export default {
                     message: `Confirming ETH transaction... <br/> DO NOT CLOSE THIS WINDOW! <br/> Hash: ${txRes.hash}`
                 })
 
-                txRes.wait().then(async res => {
-                    console.log({res})
-				    this.ethPayTxHash = res.transactionHash
+                const confirmedTx = await txRes.wait()
+				console.log({confirmedTx})
+				this.ethPayTxHash = confirmedTx.transactionHash
 
-                    const user = this.$store.state.user
-                    await this.$axios.post('transactions', {
-                        paymentMethod: PAYMENT_METHOD.ETH,
-                        amount: this.total,
-                        orderId: res.transactionHash,
-                        countryCode: null,
-                        payerId: this.userId,
-                        payerName: `${user.firstName} ${user.lastName}`,
-                        payerEmail: user.email,
-                        smartContractId: this.smartContractId
-                    })
+				const user = this.$store.state.user
+				await this.$axios.post('transactions', {
+					paymentMethod: PAYMENT_METHOD.ETH,
+					amount: this.total,
+					orderId: confirmedTx.transactionHash,
+					countryCode: null,
+					payerId: this.userId,
+					payerName: `${user.firstName} ${user.lastName}`,
+					payerEmail: user.email,
+					smartContractId: this.smartContractId
+				})
 
-                    this.setBusy({isBusy:false})
-				    this.$bvModal.show('paymentSuccess')
-                })
+				this.setBusy({isBusy:false})
+				this.$bvModal.show('paymentSuccess')
 
 				// this.$bvModal.hide('payment')
 			} catch (err) {
@@ -250,14 +248,14 @@ export default {
 						data?.message ||
 						reason ||
 						message ||
-						'Payment declined',
+						'Check your metamask balance. Do not attempt payment again. Contact us.',
 					{
 						title: 'ETH Payment',
 						variant: 'danger',
 					}
 				)
 			} finally {
-                this.isBusy = false
+                this.setBusy({isBusy:false})
             }
 		},
         // onFTXPay() {
