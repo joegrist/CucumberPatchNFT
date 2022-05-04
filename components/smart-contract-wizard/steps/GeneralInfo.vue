@@ -6,9 +6,9 @@
           <b-form-group
             description='URL to the endpoint (folder) that contains metadata .json files'
           >
-            <template  #label>
+            <template #label>
               IPFS Metadata URL
-              <ExternalLink href="https://youtu.be/hNRHFv9B-X4?t=71" icon="youtube" text="What's this?" />
+              <ExternalLink href="https://youtu.be/1f7GvvOIe6Y" icon="youtube" text="What's this?" />
             </template>
             <b-form-input
               id='baseURL'
