@@ -271,7 +271,7 @@ const basicFunctions = [
 	'reveal',
 	'totalSupply',
 	'setPublicMintPrice',
-	'setPlaceholderUri',
+	'setPreRevealUrl',
 ]
 
 export default {
