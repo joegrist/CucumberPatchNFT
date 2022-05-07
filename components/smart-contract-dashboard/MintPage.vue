@@ -41,8 +41,8 @@
 						</code>
 					</div>
 					<ExternalLink
-						href="https://www.youtube.com/watch?v=uo7mtt510hg&t=7s"
-						text="How to video"
+						href="https://www.youtube.com/playlist?list=PLSimebE4ITqOVKn2mZXb3dS51Ifqu_BEm"
+						text="How to videos"
 						icon="youtube" />
 				</b-col>
 			</b-row>
