@@ -3,7 +3,7 @@
 		<b-row class="mb-3">
 			<b-col sm="12" md="8">
 				<p class="lead font-weight-bold mb-1">
-					Deployed on {{ rawContract.blockchain | blockchainName }}
+					{{ CONTRACT_TYPE[rawContract.contractType] }} Deployed on {{ rawContract.blockchain | blockchainName }}
 					{{
 						rawContract.status === SMARTCONTRACT_STATUS.Testnet
 							? '(Testnet)'
@@ -248,7 +248,7 @@
 <script>
 import Vue from 'vue'
 import { mapMutations, mapState } from 'vuex'
-import { SALE_STATUS, SMARTCONTRACT_STATUS, BLOCKCHAIN } from '@/constants'
+import { SALE_STATUS, SMARTCONTRACT_STATUS, BLOCKCHAIN, CONTRACT_TYPE } from '@/constants'
 import {
 	getExplorerUrl,
 	getCurrency,
@@ -282,6 +282,7 @@ export default {
 	},
 	data: () => ({
 		SMARTCONTRACT_STATUS,
+		CONTRACT_TYPE,
 		SALE_STATUS,
 		showAdvancedFunctions: false,
 		rawContract: {},
