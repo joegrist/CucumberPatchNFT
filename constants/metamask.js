@@ -404,7 +404,7 @@ export function getMainnetConfig(testnetChainId) {
 	if(['0xEA61', '60001'].includes(testnetChainId)) return THINKIUM_MAINNET
 	if(['0x66EEB', '421611'].includes(testnetChainId)) return ARBITRUM_MAINNET
 	if (['0x45', '69'].includes(testnetChainId)) return OPTIMISM_MAINNET
-	if (["0x6357D2E0", '1666700000'].includes(testnetChainId)) return OPTIMISM_MAINNET
+	if (["0x6357D2E0", '1666700000'].includes(testnetChainId)) return HARMONY_MAINNET
 
 	throw new Error("Matching mainnet config not found")
 }
