@@ -26,7 +26,7 @@
 						<b-list-group-item>Balance: {{ $wallet.balance }}</b-list-group-item>
 						<b-list-group-item class="text-capitalize">Network: {{ $wallet.networkName }}</b-list-group-item>
 					</template>
-					<template v-if="isLoggedIn">
+					<template v-if="isLoggedIn && userCredits > 0">
 						<b-list-group-item>
 							<span>Credits: {{ userCredits }}</span>
 							<TransferCreditsButton />
@@ -39,7 +39,7 @@
 								<Copy :value="`https://app.zerocodenft.com?ref=${referral.code}`" />
 							</span>
 						</b-list-group-item>
-						<b-list-group-item>Referral Balance: ${{ referral.balance.toFixed(2) }}</b-list-group-item>
+						<b-list-group-item>Referral Balance: Ξ{{ referral.balanceEth.toFixed(2) }}</b-list-group-item>
 					</template>
 					<template v-if="isLoggedIn && !referral">
 						<b-list-group-item>

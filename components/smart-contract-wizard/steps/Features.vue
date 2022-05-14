@@ -21,10 +21,13 @@
 			<b-row>
 				<b-col>
 					<b-form-group
-						label="Placeholder URL"
-						description="URL to the .json file that contains generic metadata"
+						description="URL to the .json file containing pre-reveal metadata"
 						:label-class="{ required: smartContractBuilder.hasDelayedReveal }"
 						:disabled="!smartContractBuilder.hasDelayedReveal">
+						<template #label>
+							Placeholder URL 
+							<ExternalLink href="https://youtu.be/It05AkP_Wt4" icon="youtube" text="What's this?" />
+						</template>
 						<b-form-input
 							id="delayedRevealURL"
 							name="delayedRevealURL"

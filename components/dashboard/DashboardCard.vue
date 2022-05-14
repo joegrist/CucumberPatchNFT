@@ -51,7 +51,7 @@
 		</b-card-title>
 		
 		<b-card-sub-title class="text-center mb-2">{{
-			contractNetwork
+			subTitle
 		}}</b-card-sub-title>
 
 		<b-container fluid>
@@ -115,10 +115,11 @@
 					<template v-if="isOpenSea">
 						<b-link :href="collectionUrl" target="_blank">
 							<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+							<span class="text-muted">Open</span>
 						</b-link>
 					</template>
 					<template v-else>
-						<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+						<span>Marketplace N/A</span>
 					</template>
 				</b-col>
 				<b-col cols="6" class="text-center">
@@ -133,19 +134,20 @@
 				</b-col>
 			</b-row>
 			<b-row class="pb-0">
-				<b-col cols="6">
+				<b-col sm="12" md="6">
 					<b-button
 						v-if="isDeployed"
+						class="font-weight-bold"
 						variant="link"
 						size="sm"
 						:to="`/smartcontract?id=${sc.id}`"
 						>Manage contract ></b-button
 					>
-					<b-button v-else variant="link" size="sm" @click="onEdit"
+					<b-button v-else variant="link" size="sm" class="font-weight-bold" @click="onEdit"
 						>Edit/Deploy ></b-button
 					>
 				</b-col>
-				<b-col cols="6" class="text-muted d-flex justify-content-end my-auto">
+				<b-col sm="12" md="6" class="text-muted d-flex justify-content-end my-auto">
 					{{ sc.createdOn | toDate }}
 				</b-col>
 			</b-row>
@@ -224,7 +226,7 @@
 
 <script>
 import { ethers } from 'ethers'
-import { MARKETPLACE, SMARTCONTRACT_STATUS } from '@/constants'
+import { MARKETPLACE, SMARTCONTRACT_STATUS, CONTRACT_TYPE } from '@/constants'
 import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState } from '@/utils'
@@ -269,6 +271,9 @@ export default {
 				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error,
 				cloneContractTitle: !this.$v.cloneContractTitle.$error
 			}
+		},
+		subTitle() {
+			return this.contractNetwork + ' | ' + CONTRACT_TYPE[this.sc.contractType]
 		},
 		formattedBalance() {
 			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.sc.chainId)}`
