@@ -51,7 +51,7 @@
 		</b-card-title>
 		
 		<b-card-sub-title class="text-center mb-2">{{
-			contractNetwork
+			subTitle
 		}}</b-card-sub-title>
 
 		<b-container fluid>
@@ -226,7 +226,7 @@
 
 <script>
 import { ethers } from 'ethers'
-import { MARKETPLACE, SMARTCONTRACT_STATUS } from '@/constants'
+import { MARKETPLACE, SMARTCONTRACT_STATUS, CONTRACT_TYPE } from '@/constants'
 import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState } from '@/utils'
@@ -271,6 +271,9 @@ export default {
 				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error,
 				cloneContractTitle: !this.$v.cloneContractTitle.$error
 			}
+		},
+		subTitle() {
+			return this.contractNetwork + ' | ' + CONTRACT_TYPE[this.sc.contractType]
 		},
 		formattedBalance() {
 			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.sc.chainId)}`
