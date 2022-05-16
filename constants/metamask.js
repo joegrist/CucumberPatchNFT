@@ -146,8 +146,8 @@ export const CRONOS_MAINNET = {
 		symbol: 'CRO',
 		decimals: 18
 	},
-	rpcUrls: ['https://evm-cronos.crypto.org'],
-	blockExplorerUrls: ['https://cronos.org/explorer'],
+	rpcUrls: ['https://evm.cronos.org'],
+	blockExplorerUrls: ['https://cronoscan.com/'],
 }
 
 export const SONGBIRD_TESTNET = {
