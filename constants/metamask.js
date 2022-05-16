@@ -122,7 +122,7 @@ export const BSC_TESTNET = {
 		symbol: 'BNB',
 		decimals: 18
 	},
-	rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+	rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
 	blockExplorerUrls: ['https://testnet.bscscan.com'],
 }
 
@@ -134,8 +134,8 @@ export const CRONOS_TESTNET = {
 		symbol: 'TCRO',
 		decimals: 18
 	},
-	rpcUrls: ['https://cronos-testnet-3.crypto.org:8545/'],
-	blockExplorerUrls: ['https://cronos.org/explorer/testnet3'],
+	rpcUrls: ['https://evm-t3.cronos.org'],
+	blockExplorerUrls: ['https://testnet.cronoscan.com'],
 }
 
 export const CRONOS_MAINNET = {
@@ -147,7 +147,7 @@ export const CRONOS_MAINNET = {
 		decimals: 18
 	},
 	rpcUrls: ['https://evm.cronos.org'],
-	blockExplorerUrls: ['https://cronoscan.com/'],
+	blockExplorerUrls: ['https://cronoscan.com'],
 }
 
 export const SONGBIRD_TESTNET = {
