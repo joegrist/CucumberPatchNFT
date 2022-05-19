@@ -6,7 +6,10 @@
 					<h1>{{ site.title }}</h1>
 				</b-col>
 				<b-col sm="12" md="3" class="my-auto">
-					<b-button type="submit" variant="primary" block>Save</b-button>
+					<b-button type="submit" variant="primary" block>
+						Update
+						<b-icon v-show="notSaved" icon="exclamation-triangle" />
+					</b-button>
 				</b-col>
 			</b-row>
 			<b-row v-if="site.type !== WEBSITE_TYPE.Full">
@@ -16,10 +19,15 @@
 					<h5 class="text-center text-muted mb-3">Preview window</h5>
 				</b-col>
 				<b-col cols="3">
-					<b-form-group label="Template">
+					<b-form-group label="Mint Page Template">
 						<b-form-select
 							v-model="site.template"
 							:options="viewOptions"></b-form-select>
+					</b-form-group>
+					<b-form-group label="Mint Count Selector">
+						<b-form-select
+							v-model="site.mintCountSelectorType"
+							:options="mintCountSelectorOptions"></b-form-select>
 					</b-form-group>
 					<b-form-group :label="`Width (${site.windowWidth}%)`">
 						<b-form-input
@@ -216,7 +224,7 @@
 </template>
 
 <script>
-import { WEBSITE_STATUS, WEBSITE_TYPE, WEBSITE_TEMPLATE } from '@/constants'
+import { WEBSITE_STATUS, WEBSITE_TYPE, WEBSITE_TEMPLATE, MINT_SELECTOR_TYPE } from '@/constants'
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -236,11 +244,16 @@ export default {
 			WEBSITE_TEMPLATE,
 			site: {},
 			showPreview: true,
+			notSaved: false,
 			viewOptions: [
 				{ value: WEBSITE_TEMPLATE.Tabs, text: 'Tabs' },
 				{ value: WEBSITE_TEMPLATE.Button, text: 'Button' },
 				{ value: WEBSITE_TEMPLATE.Full, text: 'Full' },
 			],
+			mintCountSelectorOptions: [
+				{ value: MINT_SELECTOR_TYPE.SpinButton, text: 'Spin Button' },
+				{ value: MINT_SELECTOR_TYPE.Range, text: 'Range' },
+			]
 		}
 	},
 	async mounted() {
@@ -251,7 +264,6 @@ export default {
 		this.site.windowWidth = this.site.windowWidth ?? 100
 		this.site.windowHeight = this.site.windowHeight ?? 550
 		this.site.template = this.site.template ?? WEBSITE_TEMPLATE.Tabs
-		console.log(this.site.template)
 
 		if (this.site.dropDate) {
 			const [date, time] = dayjs
@@ -285,20 +297,6 @@ export default {
 	},
 	methods: {
 		...mapMutations(['setBusy']),
-		async onDelete() {
-			try {
-				this.setBusy({ isBusy: true })
-				await this.$axios.delete(`/websites/${this.site.id}`)
-				this.setBusy({ isBusy: false })
-				this.$router.push('/')
-			} catch (err) {
-				this.setBusy({ isBusy: false })
-				this.$bvToast.toast('Website delete failed', {
-					title: 'Website',
-					variant: 'danger',
-				})
-			}
-		},
 		async onUpdate() {
 			if (this.site.backgroundImage?.size / (1024 * 1024) > 1) {
 				alert('Background image is too big. Max supported size is 1 mb.')
@@ -339,6 +337,8 @@ export default {
 					title: 'Website',
 					variant: 'success',
 				})
+
+				this.notSaved = false
 			} catch (err) {
 				this.$bvToast.toast(err.message || 'Failed to update the website', {
 					title: 'Website',
