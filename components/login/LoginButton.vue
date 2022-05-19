@@ -1,11 +1,22 @@
 <template>
 	<div>
-		<b-button v-if="$attrs.variant" v-bind="$attrs" class="text-decoration-none text-white" style="color:inherit" @click="tryLogin">{{
-			caption
-		}}</b-button>
-		<b-button v-else v-bind="$attrs" class="bg-gradient-primary border-0 text-white" @click="tryLogin">{{
-			caption
-		}}</b-button>
+		<b-overlay :show="isBusy" rounded>
+			<b-button
+				v-if="$attrs.variant"
+				v-bind="$attrs"
+				class="text-decoration-none text-white"
+				style="color: inherit"
+				@click="tryLogin"
+				>{{ caption }}</b-button
+			>
+			<b-button
+				v-else
+				v-bind="$attrs"
+				class="bg-gradient-primary border-0 text-white"
+				@click="tryLogin"
+				>{{ caption }}</b-button
+			>
+		</b-overlay>
 		<b-modal :id="modalId" title="Register" centered hide-footer>
 			<RegistrationForm @done="onRegistrationDone" />
 		</b-modal>
@@ -19,18 +30,19 @@ import RegistrationForm from '@/components/forms/RegistrationForm'
 
 export default {
 	components: {
-		RegistrationForm
+		RegistrationForm,
 	},
 	props: {
 		caption: {
 			type: String,
 			default: 'Login',
 		},
-		redirect: String
+		redirect: String,
 	},
 	data() {
 		return {
-			modalId: nanoid()
+			modalId: nanoid(),
+			isBusy: false,
 		}
 	},
 
@@ -38,17 +50,21 @@ export default {
 		...mapActions(['login', 'signup']),
 		async tryLogin() {
 			try {
-				if(!this.$wallet.isConnected) {
+				this.isBusy = true
+
+				if (!this.$wallet.isConnected) {
 					await this.$wallet.connect()
 				}
-				
+
 				const { account: publicKey } = this.$wallet
-				
-				const { data: nonce } = await this.$axios.get("/users/nonce", { params: { publicKey }})
-	
-				if(nonce) {
+
+				const { data: nonce } = await this.$axios.get('/users/nonce', {
+					params: { publicKey },
+				})
+
+				if (nonce) {
 					await this.login()
-					if(this.redirect) {
+					if (this.redirect) {
 						this.$router.push(this.redirect)
 					}
 				} else {
@@ -56,14 +72,16 @@ export default {
 				}
 			} catch (err) {
 				console.error(err)
+			} finally {
+				this.isBusy = false
 			}
 		},
 		onRegistrationDone() {
 			this.$bvModal.hide(this.modalId)
-			if(this.redirect) {
+			if (this.redirect) {
 				this.$router.push(this.redirect)
 			}
-		}
-	}
+		},
+	},
 }
 </script>
