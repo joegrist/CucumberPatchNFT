@@ -50,7 +50,7 @@
 									v-model="stylesConfig.mintBtnTextColor"
 								></b-form-input>
 							</b-form-group>
-							<b-form-group :label="`Width (${stylesConfig.mintBtnWidth})`">
+							<b-form-group :label="`Width (${stylesConfig.mintBtnWidth}%)`">
 								<b-form-input
 									type="range"
 									max="100"
