@@ -360,6 +360,7 @@ export default {
 
 				const stylesUpdate = { ...this.stylesConfig }
 				stylesUpdate.mintBtnWidth += '%'
+				stylesUpdate.mintBtnHeight += 'px'
 				
 				update.stylesConfig = JSON.stringify(stylesUpdate)
 				update.dropDate = dropDateInput
