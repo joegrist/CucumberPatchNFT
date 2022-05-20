@@ -63,7 +63,9 @@
 				Please correct "Phone Number"
 			</b-form-invalid-feedback> -->
 		</b-form-group>
-		<b-button type="submit" block variant="primary">Register</b-button>
+		<b-overlay :show="isBusy" rounded>
+			<b-button type="submit" block variant="primary">Register</b-button>
+		</b-overlay>
 	</b-form>
 </template>
 
@@ -75,6 +77,7 @@ import { required, alpha, alphaNum, email } from 'vuelidate/lib/validators'
 export default {
 	data() {
 		return {
+			isBusy: false,
 			form: {
 				publicKey: this.$wallet.account,
 				referralCode: this.$route.query['ref'] || sessionStorage.getItem('ref'),
@@ -120,10 +123,13 @@ export default {
 				return
             }
 			try {
+				this.isBusy = true
 				await this.signUp(this.form)
 				this.$emit('done')
 			} catch (err) {
 				console.error({err})
+			} finally {
+				this.isBusy = false
 			}
 		}
 	}
