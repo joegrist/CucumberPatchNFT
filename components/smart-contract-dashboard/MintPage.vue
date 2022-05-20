@@ -16,7 +16,10 @@
 				<b-col cols="9" style="overflow: auto" class="text-center">
 					<div v-if="showPreview" v-html="iframeCode"></div>
 					<b-link :href="directURL" target="_blank">{{ directURL }}</b-link>
-					<h5 class="text-center text-muted mb-3">Preview window</h5>
+					<h5 class="text-center text-muted mb-3">Preview window | <ExternalLink
+						href="https://www.youtube.com/playlist?list=PLSimebE4ITqOVKn2mZXb3dS51Ifqu_BEm"
+						text="How To Use"
+						icon="youtube" /></h5>
 				</b-col>
 				<b-col cols="3">
 					<b-form-group label="Mint Page Template">
@@ -29,6 +32,40 @@
 							v-model="site.mintCountSelectorType"
 							:options="mintCountSelectorOptions"></b-form-select>
 					</b-form-group>
+					<div class="mb-3">
+						<b-button v-b-toggle.mintBtnStyles block variant="transparent border d-flex justify-content-between">
+							<span>Mint Button</span>
+							<b-icon icon="chevron-down" class="my-auto" />
+						</b-button>
+						<b-collapse id="mintBtnStyles" class="p-1 border">
+							<b-form-group label="Background Color" label-cols="9" content-cols="3">
+								<b-form-input
+									type="color"
+									v-model="stylesConfig.mintBtnBgColor"
+								></b-form-input>
+							</b-form-group>
+							<b-form-group label="Text Color" label-cols="9" content-cols="3">
+								<b-form-input
+									type="color"
+									v-model="stylesConfig.mintBtnTextColor"
+								></b-form-input>
+							</b-form-group>
+							<b-form-group :label="`Width (${stylesConfig.mintBtnWidth})`">
+								<b-form-input
+									type="range"
+									max="100"
+									v-model="stylesConfig.mintBtnWidth"
+								></b-form-input>
+							</b-form-group>
+							<!-- <b-form-group :label="`Height (${stylesConfig.mintBtnHeight})`">
+								<b-form-input
+									type="range"
+									max="100"
+									v-model="stylesConfig.mintBtnHeight"
+								></b-form-input>
+							</b-form-group> -->
+						</b-collapse>
+					</div>
 					<b-form-group :label="`Width (${site.windowWidth}%)`">
 						<b-form-input
 							v-model="site.windowWidth"
@@ -243,6 +280,7 @@ export default {
 			WEBSITE_TYPE,
 			WEBSITE_TEMPLATE,
 			site: {},
+			stylesConfig: {},
 			showPreview: true,
 			notSaved: false,
 			viewOptions: [
@@ -252,8 +290,8 @@ export default {
 			],
 			mintCountSelectorOptions: [
 				{ value: MINT_SELECTOR_TYPE.SpinButton, text: 'Spin Button' },
-				{ value: MINT_SELECTOR_TYPE.Range, text: 'Range' },
-			]
+				{ value: MINT_SELECTOR_TYPE.Range, text: 'Slider' },
+			],
 		}
 	},
 	async mounted() {
@@ -261,6 +299,11 @@ export default {
 			`/smartcontracts/${this.smartContractId}/website`
 		)
 		this.site = data
+
+		this.stylesConfig = JSON.parse(data.stylesConfig || "{}")
+		this.stylesConfig.mintBtnWidth = this.stylesConfig.mintBtnWidth || '100%'
+		// this.stylesConfig.mintBtnHeight = this.stylesConfig.mintBtnHeight || '16px'
+
 		this.site.windowWidth = this.site.windowWidth ?? 100
 		this.site.windowHeight = this.site.windowHeight ?? 550
 		this.site.template = this.site.template ?? WEBSITE_TEMPLATE.Tabs
@@ -314,8 +357,14 @@ export default {
 				const { dropDateInput, dropTimeInput, id } = this.site
 
 				const update = { ...this.site }
-				update.dropTimeZone = dayjs.tz.guess()
+
+				const stylesUpdate = { ...this.stylesConfig }
+				stylesUpdate.mintBtnWidth += '%'
+				// stylesUpdate.mintBtnHeight += 'px'
+				
+				update.stylesConfig = JSON.stringify(stylesUpdate)
 				update.dropDate = dropDateInput
+				update.dropTimeZone = dayjs.tz.guess()
 				if (dropDateInput && dropTimeInput) {
 					update.dropDate = new Date(
 						`${dropDateInput}T${dropTimeInput}`
@@ -331,7 +380,7 @@ export default {
 
 				// reload iframe
 				this.showPreview = false
-				setTimeout(() => (this.showPreview = true), 1000)
+				setTimeout(() => (this.showPreview = true), 500)
 
 				this.$bvToast.toast('Website updated successfully', {
 					title: 'Website',
@@ -351,3 +400,9 @@ export default {
 	},
 }
 </script>
+<style lang="scss" scoped>
+// #mintBtnStyles {
+// 	border: 1px solid black;
+// 	border-top: none;
+// }
+</style>

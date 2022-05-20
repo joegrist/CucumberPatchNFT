@@ -52,7 +52,7 @@
           <b-form-group
             label='Name'
             label-class='required'
-            description='Purely presentational, no special characters, max 50'
+            description="Purely presentational, no special characters, max 50, start with a letter"
           >
             <b-form-input
               id='contractName'
@@ -200,7 +200,7 @@
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { required, maxLength, numeric, minValue, decimal, alphaNum } from 'vuelidate/lib/validators'
 import { getCurrency } from '@/constants/metamask'
-const mustBeName = val => /^[\w ]*$/.test(val)
+const mustBeName = val => /^[A-Za-z][\w ]{1,50}$/.test(val)
 
 export default {
   mixins: [smartContractBuilderMixin],

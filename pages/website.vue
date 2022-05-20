@@ -1,9 +1,7 @@
 <template>
-
 	<div>
 		<MintPage :smartContractId="$route.query['scId']" />
 	</div>
-
 </template>
 
 <script>
