@@ -16,68 +16,143 @@
 				<b-col cols="9" style="overflow: auto" class="text-center">
 					<div v-if="showPreview" v-html="iframeCode"></div>
 					<b-link :href="directURL" target="_blank">{{ directURL }}</b-link>
-					<h5 class="text-center text-muted mb-3">Preview window | <ExternalLink
-						href="https://www.youtube.com/playlist?list=PLSimebE4ITqOVKn2mZXb3dS51Ifqu_BEm"
-						text="How To Use"
-						icon="youtube" /></h5>
+					<h5 class="text-center text-muted mb-3">
+						Preview window |
+						<ExternalLink
+							href="https://www.youtube.com/playlist?list=PLSimebE4ITqOVKn2mZXb3dS51Ifqu_BEm"
+							text="How To Use"
+							icon="youtube" />
+					</h5>
 				</b-col>
 				<b-col cols="3">
-					<b-form-group label="Mint Page Template">
-						<b-form-select
-							v-model="site.template"
-							:options="viewOptions"></b-form-select>
-					</b-form-group>
-					<b-form-group label="Mint Count Selector">
-						<b-form-select
-							v-model="site.mintCountSelectorType"
-							:options="mintCountSelectorOptions"></b-form-select>
-					</b-form-group>
-					<div class="mb-3">
-						<b-button v-b-toggle.mintBtnStyles block variant="transparent border d-flex justify-content-between">
-							<span>Mint Button</span>
-							<b-icon icon="chevron-down" class="my-auto" />
-						</b-button>
-						<b-collapse id="mintBtnStyles" class="p-1 border">
-							<b-form-group label="Background Color" label-cols="9" content-cols="3">
-								<b-form-input
-									type="color"
-									v-model="stylesConfig.mintBtnBgColor"
-								></b-form-input>
-							</b-form-group>
-							<b-form-group label="Text Color" label-cols="9" content-cols="3">
-								<b-form-input
-									type="color"
-									v-model="stylesConfig.mintBtnTextColor"
-								></b-form-input>
-							</b-form-group>
-							<b-form-group :label="`Width (${stylesConfig.mintBtnWidth})`">
-								<b-form-input
-									type="range"
-									max="100"
-									v-model="stylesConfig.mintBtnWidth"
-								></b-form-input>
-							</b-form-group>
-							<!-- <b-form-group :label="`Height (${stylesConfig.mintBtnHeight})`">
-								<b-form-input
-									type="range"
-									max="100"
-									v-model="stylesConfig.mintBtnHeight"
-								></b-form-input>
-							</b-form-group> -->
-						</b-collapse>
+					<div class="mb-2 accordion" role="tablist">
+						<b-card no-body class="rounded-0">
+							<b-card-header
+								header-class="p-0"
+								header-bg-variant="transparent"
+								role="tab">
+								<b-button
+									class="d-flex justify-content-between"
+									v-b-toggle.mintPageCollapse
+									block
+									variant="transparent">
+									<span>Mint Page</span>
+									<b-icon icon="chevron-down" class="my-auto" />
+								</b-button>
+							</b-card-header>
+							<b-collapse
+								id="mintPageCollapse"
+								visible
+								accordion="mint-page-accordion"
+								role="tabpanel">
+								<b-card-body class="pb-1">
+									<b-form-group
+										label="Background Color"
+										label-cols="9"
+										content-cols="3">
+										<b-form-input
+											type="color"
+											v-model="stylesConfig.pageBackground"></b-form-input>
+									</b-form-group>
+									<b-form-group
+										label="Text Color"
+										label-cols="9"
+										content-cols="3">
+										<b-form-input
+											type="color"
+											v-model="stylesConfig.pageTextColor"></b-form-input>
+									</b-form-group>
+									<b-form-group label="Mint Page Template">
+										<b-form-select
+											v-model="site.template"
+											:options="viewOptions"></b-form-select>
+									</b-form-group>
+									<b-form-group label="Mint Count Selector">
+										<b-form-select
+											v-model="site.mintCountSelectorType"
+											:options="mintCountSelectorOptions"></b-form-select>
+									</b-form-group>
+									<b-form-group :label="`Window Width (${site.windowWidth}%)`">
+										<b-form-input
+											v-model="site.windowWidth"
+											type="range"
+											max="100"></b-form-input>
+									</b-form-group>
+									<b-form-group
+										:label="`Window Height (${site.windowHeight}px)`">
+										<b-form-input
+											v-model="site.windowHeight"
+											type="range"
+											max="2000"></b-form-input>
+									</b-form-group>
+									<b-form-group
+										label="Minted Counter"
+										label-cols="9"
+										content-cols="3">
+										<b-form-checkbox
+											id="isCounterHidden"
+											name="isCounterHidden"
+											class="pt-1"
+											size="lg"
+											switch
+											:checked="!site.isCounterHidden"
+											@input="
+												(val) => (site.isCounterHidden = !val)
+											"></b-form-checkbox>
+									</b-form-group>
+								</b-card-body>
+							</b-collapse>
+						</b-card>
+						<b-card no-body class="rounded-0">
+							<b-card-header
+								header-class="p-0"
+								header-bg-variant="transparent"
+								role="tab">
+								<b-button
+									class="d-flex justify-content-between"
+									v-b-toggle.mintBtnStyles
+									block
+									variant="transparent">
+									<span>Mint Button</span>
+									<b-icon icon="chevron-down" class="my-auto" />
+								</b-button>
+							</b-card-header>
+							<b-collapse
+								id="mintBtnStyles"
+								accordion="mint-page-accordion"
+								role="tabpanel">
+								<b-card-body class="pb-1">
+									<b-form-group
+										label="Background Color"
+										label-cols="9"
+										content-cols="3">
+										<b-form-input
+											type="color"
+											v-model="stylesConfig.mintBtnBgColor"></b-form-input>
+									</b-form-group>
+									<b-form-group
+										label="Text Color"
+										label-cols="9"
+										content-cols="3">
+										<b-form-input
+											type="color"
+											v-model="stylesConfig.mintBtnTextColor"></b-form-input>
+									</b-form-group>
+									<b-form-group :label="`Width (${stylesConfig.mintBtnWidth})`">
+										<b-form-input
+											type="range"
+											max="100"
+											:value="
+												stylesConfig.mintBtnWidth.toString().replace('%', '')
+											"
+											@change="
+												(val) => (stylesConfig.mintBtnWidth = `${val}%`)
+											"></b-form-input>
+									</b-form-group>
+								</b-card-body>
+							</b-collapse>
+						</b-card>
 					</div>
-					<b-form-group :label="`Width (${site.windowWidth}%)`">
-						<b-form-input
-							v-model="site.windowWidth"
-							type="range"
-							max="100"></b-form-input>
-					</b-form-group>
-					<b-form-group :label="`Height (${site.windowHeight}px)`">
-						<b-form-input
-							v-model="site.windowHeight"
-							type="range"
-							max="2000"></b-form-input>
-					</b-form-group>
 					Embed code <Copy :value="iframeCode" />
 					<br />
 					<div class="border rounded p-2">
@@ -124,18 +199,6 @@
 							name="description"
 							v-model="site.description"></b-form-textarea>
 					</b-form-group>
-					<div class="d-flex flex-row mb-1">
-						<b-form-checkbox
-							id="isCounterHidden"
-							name="isCounterHidden"
-							switch
-							size="lg"
-							:checked="!site.isCounterHidden"
-							@input="(val) => (site.isCounterHidden = !val)"></b-form-checkbox>
-						<div class="mt-1">
-							<label class="mb-0">Minted/Collection Size counter</label>
-						</div>
-					</div>
 					<div class="d-flex">
 						<b-form-group
 							label="Drop Date"
@@ -261,7 +324,12 @@
 </template>
 
 <script>
-import { WEBSITE_STATUS, WEBSITE_TYPE, WEBSITE_TEMPLATE, MINT_SELECTOR_TYPE } from '@/constants'
+import {
+	WEBSITE_STATUS,
+	WEBSITE_TYPE,
+	WEBSITE_TEMPLATE,
+	MINT_SELECTOR_TYPE,
+} from '@/constants'
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -280,7 +348,14 @@ export default {
 			WEBSITE_TYPE,
 			WEBSITE_TEMPLATE,
 			site: {},
-			stylesConfig: {},
+			stylesConfig: {
+				mintBtnBgColor: '#8859EC',
+				mintBtnTextColor: '#FFFFFF',
+				mintBtnWidth: '100%',
+				// mintBtnFontSize: "20px",
+				pageBackground: '#FFFFFF',
+				pageTextColor: '#8859EC',
+			},
 			showPreview: true,
 			notSaved: false,
 			viewOptions: [
@@ -300,9 +375,11 @@ export default {
 		)
 		this.site = data
 
-		this.stylesConfig = JSON.parse(data.stylesConfig || "{}")
-		this.stylesConfig.mintBtnWidth = this.stylesConfig.mintBtnWidth || '100%'
-		// this.stylesConfig.mintBtnHeight = this.stylesConfig.mintBtnHeight || '16px'
+		this.stylesConfig = {
+			...this.stylesConfig,
+			...JSON.parse(data.stylesConfig || '{}'),
+		}
+		console.log(this.stylesConfig)
 
 		this.site.windowWidth = this.site.windowWidth ?? 100
 		this.site.windowHeight = this.site.windowHeight ?? 550
@@ -331,12 +408,18 @@ export default {
 					loading="lazy"
 					title="${this.site.title}"
 					src="${this.$config.MINT_SITE_URL}/${
-				this.site.template === WEBSITE_TEMPLATE.Full ? '' : WEBSITE_TEMPLATE[this.site.template]
+				this.site.template === WEBSITE_TEMPLATE.Full
+					? ''
+					: WEBSITE_TEMPLATE[this.site.template]
 			}?siteId=${this.site.id}"></iframe>`
 		},
 		directURL() {
-			return `${this.$config.MINT_SITE_URL}/${this.site.template === WEBSITE_TEMPLATE.Full ? '' : WEBSITE_TEMPLATE[this.site.template]}?siteId=${this.site.id}`
-		}
+			return `${this.$config.MINT_SITE_URL}/${
+				this.site.template === WEBSITE_TEMPLATE.Full
+					? ''
+					: WEBSITE_TEMPLATE[this.site.template]
+			}?siteId=${this.site.id}`
+		},
 	},
 	methods: {
 		...mapMutations(['setBusy']),
@@ -354,15 +437,11 @@ export default {
 			this.setBusy({ isBusy: true })
 
 			try {
-				const { dropDateInput, dropTimeInput, id } = this.site
-
 				const update = { ...this.site }
 
-				const stylesUpdate = { ...this.stylesConfig }
-				stylesUpdate.mintBtnWidth += '%'
-				// stylesUpdate.mintBtnHeight += 'px'
-				
-				update.stylesConfig = JSON.stringify(stylesUpdate)
+				// const stylesUpdate = { ...this.stylesConfig }
+
+				const { dropDateInput, dropTimeInput, id } = this.site
 				update.dropDate = dropDateInput
 				update.dropTimeZone = dayjs.tz.guess()
 				if (dropDateInput && dropTimeInput) {
@@ -370,6 +449,8 @@ export default {
 						`${dropDateInput}T${dropTimeInput}`
 					).toUTCString()
 				}
+
+				update.stylesConfig = JSON.stringify(this.stylesConfig)
 
 				const payload = Object.keys(update).reduce((formData, key) => {
 					if (update[key]) formData.append(key, update[key])
@@ -400,9 +481,4 @@ export default {
 	},
 }
 </script>
-<style lang="scss" scoped>
-// #mintBtnStyles {
-// 	border: 1px solid black;
-// 	border-top: none;
-// }
-</style>
+
