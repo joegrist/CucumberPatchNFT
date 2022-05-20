@@ -50,20 +50,20 @@
 									v-model="stylesConfig.mintBtnTextColor"
 								></b-form-input>
 							</b-form-group>
-							<b-form-group :label="`Width (${stylesConfig.mintBtnWidth}%)`">
+							<b-form-group :label="`Width (${stylesConfig.mintBtnWidth})`">
 								<b-form-input
 									type="range"
 									max="100"
 									v-model="stylesConfig.mintBtnWidth"
 								></b-form-input>
 							</b-form-group>
-							<b-form-group :label="`Height (${stylesConfig.mintBtnHeight}px)`">
+							<!-- <b-form-group :label="`Height (${stylesConfig.mintBtnHeight})`">
 								<b-form-input
 									type="range"
 									max="100"
 									v-model="stylesConfig.mintBtnHeight"
 								></b-form-input>
-							</b-form-group>
+							</b-form-group> -->
 						</b-collapse>
 					</div>
 					<b-form-group :label="`Width (${site.windowWidth}%)`">
@@ -301,8 +301,8 @@ export default {
 		this.site = data
 
 		this.stylesConfig = JSON.parse(data.stylesConfig || "{}")
-		this.stylesConfig.mintBtnWidth = this.stylesConfig.mintBtnWidth || 100
-		this.stylesConfig.mintBtnHeight = this.stylesConfig.mintBtnHeight || 16
+		this.stylesConfig.mintBtnWidth = this.stylesConfig.mintBtnWidth || '100%'
+		// this.stylesConfig.mintBtnHeight = this.stylesConfig.mintBtnHeight || '16px'
 
 		this.site.windowWidth = this.site.windowWidth ?? 100
 		this.site.windowHeight = this.site.windowHeight ?? 550
@@ -360,7 +360,7 @@ export default {
 
 				const stylesUpdate = { ...this.stylesConfig }
 				stylesUpdate.mintBtnWidth += '%'
-				stylesUpdate.mintBtnHeight += 'px'
+				// stylesUpdate.mintBtnHeight += 'px'
 				
 				update.stylesConfig = JSON.stringify(stylesUpdate)
 				update.dropDate = dropDateInput
