@@ -47,6 +47,15 @@
 								role="tabpanel">
 								<b-card-body class="pb-1">
 									<b-form-group
+										v-show="site.template === WEBSITE_TEMPLATE.Full"
+										label="Bars Color"
+										label-cols="9"
+										content-cols="3">
+										<b-form-input
+											type="color"
+											v-model="stylesConfig.navbarBgColor"></b-form-input>
+									</b-form-group>
+									<b-form-group
 										label="Background Color"
 										label-cols="9"
 										content-cols="3">
@@ -379,7 +388,7 @@ export default {
 			...this.stylesConfig,
 			...JSON.parse(data.stylesConfig || '{}'),
 		}
-		console.log(this.stylesConfig)
+		// console.log(this.stylesConfig)
 
 		this.site.windowWidth = this.site.windowWidth ?? 100
 		this.site.windowHeight = this.site.windowHeight ?? 550
