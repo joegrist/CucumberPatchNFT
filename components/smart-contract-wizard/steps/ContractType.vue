@@ -39,14 +39,14 @@ import ContractTypeCard from '@/components/smart-contract-wizard/ContractTypeCar
 const contractTypes = [
 	{
 		id: CONTRACT_TYPE.ERC721,
-		title: 'ERC721',
+		title: 'NFT | ERC721',
 		description:
 			'Typical NFT contract, suitable for most scenarios. Pick if unsure.',
 		isAvailable: true,
 	},
 	{
 		id: CONTRACT_TYPE.ERC721A,
-		title: 'ERC721A (Azuki)',
+		title: 'NFT | ERC721A (Azuki)',
 		description: `
 			Known as <a href="https://www.azuki.com/erc721a" target="blank">Azuki smart contract</a>, 
 			suitable when you expect your customers to mint NFTs in small batches thus saving them on gas fees.
@@ -56,14 +56,26 @@ const contractTypes = [
 	},
 	{
 		id: CONTRACT_TYPE.ERC721,
-		title: 'ERC721 OmniChain (Custom order)',
+		title: 'NFT | ERC721 OmniChain (Custom order)',
 		description: 'Spread out your NFT collection across 7 different blockchains. Allows NFTs to be transferred between these chains.',
 		isAvailable: false,
 	},
 	{
 		id: CONTRACT_TYPE.ERC20,
-		title: 'ERC20 (Custom order)',
+		title: 'Fungible | ERC20 (Custom order)',
 		description: 'Typical fungible token contract.',
+		isAvailable: false,
+	},
+	{
+		id: CONTRACT_TYPE.MintPass,
+		title: 'NFT | Membership/Mint Pass (Custom order)',
+		description: 'Create NFT passes to use as memebership cards, event tickets, etc.',
+		isAvailable: false,
+	},
+	{
+		id: CONTRACT_TYPE.DAO,
+		title: 'NFT | DAO (Custom order)',
+		description: 'Decentralized Autonomous Organization with NFTs used for voting power.',
 		isAvailable: false,
 	},
 ]

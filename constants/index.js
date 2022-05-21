@@ -97,11 +97,15 @@ const CONTRACT_TYPE = Object.freeze({
 	ERC721A: 2,
 	ERC20: 3,
 	ERC1155: 4,
+	MintPass: 5,
+	DAO: 6,
 	0: 'Unknown',
 	1: 'ERC721',
 	2: 'ERC721A',
 	3: 'ERC20',
-	4: 'ERC1155'
+	4: 'ERC1155',
+	5: 'MintPass',
+	6: 'DAO'
 })
 
 const MINT_SELECTOR_TYPE = Object.freeze({
