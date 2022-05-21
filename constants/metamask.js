@@ -48,7 +48,10 @@ export const POLYGON_MUMBAI_TESTNET_CONFIG = {
 		symbol: 'MATIC',
 		decimals: 18,
 	},
-	rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+	rpcUrls: [
+		'https://polygon-mumbai.g.alchemy.com/v2/pNeHkDmnb5yRz1gD2uKctD9STtnAtmoS',
+		'https://rpc-mumbai.maticvigil.com'
+	],
 	blockExplorerUrls: ['https://mumbai.polygonscan.com']
 }
 
