@@ -31,9 +31,9 @@ const scrollTo = (id) => {
     document.getElementById(id).scrollIntoView({behavior: 'smooth'})
 }
 
-const downloadTextFile = (filename, text) => {
+const downloadTextFile = (filename, data, format = 'data:text/plain', encoding = 'charset=utf-8') => {
     var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('href', `${format};${encoding},${encodeURIComponent(data)}`);
     element.setAttribute('download', filename);
   
     element.style.display = 'none';

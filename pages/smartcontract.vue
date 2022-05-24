@@ -12,6 +12,11 @@
 					<b-tab title="Mint Page" lazy>
 						<MintPage :smartContractId="rawContract.id" />
 					</b-tab>
+					<b-tab title="Snapshot" lazy>
+						<Snapshot :smartContract="rawContract" />
+					</b-tab>
+					<b-tab title="Gated Access" :disabled="true">
+					</b-tab>
 				</b-tabs>
 			</b-col>
 		</b-row>
@@ -24,13 +29,16 @@ import { mapGetters, mapState } from 'vuex'
 import SmartContract from '@/components/smart-contract-dashboard/SmartContract'
 import Whitelist from '@/components/smart-contract-dashboard/Whitelist'
 import MintPage from '@/components/smart-contract-dashboard/MintPage'
+import Snapshot from '@/components/smart-contract-dashboard/Snapshot'
+
 
 export default {
 	middleware: 'authenticated',
 	components: {
 		SmartContract,
 		Whitelist,
-		MintPage
+		MintPage,
+		Snapshot
 	},
 	data: () => ({
 		rawContract: null,
