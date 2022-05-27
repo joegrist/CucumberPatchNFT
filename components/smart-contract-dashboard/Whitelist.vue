@@ -32,7 +32,7 @@
 		</b-row>
 		<b-row>
 			<b-col sm="12" md="8">
-				<b-form-group label="Enter addresses manually">
+				<b-form-group label="Enter addresses manually or upload a file. Whitelist has to be committed to take effect.">
 					<b-form-tags
 						v-model="whitelist"
 						invalid-tag-text="Address is invalid"
@@ -78,28 +78,34 @@
 <script>
 import { ethers } from 'ethers'
 import { getMerkleRoot } from '@/utils'
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState, mapGetters } from 'vuex'
 import { getExplorerUrl } from '@/constants/metamask'
 
 export default {
 	props: {
-		smartContract: Object,
+		smartContractId: String,
 	},
 	data() {
 		return {
-			whitelist: this.smartContract.whitelist,
+			smartContract: null,
+			whitelist: [],
 			invalidAddresses: [],
 			isProcessingWhitelistCommit: false,
 			commitBtnVariant: 'primary',
 		}
 	},
-	mounted() {
-		this.whitelist = this.whitelist.filter(
+	async created() {
+		const { data } = await this.$axios.get(
+			`/users/${this.userId}/smartcontracts/${this.smartContractId}`
+		)
+		this.smartContract = data
+		this.whitelist = this.smartContract.whitelist.filter(
 			(a) => a !== ethers.utils.AddressZero
 		)
 	},
 	computed: {
 		...mapState(['isBusy']),
+		...mapGetters(['userId']),
 	},
 	methods: {
 		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),

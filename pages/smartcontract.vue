@@ -7,7 +7,7 @@
 						<SmartContract :smartContract="rawContract" :deploy="shouldDeploy" />
 					</b-tab>
 					<b-tab v-if="rawContract.hasWhitelist" title="Whitelist" lazy>
-						<Whitelist :smartContract="rawContract" />
+						<Whitelist :smartContractId="rawContract.id" />
 					</b-tab>
 					<b-tab title="Mint Page" lazy>
 						<MintPage :smartContractId="rawContract.id" />
