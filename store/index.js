@@ -56,9 +56,8 @@ export const mutations = {
         Vue.set(state.alerts, existingIdx, alert)
     },
     removeAlert(state, id) {
-        // console.log('removeAlert', id)
-        const idx = state.alerts.findIndex(a => a.id === id)
-        state.alerts.splice(idx)
+        const alerts = state.alerts.filter(a => a.id !== id)
+        Vue.set(state, 'alerts', alerts)
     },
     clearAlerts(state) {
         state.alerts = []

@@ -229,7 +229,7 @@ import { ethers } from 'ethers'
 import { MARKETPLACE, SMARTCONTRACT_STATUS, CONTRACT_TYPE } from '@/constants'
 import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
-import { wait, validateState } from '@/utils'
+import { wait, validateState, getProvider } from '@/utils'
 import { required } from 'vuelidate/lib/validators'
 import BlockchainImage from '@/mixins/blockchainImage'
 
@@ -387,18 +387,14 @@ export default {
 		},
 		async getContractStats() {
 			try {
-				const { address, abi, status } = this.sc
+				const { address, abi, status, chainId } = this.sc
 				if(status < SMARTCONTRACT_STATUS.Testnet) {
 					return
 				}
 
-				const contract = new ethers.Contract(
-					address,
-					abi,
-					this.$wallet.provider
-				)
-
-				const contractBalance = await this.$wallet.provider.getBalance(
+				const provider = getProvider(chainId)
+				const contract = new ethers.Contract(address, abi, provider)
+				const contractBalance = await provider.getBalance(
 					this.sc.address
 				)
 

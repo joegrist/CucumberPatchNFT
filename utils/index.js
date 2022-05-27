@@ -1,6 +1,8 @@
 import { MerkleTree } from 'merkletreejs'
 import { ethers } from 'ethers'
 import { get } from 'lodash-es'
+import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
+
 
 const getMerkleRoot = (whitelist) => {
     const leafNodes = whitelist.map(a => ethers.utils.keccak256(a))
@@ -44,11 +46,20 @@ const downloadTextFile = (filename, data, format = 'data:text/plain', encoding =
     document.body.removeChild(element);
 }
 
+const getProvider = (chainId, isStatic = true) => {
+    const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
+    return isStatic
+        ? new ethers.providers.StaticJsonRpcProvider(providerUrl)
+        : new ethers.providers.JsonRpcProvider(providerUrl)
+}
+
+
 export {
     getMerkleRoot,
     wait,
     validateState,
     copyToClipboard,
     scrollTo,
-    downloadTextFile
+    downloadTextFile,
+    getProvider
 }

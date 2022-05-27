@@ -378,7 +378,7 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['setBusy', 'addAlert']),
+		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
 		getExplorerUrl,
 		getCurrency,
 		downloadTextFile,
@@ -398,6 +398,8 @@ export default {
 					show: true,
 					text: `Connected wallet address ${this.$wallet.accountCompact} is not the smart contract owner. Please switch to ${addrTo} to perform updates.`,
 				})
+			} else {
+				this.removeAlert('smartContractOwnerMismatch')
 			}
 		},
 		async onVerify() {
