@@ -90,7 +90,7 @@ export const ETHEREUM_RINKEBY = {
 		symbol: 'ETH',
 		decimals: 18
 	},
-	rpcUrls: ["https://eth-rinkeby.alchemyapi.io/v2/eY57F0-qi9WoMojLu9bc3xQuByUU4S-c"],
+	rpcUrls: ["https://eth-rinkeby.alchemyapi.io/v2/-cUzoxu1XKrGZTjZkdyApr6pgcA45CQr"],
 	blockExplorerUrls: ['https://rinkeby.etherscan.io']
 }
 
@@ -102,7 +102,7 @@ export const ETHEREUM_MAINNET = {
 		symbol: 'ETH',
 		decimals: 18
 	},
-	rpcUrls: [],
+	rpcUrls: ["https://eth-mainnet.alchemyapi.io/v2/Ck_TxTHd6T3d4PO38SpSoloqLdUe_2mh"],
 	blockExplorerUrls: ['https://etherscan.io'],
 }
 
