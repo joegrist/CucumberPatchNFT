@@ -7,7 +7,7 @@
             <b-col sm="12" md="4" class="text-right">
                 <b-overlay :show="isRunning">
                     <b-button variant="primary" @click="runSnapshot">Run Snapshot</b-button>
-                    <b-dropdown split variant="success" text="Export As" class="m-2">
+                    <b-dropdown :disabled="snapshotData.length === 0" split variant="success" text="Export As" class="m-2">
                         <b-dropdown-item-button @click="onExport('asIs')">All</b-dropdown-item-button>
                         <b-dropdown-item-button @click="onExport('wl')">Whitelist</b-dropdown-item-button>
                     </b-dropdown>
@@ -16,7 +16,7 @@
         </b-row>
 		<b-row>
 			<b-col>
-                <b-progress v-show="showProgress" :value="progress" :max="supply" show-progress animated></b-progress>
+                <b-progress v-show="showProgress" :value="progress" :max="supply" show-progress :animated="isRunning"></b-progress>
 				<b-table striped hover :items="snapshotData"></b-table>
 			</b-col>
 		</b-row>

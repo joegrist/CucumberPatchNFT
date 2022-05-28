@@ -211,7 +211,7 @@
 					<div class="d-flex">
 						<b-form-group
 							label="Drop Date"
-							description="Sets the countdown timer, enter your local time"
+							description="Sets the countdown timer"
 							class="pr-1 w-50">
 							<b-form-input
 								id="dropDateInput"
@@ -221,7 +221,7 @@
 						</b-form-group>
 						<b-form-group
 							label="Drop Time"
-							description="Sets the countdown timer"
+							description="Sets the countdown timer, enter your local time"
 							class="w-50">
 							<b-form-input
 								id="dropTimeInput"
