@@ -71,9 +71,9 @@
 					<span class="text-muted">Status</span>
 				</b-col>
 				<b-col cols="6" class="text-center">
-					<span class="font-weight-bold">{{ revealed | yesNo }}</span>
+					<span class="font-weight-bold">{{ sc.hasDelayedReveal | yesNo }} / {{ sc.hasWhitelist | yesNo }}</span>
 					<br />
-					<span class="text-muted">Revealed</span>
+					<span class="text-muted" title="Delayed Reveal / White List">DR / WL</span>
 				</b-col>
 				<b-col cols="6" class="text-center">
 					<span class="font-weight-bold"
@@ -240,7 +240,6 @@ export default {
 	},
 	data() {
 		return {
-			revealed: 'n/a',
 			balance: 'n/a',
 			minted: 0,
 			openSeaLinkUrl: null,
@@ -400,9 +399,6 @@ export default {
 
 				this.balance = +ethers.utils.formatEther(contractBalance)
 				this.minted = +(await contract.totalSupply())
-				this.revealed = this.sc.hasDelayedReveal
-					? await contract.canReveal()
-					: 'n/a'
 			} catch (err) {
 				console.error({ err })
 			}

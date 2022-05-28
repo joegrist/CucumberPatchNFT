@@ -3,14 +3,15 @@
 		<b-row class="mb-3">
 			<b-col sm="12" md="8">
 				<p class="lead font-weight-bold mb-1">
-					{{ CONTRACT_TYPE[rawContract.contractType] }} Deployed on {{ rawContract.blockchain | blockchainName }}
+					{{ CONTRACT_TYPE[rawContract.contractType] }} Deployed on
+					{{ rawContract.blockchain | blockchainName }}
 					{{
 						rawContract.status === SMARTCONTRACT_STATUS.Testnet
 							? '(Testnet)'
 							: '(Mainnet)'
 					}}
 					<br />
-					Address: 
+					Address:
 					<b-link
 						:href="`${getExplorerUrl(rawContract.chainId)}/address/${
 							rawContract.address
@@ -26,7 +27,8 @@
 							:disabled="!canDeployMainnet"
 							variant="primary"
 							@click="onMainnetDeploy">
-							<b-icon v-if="!rawContract.isClearedForMainnet" icon="wallet2" /> Deploy to Mainnet
+							<b-icon v-if="!rawContract.isClearedForMainnet" icon="wallet2" />
+							Deploy to Mainnet
 						</b-button>
 						<!-- <b-button
 								class="bg-gradient-primary border-0"
@@ -38,6 +40,30 @@
 				</div>
 			</b-col>
 			<b-col sm="12" md="4" class="d-flex flex-column">
+				<div class="lead font-weight-bold mb-1">
+					Earnings: {{ contractBalance }}
+					{{ getCurrency(rawContract.chainId) }}
+					<b-button-group size="sm">
+						<b-button variant="success">
+							<b-icon
+								v-if="isBusy"
+								icon="bootstrap-reboot"
+								animation="spin"
+								:disabled="true" />
+							<b-icon
+								v-else
+								icon="bootstrap-reboot"
+								@click="onRefreshBalance(true)" />
+						</b-button>
+						<b-button
+							title="Withdraw Balance"
+							v-show="contractBalance > 0"
+							variant="success"
+							@click="callFuncByName('withdraw')">
+							<b-icon icon="cash-stack" />
+						</b-button>
+					</b-button-group>
+				</div>
 				<div class="lead font-weight-bold">
 					Sale Status:
 					<span
@@ -48,58 +74,46 @@
 						}"
 						>{{ saleStatus }}</span
 					>
-					<b-icon
-						v-if="isBusy"
-						class="pointer"
-						font-scale="0.9"
-						icon="bootstrap-reboot"
-						variant="success"
-						animation="spin"
-						:disabled="true" />
-					<b-icon
-						v-else
-						class="pointer"
-						font-scale="0.9"
-						icon="bootstrap-reboot"
-						variant="success"
-						@click="callFuncByName('saleStatus')" />
+					<b-button-toolbar
+						key-nav
+						justify
+						aria-label="Smart contract sales menu">
+						<b-overlay :show="isBusy">
+							<b-button-group>
+								<b-button
+									variant="success"
+									title="Refresh Status"
+									@click="callFuncByName('saleStatus')">
+									<b-icon icon="bootstrap-reboot" />
+								</b-button>
+								<b-button
+									variant="warning"
+									title="Pause Sale"
+									@click="onUpdateSaleStatus(SALE_STATUS.Paused)">
+									<b-icon icon="pause-fill" />
+								</b-button>
+								<b-button
+									v-if="rawContract.hasWhitelist"
+									variant="dark"
+									title="Start Presale"
+									@click="onUpdateSaleStatus(SALE_STATUS.Presale)">
+									<b-icon icon="play-fill" />
+									<b-icon icon="list-check" />
+								</b-button>
+								<b-button
+									variant="success"
+									title="Start Public Sale"
+									@click="onUpdateSaleStatus(SALE_STATUS.Public)">
+									<b-icon icon="play-fill" />
+									<b-icon v-if="rawContract.hasWhitelist" icon="people-fill" />
+								</b-button>
+							</b-button-group>
+						</b-overlay>
+					</b-button-toolbar>
 				</div>
-				<div class="lead font-weight-bold mb-1">
-					Earnings: {{ contractBalance }}
-					{{ getCurrency(rawContract.chainId) }}
-					<b-icon
-						v-if="isBusy"
-						class="pointer"
-						font-scale="0.9"
-						icon="bootstrap-reboot"
-						variant="success"
-						animation="spin"
-						:disabled="true" />
-					<b-icon
-						v-else
-						class="pointer"
-						font-scale="0.9"
-						icon="bootstrap-reboot"
-						variant="success"
-						@click="onRefreshBalance(true)" />
-				</div>
-				<b-button
-					variant="success"
-					:disabled="contractBalance === 0"
-					@click="callFuncByName('withdraw')"
-					>Withdraw</b-button
-				>
 			</b-col>
 		</b-row>
-		<b-row v-if="isOnWrongNetwork">
-			<b-col class="d-flex flex-column align-items-center mt-3">
-				<h3>Detected network is different than this smart contract</h3>
-				<b-button variant="warning" @click="switchNetwork">
-					Switch network
-				</b-button>
-			</b-col>
-		</b-row>
-		<b-row v-else-if="!isReady">
+		<b-row v-if="!isReady">
 			<b-col>
 				<h3 class="pt-3 text-center">
 					Contract deployment is still in progress, please check back in a few
@@ -248,7 +262,12 @@
 <script>
 import Vue from 'vue'
 import { mapMutations, mapState } from 'vuex'
-import { SALE_STATUS, SMARTCONTRACT_STATUS, BLOCKCHAIN, CONTRACT_TYPE } from '@/constants'
+import {
+	SALE_STATUS,
+	SMARTCONTRACT_STATUS,
+	BLOCKCHAIN,
+	CONTRACT_TYPE,
+} from '@/constants'
 import {
 	getExplorerUrl,
 	getCurrency,
@@ -257,7 +276,7 @@ import {
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
-import { downloadTextFile } from '@/utils'
+import { downloadTextFile, getProvider } from '@/utils'
 
 const basicFunctions = [
 	'airdrop',
@@ -278,7 +297,7 @@ export default {
 	middleware: 'authenticated',
 	props: {
 		smartContract: Object,
-		deploy: Boolean
+		deploy: Boolean,
 	},
 	data: () => ({
 		SMARTCONTRACT_STATUS,
@@ -294,31 +313,26 @@ export default {
 		saleStatus: 'N/A',
 		busyState: {},
 		isReady: false,
-		currentOwner: null
+		currentOwner: null,
+		provider: null,
 	}),
 	async mounted() {
 		try {
-			
 			this.rawContract = this.smartContract
-			const { address, abi, ownerAddress } = this.rawContract
+			const { address, abi, ownerAddress, chainId } = this.rawContract
 			this.currentOwner = ownerAddress
 
-			if(this.deploy) { // trigger deploy right away
+			if (this.deploy) {
+				// trigger deploy right away
 				this.onMainnetDeploy()
 				return
 			}
 
 			this.setBusy({ isBusy: true })
 
-			if (this.isOnWrongNetwork) {
-				await this.switchNetwork()
-			}
+			this.provider = getProvider(chainId)
+			this.contract = new ethers.Contract(address, abi, this.provider)
 
-			this.contract = new ethers.Contract(
-				address,
-				abi,
-				this.$wallet.provider.getSigner()
-			)
 			this.isReady = !!(await this.contract.deployed())
 
 			if (this.isReady) {
@@ -348,7 +362,7 @@ export default {
 	},
 	watch: {
 		'$wallet.account': {
-			handler: 'checkOwner'
+			handler: 'checkOwner',
 		},
 	},
 	computed: {
@@ -373,9 +387,6 @@ export default {
 				(f) => this.showAdvancedFunctions || basicFunctions.includes(f.name)
 			)
 		},
-		isOnWrongNetwork() {
-			return this.$wallet.chainId !== +this.rawContract.chainId
-		},
 	},
 	methods: {
 		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
@@ -392,7 +403,9 @@ export default {
 
 			if (mismatch) {
 				const addr = this.rawContract.ownerAddress
-				const addrTo = `${addr.substring(0, 4)}...${addr.substring(addr.length - 4)}`
+				const addrTo = `${addr.substring(0, 4)}...${addr.substring(
+					addr.length - 4
+				)}`
 				this.addAlert({
 					id: 'smartContractOwnerMismatch',
 					show: true,
@@ -427,8 +440,7 @@ export default {
 		async onRefreshBalance(showNotification = false) {
 			this.setBusy({ isBusy: true })
 			const balance =
-				(await this.$wallet.provider.getBalance(this.rawContract.address)) ||
-				'0'
+				(await this.provider.getBalance(this.rawContract.address)) || '0'
 			this.contractBalance = +ethers.utils.formatEther(balance)
 			this.setBusy({ isBusy: false })
 			showNotification &&
@@ -444,9 +456,6 @@ export default {
 				actualResponse = actualResponse === 'true' ? 'Yes' : 'No'
 			}
 			return `${prefix}: ${actualResponse}`
-		},
-		async switchNetwork() {
-			await this.$wallet.switchNetwork(this.rawContract.chainId)
 		},
 		onParamChange(value, func, param) {
 			const args = (this.callFuncArgs[func.name] ??= new Map())
@@ -481,7 +490,10 @@ export default {
 
 				await this.$wallet.switchNetwork(mainnetConfig.chainId)
 
-				this.setBusy({ isBusy: true, message: 'Confirm metamask transaction to deploy' })
+				this.setBusy({
+					isBusy: true,
+					message: 'Confirm metamask transaction to deploy',
+				})
 
 				const { data } = await this.$axios.get(
 					`/smartcontracts/${id}/compiled`,
@@ -541,19 +553,26 @@ export default {
 		},
 		async callFunc(func) {
 			try {
-				console.log('calling ', func)
-
-				// console.log(this.rawContract.chainId, func)
+				console.log('executing ', func)
 
 				Vue.set(this.busyState, func.name, true)
 
+				let txResponse, args
 				const txOverrides = {}
 
-				let txResponse
+				let smartContract = this.contract
+
+				// if function updates state we need a signed version of the smart contract to make updates
+				if (!func.constant) {
+					if (this.$wallet.chainId !== +this.rawContract.chainId) {
+						await this.$wallet.switchNetwork(this.rawContract.chainId)
+					}
+					smartContract = this.contract.connect(
+						this.$wallet.provider.getSigner()
+					)
+				}
 
 				const hasFuncArgs = this.callFuncArgs[func.name]?.size > 0
-				let args
-
 				if (hasFuncArgs) {
 					// to preserve correct argument order we run mapping based on original function inputs order
 					// since we can't guarantee the correct order in callFuncArgs Map
@@ -565,7 +584,7 @@ export default {
 
 					if (func.payable) {
 						if (func.name === 'mint') {
-							const mintPrice = await this.contract.MINT_PRICE()
+							const mintPrice = await smartContract.MINT_PRICE()
 							const value =
 								Number(ethers.utils.formatEther(mintPrice)) * Number(args[0])
 							txOverrides.value = ethers.utils.parseEther(value.toString())
@@ -577,13 +596,13 @@ export default {
 						args = [ethers.utils.parseUnits(value)]
 					}
 
-					txResponse = await this.contract[func.name].call(
+					txResponse = await smartContract[func.name].call(
 						null,
 						...args,
 						txOverrides
 					)
 				} else {
-					txResponse = await this.contract[func.name](txOverrides)
+					txResponse = await smartContract[func.name](txOverrides)
 				}
 
 				console.log({ txResponse })
