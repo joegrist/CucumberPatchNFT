@@ -378,7 +378,7 @@ export default {
 			],
 		}
 	},
-	async mounted() {
+	async created() {
 		const { data } = await this.$axios.get(
 			`/smartcontracts/${this.smartContractId}/website`
 		)
@@ -470,7 +470,7 @@ export default {
 
 				// reload iframe
 				this.showPreview = false
-				setTimeout(() => (this.showPreview = true), 500)
+				setTimeout(() => (this.showPreview = true), 100)
 
 				this.$bvToast.toast('Website updated successfully', {
 					title: 'Website',
