@@ -24,14 +24,15 @@
 			<b-col sm="12" md="2" class="text-center"> <h3>OR</h3> </b-col>
 			<b-col sm="12" md="4">
 				<h3 class="mb-0">Custom Deployment</h3>
-				<span class="text-muted">starting from 0.5 eth</span>
+				<span class="text-muted">starting from 2 eth</span>
 				<p class="pt-3"> For bespoke project we offer: </p>
 				<ul>
 					<li>Smart contract deployed and verified by our team</li>
 					<li>OpenSea or other marketplace royalties split</li>
 					<li>Dedicated launch day support</li>
+					<li>Multisig wallet setup</li>
 					<li>White label solution (no "Powered by Zero Code NFT" signs)</li>
-					<li>Custom designed dApp (website)</li>
+					<li>Custom designed & built dApp (website)</li>
 				</ul>
 				<b-button size="lg" variant="primary" href="https://discord.gg/NdEpB6ZYKn" target="_blank"><b-icon icon="discord"></b-icon></b-button>
 				<b-button size="lg" variant="primary" href="http://twitter.com/zero_code_nft" target="_blank"><b-icon icon="twitter"></b-icon></b-button>
