@@ -24,7 +24,7 @@
 			<b-col sm="12" md="2" class="text-center"> <h3>OR</h3> </b-col>
 			<b-col sm="12" md="4">
 				<h3 class="mb-0">Custom Deployment</h3>
-				<span class="text-muted">starting from 0.5 eth</span>
+				<span class="text-muted">starting from 2 eth</span>
 				<p class="pt-3"> For bespoke project we offer: </p>
 				<ul>
 					<li>Smart contract deployed and verified by our team</li>
