@@ -273,13 +273,18 @@
 							<b-form-group
 								label="Background Image"
 								description="Your site's background. Max 1 MB in size"
-								class="pr-1 w-50">
+								class="w-50">
+								<template #label>
+									Background Image
+									<b-link v-if="site.backgroundImageURL" @click="resetBgImage">[Reset]</b-link>
+								</template>
 								<b-form-file
 									v-model="site.backgroundImage"
 									name="backgroundImage"
 									accept="image/*"
 									placeholder="Choose a file or drop it here..."
-									drop-placeholder="Drop file here..."></b-form-file>
+									drop-placeholder="Drop file here...">
+								</b-form-file>
 							</b-form-group>
 						</div>
 						<div class="d-flex">
@@ -444,31 +449,45 @@ export default {
 	computed: {
 		...mapState(['isBusy']),
 		...mapGetters(['userId']),
+		templateName() {
+			return this.site.template === WEBSITE_TEMPLATE.Full
+				? ''
+				: WEBSITE_TEMPLATE[this.site.template]
+		},
 		iframeCode() {
+			const { id, title, windowWidth, windowHeight } = this.site
 			return `
 				<iframe 
-					width="${this.site.windowWidth}%" 
-					height="${this.site.windowHeight}px"
+					width="${windowWidth}%" 
+					height="${windowHeight}px"
 					allowfullscreen="true"
 					style="border:none;"
 					loading="lazy"
-					title="${this.site.title}"
-					src="${this.$config.MINT_SITE_URL}/${
-				this.site.template === WEBSITE_TEMPLATE.Full
-					? ''
-					: WEBSITE_TEMPLATE[this.site.template]
-			}?siteId=${this.site.id}"></iframe>`
+					title="${title}"
+					src="${this.$config.MINT_SITE_URL}/${this.templateName}?siteId=${id}"></iframe>`
 		},
 		directURL() {
-			return `${this.$config.MINT_SITE_URL}/${
-				this.site.template === WEBSITE_TEMPLATE.Full
-					? ''
-					: WEBSITE_TEMPLATE[this.site.template]
-			}?siteId=${this.site.id}`
+			return `${this.$config.MINT_SITE_URL}/${this.templateName}?siteId=${this.site.id}`
 		},
 	},
 	methods: {
 		...mapMutations(['setBusy']),
+		async resetBgImage() {
+			try { 
+				await this.$axios.delete(`/websites/${this.site.id}/bgimage`)
+				this.site.backgroundImageURL = null;
+				this.resetPreview()
+				this.$bvToast.toast('Background image reset', {
+					title: 'Website',
+					variant: 'success'
+				})
+			} catch (err) {
+				this.$bvToast.toast('Background image reset failed', {
+					title: 'Website',
+					variant: 'danger'
+				})
+			}
+		},
 		async onUpdate() {
 			if (this.site.backgroundImage?.size / (1024 * 1024) > 1) {
 				alert('Background image is too big. Max supported size is 1 mb.')
@@ -504,11 +523,10 @@ export default {
 					return formData
 				}, new FormData())
 
-				await this.$axios.put(`/websites/${id}`, payload)
-
+				const { data } = await this.$axios.put(`/websites/${id}`, payload)
+				this.site = data
 				// reload iframe
-				this.showPreview = false
-				setTimeout(() => (this.showPreview = true), 100)
+				this.resetPreview()
 
 				this.$bvToast.toast('Website updated successfully', {
 					title: 'Website',
@@ -525,6 +543,10 @@ export default {
 				this.setBusy({ isBusy: false })
 			}
 		},
+		resetPreview() {
+			this.showPreview = false
+			setTimeout(() => (this.showPreview = true), 100)
+		}
 	},
 }
 </script>
