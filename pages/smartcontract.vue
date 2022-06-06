@@ -9,6 +9,9 @@
 					<b-tab v-if="rawContract.hasWhitelist" title="Whitelist" lazy>
 						<Whitelist :smartContractId="rawContract.id" />
 					</b-tab>
+					<b-tab v-if="rawContract.hasDelayedReveal" title="Delayed Reveal" lazy>
+						<DelayedReveal :smartContract="rawContract" />
+					</b-tab>
 					<b-tab title="Mint Page" lazy>
 						<MintPage :smartContractId="rawContract.id" />
 					</b-tab>
@@ -28,6 +31,7 @@ import { mapGetters, mapState } from 'vuex'
 
 import SmartContract from '@/components/smart-contract-dashboard/SmartContract'
 import Whitelist from '@/components/smart-contract-dashboard/Whitelist'
+import DelayedReveal from '@/components/smart-contract-dashboard/DelayedReveal'
 import MintPage from '@/components/smart-contract-dashboard/MintPage'
 import Snapshot from '@/components/smart-contract-dashboard/Snapshot'
 
@@ -37,6 +41,7 @@ export default {
 	components: {
 		SmartContract,
 		Whitelist,
+		DelayedReveal,
 		MintPage,
 		Snapshot
 	},

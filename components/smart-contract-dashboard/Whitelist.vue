@@ -2,7 +2,7 @@
 	<b-container fluid>
 		<b-row class="mb-2">
 			<b-col sm="12" md="8">
-				<h4 class="m-0">Whitelist</h4>
+				<h4 class="m-0">{{ smartContract.name }} Whitelist</h4>
 				<b-link href="/whitelist-csv-example.csv" download
 					>Download example</b-link
 				>
