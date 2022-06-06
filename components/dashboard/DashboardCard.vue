@@ -141,10 +141,10 @@
 						variant="link"
 						size="sm"
 						:to="`/smartcontract?id=${sc.id}`"
-						>Manage contract ></b-button
+						>Manage contract >></b-button
 					>
 					<b-button v-else variant="link" size="sm" class="font-weight-bold" @click="onEdit"
-						>Edit/Deploy ></b-button
+						>Edit/Deploy >></b-button
 					>
 				</b-col>
 				<b-col sm="12" md="6" class="text-muted d-flex justify-content-end my-auto">

@@ -3,6 +3,7 @@
 		<b-row class="mb-3">
 			<b-col sm="12" md="8">
 				<p class="lead font-weight-bold mb-1">
+					{{ rawContract.name }}
 					{{ CONTRACT_TYPE[rawContract.contractType] }} Deployed on
 					{{ rawContract.blockchain | blockchainName }}
 					{{
@@ -280,7 +281,6 @@ import { downloadTextFile, getProvider } from '@/utils'
 
 const basicFunctions = [
 	'airdrop',
-	'canReveal',
 	'COLLECTION_SIZE',
 	'MINT_PRICE',
 	'PRESALE_MINT_PRICE',
