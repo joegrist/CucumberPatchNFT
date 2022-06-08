@@ -2,11 +2,11 @@
 	<b-container fluid>
 		<b-row class="mb-2">
 			<b-col sm="12" md="9" class="my-auto">
-				<h4>{{ smartContract.name }} Delayed Reveal</h4>
+				<h4>Delayed Reveal</h4>
 			</b-col>
 			<b-col sm="12" md="3">
 				<b-overlay :show="isBusy">
-					<b-button variant="success" block @click="update">Update</b-button>
+					<b-button variant="primary" block @click="update">Commit</b-button>
 				</b-overlay>
 			</b-col>
 		</b-row>

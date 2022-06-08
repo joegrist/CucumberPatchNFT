@@ -2,7 +2,7 @@
 	<b-container fluid>
         <b-row class="mb-2">
             <b-col sm="12" md="8" class="my-auto">
-                <h4>{{ smartContract.name }} Snapshot</h4>
+                <h4>Snapshot</h4>
             </b-col>
             <b-col sm="12" md="4" class="text-right">
                 <b-overlay :show="isRunning">
