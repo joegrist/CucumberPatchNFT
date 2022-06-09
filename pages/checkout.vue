@@ -7,11 +7,26 @@
         </b-row>
         <b-row align-h="center">
             <b-col sm="12" md="4">
-                <h3 class="mb-3">Standard Deployment {{ total || 'Loading...' }} eth</h3>
+                <h3 class="mb-3">Standard Deployment {{ calcTotal || 'Loading...' }} eth</h3>
                 <p> x1 Smart Contract Deployment </p>
+				<b-form-group
+					label="Add-ons"
+					v-slot="{ ariaDescribedby }"
+					>
+					<b-form-checkbox
+						v-for="addon in addons"
+						v-model="selectedAddons"
+						:key="addon.value"
+						:value="addon.value"
+						:aria-describedby="ariaDescribedby"
+						name="addons"
+					>
+						{{ addon.text }}
+					</b-form-checkbox>
+				</b-form-group>
                 <b-overlay :show="isBusy">
                     <b-button
-						:disabled="!total"
+						:disabled="payWithEthDisabled"
                         class="mb-3 font-weight-bolder"
                         size="lg"
 						block
@@ -28,11 +43,10 @@
 				<p class="pt-3"> For bespoke project we offer: </p>
 				<ul>
 					<li>Smart contract deployed and verified by our team</li>
-					<li>OpenSea or other marketplace royalties split</li>
+					<li>OpenSea or any other marketplace setup, royalties split, etc.</li>
 					<li>Dedicated launch day support</li>
 					<li>Multisig wallet setup</li>
-					<li>White label solution (no "Powered by Zero Code NFT" signs)</li>
-					<li>Custom designed & built dApp (website)</li>
+					<li>Custom designed & built dApp (website). See examples >></li>
 				</ul>
 				<b-button size="lg" variant="primary" href="https://discord.gg/NdEpB6ZYKn" target="_blank"><b-icon icon="discord"></b-icon></b-button>
 				<b-button size="lg" variant="primary" href="http://twitter.com/zero_code_nft" target="_blank"><b-icon icon="twitter"></b-icon></b-button>
@@ -76,14 +90,26 @@
 // import { loadScript } from '@paypal/paypal-js'
 import { ethers } from 'ethers'
 import { mapState, mapGetters, mapMutations } from 'vuex'
-import { PAYMENT_METHOD, ZERO_CODE_ETH_ADDRESS } from '@/constants'
+import { PAYMENT_METHOD, ZERO_CODE_ETH_ADDRESS, ADDONS } from '@/constants'
 
 export default {
     data() {
         return {
+			selectedAddons: [],
+			addons: [
+				{
+					text: 'Smart contract source code verification (recommended, increases trust)',
+					value: ADDONS.SourceCodeVerification
+				},
+				{
+					text: 'White label mint page (no Powered by Zero Code text or logos)',
+					value: ADDONS.Whitelabel
+				}
+			],
+			payWithEthDisabled: false,
 		    ethPayTxHash: null,
             smartContractId: null,
-			total: null,
+			smartContractTotal: 0,
 			returnUrl: '/'
         }
     },
@@ -96,7 +122,7 @@ export default {
 
 			const { data } = await this.$axios.get(`/smartcontracts/${this.smartContractId}/total`)
 
-			this.total = data.totalEth
+			this.smartContractTotal = data.totalEth
             
 			// await loadScript({
 			// 	'client-id': this.$config.PAYPAL_CLIENT_ID,
@@ -107,12 +133,22 @@ export default {
 			// })
             // this.renderPayPalButtons(this.smartContractId)
 		} catch (err) {
+			this.payWithEthDisabled = true
 			console.error('init error', err)
 		}
     },
     computed: {
 		...mapState(['isBusy']),
-		...mapGetters(['userId'])
+		...mapGetters(['userId']),
+		calcTotal() {
+			const addons = this.selectedAddons.reduce((acc,val) => {
+				if(val === ADDONS.SourceCodeVerification) acc += 0.05
+				if(val === ADDONS.Whitelabel) acc += this.smartContractTotal * 3
+				return acc
+			}, 0)
+
+			return Number((this.smartContractTotal + addons).toFixed(2))
+		}
     },
     methods: {
 		...mapMutations(['setBusy']),
@@ -204,7 +240,7 @@ export default {
 				const tx = {
 					from: this.$wallet.account,
 					to: ZERO_CODE_ETH_ADDRESS,
-					value: ethers.utils.parseEther(this.total.toString()),
+					value: ethers.utils.parseEther(this.calcTotal.toString()),
 					nonce: this.$wallet.provider.getTransactionCount(
 						this.$wallet.account,
 						'latest'
@@ -226,16 +262,20 @@ export default {
 				this.ethPayTxHash = confirmedTx.transactionHash
 
 				const user = this.$store.state.user
-				await this.$axios.post('transactions', {
+				const payload = {
 					paymentMethod: PAYMENT_METHOD.ETH,
-					amount: this.total,
+					amount: this.calcTotal,
 					orderId: confirmedTx.transactionHash,
 					countryCode: null,
 					payerId: this.userId,
 					payerName: `${user.firstName} ${user.lastName}`,
+					addons: this.selectedAddons,
 					payerEmail: user.email,
 					smartContractId: this.smartContractId
-				})
+				}
+
+				console.log({payload})
+				await this.$axios.post('transactions', payload)
 
 				this.$bvModal.show('paymentSuccess')
 
@@ -257,13 +297,6 @@ export default {
                 this.setBusy({isBusy:false})
             }
 		},
-        // onFTXPay() {
-		// 	window.open(
-		// 		`https://ftx.us/pay/request?subscribe=false&coin=USD&size=${this.total}&id=3260&memoIsRequired=false&memo=&notes=`,
-		// 		'_blank',
-		// 		'resizable,width=700,height=900'
-		// 	)
-		// },
     }
 }
 </script>
