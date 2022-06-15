@@ -113,6 +113,13 @@ const MINT_SELECTOR_TYPE = Object.freeze({
 	Range: 1
 })
 
+const ADDONS = Object.freeze({
+	Whitelabel: 1,
+	SourceCodeVerification: 2,
+	1: 'Whitelabel',
+	2: 'SourceCodeVerification'
+})
+
 const ZERO_CODE_ETH_ADDRESS = '0x34Eca06DB779169003117e8999B5E008086f4cc3'
 
 export {
@@ -126,5 +133,6 @@ export {
 	PAYMENT_METHOD,
 	WEBSITE_TEMPLATE,
 	ZERO_CODE_ETH_ADDRESS,
-	MINT_SELECTOR_TYPE
+	MINT_SELECTOR_TYPE,
+	ADDONS
 }

@@ -398,11 +398,12 @@ const toHex = (chainId) => {
 
 // get corresponding mainnet config based on testnet chainID
 export function getMainnetConfig(testnetChainId) {
+	console.log({testnetChainId})
 	if(['0x4', '4'].includes(testnetChainId)) return ETHEREUM_MAINNET
 	if(['0xA869', '43113'].includes(testnetChainId)) return AVALANCHE_MAINNET_PARAMS
 	if(['0x89', '80001'].includes(testnetChainId)) return POLYGON_MAINNET_PARAMS
 	if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
-	if(['0x38', '56'].includes(testnetChainId)) return BSC_MAINNET
+	if(['0x61', '97'].includes(testnetChainId)) return BSC_MAINNET
 	if(['0x152', '338'].includes(testnetChainId)) return CRONOS_MAINNET
 	if(['0x10', '16'].includes(testnetChainId)) return SONGBIRD_MAINNET
 	if(['0xEA61', '60001'].includes(testnetChainId)) return THINKIUM_MAINNET
