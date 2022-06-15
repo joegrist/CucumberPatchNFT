@@ -120,8 +120,8 @@
         </b-col>
         <b-col sm='12' md='6'>
           <b-form-group
-            label='First X Free (experimental)'
-            description='E.g. first 500 NFTs to be minted will be free, minters only pay the gas fees'
+            label='First X Free Per Person (experimental)'
+            description='Maximum number of NFTs someone can mint for free. Subject to Max NFTs Per Person and Max NFTs Per Transaction limits.'
           >
             <b-form-input
               id='firstXFree'
@@ -133,7 +133,6 @@
               type='number'
               step='1'
               min='0'
-              placeholder='500'
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.firstXFree">
               Please correct "First X Free". Enter 0 or leave empty.
