@@ -73,6 +73,7 @@ const blockchainToTestChainIdMap = {
 	[BLOCKCHAIN.Optimism]: 69,
 	[BLOCKCHAIN.Harmony]: 1666700000,
 	[BLOCKCHAIN.Klaytn]: 1001,
+	[BLOCKCHAIN.Heco]: 256,
 }
 
 export default {

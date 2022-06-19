@@ -296,6 +296,29 @@ export const KLAYTN_TESTNET = {
 	blockExplorerUrls: ['https://baobab.scope.klaytn.com/'],
 }
 
+export const HECO_MAINNET = {
+	chainId: '0x80',
+	chainName: 'Heco Mainnet',
+	nativeCurrency: {
+		name: 'Heco Mainnet',
+		symbol: 'HT',
+		decimals: 18
+	},
+	rpcUrls: ['https://http-mainnet.hecochain.com'],
+	blockExplorerUrls: ['https://hecoinfo.com'],
+}
+export const HECO_TESTNET = {
+	chainId: '0x100',
+	chainName: 'Heco Testnet',
+	nativeCurrency: {
+		name: 'Heco Testnet',
+		symbol: 'HT',
+		decimals: 18
+	},
+	rpcUrls: ['https://http-testnet.hecochain.com'],
+	blockExplorerUrls: ['https://testnet.hecoinfo.com/'],
+}
+
 
 export const testMainChainIdMap = {
 	'4': 1,
@@ -309,7 +332,8 @@ export const testMainChainIdMap = {
 	'421611': 42161,
 	'69': 10,
 	'1666700000': 1666600000,
-	'1001':'8217'
+	'1001': 8217,
+	'256' : 128
 }
 
 
@@ -378,6 +402,8 @@ export const CHAINID_CONFIG_MAP = {
 	'1666600000': HARMONY_MAINNET,
 	'1001': KLAYTN_TESTNET,
 	'8217':KLAYTN_MAINNET,
+	'128': HECO_MAINNET,
+	'256' :HECO_TESTNET,
 
 	'0x1': ETHEREUM_MAINNET,
 	'0x4': ETHEREUM_RINKEBY,
@@ -402,7 +428,9 @@ export const CHAINID_CONFIG_MAP = {
 	'0x6357D2E0': HARMONY_TESTNET,
 	'0x63564C40': HARMONY_MAINNET,
 	'0x2019': KLAYTN_MAINNET,
-	'0x3E9':KLAYTN_TESTNET
+	'0x3E9': KLAYTN_TESTNET,
+	'0x80': HECO_MAINNET,
+	'0x100' :HECO_TESTNET,	
 }
 
 export const FAUCETS = {
@@ -417,7 +445,8 @@ export const FAUCETS = {
 	"421611": ["https://rinkebyfaucet.com", "https://faucets.chain.link/rinkeby", "https://faucet.rinkeby.io"],
 	'69': ["https://optimismfaucet.xyz"],
 	'166670e0000': ["https://stakely.io/en/faucet/harmony-one"],
-	'1001':["https://baobab.wallet.klaytn.foundation/faucet"]
+	'1001':["https://baobab.wallet.klaytn.foundation/faucet"],
+	'256' : ["https://scan-testnet.hecochain.com/faucet"]
 }
 
 const toHex = (chainId) => {
@@ -442,6 +471,7 @@ export function getMainnetConfig(testnetChainId) {
 	if (['0x45', '69'].includes(testnetChainId)) return OPTIMISM_MAINNET
 	if (["0x6357D2E0", '1666700000'].includes(testnetChainId)) return HARMONY_MAINNET
 	if (["0x3E9", '1001'].includes(testnetChainId)) return KLAYTN_MAINNET
+	if (["0x100", '256'].includes(testnetChainId)) return HECO_MAINNET
 
 	throw new Error("Matching mainnet config not found")
 }

@@ -17,6 +17,7 @@ export default {
 				[BLOCKCHAIN.Optimism]: require('@/assets/images/blockchain/optimism.svg'),
 				[BLOCKCHAIN.Harmony]: require('@/assets/images/blockchain/harmony.svg'),
 				[BLOCKCHAIN.Klaytn]: require('@/assets/images/blockchain/klaytn.svg'),
+				[BLOCKCHAIN.Heco]: require('@/assets/images/blockchain/heco.svg'),
 			},
 			blockchainIcon: {
 				[BLOCKCHAIN.Ethereum]: require('@/assets/images/blockchain/icon/ethereum.svg'),
@@ -31,6 +32,7 @@ export default {
 				[BLOCKCHAIN.Arbitrum]: require('@/assets/images/blockchain/icon/arbitrum.svg'),
 				[BLOCKCHAIN.Harmony]: require('@/assets/images/blockchain/icon/harmony.svg'),
 				[BLOCKCHAIN.Klaytn]: require('@/assets/images/blockchain/icon/klaytn.svg'),
+				[BLOCKCHAIN.Heco]: require('@/assets/images/blockchain/icon/heco.svg'),
 			}
 		}
 	},
