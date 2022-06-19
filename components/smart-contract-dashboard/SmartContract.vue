@@ -20,6 +20,7 @@
 						target="_blank"
 						>{{ rawContract.address | compactAddress }}</b-link
 					>
+					<b-icon v-if="rawContract.isVerified" icon="check-circle" variant="success" title="Source code verified"></b-icon>
 				</p>
 				<div class="d-flex">
 					<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
