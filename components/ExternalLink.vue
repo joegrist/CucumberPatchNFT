@@ -1,10 +1,10 @@
 <template>
     <b-link v-if="href" :href="formatUrl(href)" target="_blank">
-        <span v-if="!iconOnly">{{ text }}</span>
+        <span v-if="!iconOnly">{{ text || href }}</span>
         <b-icon :icon="icon" />
     </b-link>
     <div v-else>
-        <span>{{ text }}</span>
+        <span>{{ text || href }}</span>
     </div>
 </template>
 
