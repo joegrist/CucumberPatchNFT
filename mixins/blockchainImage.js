@@ -30,6 +30,7 @@ export default {
 				[BLOCKCHAIN.Songbird]: require('@/assets/images/blockchain/icon/songbird.svg'),
 				[BLOCKCHAIN.Thinkium]: require('@/assets/images/blockchain/icon/thinkium.svg'),
 				[BLOCKCHAIN.Arbitrum]: require('@/assets/images/blockchain/icon/arbitrum.svg'),
+				[BLOCKCHAIN.Optimism]: require('@/assets/images/blockchain/icon/optimism.svg'),
 				[BLOCKCHAIN.Harmony]: require('@/assets/images/blockchain/icon/harmony.svg'),
 				[BLOCKCHAIN.Klaytn]: require('@/assets/images/blockchain/icon/klaytn.svg'),
 				[BLOCKCHAIN.Heco]: require('@/assets/images/blockchain/icon/heco.svg'),
