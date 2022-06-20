@@ -211,7 +211,7 @@
 					<div class="d-flex">
 						<b-form-group
 							label="Drop Date"
-							description="Sets the countdown timer"
+							description="Sets the countdown timer, for display purposes only"
 							class="pr-1 w-50">
 							<b-form-input
 								id="dropDateInput"
@@ -228,33 +228,6 @@
 								name="dropTimeInput"
 								v-model="site.dropTimeInput"
 								type="time"></b-form-input>
-						</b-form-group>
-					</div>
-					<div class="d-flex">
-						<b-form-group
-							description="Server to connect chat window to"
-							class="w-50 pr-1">
-							<template #label>
-								    Discord Server ID
-									<ExternalLink
-										href="https://widgetbot.io"
-										text="More info" />
-							</template>
-							<b-form-input
-								id="widgetBotServer"
-								name="widgetBotServer"
-								v-model="widgetBotConfig.server"
-								type="text"></b-form-input>
-						</b-form-group>
-						<b-form-group
-							label="Discord Channel ID"
-							description="Channel to connect chat window to"
-							class="w-50">
-							<b-form-input
-								id="widgetBotChannel"
-								name="widgetBotChannel"
-								v-model="widgetBotConfig.channel"
-								type="text"></b-form-input>
 						</b-form-group>
 					</div>
 					<div v-show="site.template === WEBSITE_TEMPLATE.Full">
@@ -397,11 +370,6 @@ export default {
 				pageBackground: '#FFFFFF',
 				pageTextColor: '#8859EC',
 			},
-			widgetBotConfig: {
-				notifications: true,
-				indicator: true,
-				location: ["bottom", "left"]
-			},
 			showPreview: true,
 			notSaved: false,
 			viewOptions: [
@@ -424,11 +392,6 @@ export default {
 		this.stylesConfig = {
 			...this.stylesConfig,
 			...JSON.parse(data.stylesConfig || '{}'),
-		}
-
-		this.widgetBotConfig = {
-			...this.widgetBotConfig,
-			...JSON.parse(data.widgetBotConfig || '{}')
 		}
 		// console.log(this.stylesConfig)
 
@@ -516,7 +479,6 @@ export default {
 				}
 
 				update.stylesConfig = JSON.stringify(this.stylesConfig)
-				update.widgetBotConfig = JSON.stringify(this.widgetBotConfig)
 
 				const payload = Object.keys(update).reduce((formData, key) => {
 					if (update[key]) formData.append(key, update[key])

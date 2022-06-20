@@ -120,6 +120,19 @@ const ADDONS = Object.freeze({
 	2: 'SourceCodeVerification'
 })
 
+const DEFAULT_CONFIG_STRING = JSON.stringify({
+    widgetBot: {},
+    analytics: {}
+})
+
+const ANALYTICS_EVENTS = Object.freeze({
+	WalletConected: 'zerocodenft_wallet_connected',
+	CheckoutBegin: 'zerocodenft_checkout_begin',
+	CheckoutComplete: 'zerocodenft_checkout_complete',
+	CheckoutError: 'zerocodenft_checkout_failed',
+	ZeroCodeLinkClicked: 'zerocodenft_link_clicked'
+})
+
 const ZERO_CODE_ETH_ADDRESS = '0x34Eca06DB779169003117e8999B5E008086f4cc3'
 
 export {
@@ -134,5 +147,7 @@ export {
 	WEBSITE_TEMPLATE,
 	ZERO_CODE_ETH_ADDRESS,
 	MINT_SELECTOR_TYPE,
-	ADDONS
+	ADDONS,
+	DEFAULT_CONFIG_STRING,
+	ANALYTICS_EVENTS
 }

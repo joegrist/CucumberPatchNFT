@@ -1,10 +1,10 @@
 <template>
 	<b-container fluid>
         <b-row class="mb-2">
-            <b-col sm="12" md="8" class="my-auto">
+            <b-col sm="12" md="6" class="my-auto">
                 <h4>Snapshot</h4>
             </b-col>
-            <b-col sm="12" md="4" class="text-right">
+            <b-col sm="12" md="6" class="text-right">
                 <b-overlay :show="isRunning">
                     <b-button variant="primary" @click="runSnapshot">Run Snapshot</b-button>
                     <b-dropdown :disabled="snapshotData.length === 0" split variant="success" text="Export As" class="m-2">
