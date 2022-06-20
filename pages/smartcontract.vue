@@ -18,6 +18,9 @@
 					<b-tab title="Snapshot" lazy>
 						<Snapshot :smartContract="rawContract" />
 					</b-tab>
+					<b-tab title="Other" lazy>
+						<Config :smartContractId="rawContract.id" />
+					</b-tab>
 					<b-tab title="Gated Access" :disabled="true">
 					</b-tab>
 				</b-tabs>
@@ -34,7 +37,7 @@ import Whitelist from '@/components/smart-contract-dashboard/Whitelist'
 import DelayedReveal from '@/components/smart-contract-dashboard/DelayedReveal'
 import MintPage from '@/components/smart-contract-dashboard/MintPage'
 import Snapshot from '@/components/smart-contract-dashboard/Snapshot'
-
+import Config from '@/components/smart-contract-dashboard/Config'
 
 export default {
 	middleware: 'authenticated',
@@ -43,7 +46,8 @@ export default {
 		Whitelist,
 		DelayedReveal,
 		MintPage,
-		Snapshot
+		Snapshot,
+		Config
 	},
 	data: () => ({
 		rawContract: null,
