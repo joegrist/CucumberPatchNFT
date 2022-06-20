@@ -36,7 +36,7 @@
 								class="bg-gradient-primary border-0"
 								:disabled="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet || rawContract.isVerified"
 								@click="onVerify">
-								{{ rawContract.isVerified ? '✅ Verified' : 'Verify Code' }}
+								{{ rawContract.isVerified ? 'Code Verified ✅' : 'Verify Code' }}
 							</b-button> -->
 					</b-overlay>
 				</div>
@@ -417,15 +417,16 @@ export default {
 			}
 		},
 		async onVerify() {
-			if (!this.rawContract.blockchain === BLOCKCHAIN.Ethereum) {
-				alert('Only Ethereum contracts are supported for now')
-				return
-			}
+			// if (!this.rawContract.blockchain === BLOCKCHAIN.Ethereum) {
+			// 	alert('Only Ethereum contracts are supported for now')
+			// 	return
+			// }
 			try {
-				await this.$axios.patch(`${this.rawContract.id}/verify`)
+				this.setBusy({isBusy: true, message: 'Verifying... this might take up to 5 mins.'})
+				await this.$axios.post(`${this.rawContract.id}/verify`)
 				this.rawContract.isVerified = true
 				this.$bvToast.toast(
-					'Verified! Please allow a 10-15 minutes to reflect on etherscan',
+					'Verified! Please allow 5-10 minutes to reflect on block explorer',
 					{
 						title: 'Code Verification',
 						variant: 'success',
@@ -436,6 +437,8 @@ export default {
 					title: 'Code Verification',
 					variant: 'danger',
 				})
+			} finally {
+				this.isBusy({ isBusy: false })
 			}
 		},
 		async onRefreshBalance(showNotification = false) {
