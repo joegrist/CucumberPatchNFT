@@ -6,7 +6,7 @@
 			</b-col>
 		</b-row>
 		<b-row>
-			<b-col sm="12" md="4" v-for="blockchain in supportedBlockchains" :key="blockchain.id">
+			<b-col sm="12" md="3" v-for="blockchain in supportedBlockchains" :key="blockchain.id">
 				<b-link v-if="!blockchain.available" href="mailto:drop@zerocodenft.com?subject=Unsupported Chain Inquiry">
 					<b-img
 						:class="[blockchain.class, { 'shadow': hasShadow(blockchain.id) }]"
@@ -14,9 +14,9 @@
 						:width="blockchain.width"
 						:height="blockchain.height"
 						:src="blockchain.imageSrc" />
-					<h4 class="text-center text-muted position-relative" style="top: -45px">
-						Inquire!
-					</h4>
+					<h5 class="text-center text-muted position-relative" style="top: -45px">
+						Inquire (custom order)
+					</h5>
 				</b-link>
 				<b-img v-else
 					:class="[blockchain.class, { 'shadow': hasShadow(blockchain.id) }]"
@@ -90,7 +90,7 @@ export default {
 				.map(k => {
 					return {
 						id: BLOCKCHAIN[k],
-						class: `pointer mw-100 ${(k === 'Arbitrum' || k === 'Thinkium') ? '' : 'p-3'}`,
+						class: `pointer mw-100 ${(k === 'Arbitrum' || k === 'Thinkium' || k === 'Klaytn') ? '' : 'p-3'}`,
 						width: "400px",
 						height: "150px",
 						imageSrc: require(`@/assets/images/blockchain/${k.toLowerCase()}.svg`),
