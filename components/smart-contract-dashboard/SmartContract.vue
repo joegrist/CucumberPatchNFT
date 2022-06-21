@@ -28,8 +28,12 @@
 							:disabled="!canDeployMainnet"
 							variant="primary"
 							@click="onMainnetDeploy">
-							<b-icon v-if="!rawContract.isClearedForMainnet" icon="wallet2" />
-							Deploy to Mainnet
+							<template v-if="rawContract.isClearedForMainnet">
+								Deploy to Mainnet
+							</template>
+							<template v-else>
+								Checkout <b-icon icon="wallet2" />
+							</template>
 						</b-button>
 						<!-- <b-button
 								class="bg-gradient-primary border-0"
