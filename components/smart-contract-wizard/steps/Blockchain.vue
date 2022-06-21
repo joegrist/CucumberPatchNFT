@@ -7,7 +7,7 @@
 		</b-row>
 		<b-row>
 			<b-col sm="12" md="3" v-for="blockchain in supportedBlockchains" :key="blockchain.id">
-				<b-link v-if="!blockchain.available" href="mailto:drop@zerocodenft.com?subject=Unsupported Chain Inquiry">
+				<b-link v-if="!blockchain.available" href="mailto:drop@zerocodenft.com?subject=Custom Order Inquiry">
 					<b-img
 						:class="[blockchain.class, { 'shadow': hasShadow(blockchain.id) }]"
 						center
@@ -29,30 +29,6 @@
         			@mouseout="hoverCard(null)" />
 			</b-col>
 		</b-row>
-		<!-- <b-row v-show="smartContractBuilder.blockchain">
-			<b-col cols="12">
-				<b-form-group
-					label="Network"
-					label-for="chainId"
-					description="Network to deploy the smart contract to. Only test network is available. This is intentional">
-					<b-form-select
-						id="chainId"
-						name="chainId"
-						:disabled="true"
-						:value="smartContractBuilder.chainId"
-						@change="onNetworkChange"
-						:class="{ 'is-invalid': $v.smartContractBuilder.chainId.$error }"
-						:options="networkOptions"
-						required></b-form-select>
-				</b-form-group>
-			</b-col>
-			<b-col cols="12">
-				<p>
-					You are currently connected to:
-					<strong class="text-capitalize">{{ $wallet.networkName || '' }}</strong>
-				</p>
-			</b-col>
-		</b-row> -->
 	</b-container>
 </template>
 
@@ -103,10 +79,6 @@ export default {
 		hasShadow(blockchain) {
 			return this.hovered === blockchain || this.smartContractBuilder.blockchain === blockchain
 		},
-		// onNetworkChange(chainId) {
-		// 	this.$v.smartContractBuilder.chainId.$touch()
-		// 	this.updateSmartContractBuilder({chainId})
-		// },
 		hoverCard(blockchain) {
 			this.hovered = blockchain
 		},
