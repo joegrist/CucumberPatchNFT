@@ -36,12 +36,12 @@
 								Checkout <b-icon icon="wallet2" />
 							</template>
 						</b-button>
-						<!-- <b-button
-								class="bg-gradient-primary border-0"
-								:disabled="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet || rawContract.isVerified"
-								@click="onVerify">
-								{{ rawContract.isVerified ? 'Code Verified ✅' : 'Verify Code' }}
-							</b-button> -->
+						<b-button
+							variant="primary"
+							v-if="canVerify"
+							@click="onVerify">
+							Verify Source Code
+						</b-button>
 					</b-overlay>
 				</div>
 			</b-col>
@@ -271,7 +271,7 @@ import { mapMutations, mapState } from 'vuex'
 import {
 	SALE_STATUS,
 	SMARTCONTRACT_STATUS,
-	BLOCKCHAIN,
+	ADDONS,
 	CONTRACT_TYPE,
 } from '@/constants'
 import {
@@ -392,6 +392,10 @@ export default {
 				(f) => this.showAdvancedFunctions || basicFunctions.includes(f.name)
 			)
 		},
+		canVerify() {
+			const { isVerified, addons } = this.rawContract
+			return !isVerified && addons?.includes(ADDONS[ADDONS.SourceCodeVerification])
+		}
 	},
 	methods: {
 		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
@@ -427,7 +431,7 @@ export default {
 			// }
 			try {
 				this.setBusy({isBusy: true, message: 'Verifying... this might take up to 5 mins.'})
-				await this.$axios.post(`${this.rawContract.id}/verify`)
+				await this.$axios.post(`/smartcontracts/${this.rawContract.id}/verify`)
 				this.rawContract.isVerified = true
 				this.$bvToast.toast(
 					'Verified! Please allow 5-10 minutes to reflect on block explorer',
@@ -442,7 +446,7 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.isBusy({ isBusy: false })
+				this.setBusy({ isBusy: false })
 			}
 		},
 		async onRefreshBalance(showNotification = false) {
