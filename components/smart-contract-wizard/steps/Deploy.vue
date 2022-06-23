@@ -159,7 +159,14 @@ export default {
         // const estimatedGas = await this.$wallet.provider.estimateGas({ data: deploymentData })
         // console.log('gas estimate', estimatedGas.toString())
 
-        const contract = await contractFactory.deploy()
+        const gasPrice = await this.$wallet.provider.getGasPrice()
+				console.info(
+					`GAS PRICE: ${ethers.utils.formatUnits(gasPrice, 'gwei')} gwei`
+				)
+
+        const contract = await contractFactory.deploy({
+          gasPrice
+        })
 
         await this.$axios.patch(`/smartcontracts/${id}/deploy-testnet`, {
           ownerAddress: this.$wallet.account,

@@ -6,17 +6,17 @@
 			</b-col>
 		</b-row>
 		<b-row>
-			<b-col sm="12" md="4" v-for="blockchain in supportedBlockchains" :key="blockchain.id">
-				<b-link v-if="!blockchain.available" href="mailto:drop@zerocodenft.com?subject=Unsupported Chain Inquiry">
+			<b-col sm="12" md="3" v-for="blockchain in supportedBlockchains" :key="blockchain.id">
+				<b-link v-if="!blockchain.available" href="mailto:drop@zerocodenft.com?subject=Custom Order Inquiry">
 					<b-img
 						:class="[blockchain.class, { 'shadow': hasShadow(blockchain.id) }]"
 						center
 						:width="blockchain.width"
 						:height="blockchain.height"
 						:src="blockchain.imageSrc" />
-					<h4 class="text-center text-muted position-relative" style="top: -45px">
-						Inquire!
-					</h4>
+					<h5 class="text-center text-muted position-relative" style="top: -45px">
+						Inquire (custom order)
+					</h5>
 				</b-link>
 				<b-img v-else
 					:class="[blockchain.class, { 'shadow': hasShadow(blockchain.id) }]"
@@ -29,30 +29,6 @@
         			@mouseout="hoverCard(null)" />
 			</b-col>
 		</b-row>
-		<!-- <b-row v-show="smartContractBuilder.blockchain">
-			<b-col cols="12">
-				<b-form-group
-					label="Network"
-					label-for="chainId"
-					description="Network to deploy the smart contract to. Only test network is available. This is intentional">
-					<b-form-select
-						id="chainId"
-						name="chainId"
-						:disabled="true"
-						:value="smartContractBuilder.chainId"
-						@change="onNetworkChange"
-						:class="{ 'is-invalid': $v.smartContractBuilder.chainId.$error }"
-						:options="networkOptions"
-						required></b-form-select>
-				</b-form-group>
-			</b-col>
-			<b-col cols="12">
-				<p>
-					You are currently connected to:
-					<strong class="text-capitalize">{{ $wallet.networkName || '' }}</strong>
-				</p>
-			</b-col>
-		</b-row> -->
 	</b-container>
 </template>
 
@@ -72,6 +48,8 @@ const blockchainToTestChainIdMap = {
 	[BLOCKCHAIN.Arbitrum]: 421611,
 	[BLOCKCHAIN.Optimism]: 69,
 	[BLOCKCHAIN.Harmony]: 1666700000,
+	[BLOCKCHAIN.Klaytn]: 1001,
+	[BLOCKCHAIN.Heco]: 256,
 }
 
 export default {
@@ -88,7 +66,7 @@ export default {
 				.map(k => {
 					return {
 						id: BLOCKCHAIN[k],
-						class: `pointer mw-100 ${(k === 'Arbitrum' || k === 'Thinkium') ? '' : 'p-3'}`,
+						class: `pointer mw-100 ${(k === 'Arbitrum' || k === 'Thinkium' || k === 'Klaytn') ? '' : 'p-3'}`,
 						width: "400px",
 						height: "150px",
 						imageSrc: require(`@/assets/images/blockchain/${k.toLowerCase()}.svg`),
@@ -101,10 +79,6 @@ export default {
 		hasShadow(blockchain) {
 			return this.hovered === blockchain || this.smartContractBuilder.blockchain === blockchain
 		},
-		// onNetworkChange(chainId) {
-		// 	this.$v.smartContractBuilder.chainId.$touch()
-		// 	this.updateSmartContractBuilder({chainId})
-		// },
 		hoverCard(blockchain) {
 			this.hovered = blockchain
 		},

@@ -9,12 +9,16 @@ const BLOCKCHAIN = Object.freeze({
 	Avalanche: 8,
 	Arbitrum: 13,
 	// Legacy: 9,
-	Cronos: 10,
-	Thinkium: 12,
 	Optimism: 14,
+	Cronos: 10,
+	Harmony: 15,
+	// Heco: 17,
+	// Klaytn: 16,
+	Thinkium: 12,
 	Songbird: 11,
 	Solana: 2,
-	Harmony: 15,
+
+	
 	1: 'Ethereum',
 	2: 'Solana',
 	3: 'Fantom',
@@ -27,7 +31,9 @@ const BLOCKCHAIN = Object.freeze({
 	12: 'Thinkium',
 	13: 'Arbitrum',
 	14: 'Optimism',
-	15: 'Harmony'
+	15: 'Harmony',
+	16: 'Klaytn',
+	17: 'Heco'
 })
 
 const MARKETPLACE = Object.freeze({
@@ -120,6 +126,19 @@ const ADDONS = Object.freeze({
 	2: 'SourceCodeVerification'
 })
 
+const DEFAULT_CONFIG_STRING = JSON.stringify({
+    widgetBot: {},
+    analytics: {}
+})
+
+const ANALYTICS_EVENTS = Object.freeze({
+	WalletConected: 'zerocodenft_wallet_connected',
+	CheckoutBegin: 'zerocodenft_checkout_begin',
+	CheckoutComplete: 'zerocodenft_checkout_complete',
+	CheckoutError: 'zerocodenft_checkout_failed',
+	ZeroCodeLinkClicked: 'zerocodenft_link_clicked'
+})
+
 const ZERO_CODE_ETH_ADDRESS = '0x34Eca06DB779169003117e8999B5E008086f4cc3'
 
 export {
@@ -134,5 +153,7 @@ export {
 	WEBSITE_TEMPLATE,
 	ZERO_CODE_ETH_ADDRESS,
 	MINT_SELECTOR_TYPE,
-	ADDONS
+	ADDONS,
+	DEFAULT_CONFIG_STRING,
+	ANALYTICS_EVENTS
 }
