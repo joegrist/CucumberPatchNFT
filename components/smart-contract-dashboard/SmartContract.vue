@@ -46,7 +46,7 @@
 			</b-col>
 			<b-col sm="12" md="4" class="d-flex flex-column">
 				<div class="lead font-weight-bold mb-1">
-					Earnings: {{ contractBalance }}
+					Balance: {{ contractBalance }}
 					{{ getCurrency(rawContract.chainId) }}
 					<b-button-group size="sm">
 						<b-button variant="success">
@@ -518,7 +518,14 @@ export default {
 				// const estimatedGas = await this.$wallet.provider.estimateGas({ data: deploymentData })
 				// console.log('CONTRACT gas estimate', estimatedGas.toString())
 
-				const contract = await contractFactory.deploy()
+				const gasPrice = await this.$wallet.provider.getGasPrice()
+				console.info(
+					`GAS PRICE: ${ethers.utils.formatUnits(gasPrice, 'gwei')} gwei`
+				)
+
+				const contract = await contractFactory.deploy({
+					gasPrice
+				})
 
 				const { data: mainnetContract } = await this.$axios.post(
 					`/smartcontracts/${id}/deploy-mainnet`,
@@ -568,6 +575,9 @@ export default {
 
 				// if function updates state we need a signed version of the smart contract to make updates
 				if (!func.constant) {
+					if(!this.$wallet.isConnected) {
+						await this.$wallet.connect()
+					}
 					if (this.$wallet.chainId !== +this.rawContract.chainId) {
 						await this.$wallet.switchNetwork(this.rawContract.chainId)
 					}

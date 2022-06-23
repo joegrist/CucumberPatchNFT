@@ -110,6 +110,8 @@ export default ({store}, inject) => {
     })
 
     if(window.ethereum) {
+
+        // console.log(window.ethereum._metamask, window.ethereum._metamask.isUnlocked())
     
         window.ethereum.on('accountsChanged', ([newAddress]) => {
             console.info('accountsChanged', newAddress)
