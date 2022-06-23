@@ -20,6 +20,7 @@
 						target="_blank"
 						>{{ rawContract.address | compactAddress }}</b-link
 					>
+					<b-icon v-if="rawContract.isVerified" icon="check-circle" variant="success" title="Source code verified"></b-icon>
 				</p>
 				<div class="d-flex">
 					<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
@@ -35,12 +36,12 @@
 								Checkout <b-icon icon="wallet2" />
 							</template>
 						</b-button>
-						<!-- <b-button
-								class="bg-gradient-primary border-0"
-								:disabled="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet || rawContract.isVerified"
-								@click="onVerify">
-								{{ rawContract.isVerified ? '✅ Verified' : 'Verify Code' }}
-							</b-button> -->
+						<b-button
+							variant="primary"
+							v-if="canVerify"
+							@click="onVerify">
+							Verify Source Code
+						</b-button>
 					</b-overlay>
 				</div>
 			</b-col>
@@ -270,7 +271,7 @@ import { mapMutations, mapState } from 'vuex'
 import {
 	SALE_STATUS,
 	SMARTCONTRACT_STATUS,
-	BLOCKCHAIN,
+	ADDONS,
 	CONTRACT_TYPE,
 } from '@/constants'
 import {
@@ -391,6 +392,10 @@ export default {
 				(f) => this.showAdvancedFunctions || basicFunctions.includes(f.name)
 			)
 		},
+		canVerify() {
+			const { isVerified, addons } = this.rawContract
+			return !isVerified && addons?.includes(ADDONS[ADDONS.SourceCodeVerification])
+		}
 	},
 	methods: {
 		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
@@ -420,15 +425,16 @@ export default {
 			}
 		},
 		async onVerify() {
-			if (!this.rawContract.blockchain === BLOCKCHAIN.Ethereum) {
-				alert('Only Ethereum contracts are supported for now')
-				return
-			}
+			// if (!this.rawContract.blockchain === BLOCKCHAIN.Ethereum) {
+			// 	alert('Only Ethereum contracts are supported for now')
+			// 	return
+			// }
 			try {
-				await this.$axios.patch(`${this.rawContract.id}/verify`)
+				this.setBusy({isBusy: true, message: 'Verifying... this might take up to 5 mins.'})
+				await this.$axios.post(`/smartcontracts/${this.rawContract.id}/verify`)
 				this.rawContract.isVerified = true
 				this.$bvToast.toast(
-					'Verified! Please allow a 10-15 minutes to reflect on etherscan',
+					'Verified! Please allow 5-10 minutes to reflect on block explorer',
 					{
 						title: 'Code Verification',
 						variant: 'success',
@@ -439,6 +445,8 @@ export default {
 					title: 'Code Verification',
 					variant: 'danger',
 				})
+			} finally {
+				this.setBusy({ isBusy: false })
 			}
 		},
 		async onRefreshBalance(showNotification = false) {
