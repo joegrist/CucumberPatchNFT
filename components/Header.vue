@@ -19,21 +19,20 @@
 
 				<!-- Right aligned nav items -->
 				<b-navbar-nav class="ml-auto">
-					<!-- <span v-if="$wallet.account" class="mr-2 my-auto"
-						>{{ $wallet.balance }}
-					</span> -->
 					<b-button
-						v-if="isLoggedIn"
-						variant="link"
-						class="gradient-text"
-						@click="onLogout"
-						>Logout</b-button
-					>
-					<b-avatar
-						button 
+						variant="transparent"
+						class="gradient-text border d-flex"
 						@click="showSidebar(true)"
-						class="bg-gradient-primary"
-					></b-avatar>
+						>
+							<b-avatar
+								class="bg-gradient-primary my-auto"
+								:src="$wallet.avatarUrl"
+							></b-avatar>
+							<div class="d-flex flex-column ml-1 text-left" style="line-height:1.2">
+								<span>{{ walletAddress }}</span>
+								<span v-if="$wallet.isConnected" class="text-muted small">{{ $wallet.balance }}</span>
+							</div>
+						</b-button>
 				</b-navbar-nav>
 			</b-collapse>
 		</b-navbar>
@@ -70,6 +69,9 @@ export default {
 	},
 	computed: {
 		...mapGetters(['isLoggedIn']),
+		walletAddress() {
+			return this.$wallet.ensName || this.$wallet.accountCompact
+		}
 	},
 	methods: {
 		...mapMutations(['showSidebar']),

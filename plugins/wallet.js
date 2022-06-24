@@ -11,6 +11,8 @@ export default ({store}, inject) => {
         network: null,
         balance: null,
         provider: null,
+        ensName: null,
+        avatarUrl: null,
 
         get chainId() {
             return this.network?.chainId
@@ -43,6 +45,11 @@ export default ({store}, inject) => {
             if(newAccount) {
                 this.account = newAccount
                 this.accountCompact = `${newAccount.substring(0, 4)}...${newAccount.substring(newAccount.length - 4)}`
+                this.ensName = await this.provider.lookupAddress(newAccount)
+                if(this.ensName) {
+                    this.avatarUrl = await this.provider.getAvatar(this.ensName)
+                    console.log(this.avatarUrl)
+                }
                 this.refreshBalance()
             }
             else {
