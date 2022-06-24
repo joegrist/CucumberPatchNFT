@@ -10,7 +10,7 @@
 				<b-form-input
 					@input="(val) => (searchTerm = val)"
 					debounce="500"
-					placeholder="Start typing the smart contract name.." />
+					placeholder="Start typing project name.." />
 				<b-input-group-append>
 					<b-button variant="primary" class="border-0" to="/wizard"
 						>Add New</b-button
@@ -30,7 +30,7 @@
 			<b-button
 				variant="primary"
 				@click="$router.push('/wizard')"
-				>Create One</b-button
+				>Start One</b-button
 			>
 		</div>
 	</div>

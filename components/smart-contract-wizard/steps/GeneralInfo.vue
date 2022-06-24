@@ -4,7 +4,7 @@
       <b-row>
         <b-col sm='12' md='6'>
           <b-form-group
-            description='URL to the endpoint (folder) that contains metadata .json files'
+            description='URL to the endpoint (folder) that contains metadata .json files. Can be added later.'
           >
             <template #label>
               IPFS Metadata URL
@@ -38,7 +38,6 @@
               :class="{'is-invalid': $v.smartContractBuilder.collectionSize.$error}"
               type='number'
               min='1'
-              placeholder='5000'
               required
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.collectionSize">
@@ -156,7 +155,6 @@
               type='number'
               step='1'
               min='0'
-              placeholder='20'
             />
           </b-form-group>
           <b-form-invalid-feedback :state="validation.maxTokensPerTransaction">
@@ -178,7 +176,6 @@
               type='number'
               step='1'
               min='0'
-              placeholder='20'
             ></b-form-input>
             <b-form-invalid-feedback :state="validation.maxTokensPerPerson">
               Please correct "Max NFTs Per Person". Enter 0 or leave empty.

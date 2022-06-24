@@ -3,12 +3,12 @@
 		<b-button size="sm" variant="primary" v-b-modal="modalId"
 			>Refer and Earn!</b-button
 		>
-		<b-modal :id="modalId" centered title="Earn 25% commission" hide-footer>
+		<b-modal :id="modalId" centered title="Ambassador Signup" hide-footer>
             <b-form novalidate @submit.prevent="onSubmit">
                 <b-form-group
                     label="Create your referral code"
                     label-class="required"
-                    description="Earns 25% commission. Alphanumeric, min 3 characters.">
+                    description="Alphanumeric, min 3 characters.">
                     <b-form-input
                         name="ambassadorCode"
                         debounce="500"
