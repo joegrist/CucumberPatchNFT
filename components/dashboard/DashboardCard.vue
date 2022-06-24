@@ -50,9 +50,10 @@
 			<span v-else>{{ sc.name | startCase }}</span>
 		</b-card-title>
 		
-		<b-card-sub-title class="text-center mb-2">{{
-			subTitle
-		}}</b-card-sub-title>
+		<b-card-sub-title class="text-center mb-2">
+			{{ subTitle}}
+			<b-icon v-if="sc.isVerified" icon="check-circle" variant="success" title="Source code verified"></b-icon>
+		</b-card-sub-title>
 
 		<b-container fluid>
 			<b-row class="stats">
