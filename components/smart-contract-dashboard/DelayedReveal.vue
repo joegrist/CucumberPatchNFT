@@ -6,15 +6,45 @@
 			</b-col>
 			<b-col sm="12" md="3">
 				<b-overlay :show="isBusy">
-					<b-button variant="primary" block @click="update">Commit</b-button>
+					<b-button variant="primary" block @click="save">Save</b-button>
 				</b-overlay>
 			</b-col>
 		</b-row>
-		<b-row>
-			<b-col sm="12" md="6">
-				<b-form-group label="URL">
+		<p v-show="url">Current Metadata URL: <b>{{ url }}</b></p>
+		<!-- <b-row>
+			<b-col>
+				<b-form-group label="Existing metadata URL">
 					<b-input v-model="url" />
 				</b-form-group>
+			</b-col>
+		</b-row>
+		<b-row>
+			<b-col class="text-center">
+				<h3>No Metadata? Create New!</h3>
+			</b-col>
+		</b-row> -->
+		<b-row>
+			<b-col>
+				<b-form novalidate>
+					<b-form-group label="Name">
+						<b-input v-model="metadata.name" placeholder="e.g. Hidden Monkey"/>
+					</b-form-group>
+					<b-form-group label="Description">
+						<b-form-textarea v-model="metadata.description" />
+					</b-form-group>
+					<b-form-group label="Image">
+						<b-form-file v-model="metadata.image" accept="image/*"/>
+					</b-form-group>
+					<b-form-group>
+						<template #label>
+							<div class="d-flex">
+								<ExternalLink text="nft.storage API key" href="https://nft.storage/docs/#get-an-api-token"></ExternalLink>
+								<!-- <b-form-checkbox switch>Remember</b-form-checkbox> -->
+							</div>
+						</template>
+						<b-form-input v-model="apiKey" />
+					</b-form-group>
+				</b-form>
 			</b-col>
 		</b-row>
 	</b-container>
@@ -33,6 +63,8 @@ export default {
 			isBusy: false,
 			contract: null,
 			url: null,
+			apiKey: null,
+			metadata: {}
 		}
 	},
 	async created() {
@@ -45,7 +77,15 @@ export default {
 		this.url = await this.contract.preRevealURL()
 	},
 	methods: {
-		async update() {
+		async save() {
+			// TODO: perform basic validation, upload image, then generate and upload json. get resulting hash, assign to this.url and commit()
+			//..............
+			//................
+			// const metadataHash = 'bag3aar53fd'
+			// this.url = `ipfs://${metadataHash}`
+			// await this.commit()
+		},
+		async commit() {
 			try {
 				if (this.$wallet.isConnected) {
 					await this.$wallet.connect()
@@ -72,6 +112,10 @@ export default {
 				this.$bvToast.toast('Update transaction accepted', {
 					title: 'Delayed Reveal URL',
 					variant: 'success',
+				})
+
+				await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
+					delayedRevealURL: this.url,
 				})
 
 				tx.wait().then((_) => {
