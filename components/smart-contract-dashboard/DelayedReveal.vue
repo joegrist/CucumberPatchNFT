@@ -100,7 +100,6 @@ import { ethers } from 'ethers'
 import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
 import { required } from 'vuelidate/lib/validators'
 import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js'
-import fs from 'fs-extra'
 export default {
 	props: {
 		smartContract: Object,
@@ -112,8 +111,8 @@ export default {
 			url: null,
 			apiKey: null,
 			metadata: {
-				name: "test",
-				description: "test",
+				name: 'test',
+				description: 'test',
 				image: [],
 			},
 		}
@@ -137,7 +136,6 @@ export default {
 		apiKey: { required },
 	},
 	async created() {
-			this.apiKey =	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDQ0OGUwMjhjYWE3NDdhNjI5YjcwYjkwNGE3YzFlODU1QjZiMkFGY0EiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1NjE0MjI0MDUyNSwibmFtZSI6Inplcm9jb2RlRFJtZXRhZGF0YXVwZGF0ZVRlc3QifQ.Of9ahM9PFcpz-YpmtzjAtAPXv3zYhJotczkjENavMhs'
 		const { abi, address, chainId } = this.smartContract
 		const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
 		const jsonRpcProvider = new ethers.providers.StaticJsonRpcProvider(
@@ -150,30 +148,29 @@ export default {
 	methods: {
 		async save() {
 			try {
-				this.$v.metadata.$touch();
+				this.$v.metadata.$touch()
 				if (this.$v.metadata.$invalid || this.$v.$invalid) {
-					console.log("form invalid")
-					return;
+					console.log('form invalid')
+					return
 				}
-				console.log({ image: this.metadata.image })
-				this.isBusy = true;
-				const { ipnft: imageCID } = await this.handleImageUpload(this.metadata.image)
-				console.log('imageCID: ', imageCID)
+				this.isBusy = true
+				const { ipnft: imageCID } = await this.handleImageUpload(
+					this.metadata.image
+				)
 				const metadataJSON = {
 					image: 'ipfs://' + imageCID,
 					name: this.metadata.name,
 					description: this.metadata.description,
 				}
-				console.log('metadataJSON: ', metadataJSON);
-				const { ipnft : metadataHash } = await this.handleMetadataUpload(metadataJSON)
-				console.log('metadataHash: ', metadataHash)
-				// TODO: perform basic validation, upload image, then generate and upload json. get resulting hash, assign to this.url and commit()
-				//..............
-				//................
+				const metadataHash = await this.handleMetadataUpload(metadataJSON)
 				this.url = `ipfs://${metadataHash}`
 				await this.commit()
+				this.$bvToast.toast('Delayed reveal metadata updated.', {
+					title: 'Delayed Reveal Config',
+					variant: 'success'
+				})
 			} catch (err) {
-				console.log('err: ', err);
+				console.log('err: ', err)
 				this.$bvToast.toast(err.message || 'Failed to update', {
 					title: 'Delayed Reveal Config',
 					variant: 'danger',
@@ -183,26 +180,24 @@ export default {
 			}
 		},
 		async handleImageUpload(image) {
-			console.log('image: ', image);
-			console.log('type of image: ', typeof image);
 			const nftStorage = new NFTStorage({ token: this.apiKey })
-			console.log('nftStorage: ', nftStorage);
-			return await nftStorage.store({ image, name:this.metadata.name,description:this.metadata.description })
+			return await nftStorage.store({
+				image,
+				name: this.metadata.name,
+				description: this.metadata.description,
+			})
 		},
 		async handleMetadataUpload(metadata) {
 			const nftStorage = new NFTStorage({ token: this.apiKey })
-		const file =	fs.writeFileSync(`/apikeys/test.json`, JSON.stringify(metadata, null, 2));
-			console.log('file: ', file);
-			return await nftStorage.storeDirectory(file)
-		
-			/* fs.writeFile(`/apikeys/${metadata.name}.json`, JSON.stringify(metadata, null, 2), function(err) {
-    if(err) {
-        return console.log(err);
-    }
-    console.log("The file was saved!");
-});  */
-			return;
-			// const file = fs.readFileSync(`/apikeys/${metadata.name}.json`)
+			var parts = [
+				new Blob([JSON.stringify(metadata, null, 2)], { type: 'text/plain' }),
+			]
+			var file = new File(parts, 'metadata.json', {
+				lastModified: new Date(0),
+				type: 'overide/mimetype'
+			})
+
+			return await nftStorage.storeDirectory([file])
 		},
 		async commit() {
 			try {
