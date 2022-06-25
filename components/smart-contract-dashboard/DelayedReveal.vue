@@ -74,7 +74,9 @@
 									text="nft.storage API key"
 									href="https://nft.storage/docs/#get-an-api-token"
 								></ExternalLink>
-								<!-- <b-form-checkbox switch>Remember</b-form-checkbox> -->
+								<b-form-checkbox class="ml-3" switch v-model="remember_apikey"
+									>Remember Key</b-form-checkbox
+								>
 							</div>
 						</template>
 						<b-form-input
@@ -111,10 +113,11 @@ export default {
 			url: null,
 			apiKey: null,
 			metadata: {
-				name: 'test',
-				description: 'test',
+				name: '',
+				description: '',
 				image: [],
 			},
+			remember_apikey: false,
 		}
 	},
 	computed: {
@@ -136,43 +139,42 @@ export default {
 		apiKey: { required },
 	},
 	async created() {
+		this.apiKey = localStorage.getItem('zcnft_nft_storage_api_key')
 		const { abi, address, chainId } = this.smartContract
 		const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
 		const jsonRpcProvider = new ethers.providers.StaticJsonRpcProvider(
 			providerUrl
 		)
 		this.contract = new ethers.Contract(address, abi, jsonRpcProvider)
-		console.log('this.contract: ', this.contract)
-		// this.url = await this.contract?.preRevealURL()
+		this.url = await this.contract?.preRevealURL()
 	},
 	methods: {
 		async save() {
 			try {
 				this.$v.metadata.$touch()
 				if (this.$v.metadata.$invalid || this.$v.$invalid) {
-					console.log('form invalid')
 					return
+				}
+				if (this.remember_apikey) {
+					localStorage.setItem('zcnft_nft_storage_api_key', this.apiKey)
 				}
 				this.isBusy = true
 				const { ipnft: imageCID } = await this.handleImageUpload(
 					this.metadata.image
 				)
+					console.log('imageCID: ', imageCID);
 				const metadataJSON = {
 					image: 'ipfs://' + imageCID,
 					name: this.metadata.name,
 					description: this.metadata.description,
 				}
 				const metadataHash = await this.handleMetadataUpload(metadataJSON)
-				this.url = `ipfs://${metadataHash}`
+				this.url = `ipfs://${metadataHash}/hidden_metadata.json`
 				await this.commit()
-				this.$bvToast.toast('Delayed reveal metadata updated.', {
-					title: 'Delayed Reveal Config',
-					variant: 'success'
-				})
 			} catch (err) {
 				console.log('err: ', err)
 				this.$bvToast.toast(err.message || 'Failed to update', {
-					title: 'Delayed Reveal Config',
+					title: 'Delayed Reveal URL',
 					variant: 'danger',
 				})
 			} finally {
@@ -192,9 +194,9 @@ export default {
 			var parts = [
 				new Blob([JSON.stringify(metadata, null, 2)], { type: 'text/plain' }),
 			]
-			var file = new File(parts, 'metadata.json', {
+			var file = new File(parts, 'hidden_metadata.json', {
 				lastModified: new Date(0),
-				type: 'overide/mimetype'
+				type: 'overide/mimetype',
 			})
 
 			return await nftStorage.storeDirectory([file])
