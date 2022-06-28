@@ -119,11 +119,15 @@ const MINT_SELECTOR_TYPE = Object.freeze({
 	Range: 1
 })
 
-const ADDONS = Object.freeze({
+const SMART_CONTRACT_FEATURES = Object.freeze({
+	Base: 0,
 	Whitelabel: 1,
 	SourceCodeVerification: 2,
+	CustomASCIIArt: 3,
+	0: 'Base',
 	1: 'Whitelabel',
-	2: 'SourceCodeVerification'
+	2: 'SourceCodeVerification',
+	3: 'CustomASCIIArt'
 })
 
 const DEFAULT_CONFIG_STRING = JSON.stringify({
@@ -153,7 +157,7 @@ export {
 	WEBSITE_TEMPLATE,
 	ZERO_CODE_ETH_ADDRESS,
 	MINT_SELECTOR_TYPE,
-	ADDONS,
+	SMART_CONTRACT_FEATURES,
 	DEFAULT_CONFIG_STRING,
 	ANALYTICS_EVENTS
 }

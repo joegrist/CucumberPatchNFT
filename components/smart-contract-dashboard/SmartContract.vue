@@ -271,7 +271,7 @@ import { mapMutations, mapState } from 'vuex'
 import {
 	SALE_STATUS,
 	SMARTCONTRACT_STATUS,
-	ADDONS,
+	SMART_CONTRACT_FEATURES,
 	CONTRACT_TYPE,
 } from '@/constants'
 import {
@@ -394,7 +394,7 @@ export default {
 		},
 		canVerify() {
 			const { isVerified, addons } = this.rawContract
-			return !isVerified && addons?.includes(ADDONS[ADDONS.SourceCodeVerification])
+			return !isVerified && addons?.includes(SMART_CONTRACT_FEATURES[SMART_CONTRACT_FEATURES.SourceCodeVerification])
 		}
 	},
 	methods: {
