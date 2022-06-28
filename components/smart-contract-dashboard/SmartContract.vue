@@ -271,7 +271,7 @@ import { mapMutations, mapState } from 'vuex'
 import {
 	SALE_STATUS,
 	SMARTCONTRACT_STATUS,
-	ADDONS,
+	SMART_CONTRACT_FEATURES,
 	CONTRACT_TYPE,
 } from '@/constants'
 import {
@@ -282,7 +282,7 @@ import {
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
-import { downloadTextFile, getProvider } from '@/utils'
+import { downloadTextFile, getProvider, getMetamaskError } from '@/utils'
 
 const basicFunctions = [
 	'airdrop',
@@ -302,7 +302,6 @@ export default {
 	middleware: 'authenticated',
 	props: {
 		smartContract: Object,
-		deploy: Boolean,
 	},
 	data: () => ({
 		SMARTCONTRACT_STATUS,
@@ -326,12 +325,6 @@ export default {
 			this.rawContract = this.smartContract
 			const { address, abi, ownerAddress, chainId } = this.rawContract
 			this.currentOwner = ownerAddress
-
-			if (this.deploy) {
-				// trigger deploy right away
-				this.onMainnetDeploy()
-				return
-			}
 
 			this.setBusy({ isBusy: true })
 
@@ -393,8 +386,9 @@ export default {
 			)
 		},
 		canVerify() {
-			const { isVerified, addons } = this.rawContract
-			return !isVerified && addons?.includes(ADDONS[ADDONS.SourceCodeVerification])
+			const { isVerified, status, addons } = this.rawContract
+			const feature = SMART_CONTRACT_FEATURES[SMART_CONTRACT_FEATURES.SourceCodeVerification]
+			return !isVerified && status === SMARTCONTRACT_STATUS.Mainnet && addons?.includes(feature)
 		}
 	},
 	methods: {
@@ -549,7 +543,7 @@ export default {
 				this.$bvModal.show('deployment')
 			} catch (err) {
 				console.error({ err })
-				this.$bvToast.toast(err.message || 'Deployment failed', {
+				this.$bvToast.toast(getMetamaskError(err, 'Deployment failed'), {
 					title: 'Contract Deployment',
 					variant: 'danger',
 				})
@@ -674,13 +668,8 @@ export default {
 				}
 			} catch (err) {
 				console.error({ err })
-				const { data, reason, message, code, method, error } = err
 				this.$bvToast.toast(
-					error?.message ||
-						data?.message ||
-						reason ||
-						message ||
-						'Function call failed',
+					getMetamaskError(err, 'Function call failed'),
 					{
 						title: method || code || 'Error',
 						variant: 'danger',

@@ -2,6 +2,7 @@ import { MerkleTree } from 'merkletreejs'
 import { ethers } from 'ethers'
 import { get } from 'lodash-es'
 import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
+
 const getMerkleRoot = (whitelist) => {
 	const leafNodes = whitelist.map((a) => ethers.utils.keccak256(a))
 	const merkleTree = new MerkleTree(leafNodes, ethers.utils.keccak256, {
@@ -30,9 +31,7 @@ const copyToClipboard = async function (value) {
 }
 
 const scrollTo = (id) => {
-	document.getElementById(id).scrollIntoView({
-		behavior: 'smooth',
-	})
+	document.getElementById(id).scrollIntoView({ behavior: 'smooth' })
 }
 
 const downloadTextFile = (
@@ -63,6 +62,10 @@ const getProvider = (chainId, isStatic = true) => {
 		: new ethers.providers.JsonRpcProvider(providerUrl)
 }
 
+const getMetamaskError = (err, defaultMsg = 'Unknown Error') => {
+	const { data, reason, message, code, method, error } = err
+	return error?.message || data?.message || reason || message || defaultMsg
+}
 
 export {
 	getMerkleRoot,
@@ -72,4 +75,5 @@ export {
 	scrollTo,
 	downloadTextFile,
 	getProvider,
+    getMetamaskError
 }
