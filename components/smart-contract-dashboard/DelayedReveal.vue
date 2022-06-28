@@ -32,12 +32,9 @@
 						<b-form-input
 							v-model="metadata.name"
 							placeholder="e.g. Hidden Monkey"
-							:class="{
-								'is-invalid': $v.metadata.name.$error,
-							}"
-							@blur.native="$v.metadata.name.$touch()"
+							:state="validateState('metadata.name')"
 						/>
-						<b-form-invalid-feedback :state="validation.name">
+						<b-form-invalid-feedback :state="state.name">
 							Please provide name for the metadata.
 						</b-form-invalid-feedback>
 					</b-form-group>
@@ -45,12 +42,9 @@
 						<b-form-textarea
 							v-model="metadata.description"
 							placeholder="e.g. Hidden Monkey is still hidden"
-							:class="{
-								'is-invalid': $v.metadata.description.$error,
-							}"
-							@blur.native="$v.metadata.description.$touch()"
+							:state="validateState('metadata.description')"
 						/>
-						<b-form-invalid-feedback :state="validation.description">
+						<b-form-invalid-feedback :state="state.description">
 							Please provide description for the metadata.
 						</b-form-invalid-feedback>
 					</b-form-group>
@@ -58,12 +52,9 @@
 						<b-form-file
 							v-model="metadata.image"
 							accept="image/*"
-							:class="{
-								'is-invalid': $v.metadata.image.$error,
-							}"
-							@blur.native="$v.metadata.image.$touch()"
+							:state="validateState('metadata.image')"
 						/>
-						<b-form-invalid-feedback :state="validation.image">
+						<b-form-invalid-feedback :state="state.image">
 							Please select the delayed reveal image.
 						</b-form-invalid-feedback>
 					</b-form-group>
@@ -80,14 +71,11 @@
 							</div>
 						</template>
 						<b-form-input
-							v-model="apiKey"
-							:class="{
-								'is-invalid': $v.apiKey.$error,
-							}"
-							@blur.native="$v.apiKey.$touch()"
+							v-model="metadata.apiKey"
+							:state="validateState('metadata.apiKey')"
 							placeholder="Enter nft.storage api key."
 						/>
-						<b-form-invalid-feedback :state="validation.apiKey">
+						<b-form-invalid-feedback :state="state.apiKey">
 							Please provide the nft.storage api key.
 						</b-form-invalid-feedback>
 					</b-form-group>
@@ -102,6 +90,8 @@ import { ethers } from 'ethers'
 import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
 import { required } from 'vuelidate/lib/validators'
 import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js'
+import { validateState } from '@/utils'
+
 export default {
 	props: {
 		smartContract: Object,
@@ -110,23 +100,23 @@ export default {
 		return {
 			isBusy: false,
 			contract: null,
-			url: null,
-			apiKey: null,
+      url: null,
 			metadata: {
-				name: '',
+        name: '',
 				description: '',
 				image: [],
+        apiKey: null,
 			},
 			remember_apikey: false,
 		}
 	},
 	computed: {
-		validation() {
+		state() {
 			return {
 				name: !this.$v.metadata.name.$error,
 				description: !this.$v.metadata.description.$error,
 				image: !this.$v.metadata.image.$error,
-				apiKey: !this.$v.apiKey.$error,
+				apiKey: !this.$v.metadata.apiKey.$error,
 			}
 		},
 	},
@@ -135,11 +125,11 @@ export default {
 			name: { required },
 			description: { required },
 			image: { required },
-		},
-		apiKey: { required },
+      apiKey: { required }
+    },
 	},
 	async created() {
-		this.apiKey = localStorage.getItem('zcnft_nft_storage_api_key')
+		this.metadata.apiKey = localStorage.getItem('zcnft_nft_storage_api_key')
 		const { abi, address, chainId } = this.smartContract
 		const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
 		const jsonRpcProvider = new ethers.providers.StaticJsonRpcProvider(
@@ -149,14 +139,15 @@ export default {
 		this.url = await this.contract?.preRevealURL()
 	},
 	methods: {
+		validateState,
 		async save() {
 			try {
-				this.$v.metadata.$touch()
-				if (this.$v.metadata.$invalid || this.$v.$invalid) {
+				this.$v.$touch()
+				if (this.$v.metadata.$invalid) {
 					return
-				}
+        }
 				if (this.remember_apikey) {
-					localStorage.setItem('zcnft_nft_storage_api_key', this.apiKey)
+					localStorage.setItem('zcnft_nft_storage_api_key', this.metadata.apiKey)
 				}
 				this.isBusy = true
 				this.url = await this.handleImageUpload(this.metadata.image)
@@ -172,7 +163,7 @@ export default {
 			}
 		},
 		async handleImageUpload(image) {
-			const client = new NFTStorage({ token: this.apiKey })
+			const client = new NFTStorage({ token: this.metadata.apiKey })
 			const metadata = await client.store({
 				image,
 				name: this.metadata.name,
