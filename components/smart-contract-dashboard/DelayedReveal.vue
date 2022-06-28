@@ -159,17 +159,7 @@ export default {
 					localStorage.setItem('zcnft_nft_storage_api_key', this.apiKey)
 				}
 				this.isBusy = true
-				const { ipnft: imageCID } = await this.handleImageUpload(
-					this.metadata.image
-				)
-					console.log('imageCID: ', imageCID);
-				const metadataJSON = {
-					image: 'ipfs://' + imageCID,
-					name: this.metadata.name,
-					description: this.metadata.description,
-				}
-				const metadataHash = await this.handleMetadataUpload(metadataJSON)
-				this.url = `ipfs://${metadataHash}/hidden_metadata.json`
+				this.url = await this.handleImageUpload(this.metadata.image)
 				await this.commit()
 			} catch (err) {
 				console.log('err: ', err)
@@ -182,24 +172,13 @@ export default {
 			}
 		},
 		async handleImageUpload(image) {
-			const nftStorage = new NFTStorage({ token: this.apiKey })
-			return await nftStorage.store({
+			const client = new NFTStorage({ token: this.apiKey })
+			const metadata = await client.store({
 				image,
 				name: this.metadata.name,
 				description: this.metadata.description,
 			})
-		},
-		async handleMetadataUpload(metadata) {
-			const nftStorage = new NFTStorage({ token: this.apiKey })
-			var parts = [
-				new Blob([JSON.stringify(metadata, null, 2)], { type: 'text/plain' }),
-			]
-			var file = new File(parts, 'hidden_metadata.json', {
-				lastModified: new Date(0),
-				type: 'overide/mimetype',
-			})
-
-			return await nftStorage.storeDirectory([file])
+			return metadata.url
 		},
 		async commit() {
 			try {
@@ -208,7 +187,7 @@ export default {
 				}
 
 				if (this.$wallet.chainId !== +this.smartContract.chainId) {
-					await this.$wallet.switchNetwork(this.rawContract.chainId)
+					await this.$wallet.switchNetwork(this.smartContract.chainId)
 				}
 
 				this.isBusy = true
@@ -241,10 +220,7 @@ export default {
 					})
 				})
 			} catch (err) {
-				this.$bvToast.toast(err.message || 'Failed to update', {
-					title: 'Delayed Reveal URL',
-					variant: 'danger',
-				})
+				throw err
 			} finally {
 				this.isBusy = false
 			}
