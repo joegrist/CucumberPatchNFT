@@ -32,8 +32,7 @@
 						<b-form-input
 							v-model="metadata.name"
 							placeholder="e.g. Hidden Monkey"
-							:state="validateState('metadata.name')"
-						/>
+							:state="validateState('metadata.name')" />
 						<b-form-invalid-feedback :state="state.name">
 							Please provide name for the metadata.
 						</b-form-invalid-feedback>
@@ -42,8 +41,7 @@
 						<b-form-textarea
 							v-model="metadata.description"
 							placeholder="e.g. Hidden Monkey is still hidden"
-							:state="validateState('metadata.description')"
-						/>
+							:state="validateState('metadata.description')" />
 						<b-form-invalid-feedback :state="state.description">
 							Please provide description for the metadata.
 						</b-form-invalid-feedback>
@@ -52,8 +50,7 @@
 						<b-form-file
 							v-model="metadata.image"
 							accept="image/*"
-							:state="validateState('metadata.image')"
-						/>
+							:state="validateState('metadata.image')" />
 						<b-form-invalid-feedback :state="state.image">
 							Please select the delayed reveal image.
 						</b-form-invalid-feedback>
@@ -63,9 +60,8 @@
 							<div class="d-flex">
 								<ExternalLink
 									text="nft.storage API key"
-									href="https://nft.storage/docs/#get-an-api-token"
-								></ExternalLink>
-								<b-form-checkbox class="ml-3" switch v-model="remember_apikey"
+									href="https://nft.storage/docs/#get-an-api-token"></ExternalLink>
+								<b-form-checkbox class="ml-3" switch v-model="rememberApiKey"
 									>Remember Key</b-form-checkbox
 								>
 							</div>
@@ -73,8 +69,7 @@
 						<b-form-input
 							v-model="metadata.apiKey"
 							:state="validateState('metadata.apiKey')"
-							placeholder="Enter nft.storage api key."
-						/>
+							placeholder="Enter nft.storage api key." />
 						<b-form-invalid-feedback :state="state.apiKey">
 							Please provide the nft.storage api key.
 						</b-form-invalid-feedback>
@@ -90,7 +85,7 @@ import { ethers } from 'ethers'
 import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
 import { required } from 'vuelidate/lib/validators'
 import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js'
-import { validateState } from '@/utils'
+import { validateState, getMetamaskError } from '@/utils'
 
 export default {
 	props: {
@@ -100,14 +95,15 @@ export default {
 		return {
 			isBusy: false,
 			contract: null,
-      url: null,
+			url: null,
+			uploadedMetadataUrl: null,
 			metadata: {
-        name: '',
+				name: '',
 				description: '',
 				image: [],
-        apiKey: null,
+				apiKey: null,
 			},
-			remember_apikey: false,
+			rememberApiKey: false,
 		}
 	},
 	computed: {
@@ -125,8 +121,8 @@ export default {
 			name: { required },
 			description: { required },
 			image: { required },
-      apiKey: { required }
-    },
+			apiKey: { required },
+		},
 	},
 	async created() {
 		this.metadata.apiKey = localStorage.getItem('zcnft_nft_storage_api_key')
@@ -141,20 +137,19 @@ export default {
 	methods: {
 		validateState,
 		async save() {
+			this.$v.$touch()
+			if (this.$v.metadata.$invalid) {
+				return
+			}
+			if (this.rememberApiKey) {
+				localStorage.setItem('zcnft_nft_storage_api_key', this.metadata.apiKey)
+			}
 			try {
-				this.$v.$touch()
-				if (this.$v.metadata.$invalid) {
-					return
-        }
-				if (this.remember_apikey) {
-					localStorage.setItem('zcnft_nft_storage_api_key', this.metadata.apiKey)
-				}
 				this.isBusy = true
-				this.url = await this.handleImageUpload(this.metadata.image)
+				this.uploadedMetadataUrl = await this.uploadMetadata()
 				await this.commit()
 			} catch (err) {
-				console.log('err: ', err)
-				this.$bvToast.toast(err.message || 'Failed to update', {
+				this.$bvToast.toast(getMetamaskError(err, 'Update failed'), {
 					title: 'Delayed Reveal URL',
 					variant: 'danger',
 				})
@@ -162,59 +157,54 @@ export default {
 				this.isBusy = false
 			}
 		},
-		async handleImageUpload(image) {
-			const client = new NFTStorage({ token: this.metadata.apiKey })
+		async uploadMetadata() {
+			const { apiKey, name, description, image } = this.metadata
+			const client = new NFTStorage({ token: apiKey })
 			const metadata = await client.store({
 				image,
-				name: this.metadata.name,
-				description: this.metadata.description,
+				name,
+				description,
 			})
 			return metadata.url
 		},
 		async commit() {
-			try {
-				if (this.$wallet.isConnected) {
-					await this.$wallet.connect()
-				}
+			if (this.$wallet.isConnected) {
+				await this.$wallet.connect()
+			}
 
-				if (this.$wallet.chainId !== +this.smartContract.chainId) {
-					await this.$wallet.switchNetwork(this.smartContract.chainId)
-				}
+			if (this.$wallet.chainId !== +this.smartContract.chainId) {
+				await this.$wallet.switchNetwork(this.smartContract.chainId)
+			}
 
-				this.isBusy = true
+			const signedContract = this.contract.connect(
+				this.$wallet.provider.getSigner()
+			)
+			const gasPrice = await this.$wallet.provider.getGasPrice()
+			console.info(
+				`GAS PRICE: ${ethers.utils.formatUnits(gasPrice, 'gwei')} gwei`
+			)
 
-				const signedContract = this.contract.connect(
-					this.$wallet.provider.getSigner()
-				)
-				const gasPrice = await this.$wallet.provider.getGasPrice()
-				console.info(
-					`GAS PRICE: ${ethers.utils.formatUnits(gasPrice, 'gwei')} gwei`
-				)
+			const tx = await signedContract.setPreRevealUrl(this.url, {
+				gasPrice,
+			})
 
-				const tx = await signedContract.setPreRevealUrl(this.url, {
-					gasPrice,
-				})
+			this.$bvToast.toast('Update transaction accepted', {
+				title: 'Delayed Reveal URL',
+				variant: 'success',
+			})
 
-				this.$bvToast.toast('Update transaction accepted', {
+			this.url = this.uploadedMetadataUrl
+
+			await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
+				delayedRevealURL: this.url,
+			})
+
+			tx.wait().then((_) => {
+				this.$bvToast.toast('Update transaction complete', {
 					title: 'Delayed Reveal URL',
 					variant: 'success',
 				})
-
-				await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
-					delayedRevealURL: this.url,
-				})
-
-				tx.wait().then((_) => {
-					this.$bvToast.toast('Update transaction complete', {
-						title: 'Delayed Reveal URL',
-						variant: 'success',
-					})
-				})
-			} catch (err) {
-				throw err
-			} finally {
-				this.isBusy = false
-			}
+			})
 		},
 	},
 }
