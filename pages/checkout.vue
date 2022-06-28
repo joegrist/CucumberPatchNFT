@@ -58,9 +58,10 @@
 					<b-col cols="9">Total: </b-col>
 					<b-col cols="3" class="text-right"> {{ calcTotal }} eth </b-col>
 				</b-row>
+				<b-alert :show="insufficientBalance" variant="warning">Insufficient balance. Your balance: {{ $wallet.balanceFormatted }}</b-alert>
 				<b-overlay :show="isBusy">
 					<b-button
-						:disabled="payWithEthDisabled"
+						:disabled="insufficientBalance || payWithEthDisabled"
 						class="mb-3 font-weight-bolder"
 						size="lg"
 						block
@@ -163,6 +164,7 @@ import {
 } from '@/constants'
 import { nanoid } from 'nanoid'
 import { startCase } from 'lodash-es'
+import { getMetamaskError } from '@/utils'
 
 export default {
 	data() {
@@ -221,6 +223,9 @@ export default {
 				SMART_CONTRACT_FEATURES.CustomASCIIArt
 			)
 		},
+		insufficientBalance() {
+			return this.$wallet.chainId === 1 && this.$wallet.balance < this.calcTotal
+		},
 		fees() {
 			if (!this.smartContract) return []
 
@@ -274,34 +279,35 @@ export default {
 				// 	'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD'
 				// )
 				// const { USD: ethPrice } = await data.json()
-				// const value = this.total / ethPrice
-				// const tx = {
-				// 	from: this.$wallet.account,
-				// 	to: ZERO_CODE_ETH_ADDRESS,
-				// 	value: ethers.utils.parseEther(this.calcTotal.toString()),
-				// 	nonce: this.$wallet.provider.getTransactionCount(
-				// 		this.$wallet.account,
-				// 		'latest'
-				// 	),
-				// }
+				// const value = this.calcTotal / ethPrice
 
-				// const txRes = await this.$wallet.provider
-				// 	.getSigner()
-				// 	.sendTransaction(tx)
-
-				// this.setBusy({
-				// 	isBusy: true,
-				// 	message: `Confirming ETH transaction... <br/> DO NOT CLOSE THIS WINDOW! <br/> Hash: ${txRes.hash}`,
-				// })
-
-				// const confirmedTx = await txRes.wait()
-				// console.log({ confirmedTx })
-
-				// this.ethPayTxHash = confirmedTx.transactionHash
-
-				const confirmedTx = {
-					transactionHash: nanoid()
+				const tx = {
+					from: this.$wallet.account,
+					to: ZERO_CODE_ETH_ADDRESS,
+					value: ethers.utils.parseEther(this.calcTotal.toString()),
+					nonce: this.$wallet.provider.getTransactionCount(
+						this.$wallet.account,
+						'latest'
+					),
 				}
+
+				const txRes = await this.$wallet.provider
+					.getSigner()
+					.sendTransaction(tx)
+
+				this.setBusy({
+					isBusy: true,
+					message: `Confirming ETH transaction... <br/> DO NOT CLOSE THIS WINDOW! <br/> Hash: ${txRes.hash}`,
+				})
+
+				const confirmedTx = await txRes.wait()
+				console.log({ confirmedTx })
+
+				this.ethPayTxHash = confirmedTx.transactionHash
+
+				// const confirmedTx = {
+				// 	transactionHash: nanoid()
+				// }
 
 				const { firstName, lastName, email } = this.$store.state.user
 				const payload = {
@@ -324,13 +330,8 @@ export default {
 
 				// this.$bvModal.hide('payment')
 			} catch (err) {
-				const { data, reason, message, error } = err
 				this.$bvToast.toast(
-					error?.message ||
-						data?.message ||
-						reason ||
-						message ||
-						'Check your metamask balance. Do not attempt payment again. Contact us.',
+					getMetamaskError(err, 'Check your metamask balance. Do not attempt payment again. Contact us.'),
 					{
 						title: 'ETH Payment',
 						variant: 'danger',
