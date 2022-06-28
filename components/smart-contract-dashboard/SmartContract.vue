@@ -543,7 +543,7 @@ export default {
 				this.$bvModal.show('deployment')
 			} catch (err) {
 				console.error({ err })
-				this.$bvToast.toast(err.message || 'Deployment failed', {
+				this.$bvToast.toast(getMetamaskError(err, 'Deployment failed'), {
 					title: 'Contract Deployment',
 					variant: 'danger',
 				})
