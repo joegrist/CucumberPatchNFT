@@ -6,7 +6,7 @@
 			</b-col>
 		</b-row>
 		<b-row align-h="center">
-			<b-col sm="12" md="4">
+			<b-col sm="12" md="6">
 				<h3 class="mb-3">Self-Deployment</h3>
 				<b-form-group label="Add-ons" v-slot="{ ariaDescribedby }">
 					<b-form-checkbox
@@ -17,8 +17,22 @@
 						:aria-describedby="ariaDescribedby"
 						name="addons">
 						{{ addon.text }}
+						<b-icon v-if="addon.value === SMART_CONTRACT_FEATURES.CustomASCIIArt" icon="question-circle" id="ascii-art-popover"></b-icon>
 					</b-form-checkbox>
+					<b-popover target="ascii-art-popover" triggers="hover" placement="rightbottom" noninteractive variant="primary" custom-class="ascii-art-popover">
+						<template #title>What's ASCII Art ?</template>
+						<div>
+							<p>ASCIIArt is added to your smart contract's code to make it unique and it just looks cool :)</p>
+							<ExternalLink href="https://polygonscan.com/address/0x357E3bDF5aD2D29c7dbe7e604e1B22611EaE8257#code" text="See Example"></ExternalLink>
+							<ExternalLink href="https://patorjk.com/software/taag" text="Generate yours"></ExternalLink>
+						</div>
+					</b-popover>
 				</b-form-group>
+				<b-row v-show="showASCIIArtTextArea" class="my-3">
+					<b-col>
+						<pre contenteditable="true" class="border p-3">{{ ASCIIArt }}</pre>
+					</b-col>
+				</b-row>
 				<b-row v-for="fee in fees" :key="fee.description" class="mb-1">
 					<b-col cols="9">{{ fee.description }}</b-col>
 					<b-col cols="3" class="text-right">{{ fee.cost }} eth</b-col>
@@ -155,6 +169,8 @@ export default {
 			returnUrl: '/',
 			feeStructure: [],
 			smartContract: null,
+			ASCIIArt: null,
+			SMART_CONTRACT_FEATURES
 		}
 	},
 	async created() {
@@ -181,6 +197,9 @@ export default {
 	computed: {
 		...mapState(['isBusy']),
 		...mapGetters(['userId']),
+		showASCIIArtTextArea() {
+			return this.selectedAddons.includes(SMART_CONTRACT_FEATURES.CustomASCIIArt)
+		},
 		fees() {
 			if (!this.smartContract) return []
 
@@ -293,3 +312,9 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss" scoped>
+	.ascii-art {
+		min-height: 300px;
+	}
+</style>
