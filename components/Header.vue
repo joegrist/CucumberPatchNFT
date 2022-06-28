@@ -28,9 +28,9 @@
 								class="bg-gradient-primary my-auto"
 								:src="$wallet.avatarUrl"
 							></b-avatar>
-							<div class="d-flex flex-column ml-1 text-left" style="line-height:1.2">
+							<div class="d-flex flex-column ml-1 my-auto text-left" style="line-height:1.2">
 								<span>{{ walletAddress }}</span>
-								<span v-if="$wallet.isConnected" class="text-muted small">{{ $wallet.balance }}</span>
+								<span v-if="$wallet.isConnected" class="text-muted small">{{ $wallet.balanceFormatted }}</span>
 							</div>
 						</b-button>
 				</b-navbar-nav>

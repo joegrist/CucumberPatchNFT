@@ -27,13 +27,14 @@
             {{ $wallet.account }}
             <Copy :value="$wallet.account" />
           </p>
+          <b-alert :show="lowBalance" variant="warning">Wallet balance too low. Please get some funds from the faucet or select a different wallet to deploy.</b-alert>
         </b-col>
       </b-row>
       <b-row>
         <b-col>
           <div class="d-flex justify-content-center">
             <template v-if="isLoggedIn">
-              <b-button variant="outline-info" :disabled='!canDeploy' @click="saveDraft" class="mr-3">Save Draft</b-button>
+              <b-button variant="outline-info" :disabled='!canSaveDraft' @click="saveDraft" class="mr-3">Save Draft</b-button>
               <b-button variant='outline-primary' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
             </template>
             <LoginButton v-else variant="primary" caption="Login to Deploy" />
@@ -73,6 +74,7 @@ import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import Summary from '@/components/smart-contract-wizard/Summary'
 import LoginButton from '@/components/login/LoginButton'
+import { getMetamaskError } from '@/utils'
 
 export default {
   mixins: [smartContractBuilderMixin],
@@ -100,8 +102,14 @@ export default {
     explorerUrl() {
       return `${getExplorerUrl(this.smartContractBuilder.chainId)}/address/${this.smartContractBuilder.address}`
     },
+    lowBalance() {
+      return this.$wallet.balance === 0
+    },
+    canSaveDraft() {
+      return this.isLoggedIn && !this.smartContractBuilder.isDeployed
+    },
     canDeploy() {
-      return !this.smartContractBuilder.isDeployed && !this.isBusy && this.isLoggedIn
+      return this.isLoggedIn && !this.lowBalance && !this.smartContractBuilder.isDeployed
     },
   },
   methods: {
@@ -136,7 +144,7 @@ export default {
 
     async deploy() {
       try {
-        if(!this.$wallet.account) {
+        if(!this.$wallet.isConnected) {
           this.showConnectWalletModal = true
           return
         }
@@ -149,9 +157,9 @@ export default {
 
         const id = await this.saveDraft()
 
-        const compilationResult = await this.$axios.post(`/smartcontracts/${id}/compile`)
+        const { data: compilationResult } = await this.$axios.post(`/smartcontracts/${id}/compile`)
 
-        const { abi, bytecode } = compilationResult.data
+        const { abi, bytecode } = compilationResult
 
         const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, this.$wallet.provider.getSigner())
 
@@ -182,7 +190,7 @@ export default {
 
         this.$bvModal.show('deployed')
       } catch (err) {
-        this.$bvToast.toast(err.message || 'Deployment failed', {
+        this.$bvToast.toast(getMetamaskError(err, 'Deployment failed'), {
           title: 'Error',
           variant: 'danger',
         })

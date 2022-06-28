@@ -119,11 +119,15 @@ const MINT_SELECTOR_TYPE = Object.freeze({
 	Range: 1
 })
 
-const ADDONS = Object.freeze({
+const SMART_CONTRACT_FEATURES = Object.freeze({
+	Base: 0,
 	Whitelabel: 1,
 	SourceCodeVerification: 2,
+	CustomASCIIArt: 3,
+	0: 'Base',
 	1: 'Whitelabel',
-	2: 'SourceCodeVerification'
+	2: 'SourceCodeVerification',
+	3: 'CustomASCIIArt'
 })
 
 const DEFAULT_CONFIG_STRING = JSON.stringify({
@@ -141,6 +145,18 @@ const ANALYTICS_EVENTS = Object.freeze({
 
 const ZERO_CODE_ETH_ADDRESS = '0x34Eca06DB779169003117e8999B5E008086f4cc3'
 
+const ZEROCODENFT_ASCII_ART = `
+ /$$$$$$$$                                /$$$$$$                  /$$           /$$   /$$ /$$$$$$$$ /$$$$$$$$
+|_____ $$                                /$$__  $$                | $$          | $$$ | $$| $$_____/|__  $$__/
+     /$$/   /$$$$$$   /$$$$$$   /$$$$$$ | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ | $$$$| $$| $$         | $$
+    /$$/   /$$__  $$ /$$__  $$ /$$__  $$| $$       /$$__  $$ /$$__  $$ /$$__  $$| $$ $$ $$| $$$$$      | $$
+   /$$/   | $$$$$$$$| $$  \__/| $$  \ $$| $$      | $$  \ $$| $$  | $$| $$$$$$$$| $$  $$$$| $$__/      | $$
+  /$$/    | $$_____/| $$      | $$  | $$| $$    $$| $$  | $$| $$  | $$| $$_____/| $$\  $$$| $$         | $$
+ /$$$$$$$$|  $$$$$$$| $$      |  $$$$$$/|  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$ \  $$| $$         | $$
+|________/ \_______/|__/       \______/  \______/  \______/  \_______/ \_______/|__/  \__/|__/         |__/
+Drop Your NFT Collection With ZERO Coding Skills at https://zerocodenft.com
+`
+
 export {
 	BLOCKCHAIN,
 	MARKETPLACE,
@@ -153,7 +169,8 @@ export {
 	WEBSITE_TEMPLATE,
 	ZERO_CODE_ETH_ADDRESS,
 	MINT_SELECTOR_TYPE,
-	ADDONS,
+	SMART_CONTRACT_FEATURES,
 	DEFAULT_CONFIG_STRING,
-	ANALYTICS_EVENTS
+	ANALYTICS_EVENTS,
+	ZEROCODENFT_ASCII_ART
 }

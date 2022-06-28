@@ -10,6 +10,7 @@ export default ({store}, inject) => {
         accountCompact: 'Connect Wallet',
         network: null,
         balance: null,
+        balanceFormatted: null,
         provider: null,
         ensName: null,
         avatarUrl: null,
@@ -29,8 +30,11 @@ export default ({store}, inject) => {
         
         async refreshBalance() {
             if(!this.account || !this.provider) return
-            const balance = (await this.provider.getBalance(this.account)).toString()
-            this.balance = `${(+ethers.utils.formatEther(balance)).toFixed(3)} ${getCurrency(this.chainId)}`
+            const balanceWei = await this.provider.getBalance(this.account)
+            const balanceEth = Number(ethers.utils.formatEther(balanceWei.toString()))
+            
+            this.balance = Number(balanceEth.toFixed(3))
+            this.balanceFormatted = `${this.balance} ${getCurrency(this.chainId)}`
         },
 
         async init() {
@@ -45,12 +49,17 @@ export default ({store}, inject) => {
             if(newAccount) {
                 this.account = newAccount
                 this.accountCompact = `${newAccount.substring(0, 4)}...${newAccount.substring(newAccount.length - 4)}`
-                this.ensName = await this.provider.lookupAddress(newAccount)
-                if(this.ensName) {
-                    this.avatarUrl = await this.provider.getAvatar(this.ensName)
-                    console.log(this.avatarUrl)
-                }
                 this.refreshBalance()
+
+                try {
+                    this.ensName = await this.provider.lookupAddress(newAccount)
+                    if(this.ensName) {
+                        this.avatarUrl = await this.provider.getAvatar(this.ensName)
+                    }
+                } catch {
+                    this.ensName = null
+                    this.avatarUrl = null
+                }
             }
             else {
                 this.disconnect()
