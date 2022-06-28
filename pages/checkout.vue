@@ -47,7 +47,7 @@
 				</b-form-group>
 				<b-row v-show="showASCIIArtTextArea" class="my-3">
 					<b-col>
-						<pre contenteditable="true" class="border p-3">{{ ASCIIArt }}</pre>
+						<pre contenteditable="true" @input="onArtInput" class="border p-3"></pre>
 					</b-col>
 				</b-row>
 				<b-row v-for="fee in fees" :key="fee.description" class="mb-1">
@@ -161,6 +161,8 @@ import {
 	ZERO_CODE_ETH_ADDRESS,
 	SMART_CONTRACT_FEATURES,
 } from '@/constants'
+import { nanoid } from 'nanoid'
+import { startCase } from 'lodash-es'
 
 export default {
 	data() {
@@ -186,7 +188,7 @@ export default {
 			returnUrl: '/',
 			feeStructure: [],
 			smartContract: null,
-			ASCIIArt: null,
+			asciiArt: null,
 			SMART_CONTRACT_FEATURES,
 		}
 	},
@@ -195,7 +197,7 @@ export default {
 			this.smartContractId = this.$route.query['smId']
 			if (!this.smartContractId) this.$router.push('/')
 
-			this.returnUrl = `/smartcontract?id=${this.smartContractId}&deploy=true`
+			this.returnUrl = `/smartcontract?id=${this.smartContractId}`
 
 			const { data: sc } = await this.$axios.get(
 				`/smartcontracts/${this.smartContractId}`
@@ -224,16 +226,18 @@ export default {
 
 			const fees1 = this.smartContract.features.map((f) => {
 				return {
-					description: f,
+					description: startCase(f),
 					cost: this.feeStructure.find((x) => x.name === f)?.fee,
 				}
 			})
 
 			const fees2 = this.selectedAddons.map((a) => {
+				const description = this.addons
+					.find((x) => x.value === a)
+					.text.replace(/\([\w\s]+\)/g, '')
+
 				return {
-					description: this.addons
-						.find((x) => x.value === a)
-						.text.replace(/\([\w\s]+\)/g, ''),
+					description: startCase(description),
 					cost: this.feeStructure.find(
 						(x) => x.name === SMART_CONTRACT_FEATURES[a]
 					)?.fee,
@@ -255,6 +259,9 @@ export default {
 	},
 	methods: {
 		...mapMutations(['setBusy']),
+		onArtInput(e) {
+			this.asciiArt = e.target.innerText
+		},
 		async payWithEth() {
 			try {
 				this.setBusy({ isBusy: true })
@@ -268,41 +275,46 @@ export default {
 				// )
 				// const { USD: ethPrice } = await data.json()
 				// const value = this.total / ethPrice
-				const tx = {
-					from: this.$wallet.account,
-					to: ZERO_CODE_ETH_ADDRESS,
-					value: ethers.utils.parseEther(this.calcTotal.toString()),
-					nonce: this.$wallet.provider.getTransactionCount(
-						this.$wallet.account,
-						'latest'
-					),
+				// const tx = {
+				// 	from: this.$wallet.account,
+				// 	to: ZERO_CODE_ETH_ADDRESS,
+				// 	value: ethers.utils.parseEther(this.calcTotal.toString()),
+				// 	nonce: this.$wallet.provider.getTransactionCount(
+				// 		this.$wallet.account,
+				// 		'latest'
+				// 	),
+				// }
+
+				// const txRes = await this.$wallet.provider
+				// 	.getSigner()
+				// 	.sendTransaction(tx)
+
+				// this.setBusy({
+				// 	isBusy: true,
+				// 	message: `Confirming ETH transaction... <br/> DO NOT CLOSE THIS WINDOW! <br/> Hash: ${txRes.hash}`,
+				// })
+
+				// const confirmedTx = await txRes.wait()
+				// console.log({ confirmedTx })
+
+				// this.ethPayTxHash = confirmedTx.transactionHash
+
+				const confirmedTx = {
+					transactionHash: nanoid()
 				}
 
-				const txRes = await this.$wallet.provider
-					.getSigner()
-					.sendTransaction(tx)
-
-				this.setBusy({
-					isBusy: true,
-					message: `Confirming ETH transaction... <br/> DO NOT CLOSE THIS WINDOW! <br/> Hash: ${txRes.hash}`,
-				})
-
-				const confirmedTx = await txRes.wait()
-				console.log({ confirmedTx })
-
-				this.ethPayTxHash = confirmedTx.transactionHash
-
-				const user = this.$store.state.user
+				const { firstName, lastName, email } = this.$store.state.user
 				const payload = {
 					paymentMethod: PAYMENT_METHOD.ETH,
 					amount: this.calcTotal,
-					orderId: confirmedTx.transactionHash,
+					orderId: confirmedTx?.transactionHash,
 					countryCode: null,
 					payerId: this.userId,
-					payerName: `${user.firstName} ${user.lastName}`,
-					addons: this.selectedAddons,
-					payerEmail: user.email,
+					payerName: `${firstName} ${lastName}`,
+					features: this.selectedAddons,
+					payerEmail: email,
 					smartContractId: this.smartContractId,
+					customASCIIArt: this.asciiArt
 				}
 
 				// console.log({payload})

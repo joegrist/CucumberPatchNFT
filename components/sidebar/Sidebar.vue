@@ -8,7 +8,7 @@
 			backdrop
 			z-index="100">
 			<div class="px-3 py-4">
-				<div v-if="!$wallet.account" class="mb-2">
+				<div v-if="!$wallet.isConnected" class="mb-2">
 					<b-button
 						variant="primary"
 						@click="$wallet.connect">
@@ -23,7 +23,7 @@
 								<Copy :value="$wallet.account" />
 							</span>
 						</b-list-group-item>
-						<b-list-group-item>Balance: {{ $wallet.balance }}</b-list-group-item>
+						<b-list-group-item>Balance: {{ $wallet.balanceFormatted }}</b-list-group-item>
 						<b-list-group-item class="text-capitalize">Network: {{ $wallet.networkName }}</b-list-group-item>
 					</template>
 					<template v-if="isLoggedIn && userCredits > 0">
