@@ -12,16 +12,14 @@
 					<b-tab v-if="rawContract.hasDelayedReveal" title="Delayed Reveal" lazy>
 						<DelayedReveal :smartContract="rawContract" />
 					</b-tab>
-					<b-tab title="Mint Page" lazy>
+					<b-tab v-if="!isImported" title="Mint Page" lazy>
 						<MintPage :smartContractId="rawContract.id" />
 					</b-tab>
 					<b-tab title="Snapshot" lazy>
 						<Snapshot :smartContract="rawContract" />
 					</b-tab>
-					<b-tab title="Other" lazy>
+					<b-tab v-if="!isImported" title="Other" lazy>
 						<Config :smartContractId="rawContract.id" />
-					</b-tab>
-					<b-tab title="Gated Access" :disabled="true">
 					</b-tab>
 				</b-tabs>
 			</b-col>
@@ -67,6 +65,9 @@ export default {
 	computed: {
 		...mapState(['isBusy']),
 		...mapGetters(['userId']),
+		isImported() {
+			return this.rawContract?.isImported
+		}
 	},
 }
 </script>

@@ -116,7 +116,7 @@
 					<template v-if="isOpenSea">
 						<b-link :href="collectionUrl" target="_blank">
 							<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
-							<span class="text-muted">Open</span>
+							<b-icon icon="box-arrow-up-right" />
 						</b-link>
 					</template>
 					<template v-else>
@@ -172,7 +172,7 @@
 			ok-variant="primary"
 			ok-title="Clone"
 			cancel-title="Cancel"
-			@ok="onCloneContract"
+			@ok.prevent="onCloneContract"
 		>
 			<b-form>
 				<b-form-group
@@ -199,12 +199,12 @@
 			ok-variant="primary"
 			ok-title="Link"
 			:ok-disabled="$v.openSeaLinkUrl.$error"
-			@ok="onLinkOpenSea"
+			@ok.prevent="onLinkOpenSea"
 			cancel-title="Cancel"
 		>
 			<div>
 				 <b-form-group
-					:label="`Collection URL on ${contractNetwork}`"
+					:label="`Collection URL on ${projectDeploymentStatus}`"
 					label-class='required'
 					:description="collectionNameDesc"
 				>
@@ -273,7 +273,7 @@ export default {
 			}
 		},
 		subTitle() {
-			return this.contractNetwork + ' | ' + CONTRACT_TYPE[this.sc.contractType]
+			return `${this.projectDeploymentStatus} | ${CONTRACT_TYPE[this.sc.contractType]}`
 		},
 		formattedBalance() {
 			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.sc.chainId)}`
@@ -298,7 +298,7 @@ export default {
 		isMainnet() {
 			return this.sc.status === SMARTCONTRACT_STATUS.Mainnet
 		},
-		contractNetwork() {
+		projectDeploymentStatus() {
 			if(this.isTestnet) return 'Testnet'
 			if(this.isMainnet) return 'Mainnet'
 			return 'Draft'
@@ -322,9 +322,7 @@ export default {
 			this.updateSmartContractBuilder({ ...this.sc, marketplaceCollection: {} })
 			this.$router.push('/wizard')
 		},
-		async onLinkOpenSea(e) {
-			e.preventDefault()
-
+		async onLinkOpenSea() {
 			this.setBusy({isBusy: true})
 
 			try {
@@ -349,17 +347,16 @@ export default {
 				this.setBusy({isBusy: false})
 			}
 		},
-		async onCloneContract(e) {
-			e.preventDefault()
+		async onCloneContract() {
 			this.$v.cloneContractTitle.$touch()
 			if(this.$v.cloneContractTitle.$invalid) return
+
 			try {
 				this.setBusy({isBusy: true})
 				await this.cloneDashboardCard({ id: this.sc.id, name: this.cloneContractTitle })
 				this.$bvModal.hide(`Clone${this.sc.id}`)
 				this.cloneContractTitle = null
 			} catch (err) {
-				console.error(err)
 				this.$bvToast.toast('Clone failed', {
 					title: 'Smart Contract',
 					variant: 'danger',
@@ -411,7 +408,7 @@ export default {
 			let retryCount = 0
 			const fetchParams = {}
 
-			const name = this.sc.marketplaceCollection.formattedName
+			const name = this.sc.marketplaceCollection?.formattedName
 
 			if (this.isTestnet) {
 				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${name}/stats`
@@ -421,7 +418,7 @@ export default {
 			} else {
 				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${name}/stats`
 				fetchParams.headers = {
-					'X-API-KEY': process.env.OPENSEA_API_KEY,
+					'X-API-KEY': this.$config.OPENSEA_API_KEY,
 				}
 			}
 
@@ -482,7 +479,7 @@ export default {
 
 .card-logo {
 	position: absolute;
-	top: 53%;
+	top: 52%;
 	left: 50%;
 	z-index: 1;
 	background: white;
