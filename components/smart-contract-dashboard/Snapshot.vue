@@ -27,7 +27,7 @@
 import { ethers } from 'ethers'
 import Vue from 'vue'
 // import { mapMutations, mapState } from 'vuex'
-import { downloadTextFile } from '@/utils'
+import { downloadTextFile, getMetamaskError } from '@/utils'
 import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
 
 export default {
@@ -47,7 +47,7 @@ export default {
     created() {
         const { abi, address, chainId } = this.smartContract
         const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
-        const jsonRpcProvider = new ethers.providers.JsonRpcProvider(providerUrl)
+        const jsonRpcProvider = new ethers.providers.StaticJsonRpcProvider(providerUrl)
         this.contract = new ethers.Contract(address, abi, jsonRpcProvider)
     },
     computed: {
@@ -64,7 +64,12 @@ export default {
             this.ownerMap = {}
             try {
                 this.supply = await this.contract.totalSupply()
-            } catch {}
+            } catch {
+                this.$bvToast.toast("Could not determine collection size", {
+                    title: 'Snapshot',
+                    variant: 'danger',
+			    })
+            }
             try {
                 this.isRunning = true
                 this.showProgress = true
@@ -81,7 +86,10 @@ export default {
                     }
                 }
             } catch (err) {
-                console.log(err)
+                this.$bvToast.toast(getMetamaskError(err, "Failed to run snapshot"), {
+                    title: 'Snapshot',
+                    variant: 'danger',
+			    })
             } finally {
                 this.isRunning = false
             }
