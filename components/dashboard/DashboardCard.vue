@@ -131,7 +131,7 @@
 				</b-col>
 			</b-row>
 			<b-row class="pb-0">
-				<b-col sm="12" md="6">
+				<b-col cols="8">
 					<b-button
 						v-if="isDeployed"
 						class="font-weight-bold"
@@ -144,7 +144,7 @@
 						>Edit/Deploy >></b-button
 					>
 				</b-col>
-				<b-col sm="12" md="6" class="text-muted d-flex justify-content-end my-auto">
+				<b-col cols="4" class="text-muted text-right">
 					{{ sc.createdOn | toDate }}
 				</b-col>
 			</b-row>
