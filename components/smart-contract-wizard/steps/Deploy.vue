@@ -191,7 +191,7 @@ export default {
         this.$bvModal.show('deployed')
       } catch (err) {
         this.$bvToast.toast(getMetamaskError(err, 'Deployment failed'), {
-          title: 'Error',
+          title: 'Deployment',
           variant: 'danger',
         })
       } finally {

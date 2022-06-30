@@ -668,7 +668,7 @@ export default {
 				}
 			} catch (err) {
 				console.error({ err })
-				const { code, method} = err
+				const { method, code } = err
 				this.$bvToast.toast(
 					getMetamaskError(err, 'Function call failed'),
 					{
