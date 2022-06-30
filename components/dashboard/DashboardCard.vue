@@ -28,7 +28,7 @@
 				<b-dd-item v-b-modal="`Clone${sc.id}`"
 					><b-icon icon="files" /> Clone Contract</b-dd-item
 				>
-				<b-dd-item v-b-modal="`OpenSea${sc.id}`"
+				<b-dd-item v-if="supportsOpenSea" v-b-modal="`OpenSea${sc.id}`"
 					><b-icon icon="link" /> Link OpenSea</b-dd-item
 				>
 			</template>
@@ -223,7 +223,7 @@
 
 <script>
 import { ethers } from 'ethers'
-import { MARKETPLACE, SMARTCONTRACT_STATUS, CONTRACT_TYPE } from '@/constants'
+import { MARKETPLACE, SMARTCONTRACT_STATUS, CONTRACT_TYPE, BLOCKCHAIN } from '@/constants'
 import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState, getProvider } from '@/utils'
@@ -293,6 +293,9 @@ export default {
 		},
 		isMainnet() {
 			return this.sc.status === SMARTCONTRACT_STATUS.Mainnet
+		},
+		supportsOpenSea() {
+			return this.sc.blockchain === BLOCKCHAIN.Ethereum || this.sc.blockchain === BLOCKCHAIN.Polygon
 		},
 		projectDeploymentStatus() {
 			if(this.isTestnet) return 'Testnet'
