@@ -32,6 +32,19 @@ export default {
 			},
 		})
 
+		scripts.push({
+			hid: 'twitter',
+			src: `https://static.ads-twitter.com/uwt.js`,
+			async: true,
+			once: true,
+			skip: isBraveBrowser,
+			callback: () => {
+				console.log({twq})
+				twq('init','o8shs');
+				twq('track','PageView');
+			},
+		})
+
 		return {
 			script: scripts,
 		}
