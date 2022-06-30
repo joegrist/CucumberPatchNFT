@@ -19,6 +19,7 @@
 					</h5>
 				</b-link>
 				<b-img v-else
+					:style="imgWithBGColor(blockchain)"
 					:class="[blockchain.class, { 'shadow': hasShadow(blockchain.id) }]"
 					center
 					:width="blockchain.width"
@@ -50,6 +51,7 @@ const blockchainToTestChainIdMap = {
 	[BLOCKCHAIN.Harmony]: 1666700000,
 	[BLOCKCHAIN.Klaytn]: 1001,
 	[BLOCKCHAIN.Heco]: 256,
+	[BLOCKCHAIN.Cube]:1819
 }
 
 export default {
@@ -73,9 +75,17 @@ export default {
 						available: k !== 'Solana'
 					}
 			})
-		}
+		},
 	},
 	methods: {
+		imgWithBGColor(blockchain) {
+			if ([18].includes(blockchain.id)) {
+				return {
+						background:'#c1c1c1'
+				}
+			} 
+			return {}
+		},
 		hasShadow(blockchain) {
 			return this.hovered === blockchain || this.smartContractBuilder.blockchain === blockchain
 		},
