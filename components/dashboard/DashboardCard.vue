@@ -25,10 +25,6 @@
 					>
 				</b-dd-text>
 				<b-dropdown-divider></b-dropdown-divider>
-				<!-- <b-dd-item
-					:to="`/website?scId=${sc.id}`"
-					><b-icon icon="pencil-square" /> Minting Page</b-dd-item
-				> -->
 				<b-dd-item v-b-modal="`Clone${sc.id}`"
 					><b-icon icon="files" /> Clone Contract</b-dd-item
 				>
@@ -44,7 +40,7 @@
 			<b-link
 				v-if="isDeployed"
 				class="text-dark"
-				:to="`/smartcontract?id=${sc.id}`"
+				:to="`/project?id=${sc.id}`"
 				>{{ sc.name | startCase }}</b-link
 			>
 			<span v-else>{{ sc.name | startCase }}</span>
@@ -141,7 +137,7 @@
 						class="font-weight-bold"
 						variant="link"
 						size="sm"
-						:to="`/smartcontract?id=${sc.id}`"
+						:to="`/project?id=${sc.id}`"
 						>Manage Project >></b-button
 					>
 					<b-button v-else variant="link" size="sm" class="font-weight-bold" @click="onEdit"

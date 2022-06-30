@@ -58,7 +58,10 @@ const excludeList = [
 	'isClearedForMainnet',
 	'ownerAddress',
 	'clonedFrom',
-	'status'
+	'status',
+	'isVerified',
+	'isImported',
+	'features'
 ]
 
 export default {

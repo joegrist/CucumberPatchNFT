@@ -199,7 +199,7 @@ export default {
 			this.smartContractId = this.$route.query['smId']
 			if (!this.smartContractId) this.$router.push('/')
 
-			this.returnUrl = `/smartcontract?id=${this.smartContractId}`
+			this.returnUrl = `/project?id=${this.smartContractId}`
 
 			const { data: sc } = await this.$axios.get(
 				`/smartcontracts/${this.smartContractId}`
