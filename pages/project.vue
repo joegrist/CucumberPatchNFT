@@ -30,12 +30,12 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 
-import SmartContract from '@/components/smart-contract-dashboard/SmartContract'
-import Whitelist from '@/components/smart-contract-dashboard/Whitelist'
-import DelayedReveal from '@/components/smart-contract-dashboard/DelayedReveal'
-import MintPage from '@/components/smart-contract-dashboard/MintPage'
-import Snapshot from '@/components/smart-contract-dashboard/Snapshot'
-import Config from '@/components/smart-contract-dashboard/Config'
+import SmartContract from '@/components/project-dashboard/SmartContract'
+import Whitelist from '@/components/project-dashboard/Whitelist'
+import DelayedReveal from '@/components/project-dashboard/DelayedReveal'
+import MintPage from '@/components/project-dashboard/MintPage'
+import Snapshot from '@/components/project-dashboard/Snapshot'
+import Config from '@/components/project-dashboard/Config'
 
 export default {
 	middleware: 'authenticated',
@@ -51,7 +51,7 @@ export default {
 		rawContract: null,
 	}),
 	fetchOnServer: false,
-	fetchKey: 'smart-contracts-id',
+	fetchKey: 'project-id',
 	async fetch() {
 		try {
 			const { data } = await this.$axios.get(

@@ -12,7 +12,7 @@
           </b-button>
         </b-col>
       </b-row>
-      <b-row v-if="site.type !== WEBSITE_TYPE.Full">
+      <b-row>
         <b-col cols="9" style="overflow: auto" class="text-center">
           <div v-if="showPreview" v-html="iframeCode"></div>
           <b-link :href="directURL" target="_blank">{{ directURL }}</b-link>
@@ -175,20 +175,6 @@
       </b-row>
       <b-row>
         <b-col>
-          <div>
-            <ul>
-              <template v-if="site.type === WEBSITE_TYPE.Full">
-                <li>
-                  Site URL:
-                  <ExternalLink :href="site.url" :text="site.url" />
-                </li>
-              </template>
-            </ul>
-          </div>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
           <b-form-group label="Title" label-class="required">
             <b-form-input
               id="title"
@@ -200,7 +186,6 @@
             ></b-form-input>
           </b-form-group>
           <b-form-group
-            v-show="site.template === WEBSITE_TEMPLATE.Full"
             label="Description"
           >
             <b-form-textarea
@@ -212,7 +197,7 @@
           <div class="d-flex">
             <b-form-group
               label="Drop Date"
-              description="Sets the countdown timer, for display purposes only"
+              description="Sets the countdown timer, display purposes only"
               class="pr-1 w-50"
             >
               <b-form-input
@@ -235,7 +220,6 @@
               ></b-form-input>
             </b-form-group>
           </div>
-          <div v-show="site.template === WEBSITE_TEMPLATE.Full">
             <div class="d-flex">
               <b-form-group
                 label="Icon"
@@ -294,6 +278,7 @@
                 ></b-form-input>
               </b-form-group>
             </div>
+            <div v-show="site.template === WEBSITE_TEMPLATE.Full">
             <div class="d-flex">
               <b-form-group class="pr-1 w-50">
                 <template #label>
@@ -339,7 +324,7 @@
                 </b-form-input>
               </b-form-group>
             </div>
-          </div>
+            </div>
         </b-col>
       </b-row>
     </b-form>
