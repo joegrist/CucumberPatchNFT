@@ -7,31 +7,20 @@
 						<b-icon icon="search" />
 					</b-input-group-text>
 				</b-input-group-prepend>
-				<b-form-input
-					@input="(val) => (searchTerm = val)"
-					debounce="500"
-					placeholder="Start typing project name.." />
+				<b-form-input @input="(val) => (searchTerm = val)" debounce="500" placeholder="Start typing project name.." />
 				<b-input-group-append>
-					<b-button variant="primary" class="border-0" to="/wizard"
-						>Add New</b-button
-					>
+					<b-button variant="primary" class="border-0" to="/wizard">Add New</b-button>
 				</b-input-group-append>
 			</b-input-group>
 		</div>
-		<b-card-group v-if="dashboardItems.length > 0" columns>
-			<DashboardCard
-				v-for="sc in filteredItems"
-				:key="sc.id"
-				:sc="sc"
-			/>
-		</b-card-group>
+		<b-row v-if="dashboardItems.length > 0">
+			<b-col md="6" lg="4" xl="3" v-for="sc in filteredItems" :key="sc.id">
+				<DashboardCard :sc="sc" class="mb-3" />
+			</b-col>
+		</b-row>
 		<div v-else class="text-center pt-2">
 			<h1>You Don't Have Any Projects Yet</h1>
-			<b-button
-				variant="primary"
-				@click="$router.push('/wizard')"
-				>Start One</b-button
-			>
+			<b-button variant="primary" @click="$router.push('/wizard')">Start One</b-button>
 		</div>
 	</div>
 </template>
@@ -53,9 +42,9 @@ export default {
 	async fetch() {
 		await this.loadDashboardCards()
 	},
-	created(){
+	created() {
 		const refCode = this.$route.query['ref']
-		if(refCode) {
+		if (refCode) {
 			sessionStorage.setItem('ref', refCode)
 		}
 	},
@@ -73,9 +62,10 @@ export default {
 	},
 	methods: {
 		...mapMutations(['setDashboardItems', 'setBusy']),
-		...mapActions(['loadDashboardCards'])
+		...mapActions(['loadDashboardCards']),
 	},
 }
 </script>
 
-<style lang="scss" scoped src="@/assets/styles/dashboard.scss"></style>
+<style lang="scss" scoped src="@/assets/styles/dashboard.scss">
+</style>
