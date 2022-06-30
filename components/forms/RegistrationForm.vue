@@ -81,7 +81,8 @@ export default {
 			form: {
 				publicKey: this.$wallet.account,
 				referralCode: this.$route.query['ref'] || sessionStorage.getItem('ref'),
-				tags: ['website-lead']
+				tags: ['website-lead'],
+				leadSource: null
 			},
 		}
 	},
@@ -112,6 +113,10 @@ export default {
 				lastName: !this.$v.form.lastName.$anyError,
 			}
 		},
+	},
+	mounted() {
+		this.form.leadSource = this.$route.query['ads_source']
+		console.info('lead source: ', this.form.leadSource)
 	},
 	methods: {
 		...mapActions(['signUp']),
