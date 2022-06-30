@@ -124,7 +124,6 @@ export default {
 		async onSubmit() {
 			this.$v.$touch()
             if (this.$v.form.$invalid) {
-				console.log(this.$v.form.referralCode)
 				return
             }
 			try {
