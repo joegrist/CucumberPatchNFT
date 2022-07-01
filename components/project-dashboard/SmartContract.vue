@@ -584,8 +584,11 @@ export default {
 						await this.$wallet.switchNetwork(this.rawContract.chainId)
 					}
 					smartContract = this.contract.connect(
-						this.$wallet.provider.getSigner()
+						this.$wallet.provider.
+						getSigner()
 					)
+
+					txOverrides.gasPrice = await this.$wallet.provider.getGasPrice()
 				}
 
 				const hasFuncArgs = this.callFuncArgs[func.name]?.size > 0
