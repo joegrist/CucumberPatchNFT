@@ -17,7 +17,7 @@
 		<b-row>
 			<b-col>
                 <b-progress v-show="showProgress" :value="progress" :max="supply" show-progress :animated="isRunning"></b-progress>
-				<b-table striped hover :items="snapshotData"></b-table>
+				<b-table-lite striped :items="snapshotData"></b-table-lite>
 			</b-col>
 		</b-row>
 	</b-container>
