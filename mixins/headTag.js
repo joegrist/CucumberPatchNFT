@@ -7,10 +7,8 @@ export default {
 		const isBraveBrowser = typeof navigator.brave !== 'undefined'
 		console.info({isBraveBrowser})
 
-		if(isBraveBrowser) {
-			// mock $gtag function since Brave blocks GA script
-			Vue.prototype.$gtag = function() {}
-		}
+		// mock $gtag function in case script gets blocked
+		Vue.prototype.$gtag = function() {}
 
 		// analytics
 		scripts.push({
