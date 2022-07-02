@@ -81,7 +81,8 @@ export default {
 			form: {
 				publicKey: this.$wallet.account,
 				referralCode: this.$route.query['ref'] || sessionStorage.getItem('ref'),
-				tags: ['website-lead']
+				tags: ['website-lead'],
+				leadSource: null
 			},
 		}
 	},
@@ -113,13 +114,16 @@ export default {
 			}
 		},
 	},
+	mounted() {
+		this.form.leadSource = this.$route.query['ads_source']
+		console.info('lead source: ', this.form.leadSource)
+	},
 	methods: {
 		...mapActions(['signUp']),
 		validateState,
 		async onSubmit() {
 			this.$v.$touch()
             if (this.$v.form.$invalid) {
-				console.log(this.$v.form.referralCode)
 				return
             }
 			try {

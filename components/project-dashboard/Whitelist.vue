@@ -150,7 +150,11 @@ export default {
 					this.$wallet.provider.getSigner()
 				)
 
-				const txResponse = await contract.setMerkleRoot(merkleRoot)
+				const gasPrice = await this.$wallet.provider.getGasPrice()
+
+				const txResponse = await contract.setMerkleRoot(merkleRoot, {
+					gasPrice					
+				})
 				this.isProcessingWhitelistCommit = true
 
 				await this.$axios.patch(

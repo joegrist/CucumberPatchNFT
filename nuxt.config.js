@@ -3,11 +3,12 @@ import getSiteMeta from './scripts/siteMeta'
 const {
 	API_URL,
 	OPENSEA_API_KEY,
-	PAYPAL_CLIENT_ID,
 	DISCORD_INVITE_URL,
 	MINT_SITE_URL,
 	DISCORD_SERVER,
 	DISCORD_CHANNEL,
+	GTAG_ID,
+	GTAG_DEBUG
 } = process.env
 
 export default {
@@ -24,11 +25,12 @@ export default {
 	publicRuntimeConfig: {
 		API_URL,
 		OPENSEA_API_KEY,
-		PAYPAL_CLIENT_ID,
 		DISCORD_INVITE_URL,
 		MINT_SITE_URL,
 		DISCORD_SERVER,
 		DISCORD_CHANNEL,
+		GTAG_ID,
+		GTAG_DEBUG
 	},
 
 	router: {
@@ -37,7 +39,7 @@ export default {
 
 	// Global page headers: https://go.nuxtjs.dev/config-head
 	head: {
-		title: 'Zero Code NFT Wizard',
+		title: 'Zero Code NFT App',
 		meta: [
 			{ charset: 'utf-8' },
 			{ name: 'viewport', content: 'width=device-width, initial-scale=1' }, // mobile responsive https://search.google.com/test/mobile-friendly
@@ -45,14 +47,15 @@ export default {
 			{
 				hid: 'description',
 				name: 'description',
-				content: 'Drop your NFT collection with ZERO coding skills',
+				content: 'Drop your NFT collection with ZERO coding skills!',
 			},
-			{ property: 'og:site_name', content: 'Zero Code NFT Wizard' },
+			{ property: 'og:site_name', content: 'Zero Code NFT App' },
 			...getSiteMeta(),
 		],
 		link: [{ rel: 'icon', type: 'image/x-icon', href: '/zero-code-icon.png' }],
 		script: [
 			{
+				hid: 'discord-widget-bot',
 				src: 'https://cdn.jsdelivr.net/npm/@widgetbot/crate@3',
 				async: true,
 				defer: true,

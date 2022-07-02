@@ -27,7 +27,7 @@
             {{ $wallet.account }}
             <Copy :value="$wallet.account" />
           </p>
-          <b-alert :show="lowBalance" variant="warning">Wallet balance too low. Please get some funds from the faucet or select a different wallet to deploy.</b-alert>
+          <b-alert :show="lowBalance" variant="warning">{{ getCurrency(smartContractBuilder.chainId)}} balance too low. Please get some funds from the faucet or select a different wallet to deploy.</b-alert>
         </b-col>
       </b-row>
       <b-row>
@@ -70,7 +70,7 @@
 <script>
 import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
-import { FAUCETS, getExplorerUrl } from '@/constants/metamask'
+import { FAUCETS, getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import Summary from '@/components/smart-contract-wizard/Summary'
 import LoginButton from '@/components/login/LoginButton'
@@ -103,7 +103,7 @@ export default {
       return `${getExplorerUrl(this.smartContractBuilder.chainId)}/address/${this.smartContractBuilder.address}`
     },
     lowBalance() {
-      return this.$wallet.balance === 0
+      return this.$wallet.chainId === +this.smartContractBuilder.chainId && this.$wallet.balance === 0
     },
     canSaveDraft() {
       return this.isLoggedIn && !this.smartContractBuilder.isDeployed
@@ -114,7 +114,7 @@ export default {
   },
   methods: {
     ...mapMutations(['setBusy']),
-    
+    getCurrency,
     async saveDraft() {
       try {
         const res = await this.$axios.post('/smartcontracts/save-draft', {

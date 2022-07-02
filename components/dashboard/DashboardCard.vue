@@ -28,7 +28,7 @@
 				<b-dd-item v-b-modal="`Clone${sc.id}`"
 					><b-icon icon="files" /> Clone Contract</b-dd-item
 				>
-				<b-dd-item v-b-modal="`OpenSea${sc.id}`"
+				<b-dd-item v-if="supportsOpenSea" v-b-modal="`OpenSea${sc.id}`"
 					><b-icon icon="link" /> Link OpenSea</b-dd-item
 				>
 			</template>
@@ -131,7 +131,7 @@
 				</b-col>
 			</b-row>
 			<b-row class="pb-0">
-				<b-col sm="12" md="6">
+				<b-col cols="8">
 					<b-button
 						v-if="isDeployed"
 						class="font-weight-bold"
@@ -144,7 +144,7 @@
 						>Edit/Deploy >></b-button
 					>
 				</b-col>
-				<b-col sm="12" md="6" class="text-muted d-flex justify-content-end my-auto">
+				<b-col cols="4" class="text-muted text-right">
 					{{ sc.createdOn | toDate }}
 				</b-col>
 			</b-row>
@@ -223,7 +223,7 @@
 
 <script>
 import { ethers } from 'ethers'
-import { MARKETPLACE, SMARTCONTRACT_STATUS, CONTRACT_TYPE } from '@/constants'
+import { MARKETPLACE, SMARTCONTRACT_STATUS, CONTRACT_TYPE, BLOCKCHAIN } from '@/constants'
 import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState, getProvider } from '@/utils'
@@ -293,6 +293,9 @@ export default {
 		},
 		isMainnet() {
 			return this.sc.status === SMARTCONTRACT_STATUS.Mainnet
+		},
+		supportsOpenSea() {
+			return this.sc.blockchain === BLOCKCHAIN.Ethereum || this.sc.blockchain === BLOCKCHAIN.Polygon
 		},
 		projectDeploymentStatus() {
 			if(this.isTestnet) return 'Testnet'

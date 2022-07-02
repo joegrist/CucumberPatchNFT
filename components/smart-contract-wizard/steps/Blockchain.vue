@@ -67,7 +67,7 @@ export default {
 				.map(k => {
 					return {
 						id: BLOCKCHAIN[k],
-						class: `pointer mw-100 ${(k === 'Arbitrum' || k === 'Thinkium' || k === 'Klaytn') ? '' : 'p-3'}`,
+						class: `pointer mw-100 ${(k === 'Arbitrum' || k === 'Thinkium') ? '' : 'p-3'}`,
 						width: "400px",
 						height: "150px",
 						imageSrc: require(`@/assets/images/blockchain/${k.toLowerCase()}.svg`),
