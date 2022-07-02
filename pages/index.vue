@@ -13,9 +13,9 @@
 				</b-input-group-append>
 			</b-input-group>
 		</div>
-		<b-row v-if="dashboardItems.length > 0">
-			<b-col md="6" lg="4" xl="3" v-for="sc in filteredItems" :key="sc.id">
-				<DashboardCard :sc="sc" class="mb-3" />
+		<b-row v-if="dashboardItems.length > 0" >
+			<b-col md="6" lg="4" xl="3" v-for="(sc,idx) in filteredItems" :key="sc.id">
+				<DashboardCard :sc="sc" class="mb-3"  :isTourCard="idx === 0" />
 			</b-col>
 		</b-row>
 		<div v-else class="text-center pt-2">

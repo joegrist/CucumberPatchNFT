@@ -8,11 +8,14 @@
 			size="lg"
 			variant="link"
 			class="card-menu"
+			id="project-status"
+			ref="cardMenu"
 			toggle-class="text-decoration-none p-0"
 			no-caret
 			right>
-			<template #button-content>
-				<b-icon icon="three-dots-vertical" class="text-muted" /><span
+			<template #button-content >
+				<b-icon  icon="three-dots-vertical" class="text-muted" />
+				<span
 					class="sr-only"
 					>Card Menu</span
 				>
@@ -36,17 +39,18 @@
 				><b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
-		<b-card-title class="text-center truncate-text px-3 mb-0 pb-2">
+		<b-card-title class="text-center truncate-text px-3 mb-0 pb-2"  >
 			<b-link
+			id="project-name"
 				v-if="isDeployed"
 				class="text-dark"
 				:to="`/project?id=${sc.id}`"
 				>{{ sc.name | startCase }}</b-link
 			>
-			<span v-else>{{ sc.name | startCase }}</span>
+			<span v-else id="project-name">{{ sc.name | startCase }}</span>
 		</b-card-title>
 		
-		<b-card-sub-title class="text-center mb-2">
+		<b-card-sub-title class="text-center mb-2" id="project-type-network">
 			{{ subTitle}}
 			<b-icon v-if="sc.isVerified" icon="check-circle" variant="success" title="Source code verified"></b-icon>
 		</b-card-sub-title>
@@ -229,11 +233,17 @@ import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState, getProvider } from '@/utils'
 import { required } from 'vuelidate/lib/validators'
 import BlockchainImage from '@/mixins/blockchainImage'
+import Driver from 'driver.js';
+import 'driver.js/dist/driver.min.css';
 
 export default {
 	mixins: [BlockchainImage],
 	props: {
 		sc: Object,
+		isTourCard: {
+			type: Boolean,
+			default:false,
+		}
 	},
 	data() {
 		return {
@@ -259,6 +269,7 @@ export default {
 		if (!this.isDeployed) return
 		this.getContractStats()
 		this.getOpenSeaStats()
+			this.initTour();
 	},
 	computed: {
 		...mapGetters(['userId']),
@@ -312,6 +323,51 @@ export default {
 		}
 	},
 	methods: {
+		initTour() {
+			console.log("initiating tour.");
+			if (this.isTourCard) {
+				const driver = new Driver();
+				driver.defineSteps([
+					{
+						element: '#tour-card',
+						popover: {
+							title: 'Project Card',
+							description: "A quick insight of the project.",
+							position: 'right'
+						}
+					},
+					{
+						element: '#project-name',
+						popover: {
+							title: 'Project Name',
+							description: "Project name",
+							position: 'right'
+						}
+					},
+					{
+						element: '#project-type-network',
+						popover: {
+							title: 'Contract Type and Network',
+							description: "The network contract is deployed on and the contract's type.",
+							position: 'right'
+						},
+						onNext: () => {
+							// document.querySelector('.card-menu').click();
+							this.$refs.cardMenu.show();
+							driver.moveNext();
+						}
+					}, {
+						element: '#project-status',
+						popover: {
+							title: 'Project Status',
+							description: "Status of the project. It can be 'Draft' or 'Live'.",
+							position: 'right'
+						}
+					}
+				])
+				driver.start();
+			}
+		},
 		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
 		...mapActions(['removeDashboardCard', 'cloneDashboardCard', 'linkOpenSea']),
 		getCurrency,
