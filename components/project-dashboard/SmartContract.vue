@@ -137,11 +137,23 @@
 							variant="link"
 							@click="
 								downloadTextFile(
-									'abi.txt',
+									`${rawContract.name}-abi.txt`,
 									JSON.stringify(JSON.parse(rawContract.abi), null, 2)
 								)
 							"
 							>[ABI]</b-button
+						>
+						<b-button
+							v-if="rawContract.rawCode"
+							size="sm"
+							variant="link"
+							@click="
+								downloadTextFile(
+									`${rawContract.name}.sol`,
+									rawContract.rawCode
+								)
+							"
+							>[Source Code]</b-button
 						>
 					</b-col>
 					<b-col cols="6" class="d-flex justify-content-end my-auto">
