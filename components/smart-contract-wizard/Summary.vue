@@ -12,9 +12,8 @@
 					<h6 class="text-muted">{{ smartContract.symbol }}</h6>
 				</div>
 				<b-img
-					:style="imgWithBGColor(smartContract.blockchain)"
 					width="130px"
-					:src="blockchainImage[smartContract.blockchain]"></b-img>
+					:src="blockchainIcon[smartContract.blockchain]"></b-img>
 			</b-col>
 			<b-col sm="12" md="8">
 				<b-row
@@ -109,15 +108,5 @@ export default {
 				.sort((a, b) => a.key.localeCompare(b.key))
 		},
 	},
-	methods: {
-		imgWithBGColor(blockchainID) {
-			if ([18].includes(blockchainID)) {
-				return {
-						background:'#c1c1c1'
-				}
-			} 
-			return {}
-		},
-	}
 }
 </script>

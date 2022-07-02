@@ -19,7 +19,6 @@
 					</h5>
 				</b-link>
 				<b-img v-else
-					:style="imgWithBGColor(blockchain)"
 					:class="[blockchain.class, { 'shadow': hasShadow(blockchain.id) }]"
 					center
 					:width="blockchain.width"
@@ -78,14 +77,6 @@ export default {
 		},
 	},
 	methods: {
-		imgWithBGColor(blockchain) {
-			if ([18].includes(blockchain.id)) {
-				return {
-						background:'#c1c1c1'
-				}
-			} 
-			return {}
-		},
 		hasShadow(blockchain) {
 			return this.hovered === blockchain || this.smartContractBuilder.blockchain === blockchain
 		},
