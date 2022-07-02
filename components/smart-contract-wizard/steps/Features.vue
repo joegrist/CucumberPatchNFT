@@ -21,8 +21,7 @@
 			<b-row>
 				<b-col>
 					<b-form-group
-						description="URL to the .json file containing pre-reveal metadata"
-						:label-class="{ required: smartContractBuilder.hasDelayedReveal }"
+						description="URL to the .json file containing pre-reveal metadata, can be updated later"
 						:disabled="!smartContractBuilder.hasDelayedReveal">
 						<template #label>
 							Placeholder URL 
@@ -125,7 +124,7 @@
 				</b-col>
 			</b-row>
 			<b-row>
-				<b-col>
+				<b-col sm="12" md="8">
 					<b-form-group description="If you are the 100% shareholder your wallet will be added automatically during deployment">
 						<b-form-checkbox
 							id="revenueSplitFeature"
@@ -137,19 +136,20 @@
 								(val) => updateSmartContractBuilder({ hasRevenueSplits: val })
 							">
 							Primary Sales Revenue Splits
-							<b-button
-								variant="success"
-								size="sm"
-								:hidden="!smartContractBuilder.hasRevenueSplits"
-								@click="onAddSplit">
-								<b-icon icon="plus-circle" />
-							</b-button>
 						</b-form-checkbox>
 					</b-form-group>
 				</b-col>
+				<b-col sm="12" md="4" class="text-left text-md-right mb-2 mb-md-0">
+					<b-button
+								variant="success"
+								:hidden="!smartContractBuilder.hasRevenueSplits"
+								@click="onAddSplit">
+								Add Split <b-icon icon="wallet2" />
+							</b-button>
+				</b-col>
 			</b-row>
 			<b-row v-for="(split, idx) in revenueSplits" :key="idx">
-				<b-col cols="8">
+				<b-col sm="12" md="8">
 					<b-form-group
 						label="Wallet Address"
 						:label-class="{ required: smartContractBuilder.hasRevenueSplits }"
@@ -164,7 +164,7 @@
 						</b-form-invalid-feedback> -->
 					</b-form-group>
 				</b-col>
-				<b-col cols="3">
+				<b-col sm="12" md="3">
 					<b-form-group
 						label="Share %"
 						:label-class="{ required: smartContractBuilder.hasRevenueSplits }"
@@ -178,12 +178,14 @@
 							min="0"></b-form-input>
 					</b-form-group>
 				</b-col>
-				<b-col cols="1">
+				<b-col sm="12" md="1">
 					<b-form-group
-						label="Actions"
-						label-class="text-center"
-						class="text-center">
+						label-class="text-center d-none d-md-block">
+						<template #label>
+							Actions
+						</template>
 						<b-button
+							block
 							variant="danger"
 							@click="onRemoveSplit(idx)"
 							:disabled="revenueSplits.length === 1">
@@ -254,9 +256,9 @@ export default {
 	validations: {
 		smartContractBuilder: {
 			delayedRevealURL: {
-				required: requiredIf(function () {
-					return this.smartContractBuilder.hasDelayedReveal
-				}),
+				// required: requiredIf(function () {
+				// 	return this.smartContractBuilder.hasDelayedReveal
+				// }),
 			},
 			whitelistPrice: {
 				required: requiredIf(function () {

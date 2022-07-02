@@ -6,11 +6,11 @@
 			</b-col>
 			<b-col sm="12" md="3">
 				<b-overlay :show="isBusy">
-					<b-button variant="primary" block @click="save">Save</b-button>
+					<b-button variant="primary" block @click="save">Upload</b-button>
 				</b-overlay>
 			</b-col>
 		</b-row>
-		<p v-show="url">
+		<p v-show="url" class="break-word">
 			Current Metadata URL: <b>{{ url }}</b>
 		</p>
 		<!-- <b-row>
@@ -180,9 +180,6 @@ export default {
 				this.$wallet.provider.getSigner()
 			)
 			const gasPrice = await this.$wallet.provider.getGasPrice()
-			console.info(
-				`GAS PRICE: ${ethers.utils.formatUnits(gasPrice, 'gwei')} gwei`
-			)
 
 			const tx = await signedContract.setPreRevealUrl(this.url, {
 				gasPrice,

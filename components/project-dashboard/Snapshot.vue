@@ -4,7 +4,7 @@
             <b-col sm="12" md="6" class="my-auto">
                 <h4>Snapshot</h4>
             </b-col>
-            <b-col sm="12" md="6" class="text-right">
+            <b-col sm="12" md="6" class="text-left text-md-right">
                 <b-overlay :show="isRunning">
                     <b-button variant="primary" @click="runSnapshot">Run Snapshot</b-button>
                     <b-dropdown :disabled="snapshotData.length === 0" split variant="success" text="Export As" class="m-2">
@@ -17,7 +17,7 @@
 		<b-row>
 			<b-col>
                 <b-progress v-show="showProgress" :value="progress" :max="supply" show-progress :animated="isRunning"></b-progress>
-				<b-table-lite striped :items="snapshotData"></b-table-lite>
+				<b-table-lite responsive striped :items="snapshotData"></b-table-lite>
 			</b-col>
 		</b-row>
 	</b-container>
