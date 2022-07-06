@@ -12,12 +12,12 @@ const BLOCKCHAIN = Object.freeze({
 	Optimism: 14,
 	Cronos: 10,
 	Klaytn: 16,
+	Cube:18,
 	Harmony: 15,
 	// Heco: 17,
 	Thinkium: 12,
 	Songbird: 11,
 	Solana: 2,
-	Cube:18,
 
 	
 	1: 'Ethereum',
