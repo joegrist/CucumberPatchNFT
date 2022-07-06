@@ -24,8 +24,11 @@
 						description="URL to the .json file containing pre-reveal metadata, can be updated later"
 						:disabled="!smartContractBuilder.hasDelayedReveal">
 						<template #label>
-							Placeholder URL 
-							<ExternalLink href="https://youtu.be/It05AkP_Wt4" icon="youtube" text="What's this?" />
+							Placeholder URL
+							<ExternalLink
+								href="https://youtu.be/It05AkP_Wt4"
+								icon="youtube"
+								text="What's this?" />
 						</template>
 						<b-form-input
 							id="delayedRevealURL"
@@ -66,7 +69,9 @@
 			<b-row>
 				<b-col sm="12" md="6">
 					<b-form-group
-						:label="`Price per NFT in ${getCurrency(smartContractBuilder.chainId)}`"
+						:label="`Price per NFT in ${getCurrency(
+							smartContractBuilder.chainId
+						)}`"
 						description="Can be the same as public sale price or even zero to allow free mint"
 						:label-class="{ required: smartContractBuilder.hasWhitelist }"
 						:disabled="!smartContractBuilder.hasWhitelist">
@@ -86,8 +91,7 @@
 							}"
 							type="number"
 							step="any"
-							min="0"
-							></b-form-input>
+							min="0"></b-form-input>
 						<b-form-invalid-feedback :state="validation.whitelistPrice">
 							Please correct "Presale Price"
 						</b-form-invalid-feedback>
@@ -109,15 +113,18 @@
 										maxTokensPerPersonOnWhitelist: val ? +val : null,
 									})
 							"
-							@blur="$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$touch()"
+							@blur="
+								$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$touch()
+							"
 							:class="{
-								'is-invalid': $v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$error,
+								'is-invalid':
+									$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$error,
 							}"
 							type="number"
 							step="1"
-							min="1"
-							></b-form-input>
-						<b-form-invalid-feedback :state="validation.maxTokensPerPersonOnWhitelist">
+							min="1"></b-form-input>
+						<b-form-invalid-feedback
+							:state="validation.maxTokensPerPersonOnWhitelist">
 							Please correct "Max NFTs Per Person"
 						</b-form-invalid-feedback>
 					</b-form-group>
@@ -125,7 +132,8 @@
 			</b-row>
 			<b-row>
 				<b-col sm="12" md="8">
-					<b-form-group description="If you are the 100% shareholder your wallet will be added automatically during deployment">
+					<b-form-group
+						description="If you are the 100% shareholder your wallet will be added automatically during deployment">
 						<b-form-checkbox
 							id="revenueSplitFeature"
 							name="revenueSplitFeature"
@@ -141,11 +149,11 @@
 				</b-col>
 				<b-col sm="12" md="4" class="text-left text-md-right mb-2 mb-md-0">
 					<b-button
-								variant="success"
-								:hidden="!smartContractBuilder.hasRevenueSplits"
-								@click="onAddSplit">
-								Add Split <b-icon icon="wallet2" />
-							</b-button>
+						variant="success"
+						:hidden="!smartContractBuilder.hasRevenueSplits"
+						@click="onAddSplit">
+						Add Split <b-icon icon="wallet2" />
+					</b-button>
 				</b-col>
 			</b-row>
 			<b-row v-for="(split, idx) in revenueSplits" :key="idx">
@@ -179,11 +187,8 @@
 					</b-form-group>
 				</b-col>
 				<b-col sm="12" md="1">
-					<b-form-group
-						label-class="text-center d-none d-md-block">
-						<template #label>
-							Actions
-						</template>
+					<b-form-group label-class="text-center d-none d-md-block">
+						<template #label> Actions </template>
 						<b-button
 							block
 							variant="danger"
@@ -271,8 +276,8 @@ export default {
 				required: requiredIf(function () {
 					return this.smartContractBuilder.hasWhitelist
 				}),
-				minValue: minValue(1)
-			}
+				minValue: minValue(1),
+			},
 		},
 		revenueSplitErrors: {
 			maxValue: maxValue(0),
@@ -287,7 +292,7 @@ export default {
 	},
 	beforeDestroy() {
 		// we perform split revenue updates locally and only update store before leaving
-		if(this.smartContractBuilder.hasRevenueSplits) {
+		if (this.smartContractBuilder.hasRevenueSplits) {
 			this.updateBuilderRevenueSplits(this.revenueSplits)
 		}
 	},
@@ -296,7 +301,8 @@ export default {
 			return {
 				delayedRevealURL: !this.$v.smartContractBuilder.delayedRevealURL.$error,
 				whitelistPrice: !this.$v.smartContractBuilder.whitelistPrice.$error,
-				maxTokensPerPersonOnWhitelist: !this.$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$error,
+				maxTokensPerPersonOnWhitelist:
+					!this.$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$error,
 				shares: this.revenueSplitErrors.length === 0,
 			}
 		},
@@ -306,7 +312,7 @@ export default {
 				.reduce((acc, val) => acc + val, 0)
 		},
 		revenueSplitErrors() {
-			if(!this.smartContractBuilder.hasRevenueSplits) return []
+			if (!this.smartContractBuilder.hasRevenueSplits) return []
 
 			const errors = []
 			const sumsTo100 = this.splitShareTotal === 100
