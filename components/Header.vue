@@ -9,8 +9,8 @@
 
 			<b-collapse id="nav-collapse" is-nav>
 				<b-navbar-nav>
-					<b-nav-item to="/wizard" class="gradient-text my-auto">Wizard</b-nav-item>
-					<b-nav-item v-if="isLoggedIn" to="/" class="gradient-text"
+					<b-nav-item to="/wizard" active-class="active-nav" class="text-center text-md-left">Wizard</b-nav-item>
+					<b-nav-item v-if="isLoggedIn" to="/" exact active-class="active-nav" class="text-center text-md-left"
 						>Dashboard</b-nav-item
 					>
 					<b-nav-item v-else class="gradient-text" to="/login">Login</b-nav-item

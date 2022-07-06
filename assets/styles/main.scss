@@ -44,10 +44,18 @@
   background: $theme-gradient !important;
 }
 
+.text-zerocode {
+  background: $theme-gradient;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .gradient-text {
   &:hover {
-    background: $theme-gradient;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    @extend .text-zerocode;
   }
+}
+
+.active-nav {
+  @extend .text-zerocode;
 }
