@@ -17,6 +17,7 @@ const BLOCKCHAIN = Object.freeze({
 	Thinkium: 12,
 	Songbird: 11,
 	Solana: 2,
+	Cube:18,
 
 	
 	1: 'Ethereum',
@@ -33,7 +34,8 @@ const BLOCKCHAIN = Object.freeze({
 	14: 'Optimism',
 	15: 'Harmony',
 	16: 'Klaytn',
-	17: 'Heco'
+	17: 'Heco',
+	18:"Cube"
 })
 
 const MARKETPLACE = Object.freeze({

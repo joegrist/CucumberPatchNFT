@@ -50,6 +50,7 @@ const blockchainToTestChainIdMap = {
 	[BLOCKCHAIN.Harmony]: 1666700000,
 	[BLOCKCHAIN.Klaytn]: 1001,
 	[BLOCKCHAIN.Heco]: 256,
+	[BLOCKCHAIN.Cube]:1819
 }
 
 export default {
@@ -73,7 +74,7 @@ export default {
 						available: k !== 'Solana'
 					}
 			})
-		}
+		},
 	},
 	methods: {
 		hasShadow(blockchain) {

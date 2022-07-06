@@ -13,7 +13,7 @@
 				</div>
 				<b-img
 					width="130px"
-					:src="blockchainImage[smartContract.blockchain]"></b-img>
+					:src="blockchainIcon[smartContract.blockchain]"></b-img>
 			</b-col>
 			<b-col sm="12" md="9">
 				<b-row
