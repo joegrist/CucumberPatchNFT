@@ -18,6 +18,7 @@ export default {
 				[BLOCKCHAIN.Harmony]: require('@/assets/images/blockchain/harmony.svg'),
 				[BLOCKCHAIN.Klaytn]: require('@/assets/images/blockchain/klaytn.svg'),
 				[BLOCKCHAIN.Heco]: require('@/assets/images/blockchain/heco.svg'),
+				[BLOCKCHAIN.Cube]: require('@/assets/images/blockchain/cube.svg'),
 			},
 			blockchainIcon: {
 				[BLOCKCHAIN.Ethereum]: require('@/assets/images/blockchain/icon/ethereum.svg'),
@@ -34,6 +35,7 @@ export default {
 				[BLOCKCHAIN.Harmony]: require('@/assets/images/blockchain/icon/harmony.svg'),
 				[BLOCKCHAIN.Klaytn]: require('@/assets/images/blockchain/icon/klaytn.svg'),
 				[BLOCKCHAIN.Heco]: require('@/assets/images/blockchain/icon/heco.svg'),
+				[BLOCKCHAIN.Cube]: require('@/assets/images/blockchain/icon/cube.svg'),
 			}
 		}
 	},
