@@ -8,7 +8,6 @@
 			size="lg"
 			variant="link"
 			class="card-menu"
-			id="project-status"
 			ref="cardMenu"
 			toggle-class="text-decoration-none p-0"
 			no-caret
@@ -57,7 +56,9 @@
 
 		<b-container fluid>
 			<b-row class="stats">
-				<b-col cols="6" class="text-center">
+				<b-col cols="6" class="text-center" 
+			id="project-status"
+				>
 					<span
 						:class="[
 							'font-weight-bold',
@@ -71,7 +72,7 @@
 					<br />
 					<span class="text-muted">Status</span>
 				</b-col>
-				<b-col cols="6" class="text-center">
+				<b-col cols="6" class="text-center" id="feature-preview">
 					<span class="font-weight-bold">{{ sc.hasDelayedReveal | yesNo }} / {{ sc.hasWhitelist | yesNo }}</span>
 					<br />
 					<span class="text-muted" title="Delayed Reveal / White List">DR / WL</span>
@@ -351,16 +352,74 @@ export default {
 							description: "The network contract is deployed on and the contract's type.",
 							position: 'right'
 						},
-						onNext: () => {
+						/* onNext: () => {
 							// document.querySelector('.card-menu').click();
 							this.$refs.cardMenu.show();
-							driver.moveNext();
-						}
+							this.$nextTick(() => {
+								driver.moveNext();
+							})
+						} */
 					}, {
 						element: '#project-status',
 						popover: {
 							title: 'Project Status',
 							description: "Status of the project. It can be 'Draft' or 'Live'.",
+							position: 'right'
+						}
+					},
+					{
+						element: '#feature-preview',
+						popover: {
+							title: "Contract's feature",
+							description: "Information about the selected feature for the contract.",
+							position: 'right'
+						}
+					}
+					,{
+						element: '#mint-count',
+						popover: {
+							title: 'Mint Count',
+							description: "Mint count of the tokens from the contract.",
+							position: 'right'
+						}
+					}
+					,{
+						element: '#withdraw-balance',
+						popover: {
+							title: 'Withdraw Balance',
+							description: "Available Balance for the withdrawl.",
+							position: 'right'
+						}
+					}
+					,{
+						element: '#owners-count',
+						popover: {
+							title: 'Owners Count',
+							description: "Total number of owners for the token.",
+							position: 'right'
+						}
+					}
+					,{
+						element: '#volume',
+						popover: {
+							title: 'volume',
+							description: "",
+							position: 'right'
+						}
+					}
+					,{
+						element: '#floor-price',
+						popover: {
+							title: 'Floor Price',
+							description: "",
+							position: 'right'
+						}
+					}
+					,{
+						element: '#sales',
+						popover: {
+							title: 'Sales',
+							description: "",
 							position: 'right'
 						}
 					}
