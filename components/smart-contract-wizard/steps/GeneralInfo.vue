@@ -97,7 +97,7 @@
       <b-row>
         <b-col sm='12' md='6'>
           <b-form-group
-            :label="`Price per NFT in ${getCurrency(smartContractBuilder.chainId)}`"
+            :label="`Price per NFT in ${currency}`"
             label-class='required'
             description='Mint price during public sale'
           >
@@ -195,7 +195,7 @@
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { required, maxLength, numeric, minValue, decimal, alphaNum } from 'vuelidate/lib/validators'
-import { getCurrency } from '@/constants/metamask'
+import { getMainnetConfig } from '@/constants/metamask'
 const mustBeName = val => /^[A-Za-z][\w ]{1,50}$/.test(val)
 
 export default {
@@ -225,6 +225,9 @@ export default {
       }
   },
   computed: {
+    currency() {
+      return this.getMainnetConfig(this.smartContractBuilder.chainId)?.nativeCurrency.symbol || ''
+    },
     validation() {
       return {
         name: !this.$v.smartContractBuilder.name.$error,
@@ -238,7 +241,7 @@ export default {
     }
   },
   methods: {
-    getCurrency
+    getMainnetConfig
   }
 
 }

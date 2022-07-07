@@ -369,47 +369,6 @@ export const testMainChainIdMap = {
 	'1819':1818
 }
 
-
-
-// const CHAINS_INFO = {
-// 	'0x4': {
-// 		isTestnet: true,
-// 		config: ETHEREUM_RINKEBY,
-// 		mainnetConfig: ETHEREUM_MAINNET,
-// 		mainnetChainId: 1,
-// 		currency: ETHEREUM_RINKEBY['0xA869']?.nativeCurrency.symbol || 'Unknown',
-// 		blockExplorer: ETHEREUM_RINKEBY['0xA869']?.blockExplorerUrls[0],
-// 		faucets: ["https://rinkebyfaucet.com", "https://faucet.rinkeby.io", "https://faucets.chain.link/rinkeby"]
-// 	},
-// 	'0xA869': {
-// 		isTestnet: true,
-// 		config: AVALANCHE_TESTNET_PARAMS,
-// 		mainnetConfig: AVALANCHE_MAINNET_PARAMS,
-// 		mainnetChainId: 43114,
-// 		currency: AVALANCHE_TESTNET_PARAMS['0xA869']?.nativeCurrency.symbol || 'Unknown',
-// 		blockExplorer: AVALANCHE_TESTNET_PARAMS['0xA869']?.blockExplorerUrls[0],
-// 		faucets: ["https://faucet.avax-test.network"]
-// 	},
-// 	'0x61': {
-// 		isTestnet: true,
-// 		config: BSC_TESTNET,
-// 		mainnetConfig: BSC_MAINNET,
-// 		mainnetChainId: 56,
-// 		currency: BSC_TESTNET['0xA869']?.nativeCurrency.symbol || 'Unknown',
-// 		blockExplorer: BSC_TESTNET['0xA869']?.blockExplorerUrls[0],
-// 		faucets: ["https://testnet.binance.org/faucet-smart"]
-// 	},
-// 	'0x13881': {
-// 		isTestnet: true,
-// 		config: POLYGON_MUMBAI_TESTNET_CONFIG,
-// 		mainnetConfig: POLYGON_MAINNET_PARAMS,
-// 		mainnetChainId: 137,
-// 		currency: POLYGON_MUMBAI_TESTNET_CONFIG['0xA869']?.nativeCurrency.symbol || 'Unknown',
-// 		blockExplorer: POLYGON_MUMBAI_TESTNET_CONFIG['0xA869']?.blockExplorerUrls[0],
-// 		faucets: ["https://faucet.polygon.technology"]
-// 	},
-// }
-
 export const CHAINID_CONFIG_MAP = {
 	'1': ETHEREUM_MAINNET,
 	'4': ETHEREUM_RINKEBY,
@@ -496,7 +455,9 @@ const toHex = (chainId) => {
 
 // get corresponding mainnet config based on testnet chainID
 export function getMainnetConfig(testnetChainId) {
-	console.log({testnetChainId})
+	if(typeof testnetChainId !== 'string') {
+		testnetChainId = testnetChainId.toString()
+	}
 	if(['0x4', '4'].includes(testnetChainId)) return ETHEREUM_MAINNET
 	if(['0xA869', '43113'].includes(testnetChainId)) return AVALANCHE_MAINNET_PARAMS
 	if(['0x89', '80001'].includes(testnetChainId)) return POLYGON_MAINNET_PARAMS

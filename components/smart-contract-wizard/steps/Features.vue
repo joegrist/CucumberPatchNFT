@@ -69,9 +69,7 @@
 			<b-row>
 				<b-col sm="12" md="6">
 					<b-form-group
-						:label="`Price per NFT in ${getCurrency(
-							smartContractBuilder.chainId
-						)}`"
+						:label="`Price per NFT in ${currency}`"
 						description="Can be the same as public sale price or even zero to allow free mint"
 						:label-class="{ required: smartContractBuilder.hasWhitelist }"
 						:disabled="!smartContractBuilder.hasWhitelist">
@@ -230,7 +228,7 @@ import {
 	minValue,
 	maxValue,
 } from 'vuelidate/lib/validators'
-import { getCurrency } from '@/constants/metamask'
+import { getMainnetConfig } from '@/constants/metamask'
 
 export default {
 	mixins: [smartContractBuilderMixin],
@@ -297,6 +295,9 @@ export default {
 		}
 	},
 	computed: {
+		currency() {
+			return this.getMainnetConfig(this.smartContractBuilder.chainId)?.nativeCurrency.symbol || ''
+		},
 		validation() {
 			return {
 				delayedRevealURL: !this.$v.smartContractBuilder.delayedRevealURL.$error,
@@ -331,7 +332,7 @@ export default {
 		},
 	},
 	methods: {
-		getCurrency,
+		getMainnetConfig,
 		onAddSplit() {
 			const otherShares = this.revenueSplits
 				.map((x) => x.share)
