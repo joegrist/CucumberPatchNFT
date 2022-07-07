@@ -1,9 +1,11 @@
 <template>
 	<b-card class="shadow-sm py-3" no-body>
 		<b-avatar
+			id="blockchain-logo"
 			class="p-2 border card-logo"
 			:src="blockchainIcon[sc.blockchain]"
-			size="lg"></b-avatar>
+			size="lg"
+		></b-avatar>
 		<b-dropdown
 			size="lg"
 			variant="link"
@@ -11,13 +13,12 @@
 			ref="cardMenu"
 			toggle-class="text-decoration-none p-0"
 			no-caret
-			right>
-			<template #button-content >
-				<b-icon  icon="three-dots-vertical" class="text-muted" />
-				<span
-					class="sr-only"
-					>Card Menu</span
-				>
+			id="contract-actions"
+			right
+		>
+			<template #button-content>
+				<b-icon icon="three-dots-vertical" class="text-muted" />
+				<span class="sr-only">Card Menu</span>
 			</template>
 			<template v-if="isDeployed">
 				<b-dd-text v-if="sc.address" class="text-center">
@@ -38,9 +39,9 @@
 				><b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
-		<b-card-title class="text-center truncate-text px-3 mb-0 pb-2"  >
+		<b-card-title class="text-center truncate-text px-3 mb-0 pb-2">
 			<b-link
-			id="project-name"
+				id="project-name"
 				v-if="isDeployed"
 				class="text-dark"
 				:to="`/project?id=${sc.id}`"
@@ -48,17 +49,20 @@
 			>
 			<span v-else id="project-name">{{ sc.name | startCase }}</span>
 		</b-card-title>
-		
+
 		<b-card-sub-title class="text-center mb-2" id="project-type-network">
-			{{ subTitle}}
-			<b-icon v-if="sc.isVerified" icon="check-circle" variant="success" title="Source code verified"></b-icon>
+			{{ subTitle }}
+			<b-icon
+				v-if="sc.isVerified"
+				icon="check-circle"
+				variant="success"
+				title="Source code verified"
+			></b-icon>
 		</b-card-sub-title>
 
 		<b-container fluid>
 			<b-row class="stats">
-				<b-col cols="6" class="text-center" 
-			id="project-status"
-				>
+				<b-col cols="6" class="text-center" id="project-status">
 					<span
 						:class="[
 							'font-weight-bold',
@@ -73,11 +77,16 @@
 					<span class="text-muted">Status</span>
 				</b-col>
 				<b-col cols="6" class="text-center" id="feature-preview">
-					<span class="font-weight-bold">{{ sc.hasDelayedReveal | yesNo }} / {{ sc.hasWhitelist | yesNo }}</span>
+					<span class="font-weight-bold"
+						>{{ sc.hasDelayedReveal | yesNo }} /
+						{{ sc.hasWhitelist | yesNo }}</span
+					>
 					<br />
-					<span class="text-muted" title="Delayed Reveal / White List">DR / WL</span>
+					<span class="text-muted" title="Delayed Reveal / White List"
+						>DR / WL</span
+					>
 				</b-col>
-				<b-col cols="6" class="text-center">
+				<b-col cols="6" class="text-center" id="mint-count">
 					<span class="font-weight-bold"
 						>{{ minted }} / {{ sc.collectionSize }}</span
 					>
@@ -85,10 +94,8 @@
 					<br />
 					<span class="text-muted">Minted</span>
 				</b-col>
-				<b-col cols="6" class="text-center">
-					<span class="font-weight-bold">{{
-						formattedBalance
-					}}</span>
+				<b-col cols="6" class="text-center" id="withdraw-balance">
+					<span class="font-weight-bold">{{ formattedBalance }}</span>
 					<br />
 					<span class="text-muted">Balance</span>
 				</b-col>
@@ -99,12 +106,22 @@
 				</b-col>
 			</b-row>
 			<b-row class="stats mt-3">
-				<b-col cols="6" class="text-center" style="padding-bottom: 0">
+				<b-col
+					cols="6"
+					class="text-center"
+					style="padding-bottom: 0;"
+					id="owners-count"
+				>
 					<span class="font-weight-bold">{{ openSeaStats.num_owners }}</span>
 					<br />
 					<span class="text-muted">Owners</span>
 				</b-col>
-				<b-col cols="6" class="text-center" style="padding-bottom: 0">
+				<b-col
+					cols="6"
+					class="text-center"
+					style="padding-bottom: 0;"
+					id="total-volume"
+				>
 					<span class="font-weight-bold">{{
 						openSeaStats.total_volume === 'n/a'
 							? 'n/a'
@@ -113,10 +130,18 @@
 					<br />
 					<span class="text-muted">Volume</span>
 				</b-col>
-				<b-col cols="12" class="text-center" style="padding: 0">
+				<b-col
+					cols="12"
+					class="text-center"
+					style="padding: 0;"
+					id="marketplace"
+				>
 					<template v-if="isOpenSea">
 						<b-link :href="collectionUrl" target="_blank">
-							<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+							<b-img
+								width="90px"
+								src="@/assets/images/open-sea-logo-dark.svg"
+							/>
 							<b-icon icon="box-arrow-up-right" />
 						</b-link>
 					</template>
@@ -124,12 +149,12 @@
 						<span>Marketplace N/A</span>
 					</template>
 				</b-col>
-				<b-col cols="6" class="text-center">
+				<b-col cols="6" class="text-center" id="floor-price">
 					<span class="font-weight-bold">{{ openSeaStats.floor_price }}</span>
 					<br />
 					<span class="text-muted">Floor Price</span>
 				</b-col>
-				<b-col cols="6" class="text-center">
+				<b-col cols="6" class="text-center" id="total-sales">
 					<span class="font-weight-bold">{{ openSeaStats.total_sales }}</span>
 					<br />
 					<span class="text-muted">Sales</span>
@@ -145,7 +170,12 @@
 						:to="`/project?id=${sc.id}`"
 						>Manage Project >></b-button
 					>
-					<b-button v-else variant="link" size="sm" class="font-weight-bold" @click="onEdit"
+					<b-button
+						v-else
+						variant="link"
+						size="sm"
+						class="font-weight-bold"
+						@click="onEdit"
 						>Edit/Deploy >></b-button
 					>
 				</b-col>
@@ -176,15 +206,12 @@
 			@ok.prevent="onCloneContract"
 		>
 			<b-form>
-				<b-form-group
-					label="Title"
-					label-class='required'
-				>
+				<b-form-group label="Title" label-class="required">
 					<b-form-input
-						id='cloneContractTitle'
-						name='cloneContractTitle'
-						type='text'
-						v-model='cloneContractTitle'
+						id="cloneContractTitle"
+						name="cloneContractTitle"
+						type="text"
+						v-model="cloneContractTitle"
 						:state="validateState('cloneContractTitle')"
 					></b-form-input>
 					<b-form-invalid-feedback :state="validation.cloneContractTitle">
@@ -204,18 +231,18 @@
 			cancel-title="Cancel"
 		>
 			<div>
-				 <b-form-group
+				<b-form-group
 					:label="`Collection URL on ${projectDeploymentStatus}`"
-					label-class='required'
+					label-class="required"
 					:description="collectionNameDesc"
 				>
 					<b-form-input
-					id='link'
-					name='link'
-					type='url'
-					v-model='openSeaLinkUrl'
-					:state="validateState('openSeaLinkUrl')"
-					@blur="$v.openSeaLinkUrl.$touch()"
+						id="link"
+						name="link"
+						type="url"
+						v-model="openSeaLinkUrl"
+						:state="validateState('openSeaLinkUrl')"
+						@blur="$v.openSeaLinkUrl.$touch()"
 					></b-form-input>
 					<b-form-invalid-feedback :state="validation.openSeaLinkUrl">
 						Please correct "Collection URL"
@@ -228,14 +255,19 @@
 
 <script>
 import { ethers } from 'ethers'
-import { MARKETPLACE, SMARTCONTRACT_STATUS, CONTRACT_TYPE, BLOCKCHAIN } from '@/constants'
+import {
+	MARKETPLACE,
+	SMARTCONTRACT_STATUS,
+	CONTRACT_TYPE,
+	BLOCKCHAIN,
+} from '@/constants'
 import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState, getProvider } from '@/utils'
 import { required } from 'vuelidate/lib/validators'
 import BlockchainImage from '@/mixins/blockchainImage'
-import Driver from 'driver.js';
-import 'driver.js/dist/driver.min.css';
+import Driver from 'driver.js'
+import 'driver.js/dist/driver.min.css'
 
 export default {
 	mixins: [BlockchainImage],
@@ -243,8 +275,8 @@ export default {
 		sc: Object,
 		isTourCard: {
 			type: Boolean,
-			default:false,
-		}
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -270,21 +302,25 @@ export default {
 		if (!this.isDeployed) return
 		this.getContractStats()
 		this.getOpenSeaStats()
-			this.initTour();
+		this.initTour()
 	},
 	computed: {
 		...mapGetters(['userId']),
 		validation() {
 			return {
 				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error,
-				cloneContractTitle: !this.$v.cloneContractTitle.$error
+				cloneContractTitle: !this.$v.cloneContractTitle.$error,
 			}
 		},
 		subTitle() {
-			return `${this.projectDeploymentStatus} | ${CONTRACT_TYPE[this.sc.contractType]}`
+			return `${this.projectDeploymentStatus} | ${
+				CONTRACT_TYPE[this.sc.contractType]
+			}`
 		},
 		formattedBalance() {
-			return this.balance === 'n/a' ? 'n/a' : `${this.balance} ${getCurrency(this.sc.chainId)}`
+			return this.balance === 'n/a'
+				? 'n/a'
+				: `${this.balance} ${getCurrency(this.sc.chainId)}`
 		},
 		viewContractUrl() {
 			return `${this.getExplorerUrl(this.sc.chainId)}/address/${
@@ -307,11 +343,14 @@ export default {
 			return this.sc.status === SMARTCONTRACT_STATUS.Mainnet
 		},
 		supportsOpenSea() {
-			return this.sc.blockchain === BLOCKCHAIN.Ethereum || this.sc.blockchain === BLOCKCHAIN.Polygon
+			return (
+				this.sc.blockchain === BLOCKCHAIN.Ethereum ||
+				this.sc.blockchain === BLOCKCHAIN.Polygon
+			)
 		},
 		projectDeploymentStatus() {
-			if(this.isTestnet) return 'Testnet'
-			if(this.isMainnet) return 'Mainnet'
+			if (this.isTestnet) return 'Testnet'
+			if (this.isMainnet) return 'Mainnet'
 			return 'Draft'
 		},
 		collectionNameDesc() {
@@ -321,110 +360,141 @@ export default {
 			return this.isTestnet
 				? `https://testnets.opensea.io/collection/${slug}`
 				: `https://opensea.io/collection/${slug}`
-		}
+		},
 	},
 	methods: {
 		initTour() {
-			console.log("initiating tour.");
 			if (this.isTourCard) {
-				const driver = new Driver();
+				const driver = new Driver()
 				driver.defineSteps([
 					{
 						element: '#tour-card',
 						popover: {
 							title: 'Project Card',
-							description: "A quick insight of the project.",
-							position: 'right'
-						}
+							description: 'A quick insight of the project.',
+							position: 'right',
+						},
 					},
 					{
 						element: '#project-name',
 						popover: {
 							title: 'Project Name',
-							description: "Project name",
-							position: 'right'
-						}
+							description:
+								"Name of the project that's associated with zerocodenft.",
+							position: 'right',
+						},
 					},
 					{
 						element: '#project-type-network',
 						popover: {
 							title: 'Contract Type and Network',
-							description: "The network contract is deployed on and the contract's type.",
-							position: 'right'
+							description:
+								"The network of contract that's deployed on and the contract's type.",
+							position: 'right',
 						},
-						/* onNext: () => {
+					/* 	onNext: () => {
+							driver.preventMove();
 							// document.querySelector('.card-menu').click();
 							this.$refs.cardMenu.show();
 							this.$nextTick(() => {
 								driver.moveNext();
 							})
 						} */
-					}, {
+					},
+					{
+						element: '#contract-actions',
+						popover: {
+							title: 'Contract Actions',
+							description:
+								'Link to the block explorer of the contract, cloning the contract to new one, linking the opensea page and option to remove the project from zerocodenft.',
+							position: 'right',
+						},
+					},
+					{
 						element: '#project-status',
 						popover: {
 							title: 'Project Status',
-							description: "Status of the project. It can be 'Draft' or 'Live'.",
-							position: 'right'
-						}
+							description:
+								"Status of the project. It can be 'Draft' or 'Live'.",
+							position: 'right',
+						},
 					},
 					{
 						element: '#feature-preview',
 						popover: {
 							title: "Contract's feature",
-							description: "Information about the selected feature for the contract.",
-							position: 'right'
-						}
-					}
-					,{
+							description:
+								'Information about the selected feature for the contract. Whitelist(WL) / Delayed Reveal(DR).',
+							position: 'right',
+						},
+					},
+					{
 						element: '#mint-count',
 						popover: {
 							title: 'Mint Count',
-							description: "Mint count of the tokens from the contract.",
-							position: 'right'
-						}
-					}
-					,{
+							description: 'Mint count of the tokens from the contract.',
+							position: 'right',
+						},
+					},
+					{
 						element: '#withdraw-balance',
 						popover: {
 							title: 'Withdraw Balance',
-							description: "Available Balance for the withdrawl.",
-							position: 'right'
-						}
-					}
-					,{
+							description: 'Available Balance for the withdrawl.',
+							position: 'right',
+						},
+					},
+					{
+						element: '#blockchain-logo',
+						popover: {
+							title: 'Blockchain Logo',
+							description:
+								'Blockchain logo of network the contract is deployed on.',
+							position: 'right',
+						},
+					},
+					{
 						element: '#owners-count',
 						popover: {
 							title: 'Owners Count',
-							description: "Total number of owners for the token.",
-							position: 'right'
-						}
-					}
-					,{
-						element: '#volume',
+							description: 'Total number of owners for the token.',
+							position: 'right',
+						},
+					},
+					{
+						element: '#total-volume',
 						popover: {
-							title: 'volume',
-							description: "",
-							position: 'right'
-						}
-					}
-					,{
+							title: 'Total Volume',
+							description: 'Total volume of transactions till now.',
+							position: 'right',
+						},
+					},
+					{
+						element: '#marketplace',
+						popover: {
+							title: 'Marketplace',
+							description: 'Marketplace for the token.',
+							position: 'right',
+						},
+					},
+					{
 						element: '#floor-price',
 						popover: {
 							title: 'Floor Price',
-							description: "",
-							position: 'right'
-						}
-					}
-					,{
-						element: '#sales',
+							description: 'Floor Price of the token.',
+							position: 'right',
+						},
+					},
+					{
+						element: '#total-sales',
 						popover: {
-							title: 'Sales',
-							description: "",
-							position: 'right'
-						}
-					}
+							title: 'Total Sales',
+							description: 'Total Sales count of the token.',
+							position: 'right',
+						},
+					},
 				])
-				driver.start();
+				driver.start()
 			}
 		},
 		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
@@ -437,12 +507,12 @@ export default {
 			this.$router.push('/wizard')
 		},
 		async onLinkOpenSea() {
-			this.setBusy({isBusy: true})
+			this.setBusy({ isBusy: true })
 
 			try {
 				const payload = {
 					smartContractId: this.sc.id,
-					url: this.openSeaLinkUrl
+					url: this.openSeaLinkUrl,
 				}
 
 				await this.linkOpenSea(payload)
@@ -458,16 +528,19 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy({isBusy: false})
+				this.setBusy({ isBusy: false })
 			}
 		},
 		async onCloneContract() {
 			this.$v.cloneContractTitle.$touch()
-			if(this.$v.cloneContractTitle.$invalid) return
+			if (this.$v.cloneContractTitle.$invalid) return
 
 			try {
-				this.setBusy({isBusy: true})
-				await this.cloneDashboardCard({ id: this.sc.id, name: this.cloneContractTitle })
+				this.setBusy({ isBusy: true })
+				await this.cloneDashboardCard({
+					id: this.sc.id,
+					name: this.cloneContractTitle,
+				})
 				this.$bvModal.hide(`Clone${this.sc.id}`)
 				this.cloneContractTitle = null
 			} catch (err) {
@@ -476,12 +549,12 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy({isBusy: false})
+				this.setBusy({ isBusy: false })
 			}
 		},
 		async onRemoveCard() {
 			try {
-				this.setBusy({isBusy: true})
+				this.setBusy({ isBusy: true })
 				await this.removeDashboardCard(this.sc.id)
 				this.$bvToast.toast('Card removed', {
 					title: 'Dashboard',
@@ -493,21 +566,19 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.setBusy({isBusy: false})
+				this.setBusy({ isBusy: false })
 			}
 		},
 		async getContractStats() {
 			try {
 				const { address, abi, status, chainId } = this.sc
-				if(status < SMARTCONTRACT_STATUS.Testnet) {
+				if (status < SMARTCONTRACT_STATUS.Testnet) {
 					return
 				}
 
 				const provider = getProvider(chainId)
 				const contract = new ethers.Contract(address, abi, provider)
-				const contractBalance = await provider.getBalance(
-					this.sc.address
-				)
+				const contractBalance = await provider.getBalance(this.sc.address)
 
 				this.balance = +ethers.utils.formatEther(contractBalance)
 				this.minted = +(await contract.totalSupply())
@@ -527,7 +598,7 @@ export default {
 			if (this.isTestnet) {
 				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${name}/stats`
 				fetchParams.headers = {
-					'X-API-KEY': ''
+					'X-API-KEY': '',
 				}
 			} else {
 				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${name}/stats`
@@ -538,34 +609,36 @@ export default {
 
 			const getData = () => {
 				fetch(openseaApiUrl, fetchParams)
-				.then((response) => {
-					if(response.status == 429 && retryCount < 3) {
-						retryCount++
-						wait(2000).then(() => getData())
-					}
-					return response.json()
-				})
-				.then((data) => {
-					if (
-						data.detail?.startsWith('Request was throttled') ||
-						!data.stats ||
-						(data.success && data.success === false)
-					) {
-						return
-					}
+					.then((response) => {
+						if (response.status == 429 && retryCount < 3) {
+							retryCount++
+							wait(2000).then(() => getData())
+						}
+						return response.json()
+					})
+					.then((data) => {
+						if (
+							data.detail?.startsWith('Request was throttled') ||
+							!data.stats ||
+							(data.success && data.success === false)
+						) {
+							return
+						}
 
-					this.openSeaStats = data.stats
-					this.openSeaStats.floor_price = !!data.stats.floor_price
-						? data.stats.floor_price.toFixed(2)
-						: 'n/a'
-					this.openSeaStats.total_volume =
-						data.stats.total_volume > 0 ? data.stats.total_volume.toFixed(2) : 0
-				})
-				.catch(console.error)
+						this.openSeaStats = data.stats
+						this.openSeaStats.floor_price = !!data.stats.floor_price
+							? data.stats.floor_price.toFixed(2)
+							: 'n/a'
+						this.openSeaStats.total_volume =
+							data.stats.total_volume > 0
+								? data.stats.total_volume.toFixed(2)
+								: 0
+					})
+					.catch(console.error)
 			}
 
 			return getData()
-		}
+		},
 	},
 }
 </script>
