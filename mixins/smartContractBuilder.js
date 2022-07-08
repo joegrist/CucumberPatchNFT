@@ -13,7 +13,7 @@ const smartContractWizardMixin = {
 			return Object.keys(this.$v.smartContractBuilder || {})
 				.filter((key) => !key.startsWith('$'))
 				.reduce((acc, key) => {
-					acc[key] = !this.$v.smartContractBuilder[key].$invalid
+					acc[key] = !this.$v.smartContractBuilder[key].$anyError
 					return acc
 				}, {})
 		},

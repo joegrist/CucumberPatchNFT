@@ -261,9 +261,9 @@ export default {
 
 			return {
 				marketplaceCollection: {
-					name: !name.$invalid,
-					feeRecipient: !feeRecipient.$invalid,
-					royalties: !royalties.$invalid,
+					name: !name.$anyError,
+					feeRecipient: !feeRecipient.$anyError,
+					royalties: !royalties.$anyError,
 				},
 			}
 		},

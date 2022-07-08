@@ -144,17 +144,15 @@ export default {
 
     async deploy() {
       try {
-        const { isConnected, account, chainId, provider, switchNetwork } = this.$wallet
-
-        if(!isConnected) {
+        if(!this.$wallet.isConnected) {
           this.showConnectWalletModal = true
           return
         }
 
         this.setBusy({isBusy: true, message: 'Wait for the Metamask popup to deploy'})
 
-        if(this.smartContractBuilder.chainId !== chainId) {
-          await switchNetwork(this.smartContractBuilder.chainId)
+        if(this.smartContractBuilder.chainId !== this.$wallet.chainId) {
+          await this.$wallet.switchNetwork(this.smartContractBuilder.chainId)
         }
 
         const id = await this.saveDraft()
@@ -163,13 +161,13 @@ export default {
 
         const { abi, bytecode } = compilationResult
 
-        const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, provider.getSigner())
+        const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, this.$wallet.provider.getSigner())
 
         // const deploymentData = contractFactory.interface.encodeDeploy([])
         // const estimatedGas = await this.$wallet.provider.estimateGas({ data: deploymentData })
         // console.log('gas estimate', estimatedGas.toString())
 
-        const gasPrice = await provider.getGasPrice()
+        const gasPrice = await this.$wallet.provider.getGasPrice()
 				console.info(
 					`GAS PRICE: ${ethers.utils.formatUnits(gasPrice, 'gwei')} gwei`
 				)
@@ -179,7 +177,7 @@ export default {
         })
 
         await this.$axios.patch(`/smartcontracts/${id}/deploy-testnet`, {
-          ownerAddress: account,
+          ownerAddress: this.$wallet.account,
           address: contract.address,
         })
 
