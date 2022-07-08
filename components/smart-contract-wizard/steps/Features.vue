@@ -11,7 +11,7 @@
 							size="lg"
 							:checked="smartContractBuilder.hasDelayedReveal"
 							@change="
-								(val) => updateSmartContractBuilder({ hasDelayedReveal: val })
+								(hasDelayedReveal) => updateSmartContractBuilder({ hasDelayedReveal })
 							">
 							Delayed Reveal
 						</b-form-checkbox>
@@ -33,18 +33,18 @@
 						<b-form-input
 							id="delayedRevealURL"
 							name="delayedRevealURL"
+							type="text"
+							placeholder="ipfs://..."
 							:value="smartContractBuilder.delayedRevealURL"
 							@change="
-								(val) => updateSmartContractBuilder({ delayedRevealURL: val })
+								(delayedRevealURL) => updateSmartContractBuilder({ delayedRevealURL })
 							"
 							@blur="$v.smartContractBuilder.delayedRevealURL.$touch()"
-							:class="{
-								'is-invalid': $v.smartContractBuilder.delayedRevealURL.$error,
-							}"
-							type="text"
-							placeholder="ipfs://..."></b-form-input>
-						<b-form-invalid-feedback :state="validation.delayedRevealURL">
-							Enter the URL
+							:state="
+								validateState('smartContractBuilder.delayedRevealURL')
+							"></b-form-input>
+						<b-form-invalid-feedback :state="state.delayedRevealURL">
+							Please correct "Placeholder URL"
 						</b-form-invalid-feedback>
 					</b-form-group>
 				</b-col>
@@ -59,7 +59,7 @@
 							size="lg"
 							:checked="smartContractBuilder.hasWhitelist"
 							@change="
-								(val) => updateSmartContractBuilder({ hasWhitelist: val })
+								(hasWhitelist) => updateSmartContractBuilder({ hasWhitelist })
 							">
 							Whitelist
 						</b-form-checkbox>
@@ -69,13 +69,16 @@
 			<b-row>
 				<b-col sm="12" md="6">
 					<b-form-group
-						:label="`Price per NFT in ${currency}`"
 						description="Can be the same as public sale price or even zero to allow free mint"
+						:label="`Price per NFT in ${currency}`"
 						:label-class="{ required: smartContractBuilder.hasWhitelist }"
 						:disabled="!smartContractBuilder.hasWhitelist">
 						<b-form-input
 							id="whitelistPrice"
 							name="whitelistPrice"
+							type="number"
+							step="any"
+							min="0"
 							:value="smartContractBuilder.whitelistPrice"
 							@change="
 								(val) =>
@@ -84,14 +87,11 @@
 									})
 							"
 							@blur="$v.smartContractBuilder.whitelistPrice.$touch()"
-							:class="{
-								'is-invalid': $v.smartContractBuilder.whitelistPrice.$error,
-							}"
-							type="number"
-							step="any"
-							min="0"></b-form-input>
-						<b-form-invalid-feedback :state="validation.whitelistPrice">
-							Please correct "Presale Price"
+							:state="
+								validateState('smartContractBuilder.whitelistPrice')
+							"></b-form-input>
+						<b-form-invalid-feedback :state="state.whitelistPrice">
+							Please correct "Whitelist Price"
 						</b-form-invalid-feedback>
 					</b-form-group>
 				</b-col>
@@ -104,6 +104,9 @@
 						<b-form-input
 							id="maxTokensPerPersonOnWhitelist"
 							name="maxTokensPerPersonOnWhitelist"
+							type="number"
+							step="1"
+							min="1"
 							:value="smartContractBuilder.maxTokensPerPersonOnWhitelist"
 							@change="
 								(val) =>
@@ -114,15 +117,13 @@
 							@blur="
 								$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$touch()
 							"
-							:class="{
-								'is-invalid':
-									$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$error,
-							}"
-							type="number"
-							step="1"
-							min="1"></b-form-input>
+							:state="
+								validateState(
+									'smartContractBuilder.maxTokensPerPersonOnWhitelist'
+								)
+							"></b-form-input>
 						<b-form-invalid-feedback
-							:state="validation.maxTokensPerPersonOnWhitelist">
+							:state="state.maxTokensPerPersonOnWhitelist">
 							Please correct "Max NFTs Per Person"
 						</b-form-invalid-feedback>
 					</b-form-group>
@@ -139,7 +140,7 @@
 							size="lg"
 							:checked="smartContractBuilder.hasRevenueSplits"
 							@change="
-								(val) => updateSmartContractBuilder({ hasRevenueSplits: val })
+								(hasRevenueSplits) => updateSmartContractBuilder({ hasRevenueSplits })
 							">
 							Primary Sales Revenue Splits
 						</b-form-checkbox>
@@ -161,10 +162,10 @@
 						:label-class="{ required: smartContractBuilder.hasRevenueSplits }"
 						:disabled="!smartContractBuilder.hasRevenueSplits">
 						<b-form-input
+							type="text"
 							:name="`wallet${idx}`"
 							:value="split.wallet"
-							@change="(val) => onSplitWalletUpdate(val, idx)"
-							type="text"></b-form-input>
+							@change="(val) => onSplitWalletUpdate(val, idx)"></b-form-input>
 						<!-- <b-form-invalid-feedback :state="revenueSplitErrors[idx]">
 							Please correct "Wallet {{ idx }}"
 						</b-form-invalid-feedback> -->
@@ -178,10 +179,11 @@
 						<b-form-input
 							:name="`share${idx}`"
 							:value="split.share"
-							@change="(val) => onSplitShareUpdate(val ? +val : 0, idx)"
 							type="number"
 							step="any"
-							min="0"></b-form-input>
+							min="0"
+							@change="(val) => onSplitShareUpdate(val ? +val : 0, idx)"
+							></b-form-input>
 					</b-form-group>
 				</b-col>
 				<b-col sm="12" md="1">
@@ -220,7 +222,6 @@
 
 <script>
 import Vue from 'vue'
-import { ethers } from 'ethers'
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import {
 	requiredIf,
@@ -229,6 +230,8 @@ import {
 	maxValue,
 } from 'vuelidate/lib/validators'
 import { getMainnetConfig } from '@/constants/metamask'
+import { validateState, mustBeURL, hasValidAddress } from '@/utils'
+import { cloneDeep } from 'lodash-es'
 
 export default {
 	mixins: [smartContractBuilderMixin],
@@ -258,11 +261,7 @@ export default {
 	},
 	validations: {
 		smartContractBuilder: {
-			delayedRevealURL: {
-				// required: requiredIf(function () {
-				// 	return this.smartContractBuilder.hasDelayedReveal
-				// }),
-			},
+			delayedRevealURL: { mustBeURL },
 			whitelistPrice: {
 				required: requiredIf(function () {
 					return this.smartContractBuilder.hasWhitelist
@@ -285,7 +284,7 @@ export default {
 		const splits = this.$store.state.smartContractBuilder.revenueSplits
 		if (splits?.length) {
 			// hard copy from state to avoid vuex errors of mutating state outside of store
-			this.revenueSplits = JSON.parse(JSON.stringify(splits))
+			this.revenueSplits = cloneDeep(splits)
 		}
 	},
 	beforeDestroy() {
@@ -296,16 +295,8 @@ export default {
 	},
 	computed: {
 		currency() {
-			return this.getMainnetConfig(this.smartContractBuilder.chainId)?.nativeCurrency.symbol || ''
-		},
-		validation() {
-			return {
-				delayedRevealURL: !this.$v.smartContractBuilder.delayedRevealURL.$error,
-				whitelistPrice: !this.$v.smartContractBuilder.whitelistPrice.$error,
-				maxTokensPerPersonOnWhitelist:
-					!this.$v.smartContractBuilder.maxTokensPerPersonOnWhitelist.$error,
-				shares: this.revenueSplitErrors.length === 0,
-			}
+			const chainId = this.smartContractBuilder.chainId
+			return this.getMainnetConfig(chainId)?.nativeCurrency.symbol || ''
 		},
 		splitShareTotal() {
 			return this.revenueSplits
@@ -319,7 +310,7 @@ export default {
 			const sumsTo100 = this.splitShareTotal === 100
 			const hasValidWallets = this.revenueSplits
 				.map((x) => x.wallet)
-				.every((w) => w !== null && w !== '' && ethers.utils.isAddress(w))
+				.every(hasValidAddress)
 			const hasShares = this.revenueSplits
 				.map((x) => x.share)
 				.every((s) => s !== null && s !== 0)
@@ -333,6 +324,7 @@ export default {
 	},
 	methods: {
 		getMainnetConfig,
+		validateState,
 		onAddSplit() {
 			const otherShares = this.revenueSplits
 				.map((x) => x.share)

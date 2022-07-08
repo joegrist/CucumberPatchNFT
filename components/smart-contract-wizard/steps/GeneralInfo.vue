@@ -4,23 +4,25 @@
       <b-row>
         <b-col sm='12' md='6'>
           <b-form-group
-            description='URL to the endpoint (folder) that contains metadata .json files. Can be added later.'
+            description='URL to the endpoint (folder) that contains metadata .json files. Can be set later.'
           >
             <template #label>
-              IPFS Metadata URL
+              Metadata URL (IPFS)
               <ExternalLink href="https://youtu.be/1f7GvvOIe6Y" icon="youtube" text="What's this?" />
             </template>
             <b-form-input
               id='baseURL'
               name='baseURL'
-              :value='smartContractBuilder.baseURL'
-              @change="(baseURL) => updateSmartContractBuilder({ baseURL })"
               type='text'
               placeholder='ipfs://*************************/'
+              :value='smartContractBuilder.baseURL'
+              @change="(baseURL) => updateSmartContractBuilder({ baseURL })"
+              @blur="$v.smartContractBuilder.baseURL.$touch()"
+              :state="validateState('smartContractBuilder.baseURL')"
             ></b-form-input>
-            <!-- <b-form-invalid-feedback :state="validation.baseURL">
-              Please correct IPFS Metadata URL"
-            </b-form-invalid-feedback> -->
+            <b-form-invalid-feedback :state="state.baseURL">
+              Please correct "Metadata URL"
+            </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
         <b-col sm='12' md='6'>
@@ -32,15 +34,14 @@
             <b-form-input
               id='collectionSize'
               name='collectionSize'
+              type='number'
+              min='1'
               :value='smartContractBuilder.collectionSize'
               @change='(val) => updateSmartContractBuilder({ collectionSize: val ? +val:null })'
               @blur="$v.smartContractBuilder.collectionSize.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.collectionSize.$error}"
-              type='number'
-              min='1'
-              required
+              :state="validateState('smartContractBuilder.collectionSize')"
             ></b-form-input>
-            <b-form-invalid-feedback :state="validation.collectionSize">
+            <b-form-invalid-feedback :state="state.collectionSize">
               Please correct "Collection Size"
             </b-form-invalid-feedback>
           </b-form-group>
@@ -56,15 +57,14 @@
             <b-form-input
               id='contractName'
               name='contractName'
-              :value='smartContractBuilder.name'
-              @change='(val) => updateSmartContractBuilder({ name: val })'
-              @blur="$v.smartContractBuilder.name.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.name.$error}"
               type='text'
               placeholder='Bored Apes Yacht Club'
-              required
+              :value='smartContractBuilder.name'
+              @change='(val) => updateSmartContractBuilder({ name: val })'
+              @blur="$v.smartContractBuilder.name.$touch()"       
+              :state="validateState('smartContractBuilder.name')"
             ></b-form-input>
-            <b-form-invalid-feedback :state="validation.name">
+            <b-form-invalid-feedback :state="state.name">
               Please correct "Name"
             </b-form-invalid-feedback>
           </b-form-group>
@@ -79,16 +79,15 @@
             <b-form-input
               id='symbol'
               name='symbol'
-              :value='smartContractBuilder.symbol'
-              @change='(val) => updateSmartContractBuilder({ symbol: val })'
-              @blur="$v.smartContractBuilder.symbol.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.symbol.$error}"
               type='text'
               maxlength='10'
               placeholder='BAYC'
-              required
+              :value='smartContractBuilder.symbol'
+              @change='(val) => updateSmartContractBuilder({ symbol: val })'
+              @blur="$v.smartContractBuilder.symbol.$touch()"
+              :state="validateState('smartContractBuilder.symbol')"
             ></b-form-input>
-            <b-form-invalid-feedback :state="validation.symbol">
+            <b-form-invalid-feedback :state="state.symbol">
               Please corrent "Token Symbol"
             </b-form-invalid-feedback>
           </b-form-group>
@@ -104,15 +103,14 @@
             <b-form-input
               id='mintPrice'
               name='mintPrice'
+              type='number'
+              step='any'
               :value='smartContractBuilder.mintPrice'
               @change='(val) => updateSmartContractBuilder({ mintPrice: val ? +val:null })'
               @blur="$v.smartContractBuilder.mintPrice.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.mintPrice.$error}"
-              type='number'
-              step='any'
-              required
+              :state="validateState('smartContractBuilder.mintPrice')"
             ></b-form-input>
-            <b-form-invalid-feedback :state="validation.mintPrice">
+            <b-form-invalid-feedback :state="state.mintPrice">
               Please correct "Mint Price"
             </b-form-invalid-feedback>
           </b-form-group>
@@ -125,15 +123,15 @@
             <b-form-input
               id='firstXFree'
               name='firstXFree'
-              :value='smartContractBuilder.firstXFree'
-              @change='(val) => updateSmartContractBuilder({ firstXFree: val ? +val:null })'
-              @blur="$v.smartContractBuilder.firstXFree.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.firstXFree.$error}"
               type='number'
               step='1'
               min='0'
+              :value='smartContractBuilder.firstXFree'
+              @change='(val) => updateSmartContractBuilder({ firstXFree: val ? +val:null })'
+              @blur="$v.smartContractBuilder.firstXFree.$touch()"
+              :state="validateState('smartContractBuilder.firstXFree')"
             ></b-form-input>
-            <b-form-invalid-feedback :state="validation.firstXFree">
+            <b-form-invalid-feedback :state="state.firstXFree">
               Please correct "First X Free". Enter 0 or leave empty.
             </b-form-invalid-feedback>
           </b-form-group>
@@ -148,18 +146,18 @@
             <b-form-input
               id='maxTokensPerTransaction'
               name='maxTokensPerTransaction'
+              type='number'
+              min='0'
+              step='1'
               :value='smartContractBuilder.maxTokensPerTransaction'
               @change='(val) => updateSmartContractBuilder({ maxTokensPerTransaction: val ? +val:null })'
               @blur="$v.smartContractBuilder.maxTokensPerTransaction.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerTransaction.$error}"
-              type='number'
-              step='1'
-              min='0'
+              :state="validateState('smartContractBuilder.maxTokensPerTransaction')"
             />
+            <b-form-invalid-feedback :state="state.maxTokensPerTransaction">
+              Please correct "Max NFTs Per Transaction". Enter 0 or leave empty.
+            </b-form-invalid-feedback>
           </b-form-group>
-          <b-form-invalid-feedback :state="validation.maxTokensPerTransaction">
-            Please correct "Max NFTs Per Transaction". Enter 0 or leave empty.
-          </b-form-invalid-feedback>
         </b-col>
         <b-col sm='12' md='6'>
           <b-form-group
@@ -169,15 +167,15 @@
             <b-form-input
               id='maxTokensPerPerson'
               name='maxTokensPerPerson'
-              :value='smartContractBuilder.maxTokensPerPerson'
-              @change='(val) => updateSmartContractBuilder({ maxTokensPerPerson: val ? +val:null })'
-              @blur="$v.smartContractBuilder.maxTokensPerPerson.$touch()"
-              :class="{'is-invalid': $v.smartContractBuilder.maxTokensPerPerson.$error}"
               type='number'
               step='1'
               min='0'
+              :value='smartContractBuilder.maxTokensPerPerson'
+              @change='(val) => updateSmartContractBuilder({ maxTokensPerPerson: val ? +val:null })'
+              @blur="$v.smartContractBuilder.maxTokensPerPerson.$touch()"
+              :state="validateState('smartContractBuilder.maxTokensPerPerson')"
             ></b-form-input>
-            <b-form-invalid-feedback :state="validation.maxTokensPerPerson">
+            <b-form-invalid-feedback :state="state.maxTokensPerPerson">
               Please correct "Max NFTs Per Person". Enter 0 or leave empty.
             </b-form-invalid-feedback>
           </b-form-group>
@@ -195,6 +193,7 @@
 <script>
 import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { required, maxLength, numeric, minValue, decimal, alphaNum } from 'vuelidate/lib/validators'
+import { validateState, mustBeURL } from '@/utils'
 import { getMainnetConfig } from '@/constants/metamask'
 const mustBeName = val => /^[A-Za-z][\w ]{1,50}$/.test(val)
 
@@ -217,6 +216,7 @@ export default {
       smartContractBuilder: {
         collectionSize: { required, numeric, minValue: minValue(1) },
         name: { required, mustBeName, maxLength: maxLength(50) },
+        baseURL: { mustBeURL, maxLength: maxLength(200) },
         symbol: { required, alphaNum, maxLength: maxLength(10) },
         mintPrice: { required, decimal, minValue: minValue(0) },
         firstXFree: { numeric, minValue: minValue(0) },
@@ -226,22 +226,13 @@ export default {
   },
   computed: {
     currency() {
-      return this.getMainnetConfig(this.smartContractBuilder.chainId)?.nativeCurrency.symbol || ''
+      const chainId = this.smartContractBuilder.chainId
+      return this.getMainnetConfig(chainId)?.nativeCurrency.symbol || ''
     },
-    validation() {
-      return {
-        name: !this.$v.smartContractBuilder.name.$error,
-        symbol: !this.$v.smartContractBuilder.symbol.$error,
-        collectionSize: !this.$v.smartContractBuilder.collectionSize.$error,
-        mintPrice: !this.$v.smartContractBuilder.mintPrice.$error,
-        firstXFree: !this.$v.smartContractBuilder.firstXFree.$error,
-        maxTokensPerPerson: !this.$v.smartContractBuilder.maxTokensPerPerson.$error,
-        maxTokensPerTransaction: !this.$v.smartContractBuilder.maxTokensPerTransaction.$error
-      }
-    }
   },
   methods: {
-    getMainnetConfig
+    getMainnetConfig,
+    validateState
   }
 
 }
