@@ -21,6 +21,9 @@ function validateState(path) {
 	return $dirty ? !$error : null
 }
 
+const mustBeURL = val => /^[\w:\/]*$/.test(val)
+const hasValidAddress = val => val && ethers.utils.isAddress(val)
+
 // this function is not fat arrowed on purpose: it needs parent scope to access this.$bvToast
 const copyToClipboard = async function (value) {
 	await navigator.clipboard.writeText(value)
@@ -71,6 +74,8 @@ export {
 	getMerkleRoot,
 	wait,
 	validateState,
+	mustBeURL,
+	hasValidAddress,
 	copyToClipboard,
 	scrollTo,
 	downloadTextFile,
