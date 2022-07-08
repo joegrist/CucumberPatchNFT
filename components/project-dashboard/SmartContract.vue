@@ -293,7 +293,7 @@ import {
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
-import { downloadTextFile, getProvider, getMetamaskError } from '@/utils'
+import { downloadTextFile, getMetamaskError } from '@/utils'
 import useSmartContract from '@/hooks/useSmartContract'
 
 const basicFunctions = [
@@ -311,7 +311,6 @@ const basicFunctions = [
 ]
 
 export default {
-	middleware: 'authenticated',
 	props: {
 		smartContract: Object,
 	},
