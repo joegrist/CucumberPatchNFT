@@ -2,6 +2,7 @@
 	<div>
 		<b-button
 			size="sm"
+			block
 			variant="primary"
 			:disabled="userCredits === 0"
 			v-b-modal="modalId"
