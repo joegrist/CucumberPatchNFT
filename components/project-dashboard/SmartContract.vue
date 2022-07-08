@@ -62,11 +62,10 @@
 								@click="onRefreshBalance(true)" />
 						</b-button>
 						<b-button
-							title="Withdraw Balance"
-							v-show="contractBalance > 0"
+							:disabled="contractBalance === 0"
 							variant="success"
 							@click="callFuncByName('withdraw')">
-							<b-icon icon="cash-stack" />
+							<b-icon icon="cash-stack" /> Withdraw
 						</b-button>
 					</b-button-group>
 				</div>
@@ -295,6 +294,7 @@ import {
 import { ethers } from 'ethers'
 import { isNumber, startCase } from 'lodash-es'
 import { downloadTextFile, getProvider, getMetamaskError } from '@/utils'
+import useSmartContract from '@/hooks/useSmartContract'
 
 const basicFunctions = [
 	'airdrop',
@@ -315,13 +315,16 @@ export default {
 	props: {
 		smartContract: Object,
 	},
+	setup(props) {
+		const contract = useSmartContract(props.smartContract)
+		return { contract }
+  	},
 	data: () => ({
 		SMARTCONTRACT_STATUS,
 		CONTRACT_TYPE,
 		SALE_STATUS,
 		showAdvancedFunctions: false,
 		rawContract: {},
-		contract: {},
 		deployedContract: {},
 		responses: {},
 		callFuncArgs: {},
@@ -330,18 +333,14 @@ export default {
 		busyState: {},
 		isReady: false,
 		currentOwner: null,
-		provider: null,
 	}),
 	async mounted() {
 		try {
 			this.rawContract = this.smartContract
-			const { address, abi, ownerAddress, chainId } = this.rawContract
+			const { ownerAddress } = this.rawContract
 			this.currentOwner = ownerAddress
 
 			this.setBusy({ isBusy: true })
-
-			this.provider = getProvider(chainId)
-			this.contract = new ethers.Contract(address, abi, this.provider)
 
 			this.isReady = !!(await this.contract.deployed())
 
@@ -458,7 +457,7 @@ export default {
 		async onRefreshBalance(showNotification = false) {
 			this.setBusy({ isBusy: true })
 			const balance =
-				(await this.provider.getBalance(this.rawContract.address)) || '0'
+				(await this.contract.provider.getBalance(this.rawContract.address)) || '0'
 			this.contractBalance = +ethers.utils.formatEther(balance)
 			this.setBusy({ isBusy: false })
 			showNotification &&

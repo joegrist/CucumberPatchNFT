@@ -24,31 +24,26 @@
 </template>
 
 <script>
-import { ethers } from 'ethers'
 import Vue from 'vue'
-// import { mapMutations, mapState } from 'vuex'
 import { downloadTextFile, getMetamaskError } from '@/utils'
-import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
+import useSmartContract from '@/hooks/useSmartContract'
 
 export default {
 	props: {
 		smartContract: Object,
 	},
+    setup(props) {
+		const contract = useSmartContract(props.smartContract)
+		return { contract }
+  	},
     data() {
         return {
-            contract: null,
             isRunning: false,
             showProgress: false,
             ownerMap: {},
             progress: 0,
             supply: this.smartContract.collectionSize
         }
-    },
-    created() {
-        const { abi, address, chainId } = this.smartContract
-        const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
-        const jsonRpcProvider = new ethers.providers.StaticJsonRpcProvider(providerUrl)
-        this.contract = new ethers.Contract(address, abi, jsonRpcProvider)
     },
     computed: {
         snapshotData() {
