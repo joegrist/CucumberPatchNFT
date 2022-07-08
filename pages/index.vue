@@ -26,14 +26,12 @@
 </template>
 
 <script>
-import { mapMutations, mapActions, mapGetters, mapState } from 'vuex'
-import { MARKETPLACE } from '@/constants'
+import { mapActions, mapState } from 'vuex'
 
 export default {
 	middleware: 'authenticated',
 	data() {
 		return {
-			MARKETPLACE,
 			searchTerm: '',
 		}
 	},
@@ -49,8 +47,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(['dashboardItems', 'isBusy']),
-		...mapGetters(['userId']),
+		...mapState(['dashboardItems',]),
 		filteredItems() {
 			const term = this.searchTerm.toLowerCase()
 			return this.dashboardItems.filter(
@@ -61,11 +58,9 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['setDashboardItems', 'setBusy']),
 		...mapActions(['loadDashboardCards']),
 	},
 }
 </script>
 
-<style lang="scss" scoped src="@/assets/styles/dashboard.scss">
-</style>
+<style lang="scss" scoped src="@/assets/styles/dashboard.scss" />
