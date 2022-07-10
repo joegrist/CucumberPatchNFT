@@ -1,5 +1,5 @@
 <template>
-	<b-card class="shadow-sm py-3" no-body :id="isTourCard ? 'tour-card':''">
+	<b-card class="shadow-sm py-3" no-body :id="isTourCard ? 'tour-card' : ''">
 		<b-avatar
 			id="blockchain-logo"
 			class="p-2 border card-logo"
@@ -31,7 +31,10 @@
 				<b-dd-item v-b-modal="`Clone${sc.id}`" id="clone-contract"
 					><b-icon icon="files" /> Clone Contract</b-dd-item
 				>
-				<b-dd-item v-if="supportsOpenSea" v-b-modal="`OpenSea${sc.id}`" id="link-opensea"
+				<b-dd-item
+					v-if="supportsOpenSea"
+					v-b-modal="`OpenSea${sc.id}`"
+					id="link-opensea"
 					><b-icon icon="link" /> Link OpenSea</b-dd-item
 				>
 			</template>
@@ -39,15 +42,17 @@
 				><b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
-		<b-card-title class="text-center truncate-text px-3 mb-0 pb-2">
+		<b-card-title
+			class="text-center truncate-text px-3 mb-0 pb-2"
+			id="project-name"
+		>
 			<b-link
-				id="project-name"
 				v-if="isDeployed"
 				class="text-dark"
 				:to="`/project?id=${sc.id}`"
 				>{{ sc.name | startCase }}</b-link
 			>
-			<span v-else id="project-name">{{ sc.name | startCase }}</span>
+			<span v-else>{{ sc.name | startCase }}</span>
 		</b-card-title>
 
 		<b-card-sub-title class="text-center mb-2" id="project-type-network">
@@ -303,7 +308,7 @@ export default {
 		await this.getOpenSeaStats()
 		if (this.startProductTour) {
 			this.initTour()
-			}
+	}
 	},
 	computed: {
 		...mapGetters(['userId','startProductTour']),

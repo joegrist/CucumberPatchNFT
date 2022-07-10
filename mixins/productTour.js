@@ -46,14 +46,6 @@ export default {
 								"The network of contract that's deployed on and the contract's type (ERC721,ERC721A)",
 							position: 'right',
 						},
-						/* 	onNext: () => {
-							// driver.preventMove();
-							// document.querySelector('.card-menu').click();
-							this.$refs.cardMenu.show();
-							this.$nextTick(() => {
-								driver.moveNext();
-							})
-						} */
 					},
 					{
 						element: '#contract-actions',
@@ -63,6 +55,9 @@ export default {
 								'Link to the block explorer of the contract, cloning the contract to new one, linking the opensea page and option to remove the project from zerocodenft.',
 							position: 'right',
 						},
+						/* onNext: () => {
+							this.initProjectActionsTour();
+						} */
 					},
 					{
 						element: '#project-status',
@@ -159,5 +154,43 @@ export default {
 				driver.start()
 			} 
 		},
+		initProjectActionsTour() {
+				const driver = new Driver()
+				driver.defineSteps([
+					{
+						element: '#block-explorer',
+						popover: {
+							title: 'Block Explorer',
+							description: '',
+							position: 'right',
+						},
+					},
+					{
+						element: '#clone-contract',
+						popover: {
+							title: 'Clone Contract',
+							description: '',
+							position: 'right',
+						},
+					},
+					{
+						element: '#link-opensea',
+						popover: {
+							title: 'Link Opensea',
+							description: '',
+							position: 'right',
+						},
+					},
+					{
+						element: '#remove-card',
+						popover: {
+							title: 'Remove Project',
+							description: '',
+							position: 'right',
+						},
+					},
+				])
+			driver.start();
+		}
 	},
 }
