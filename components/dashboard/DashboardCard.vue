@@ -1,5 +1,5 @@
 <template>
-	<b-card class="shadow-sm py-3" no-body>
+	<b-card class="shadow-sm py-3" no-body :id="isTourCard ? 'tour-card':''">
 		<b-avatar
 			id="blockchain-logo"
 			class="p-2 border card-logo"
@@ -21,21 +21,21 @@
 				<span class="sr-only">Card Menu</span>
 			</template>
 			<template v-if="isDeployed">
-				<b-dd-text v-if="sc.address" class="text-center">
+				<b-dd-text v-if="sc.address" class="text-center" id="block-explorer">
 					<span class="text-muted">Block Expolorer</span><br />
 					<b-link target="_blank" :href="viewContractUrl"
 						>{{ sc.address | compactAddress }} ></b-link
 					>
 				</b-dd-text>
 				<b-dropdown-divider></b-dropdown-divider>
-				<b-dd-item v-b-modal="`Clone${sc.id}`"
+				<b-dd-item v-b-modal="`Clone${sc.id}`" id="clone-contract"
 					><b-icon icon="files" /> Clone Contract</b-dd-item
 				>
-				<b-dd-item v-if="supportsOpenSea" v-b-modal="`OpenSea${sc.id}`"
+				<b-dd-item v-if="supportsOpenSea" v-b-modal="`OpenSea${sc.id}`" id="link-opensea"
 					><b-icon icon="link" /> Link OpenSea</b-dd-item
 				>
 			</template>
-			<b-dd-item variant="danger" v-b-modal="`Remove${sc.id}`"
+			<b-dd-item variant="danger" v-b-modal="`Remove${sc.id}`" id="remove-card"
 				><b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
@@ -266,11 +266,10 @@ import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState, getProvider } from '@/utils'
 import { required } from 'vuelidate/lib/validators'
 import BlockchainImage from '@/mixins/blockchainImage'
-import Driver from 'driver.js'
-import 'driver.js/dist/driver.min.css'
+import ProductTour from '@/mixins/productTour';
 
 export default {
-	mixins: [BlockchainImage],
+	mixins: [BlockchainImage,ProductTour],
 	props: {
 		sc: Object,
 		isTourCard: {
@@ -298,10 +297,10 @@ export default {
 		openSeaLinkUrl: { required },
 		cloneContractTitle: { required },
 	},
-	mounted() {
+	async mounted() {
 		if (!this.isDeployed) return
-		this.getContractStats()
-		this.getOpenSeaStats()
+		await this.getContractStats()
+		await this.getOpenSeaStats()
 		this.initTour()
 	},
 	computed: {
@@ -362,141 +361,8 @@ export default {
 				: `https://opensea.io/collection/${slug}`
 		},
 	},
+
 	methods: {
-		initTour() {
-			if (this.isTourCard) {
-				const driver = new Driver()
-				driver.defineSteps([
-					{
-						element: '#tour-card',
-						popover: {
-							title: 'Project Card',
-							description: 'A quick insight of the project.',
-							position: 'right',
-						},
-					},
-					{
-						element: '#project-name',
-						popover: {
-							title: 'Project Name',
-							description:
-								"Name of the project that's associated with zerocodenft.",
-							position: 'right',
-						},
-					},
-					{
-						element: '#project-type-network',
-						popover: {
-							title: 'Contract Type and Network',
-							description:
-								"The network of contract that's deployed on and the contract's type.",
-							position: 'right',
-						},
-					/* 	onNext: () => {
-							driver.preventMove();
-							// document.querySelector('.card-menu').click();
-							this.$refs.cardMenu.show();
-							this.$nextTick(() => {
-								driver.moveNext();
-							})
-						} */
-					},
-					{
-						element: '#contract-actions',
-						popover: {
-							title: 'Contract Actions',
-							description:
-								'Link to the block explorer of the contract, cloning the contract to new one, linking the opensea page and option to remove the project from zerocodenft.',
-							position: 'right',
-						},
-					},
-					{
-						element: '#project-status',
-						popover: {
-							title: 'Project Status',
-							description:
-								"Status of the project. It can be 'Draft' or 'Live'.",
-							position: 'right',
-						},
-					},
-					{
-						element: '#feature-preview',
-						popover: {
-							title: "Contract's feature",
-							description:
-								'Information about the selected feature for the contract. Whitelist(WL) / Delayed Reveal(DR).',
-							position: 'right',
-						},
-					},
-					{
-						element: '#mint-count',
-						popover: {
-							title: 'Mint Count',
-							description: 'Mint count of the tokens from the contract.',
-							position: 'right',
-						},
-					},
-					{
-						element: '#withdraw-balance',
-						popover: {
-							title: 'Withdraw Balance',
-							description: 'Available Balance for the withdrawl.',
-							position: 'right',
-						},
-					},
-					{
-						element: '#blockchain-logo',
-						popover: {
-							title: 'Blockchain Logo',
-							description:
-								'Blockchain logo of network the contract is deployed on.',
-							position: 'right',
-						},
-					},
-					{
-						element: '#owners-count',
-						popover: {
-							title: 'Owners Count',
-							description: 'Total number of owners for the token.',
-							position: 'right',
-						},
-					},
-					{
-						element: '#total-volume',
-						popover: {
-							title: 'Total Volume',
-							description: 'Total volume of transactions till now.',
-							position: 'right',
-						},
-					},
-					{
-						element: '#marketplace',
-						popover: {
-							title: 'Marketplace',
-							description: 'Marketplace for the token.',
-							position: 'right',
-						},
-					},
-					{
-						element: '#floor-price',
-						popover: {
-							title: 'Floor Price',
-							description: 'Floor Price of the token.',
-							position: 'right',
-						},
-					},
-					{
-						element: '#total-sales',
-						popover: {
-							title: 'Total Sales',
-							description: 'Total Sales count of the token.',
-							position: 'right',
-						},
-					},
-				])
-				driver.start()
-			}
-		},
 		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
 		...mapActions(['removeDashboardCard', 'cloneDashboardCard', 'linkOpenSea']),
 		getCurrency,
