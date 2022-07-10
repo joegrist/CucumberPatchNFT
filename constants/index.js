@@ -12,6 +12,7 @@ const BLOCKCHAIN = Object.freeze({
 	Optimism: 14,
 	Cronos: 10,
 	Klaytn: 16,
+	Cube:18,
 	Harmony: 15,
 	// Heco: 17,
 	Thinkium: 12,
@@ -33,7 +34,8 @@ const BLOCKCHAIN = Object.freeze({
 	14: 'Optimism',
 	15: 'Harmony',
 	16: 'Klaytn',
-	17: 'Heco'
+	17: 'Heco',
+	18:"Cube"
 })
 
 const MARKETPLACE = Object.freeze({

@@ -5,7 +5,6 @@ export default {
 		const scripts = []
 
 		const isBraveBrowser = typeof navigator.brave !== 'undefined'
-		console.info({isBraveBrowser})
 
 		// mock $gtag function in case script gets blocked
 		Vue.prototype.$gtag = function() {}
@@ -39,7 +38,6 @@ export default {
 			callback: () => {
 				!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
 				},s.version='1.1',s.queue=[])}(window,document,'script');
-				// console.log(window.twq)
 				twq('init','o8shs');
 				twq('track','PageView');
 			},

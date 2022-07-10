@@ -1,10 +1,10 @@
 <template>
 	<b-card class="border-0 shadow">
 		<template #header>
-			<h2 class="text-center py-2">Verify Your Contract's Information</h2>
+			<h2 class="text-center py-1">Verify Your Contract's Information</h2>
       	</template>
-		<b-row class="px-3">
-			<b-col sm="12" md="4" class="d-flex flex-column justify-content-between">
+		<b-row class="px-0 px-md-3">
+			<b-col sm="12" md="3" class="d-flex flex-column justify-content-between">
 				<div>
 					<h3 class="mb-1">
 						{{ smartContract.name | startCase }}
@@ -13,17 +13,17 @@
 				</div>
 				<b-img
 					width="130px"
-					:src="blockchainImage[smartContract.blockchain]"></b-img>
+					:src="blockchainIcon[smartContract.blockchain]"></b-img>
 			</b-col>
-			<b-col sm="12" md="8">
+			<b-col sm="12" md="9">
 				<b-row
 					v-for="item in summary"
 					:key="item.key"
 					class="border-bottom pt-1">
-					<b-col cols="5" class="truncate-text text-muted">{{
+					<b-col cols="6" class="truncate-text text-muted">{{
 						item.key | startCase
 					}}</b-col>
-					<b-col cols="7" class="truncate-text">{{ item.val | yesNo }}</b-col>
+					<b-col cols="6" class="truncate-text">{{ item.val | yesNo }}</b-col>
 				</b-row>
 			</b-col>
 		</b-row>

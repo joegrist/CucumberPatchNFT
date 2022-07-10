@@ -22,11 +22,11 @@
               </li>
             </ul>
           </b-collapse>
-          <p v-if="$wallet.account">
+          <div v-if="$wallet.account" class="mb-3">
             <span class="font-weight-bold">Your wallet address: </span>
-            {{ $wallet.account }}
+            <span class="break-word">{{ $wallet.account }}</span>
             <Copy :value="$wallet.account" />
-          </p>
+          </div>
           <b-alert :show="lowBalance" variant="warning">{{ getCurrency(smartContractBuilder.chainId)}} balance too low. Please get some funds from the faucet or select a different wallet to deploy.</b-alert>
         </b-col>
       </b-row>

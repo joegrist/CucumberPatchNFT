@@ -6,11 +6,11 @@
 			</b-col>
 			<b-col sm="12" md="3">
 				<b-overlay :show="isBusy">
-					<b-button variant="primary" block @click="save">Save</b-button>
+					<b-button variant="primary" block @click="save">Upload</b-button>
 				</b-overlay>
 			</b-col>
 		</b-row>
-		<p v-show="url">
+		<p v-show="url" class="break-word">
 			Current Metadata URL: <b>{{ url }}</b>
 		</p>
 		<!-- <b-row>
@@ -81,20 +81,22 @@
 </template>
 
 <script>
-import { ethers } from 'ethers'
-import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
 import { required } from 'vuelidate/lib/validators'
 import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js'
 import { validateState, getMetamaskError } from '@/utils'
+import useSmartContract from '@/hooks/useSmartContract'
 
 export default {
 	props: {
 		smartContract: Object,
 	},
+	setup(props) {
+		const contract = useSmartContract(props.smartContract)
+		return { contract }
+  	},
 	data() {
 		return {
 			isBusy: false,
-			contract: null,
 			url: null,
 			uploadedMetadataUrl: null,
 			metadata: {
@@ -126,12 +128,6 @@ export default {
 	},
 	async created() {
 		this.metadata.apiKey = localStorage.getItem('zcnft_nft_storage_api_key')
-		const { abi, address, chainId } = this.smartContract
-		const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
-		const jsonRpcProvider = new ethers.providers.StaticJsonRpcProvider(
-			providerUrl
-		)
-		this.contract = new ethers.Contract(address, abi, jsonRpcProvider)
 		this.url = await this.contract?.preRevealURL()
 	},
 	methods: {
@@ -180,9 +176,6 @@ export default {
 				this.$wallet.provider.getSigner()
 			)
 			const gasPrice = await this.$wallet.provider.getGasPrice()
-			console.info(
-				`GAS PRICE: ${ethers.utils.formatUnits(gasPrice, 'gwei')} gwei`
-			)
 
 			const tx = await signedContract.setPreRevealUrl(this.url, {
 				gasPrice,

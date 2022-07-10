@@ -47,7 +47,8 @@
 				</b-form-group>
 				<b-row v-show="showASCIIArtTextArea" class="my-3">
 					<b-col>
-						<pre contenteditable="true" @input="onArtInput" class="border p-3"></pre>
+						<pre contenteditable="true" @input="onArtInput" class="border p-3 mb-0"></pre>
+						<span class="text-muted small">Must generate and provide your own art!</span>
 					</b-col>
 				</b-row>
 				<b-row v-for="fee in fees" :key="fee.description" class="mb-1">
@@ -71,13 +72,14 @@
 					>
 				</b-overlay>
 			</b-col>
-			<b-col sm="12" md="2" class="text-center"> <h3>OR</h3> </b-col>
+			<b-col sm="12" md="2"></b-col>
 			<b-col sm="12" md="4">
 				<h3 class="mb-0">Custom Project</h3>
 				<span class="text-muted">starting from 3 eth</span>
 				<p class="pt-3">For bespoke project we offer:</p>
 				<ul>
 					<li>Smart contract deployed and verified by our team</li>
+					<li>OmniChain NFT</li>
 					<li>OpenSea or any other marketplace setup, royalties split, etc.</li>
 					<li>Dedicated launch day support</li>
 					<li>Multisig wallet setup</li>
@@ -162,7 +164,6 @@ import {
 	ZERO_CODE_ETH_ADDRESS,
 	SMART_CONTRACT_FEATURES,
 } from '@/constants'
-import { nanoid } from 'nanoid'
 import { startCase } from 'lodash-es'
 import { getMetamaskError } from '@/utils'
 
@@ -180,7 +181,7 @@ export default {
 					value: SMART_CONTRACT_FEATURES.Whitelabel,
 				},
 				{
-					text: 'Custom ASCII Art (experimental)',
+					text: 'Custom ASCII Art',
 					value: SMART_CONTRACT_FEATURES.CustomASCIIArt,
 				},
 			],

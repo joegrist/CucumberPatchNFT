@@ -9,6 +9,14 @@ const smartContractWizardMixin = {
 	props: ['clickedNext', 'currentStep'],
 	computed: {
 		...mapState(['smartContractBuilder']),
+		state() {
+			return Object.keys(this.$v.smartContractBuilder || {})
+				.filter((key) => !key.startsWith('$'))
+				.reduce((acc, key) => {
+					acc[key] = !this.$v.smartContractBuilder[key].$anyError
+					return acc
+				}, {})
+		},
 	},
 	watch: {
 		$v: {
@@ -25,7 +33,10 @@ const smartContractWizardMixin = {
 		},
 	},
 	methods: {
-		...mapMutations(['updateSmartContractBuilder', 'updateBuilderRevenueSplits']),
+		...mapMutations([
+			'updateSmartContractBuilder',
+			'updateBuilderRevenueSplits',
+		]),
 		onFormReset(value) {
 			this.updateSmartContractBuilder(value)
 			// Trick to reset/clear native browser form validation state
@@ -35,8 +46,12 @@ const smartContractWizardMixin = {
 			})
 		},
 		goNext() {
-			setTimeout(() => document.getElementsByClassName('stepper-button next')[0]?.click(), 250)
-		}
+			setTimeout(
+				() =>
+					document.getElementsByClassName('stepper-button next')[0]?.click(),
+				250
+			)
+		},
 	},
 }
 

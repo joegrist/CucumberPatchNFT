@@ -9,10 +9,18 @@
 
 			<b-collapse id="nav-collapse" is-nav>
 				<b-navbar-nav>
-					<b-nav-item to="/wizard" class="gradient-text my-auto"
+					<b-nav-item
+						to="/wizard"
+						active-class="active-nav"
+						class="text-center text-md-left"
 						>Wizard</b-nav-item
 					>
-					<b-nav-item v-if="isLoggedIn" to="/" class="gradient-text"
+					<b-nav-item
+						v-if="isLoggedIn"
+						to="/"
+						exact
+						active-class="active-nav"
+						class="text-center text-md-left"
 						>Dashboard</b-nav-item
 					>
 					<b-nav-item v-else class="gradient-text" to="/login"
@@ -101,7 +109,7 @@ export default {
 		handleTourToggle() {
 			this.toggleProductTourStatus()
 			if (!this.startProductTour) {
-					this.$bvToast.toast('Deactivated the product tour.', {
+				this.$bvToast.toast('Deactivated the product tour.', {
 					title: 'Product Tour',
 					variant: 'danger',
 				})
