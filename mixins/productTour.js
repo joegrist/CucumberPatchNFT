@@ -1,6 +1,6 @@
 import Driver from 'driver.js'
 import 'driver.js/dist/driver.min.css'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
 	computed: {
 		...mapGetters(['startProductTour']),
@@ -13,9 +13,8 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['toggleProductTourStatus']),
 		async initTour() {
-			if (this.isTourCard && this.startProductTour) {
+			if (this.isTourCard) {
 				this.$bvToast.toast('Initiating the product tour.', {
 					title: 'Product Tour',
 					variant: 'success',
@@ -148,9 +147,17 @@ export default {
 							position: 'right',
 						},
 					},
+					{
+						element: '#manage-project',
+						popover: {
+							title: 'Manage Project',
+							description: 'Manage your project with different functions available to interact with the contract.',
+							position: 'right',
+						},
+					},
 				])
 				driver.start()
-			}
+			} 
 		},
 	},
 }

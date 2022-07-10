@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState,mapGetters } from 'vuex'
 
 export default {
 	middleware: 'authenticated',
@@ -39,6 +39,12 @@ export default {
 	fetchKey: 'dashboard',
 	async fetch() {
 		await this.loadDashboardCards()
+		if (this.startProductTour && !this.dashboardItems.length) {
+				this.$bvToast.toast('Create some projects to begin the tour.', {
+					title: 'Product Tour',
+					variant: 'success',
+				})
+		}
 	},
 	created() {
 		const refCode = this.$route.query['ref']
@@ -48,6 +54,7 @@ export default {
 	},
 	computed: {
 		...mapState(['dashboardItems',]),
+		...mapGetters(['startProductTour']),
 		filteredItems() {
 			const term = this.searchTerm.toLowerCase()
 			return this.dashboardItems.filter(

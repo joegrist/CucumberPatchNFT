@@ -161,7 +161,7 @@
 				</b-col>
 			</b-row>
 			<b-row class="pb-0">
-				<b-col cols="8">
+				<b-col cols="8" id="manage-project">
 					<b-button
 						v-if="isDeployed"
 						class="font-weight-bold"
@@ -301,10 +301,12 @@ export default {
 		if (!this.isDeployed) return
 		await this.getContractStats()
 		await this.getOpenSeaStats()
-		this.initTour()
+		if (this.startProductTour) {
+			this.initTour()
+			}
 	},
 	computed: {
-		...mapGetters(['userId']),
+		...mapGetters(['userId','startProductTour']),
 		validation() {
 			return {
 				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error,
@@ -361,7 +363,6 @@ export default {
 				: `https://opensea.io/collection/${slug}`
 		},
 	},
-
 	methods: {
 		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
 		...mapActions(['removeDashboardCard', 'cloneDashboardCard', 'linkOpenSea']),
