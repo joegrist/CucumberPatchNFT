@@ -15,18 +15,24 @@ export default {
 	methods: {
 		async initTour() {
 			if (this.isTourCard) {
-				this.$bvToast.toast('Initiating the product tour.', {
-					title: 'Product Tour',
+				this.$bvToast.toast('Initiating the tour.', {
+					title: 'Dashboard Tour',
 					variant: 'info',
 				})
 				setTimeout(() => {
-				const driver = new Driver()
+				const driver = new Driver({
+					onNext: (element) => {
+						if(!driver.hasNextStep()) {
+							// TODO: end tour 
+						}
+					}
+				})
 				driver.defineSteps([
 					{
 						element: '#tour-card',
 						popover: {
 							title: 'Project Card',
-							description: 'A quick insight of the project.',
+							description: 'Shows project summary.',
 							position: 'right',
 						},
 					},
@@ -35,25 +41,30 @@ export default {
 						popover: {
 							title: 'Project Name',
 							description:
-								"Name of the project that's associated with zerocodenft.",
+								"Name of your project.",
 							position: 'right',
 						},
 					},
 					{
 						element: '#project-type-network',
 						popover: {
-							title: 'Contract Type and Network',
+							title: 'Contract Network & Type',
 							description:
-								"The network of contract that's deployed on and the contract's type (ERC721,ERC721A)",
+								"The network contract is deployed to and type: ERC721, ERC721A, etc.",
 							position: 'right',
 						},
 					},
 					{
 						element: '#contract-actions',
 						popover: {
-							title: 'Contract Actions',
+							title: 'Project Actions',
 							description:
-								'Link to the block explorer of the contract, cloning the contract to new one, linking the opensea page and option to remove the project from zerocodenft.',
+								`<ul>
+									<li> See contract on etherscan </li>
+									<li> Clone project </li>
+									<li> Link OpenSea (when applicable) </li>
+									<li> Remove the project from Zero Code NFT </li>
+								</ul>`,
 							position: 'right',
 						},
 						/* onNext: () => {
@@ -65,16 +76,16 @@ export default {
 						popover: {
 							title: 'Project Status',
 							description:
-								"Status of the project. It can be 'Draft' or 'Live'.",
+								"Status of the deployment: Draft or Live.",
 							position: 'right',
 						},
 					},
 					{
 						element: '#feature-preview',
 						popover: {
-							title: "Contract's feature",
+							title: "Project Features",
 							description:
-								'Information about the selected feature for the contract. Whitelist(WL) / Delayed Reveal(DR).',
+								'Information about the selected project features. Whitelist(WL) / Delayed Reveal(DR).',
 							position: 'right',
 						},
 					},
@@ -82,15 +93,15 @@ export default {
 						element: '#mint-count',
 						popover: {
 							title: 'Mint Count',
-							description: 'Mint count of the tokens from the contract.',
+							description: 'Shows how many NFTs have been minted so far.',
 							position: 'right',
 						},
 					},
 					{
 						element: '#withdraw-balance',
 						popover: {
-							title: 'Withdraw Balance',
-							description: 'Available Balance for the withdrawl.',
+							title: 'Contract Balance',
+							description: 'Shows balance available for withdrawal (your revenue).',
 							position: 'right',
 						},
 					},
@@ -99,7 +110,7 @@ export default {
 						popover: {
 							title: 'Blockchain Logo',
 							description:
-								'Blockchain logo of network the contract is deployed on.',
+								'Blockchain your smart contract is deployed on.',
 							position: 'right',
 						},
 					},
@@ -107,7 +118,7 @@ export default {
 						element: '#owners-count',
 						popover: {
 							title: 'Owners Count',
-							description: 'Total number of owners for the token.',
+							description: 'Shows how many people hold your NFTs.',
 							position: 'right',
 						},
 					},
@@ -115,7 +126,7 @@ export default {
 						element: '#total-volume',
 						popover: {
 							title: 'Total Volume',
-							description: 'Total volume of transactions till now.',
+							description: 'Total volume of secondary marketplace transactions.',
 							position: 'right',
 						},
 					},
@@ -123,7 +134,7 @@ export default {
 						element: '#marketplace',
 						popover: {
 							title: 'Marketplace',
-							description: 'Marketplace for the token.',
+							description: 'Click to navigate to secondary marketplace webpage. Currently, only OpenSea is supported. Others N/A.',
 							position: 'right',
 						},
 					},
@@ -131,7 +142,7 @@ export default {
 						element: '#floor-price',
 						popover: {
 							title: 'Floor Price',
-							description: 'Floor Price of the token.',
+							description: 'The lowest price someone has listed their NFT from your collection for sale on a secondary marketplace.',
 							position: 'right',
 						},
 					},
@@ -139,7 +150,7 @@ export default {
 						element: '#total-sales',
 						popover: {
 							title: 'Total Sales',
-							description: 'Total Sales count of the token.',
+							description: 'Shows how many times your NFTs have been sold on a secondary marketplace.',
 							position: 'right',
 						},
 					},
@@ -147,7 +158,7 @@ export default {
 						element: '#manage-project',
 						popover: {
 							title: 'Manage Project',
-							description: 'Manage your project with different functions available to interact with the contract.',
+							description: 'Deploy to the mainnet, withdraw balance, customize minting page and more!',
 							position: 'right',
 						},
 					},
