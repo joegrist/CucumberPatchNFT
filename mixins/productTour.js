@@ -3,10 +3,10 @@ import 'driver.js/dist/driver.min.css'
 import { mapGetters } from 'vuex'
 export default {
 	computed: {
-		...mapGetters(['startProductTour']),
+		...mapGetters(['isProductTourActivated']),
 	},
 	watch: {
-		startProductTour(nv) {
+		isProductTourActivated(nv) {
 			if (nv) {
 				this.initTour()
 			}
@@ -17,8 +17,9 @@ export default {
 			if (this.isTourCard) {
 				this.$bvToast.toast('Initiating the product tour.', {
 					title: 'Product Tour',
-					variant: 'success',
+					variant: 'info',
 				})
+				setTimeout(() => {
 				const driver = new Driver()
 				driver.defineSteps([
 					{
@@ -151,7 +152,8 @@ export default {
 						},
 					},
 				])
-				driver.start()
+					driver.start()
+				},1000)
 			} 
 		},
 		initProjectActionsTour() {

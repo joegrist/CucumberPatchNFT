@@ -306,12 +306,12 @@ export default {
 		if (!this.isDeployed) return
 		await this.getContractStats()
 		await this.getOpenSeaStats()
-		if (this.startProductTour) {
+		if (this.isProductTourActivated) {
 			this.initTour()
 	}
 	},
 	computed: {
-		...mapGetters(['userId','startProductTour']),
+		...mapGetters(['userId','isProductTourActivated']),
 		validation() {
 			return {
 				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error,

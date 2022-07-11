@@ -28,7 +28,7 @@ export const state = () => ({
         marketplaceCollection: {},
         revenueSplits: []
     },
-    isProductTourActive: JSON.parse(localStorage.getItem('zerocode_productTour_active')).value || false
+    isProductTourActive: localStorage.getItem('zerocode_productTour_active')
   })
 
 export const getters = {
@@ -36,7 +36,7 @@ export const getters = {
 	userId: (state) => state.user?.id,
     userCredits: (state) => state.user?.credits,
     referral: (state) => state.user?.referral,
-    startProductTour:(state) => state.isProductTourActive
+    isProductTourActivated:(state) => state.isProductTourActive
 }
   
 export const mutations = {
@@ -117,7 +117,7 @@ export const mutations = {
     },
     toggleProductTourStatus: function (state) {
         state.isProductTourActive = !state.isProductTourActive;
-        localStorage.setItem('zerocode_productTour_active', JSON.stringify({ value: state.isProductTourActive}))
+        localStorage.setItem('zerocode_productTour_active', state.isProductTourActive)
     }
 }
 

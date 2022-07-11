@@ -26,9 +26,9 @@
 					<b-nav-item v-else class="gradient-text" to="/login"
 						>Login</b-nav-item
 					>
-					<b-nav-item class="gradient-text" @click="handleTourToggle">
+					<b-nav-item v-show="$route.path==='/' && dashboardItems.length" class="gradient-text" @click="handleTourToggle">
 						{{
-							startProductTour ? 'Deactivate tour' : 'Start tour'
+							isProductTourActivated ? 'Deactivate tour' : 'Start tour'
 						}}</b-nav-item
 					>
 				</b-navbar-nav>
@@ -86,7 +86,7 @@
 
 <script>
 import Sidebar from '@/components/sidebar/Sidebar.vue'
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapGetters, mapMutations, mapActions,mapState } from 'vuex'
 import LoginButton from '@/components/login/LoginButton.vue'
 export default {
 	components: {
@@ -94,7 +94,8 @@ export default {
 		LoginButton,
 	},
 	computed: {
-		...mapGetters(['isLoggedIn', 'startProductTour']),
+		...mapState(['dashboardItems']),
+		...mapGetters(['isLoggedIn', 'isProductTourActivated']),
 		walletAddress() {
 			return this.$wallet.ensName || this.$wallet.accountCompact
 		},
@@ -108,18 +109,18 @@ export default {
 		},
 		handleTourToggle() {
 			this.toggleProductTourStatus()
-			if (!this.startProductTour) {
+			if (!this.isProductTourActivated) {
 				this.$bvToast.toast('Deactivated the product tour.', {
 					title: 'Product Tour',
-					variant: 'danger',
+					variant: 'info',
 				})
 				return
 			}
-			if (this.$route.path !== '/') {
+			/* if (this.$route.path !== '/') {
 				this.$router.push('/')
 			} else {
 				this.$router.go(0)
-			}
+			} */
 		},
 	},
 }
