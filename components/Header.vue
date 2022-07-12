@@ -115,11 +115,6 @@ export default {
 				})
 				return
 			}
-			/* if (this.$route.path !== '/') {
-				this.$router.push('/')
-			} else {
-				this.$router.go(0)
-			} */
 		},
 	},
 }

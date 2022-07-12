@@ -28,7 +28,7 @@ export const state = () => ({
         marketplaceCollection: {},
         revenueSplits: []
     },
-    isProductTourActive: localStorage.getItem('zerocode_productTour_active')
+    isProductTourActive: JSON.parse(localStorage.getItem('zerocode_productTour_active'))
   })
 
 export const getters = {
