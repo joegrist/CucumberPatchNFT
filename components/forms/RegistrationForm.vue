@@ -115,8 +115,8 @@ export default {
 		},
 	},
 	mounted() {
-		this.form.leadSource = this.$route.query['ads_source']
-		this.form.leadSource && console.info('lead source: ', this.form.leadSource)
+		this.form.leadSource = this.$route.query['utm_ads_source']
+		console.info('lead source: ', this.form.leadSource)
 	},
 	methods: {
 		...mapActions(['signUp']),
