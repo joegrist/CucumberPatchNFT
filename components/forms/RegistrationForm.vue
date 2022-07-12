@@ -80,7 +80,7 @@ export default {
 			isBusy: false,
 			form: {
 				publicKey: this.$wallet.account,
-				referralCode: this.$route.query['ref'] || sessionStorage.getItem('ref'),
+				referralCode: this.$route.query['ref'],
 				tags: ['website-lead'],
 				leadSource: null
 			},

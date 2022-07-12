@@ -17,7 +17,7 @@
 				>{{ caption }}</b-button
 			>
 		</b-overlay>
-		<b-modal :id="modalId" title="Register" centered hide-footer>
+		<b-modal :id="modalId" title="Registration Form" centered hide-footer>
 			<RegistrationForm @done="onRegistrationDone" />
 		</b-modal>
 	</div>
