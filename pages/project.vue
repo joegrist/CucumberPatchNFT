@@ -18,6 +18,9 @@
 					<b-tab title="Snapshot" lazy>
 						<Snapshot :smartContract="rawContract" />
 					</b-tab>
+					<b-tab v-if="!isImported" title="Source Code" lazy>
+						<SourceCode :smartContract="rawContract" />
+					</b-tab>
 					<b-tab v-if="!isImported" title="Other" lazy>
 						<Config :smartContractId="rawContract.id" />
 					</b-tab>
@@ -36,6 +39,7 @@ import DelayedReveal from '@/components/project-dashboard/DelayedReveal'
 import MintPage from '@/components/project-dashboard/MintPage'
 import Snapshot from '@/components/project-dashboard/Snapshot'
 import Config from '@/components/project-dashboard/Config'
+import SourceCode from '@/components/project-dashboard/SourceCode'
 
 export default {
 	middleware: 'authenticated',
@@ -45,7 +49,8 @@ export default {
 		DelayedReveal,
 		MintPage,
 		Snapshot,
-		Config
+		Config,
+		SourceCode
 	},
 	data: () => ({
 		rawContract: null,
