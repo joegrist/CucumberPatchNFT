@@ -3,7 +3,7 @@ export default function ({ store, redirect, route }) {
     if (!store.getters.isLoggedIn) {
         // forward query params to preserve things like ads_source params on redirect etc.
         const query = new URLSearchParams(route.query).toString()
-        const redirectUrl = `$/login?${query}`
+        const redirectUrl = `/login?${query}`
 
         return redirect(redirectUrl)
     }
