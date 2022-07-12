@@ -21,25 +21,23 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { downloadTextFile } from '@/utils'
 
 export default {
     props: {
 		smartContract: Object,
 	},
-    computed: {
-        canDownload() {
-            return this.smartContract.isClearedForMainnet
-        },
-        code() {
-            return this.smartContract.rawCode.replace(/[\n]+/g, "\n")
-        }
-    },
-    methods: {
-        onDownload() {
+    setup(props) {
+        const canDownload = ref(props.smartContract.isClearedForMainnet)
+        const code = ref(props.smartContract.rawCode)
+
+        function onDownload() {
             const filename = `${this.smartContract.name}.sol`
             downloadTextFile(filename, this.smartContract.rawCode)
         }
+
+        return { canDownload, code, onDownload }
     }
 }
 </script>
