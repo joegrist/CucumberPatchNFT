@@ -63,6 +63,15 @@
 				Please correct "Phone Number"
 			</b-form-invalid-feedback> -->
 		</b-form-group>
+		<b-form-group label="Public Key">
+			<b-form-input
+				id="publicKey"
+				name="publicKey"
+				type="text"
+				disabled
+				v-model="form.publicKey"
+				></b-form-input>
+		</b-form-group>
 		<b-overlay :show="isBusy" rounded>
 			<b-button type="submit" block variant="primary">Register</b-button>
 		</b-overlay>
@@ -118,6 +127,11 @@ export default {
 		this.form.leadSource = this.$route.query['utm_ads_source']
 		console.info('lead source: ', this.form.leadSource)
 	},
+	watch: {
+		'$wallet.account': function(newVal, oldVal) {
+			this.form.publicKey = newVal
+		}
+	},
 	methods: {
 		...mapActions(['signUp']),
 		validateState,
@@ -126,15 +140,15 @@ export default {
             if (this.$v.form.$invalid) {
 				return
             }
-			try {
-				this.isBusy = true
-				await this.signUp(this.form)
-				this.$emit('done')
-			} catch (err) {
-				console.error({err})
-			} finally {
-				this.isBusy = false
+			if (!this.$wallet.isConnected) {
+				await this.$wallet.connect()
 			}
+			this.isBusy = true
+			const success = await this.signUp(this.form)
+			if(success) {
+				this.$emit('done')
+			}
+			this.isBusy = false
 		}
 	}
 }

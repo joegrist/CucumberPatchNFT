@@ -20,7 +20,7 @@
 		</b-row>
 		<div v-else class="text-center pt-2">
 			<h1>You Don't Have Any Projects Yet</h1>
-			<b-button variant="primary" @click="$router.push('/wizard')">Start One</b-button>
+			<b-button variant="primary" size="lg" @click="$router.push('/wizard')">Start One</b-button>
 		</div>
 	</div>
 </template>

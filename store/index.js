@@ -172,15 +172,18 @@ export const actions = {
     },
 
     async signUp({dispatch}, payload) {
+        let success = false
         try {
             await this.$axios.post("/users", payload)
             await dispatch('login')
+            success = true
         } catch (err) {
             this._vm.$bvToast.toast(err.message || 'Registration failed', {
                 title: 'Registration',
                 variant: 'danger',
             })
         }
+        return success
     },
 
     async login({commit, dispatch}) {
