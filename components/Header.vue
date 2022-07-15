@@ -26,19 +26,12 @@
 					<b-nav-item v-else class="gradient-text" to="/login"
 						>Login</b-nav-item
 					>
-					<!-- <b-nav-item
-						v-show="canTour"
-						active-class="active-nav"
-						class="text-center text-md-left"
-						@click="handleTourToggle">
-						{{ isProductTourActivated ? 'End tour' : 'Start tour' }}</b-nav-item
-					> -->
 				</b-navbar-nav>
 
 				<!-- Right aligned nav items -->
 				<b-navbar-nav class="ml-auto">
 					 <b-nav-item-dropdown text="Help" class="my-auto text-center text-md-left" right>
-						<b-dropdown-item v-show="canTour" @click="handleTourToggle">Start Tour</b-dropdown-item>
+						<b-dropdown-item v-show="canTour" @click="initTour">Start Tour</b-dropdown-item>
 						<b-dropdown-item href="https://discord.gg/zerocodenft" target="_blank">Discord</b-dropdown-item>
 						<b-dropdown-item href="https://youtube.com/zerocodenft" target="_blank">YouTube</b-dropdown-item>
 					</b-nav-item-dropdown>
@@ -89,14 +82,17 @@
 import Sidebar from '@/components/sidebar/Sidebar.vue'
 import { mapGetters, mapMutations, mapActions, mapState } from 'vuex'
 import LoginButton from '@/components/login/LoginButton.vue'
+import ProductTour from '@/mixins/productTour';
+
 export default {
+	mixins: [ProductTour],
 	components: {
 		Sidebar,
 		LoginButton,
 	},
 	computed: {
 		...mapState(['dashboardItems']),
-		...mapGetters(['isLoggedIn', 'isProductTourActivated']),
+		...mapGetters(['isLoggedIn']),
 		walletAddress() {
 			return this.$wallet.ensName || this.$wallet.accountCompact
 		},
@@ -105,21 +101,12 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['showSidebar', 'toggleProductTourStatus']),
+		...mapMutations(['showSidebar']),
 		...mapActions(['login', 'logout']),
 		onLogout() {
 			this.logout()
 			this.$router.push('/login')
-		},
-		handleTourToggle() {
-			this.toggleProductTourStatus()
-			if (!this.isProductTourActivated) {
-				this.$bvToast.toast('Tour has been finished.', {
-					title: 'Dashboard Tour',
-					variant: 'info',
-				})
-			}
-		},
+		}
 	},
 }
 </script>

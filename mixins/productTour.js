@@ -1,45 +1,21 @@
 import Driver from 'driver.js'
 import 'driver.js/dist/driver.min.css'
-import {
-  mapGetters,
-  mapMutations
-} from 'vuex'
+
 export default {
-  computed: {
-    ...mapGetters(['isProductTourActivated']),
-  },
-  watch: {
-    isProductTourActivated(nv) {
-      if (nv) {
-        this.initTour()
-      }
-    },
-  },
-  mounted() {},
   methods: {
-    ...mapMutations(['toggleProductTourStatus']),
     async initTour() {
-      if (this.isTourCard) {
+      // TODO: pass tour ID to start e.g dashboard, project, etc.
         this.$bvToast.toast('Initiating the tour.', {
-          title: 'Dashboard Tour',
+          title: 'Tour',
           variant: 'info',
         })
-        const self = this
         setTimeout(() => {
           const driver = new Driver({
             allowClose: false,
-            onReset: function() {
-              self.toggleProductTourStatus()
-            },
-            onNext: function () {
-              if (!driver.hasNextStep()) {
-                self.toggleProductTourStatus()
-              }
-            },
           })
 
           driver.defineSteps([{
-              element: '#tour-card',
+              element: '.card',
               popover: {
                 title: 'Project Card',
                 description: 'Shows project summary.',
@@ -166,7 +142,6 @@ export default {
           ])
           driver.start()
         }, 1000)
-      }
     },
     initProjectActionsTour() {
       const driver = new Driver()

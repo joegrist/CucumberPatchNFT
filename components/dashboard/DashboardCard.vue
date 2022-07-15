@@ -1,5 +1,5 @@
 <template>
-	<b-card class="shadow-sm py-3" no-body :id="isTourCard ? 'tour-card' : ''">
+	<b-card class="shadow-sm py-3" no-body>
 		<b-avatar id="blockchain-logo" class="p-2 border card-logo" :src="blockchainIcon[sc.blockchain]" size="lg">
 		</b-avatar>
 		<b-dropdown size="lg" variant="link" class="card-menu" ref="cardMenu" toggle-class="text-decoration-none p-0"
@@ -166,16 +166,11 @@ import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState, getProvider } from '@/utils'
 import { required } from 'vuelidate/lib/validators'
 import BlockchainImage from '@/mixins/blockchainImage'
-import ProductTour from '@/mixins/productTour';
 
 export default {
-	mixins: [BlockchainImage,ProductTour],
+	mixins: [BlockchainImage],
 	props: {
 		sc: Object,
-		isTourCard: {
-			type: Boolean,
-			default: false,
-		},
 	},
 	data() {
 		return {
@@ -201,12 +196,9 @@ export default {
 		if (!this.isDeployed) return
 		await this.getContractStats()
 		await this.getOpenSeaStats()
-		if (this.isProductTourActivated) {
-			this.initTour()
-	}
 	},
 	computed: {
-		...mapGetters(['userId','isProductTourActivated']),
+		...mapGetters(['userId']),
 		validation() {
 			return {
 				openSeaLinkUrl: !this.$v.openSeaLinkUrl.$error,
