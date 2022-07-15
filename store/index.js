@@ -1,6 +1,8 @@
 import { nanoid } from 'nanoid'
 import Vue from 'vue'
 
+const tourPromptsKey = 'zerocode_tour_prompts'
+
 export const state = () => ({
 	user: JSON.parse(localStorage.getItem('user') || '{}'),
 	accessToken: localStorage.getItem('accessToken'),
@@ -27,6 +29,10 @@ export const state = () => ({
         marketplace: null,
         marketplaceCollection: {},
         revenueSplits: []
+    },
+    tourPrompts: JSON.parse(localStorage.getItem(tourPromptsKey)) || {
+        dashboard: true,
+        project: true
     }
   })
 
@@ -34,7 +40,7 @@ export const getters = {
 	isLoggedIn: (state) => !!state.accessToken,
 	userId: (state) => state.user?.id,
     userCredits: (state) => state.user?.credits,
-    referral: (state) => state.user?.referral,
+    referral: (state) => state.user?.referral
 }
   
 export const mutations = {
@@ -112,6 +118,13 @@ export const mutations = {
     },
     setAmbassador(state, payload) {
         state.user.referral = payload
+    },
+    updateTourPrompts(state, payload) {
+        state.tourPrompts = {
+            ...state.tourPrompts,
+            ...payload
+        }
+        localStorage.setItem(tourPromptsKey, JSON.stringify(state.tourPrompts))
     }
 }
 
