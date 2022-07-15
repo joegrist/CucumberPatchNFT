@@ -28,6 +28,9 @@ export default {
         setTimeout(() => {
           const driver = new Driver({
             allowClose: false,
+            onReset: function() {
+              self.toggleProductTourStatus()
+            },
             onNext: function () {
               if (!driver.hasNextStep()) {
                 self.toggleProductTourStatus()
