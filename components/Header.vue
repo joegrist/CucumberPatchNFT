@@ -31,11 +31,12 @@
 				<!-- Right aligned nav items -->
 				<b-navbar-nav class="ml-auto">
 					 <b-nav-item-dropdown text="Help" class="my-auto text-center text-md-left" right>
-						<b-dropdown-item v-show="canTour" @click="initTour">Start Tour</b-dropdown-item>
+						<b-dropdown-item v-show="canTour" @click="initTour('dashboard')">Start Tour</b-dropdown-item>
 						<b-dropdown-item href="https://discord.gg/zerocodenft" target="_blank">Discord</b-dropdown-item>
 						<b-dropdown-item href="https://youtube.com/zerocodenft" target="_blank">YouTube</b-dropdown-item>
 					</b-nav-item-dropdown>
 					<b-button
+						id="user-profile-btn"
 						variant="transparent"
 						class="gradient-text border d-flex"
 						@click="showSidebar(true)">

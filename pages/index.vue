@@ -7,9 +7,9 @@
 						<b-icon icon="search" />
 					</b-input-group-text>
 				</b-input-group-prepend>
-				<b-form-input @input="(val) => (searchTerm = val)" debounce="500" placeholder="Start typing project name.." />
+				<b-form-input id="search-bar" @input="(val) => (searchTerm = val)" debounce="500" placeholder="Start typing project name.." />
 				<b-input-group-append>
-					<b-button variant="primary" class="border-0" to="/wizard">Add New</b-button>
+					<b-button id="add-new-btn" variant="primary" class="border-0" to="/wizard">Add New</b-button>
 				</b-input-group-append>
 			</b-input-group>
 		</div>
@@ -75,7 +75,7 @@ export default {
 		...mapMutations(['updateTourPrompts']),
 		onAcceptTour() {
 			this.$bvModal.hide("tourModal")
-			this.initTour(this.dashboardItems[0].id)
+			this.initTour('dashboard')
 			this.updateTourPrompts({
 				dashboard: false
 			})
