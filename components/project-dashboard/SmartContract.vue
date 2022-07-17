@@ -94,21 +94,21 @@
 								<b-button
 									variant="warning"
 									title="Pause Sale"
-									@click="onUpdateSaleStatus(SALE_STATUS.Paused)">
+									@click="callFuncByName('setSaleStatus', [SALE_STATUS.Paused])">
 									<b-icon icon="pause-fill" />
 								</b-button>
 								<b-button
 									v-if="rawContract.hasWhitelist"
 									variant="dark"
 									title="Start Presale"
-									@click="onUpdateSaleStatus(SALE_STATUS.Presale)">
+									@click="callFuncByName('setSaleStatus', [SALE_STATUS.Presale])">
 									<b-icon icon="play-fill" />
 									<b-icon icon="list-check" />
 								</b-button>
 								<b-button
 									variant="success"
 									title="Start Public Sale"
-									@click="onUpdateSaleStatus(SALE_STATUS.Public)">
+									@click="callFuncByName('setSaleStatus', [SALE_STATUS.Public])">
 									<b-icon icon="play-fill" />
 									<b-icon v-if="rawContract.hasWhitelist" icon="people-fill" />
 								</b-button>
@@ -163,96 +163,9 @@
 							switch />
 					</b-col>
 				</b-row>
-				<b-row>
-					<b-col>
-						<ul class="list-unstyled">
-							<li
-								class="mb-2 border rounded"
-								v-for="(func, idx) in filteredFunctions"
-								:key="idx"
-								role="tab">
-								<div
-									class="d-flex justify-content-between p-2"
-									v-b-toggle="`${func.name + idx}`">
-									<template v-if="func.constant">
-										<b-badge pill size="sm" variant="success" class="my-auto"
-											>Eco</b-badge
-										>
-									</template>
-									<template v-else>
-										<b-badge pill size="sm" variant="warning" class="my-auto"
-											>Gas</b-badge
-										>
-									</template>
-									<span variant="link">
-										{{ func.name | startCase }}
-									</span>
-									<b-icon icon="chevron-down" class="my-auto" />
-								</div>
-								<b-collapse
-									:id="func.name + idx"
-									class="p-2"
-									accordion="eco-accordion"
-									role="tabpanel">
-									<ul
-										v-if="
-											func.inputs.length > 0 && func.name !== 'setSaleStatus'
-										"
-										class="mb-2">
-										<li
-											v-for="(param, idx) in func.inputs.filter(
-												(x) => !x.name.startsWith('_')
-											)"
-											:key="idx">
-											<span> {{ param.name }} </span>
-											<b-input
-												@change="(val) => onParamChange(val, func, param)" />
-										</li>
-									</ul>
-									<div>
-										<b-overlay
-											:show="busyState[func.name]"
-											rounded
-											class="w-100"
-											opacity="0.5"
-											spinner-small>
-											<b-button-group
-												v-if="func.name === 'setSaleStatus'"
-												class="w-100">
-												<b-button
-													variant="warning"
-													@click="onUpdateSaleStatus(SALE_STATUS.Paused)"
-													>Pause Sales</b-button
-												>
-												<b-button
-													v-if="rawContract.hasWhitelist"
-													variant="dark"
-													@click="onUpdateSaleStatus(SALE_STATUS.Presale)"
-													>Start Presale</b-button
-												>
-												<b-button
-													variant="success"
-													@click="onUpdateSaleStatus(SALE_STATUS.Public)"
-													>Start Public Sale</b-button
-												>
-											</b-button-group>
-											<b-button
-												v-else
-												class="w-100"
-												variant="success"
-												@click="callFunc(func)"
-												>Call</b-button
-											>
-										</b-overlay>
-									</div>
-									<div
-										v-show="responses[func.name]"
-										class="font-weight-bold mt-2">
-										{{ formatFuncResponse(func) }}
-									</div>
-								</b-collapse>
-							</li>
-						</ul>
+				<b-row v-for="(func, idx) in filteredFunctions" :key="idx" >
+					<b-col class="mb-2">
+						<FunctionForm :func="func" :smartContract="smartContract"></FunctionForm>
 					</b-col>
 				</b-row>
 			</b-col>
@@ -277,8 +190,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { mapMutations, mapState } from 'vuex'
+import { startCase } from 'lodash-es'
 import {
 	SALE_STATUS,
 	SMARTCONTRACT_STATUS,
@@ -289,12 +202,11 @@ import {
 	getExplorerUrl,
 	getCurrency,
 	getMainnetConfig,
-	testMainChainIdMap,
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
-import { isNumber, startCase } from 'lodash-es'
 import { downloadTextFile, getMetamaskError } from '@/utils'
 import useSmartContract from '@/hooks/useSmartContract'
+import FunctionForm from './smart-contract/FunctionForm'
 
 const basicFunctions = [
 	'airdrop',
@@ -311,13 +223,16 @@ const basicFunctions = [
 ]
 
 export default {
-	props: {
-		smartContract: Object,
-	},
 	setup(props) {
 		const contract = useSmartContract(props.smartContract)
 		return { contract }
-  	},
+	},
+	props: {
+		smartContract: Object,
+	},
+	components: {
+		FunctionForm
+	},
 	data: () => ({
 		SMARTCONTRACT_STATUS,
 		CONTRACT_TYPE,
@@ -325,13 +240,11 @@ export default {
 		showAdvancedFunctions: false,
 		rawContract: {},
 		deployedContract: {},
-		responses: {},
-		callFuncArgs: {},
 		contractBalance: 0,
 		saleStatus: 'N/A',
-		busyState: {},
 		isReady: false,
 		currentOwner: null,
+		isBusy: false,
 	}),
 	async mounted() {
 		try {
@@ -342,13 +255,13 @@ export default {
 			this.setBusy({ isBusy: true })
 
 			this.isReady = !!(await this.contract.deployed())
-
 			if (this.isReady) {
 				await this.onRefreshBalance()
 				const saleStatus = await this.contract.saleStatus()
 				this.saleStatus = SALE_STATUS[saleStatus]
 				this.currentOwner = await this.contract.owner()
 			}
+
 			this.checkOwner(this.$wallet.account)
 		} catch (err) {
 			console.error(err)
@@ -359,14 +272,6 @@ export default {
 		} finally {
 			this.setBusy({ isBusy: false })
 		}
-
-		// console.log(
-		// 	'loaded smart-contract',
-		// 	this.rawContract,
-		// 	this.contract,
-		// 	this.contractBalance,
-		// 	this.isReady
-		// )
 	},
 	watch: {
 		'$wallet.account': {
@@ -374,11 +279,11 @@ export default {
 		},
 	},
 	computed: {
-		...mapState(['isBusy']),
+		// ...mapState(['isBusy']),
 		deployedExplorerUrl() {
 			if (!this.deployedContract?.address) return
-			const mainnetChainId = testMainChainIdMap[this.rawContract.chainId]
-			return `${getExplorerUrl(mainnetChainId)}/address/${
+
+			return `${getExplorerUrl(this.deployedContract.chainId)}/address/${
 				this.deployedContract.address
 			}`
 		},
@@ -429,10 +334,6 @@ export default {
 			}
 		},
 		async onVerify() {
-			// if (!this.rawContract.blockchain === BLOCKCHAIN.Ethereum) {
-			// 	alert('Only Ethereum contracts are supported for now')
-			// 	return
-			// }
 			try {
 				this.setBusy({isBusy: true, message: 'Verifying... this might take up to 5 mins.'})
 				await this.$axios.post(`/smartcontracts/${this.rawContract.id}/verify`)
@@ -465,26 +366,9 @@ export default {
 					variant: 'success',
 				})
 		},
-		formatFuncResponse(func) {
-			let actualResponse = this.responses[func.name]
-			const prefix = func.inputs.length > 0 ? 'Response' : startCase(func.name)
-			if (actualResponse === 'true' || actualResponse === 'false') {
-				actualResponse = actualResponse === 'true' ? 'Yes' : 'No'
-			}
-			return `${prefix}: ${actualResponse}`
-		},
-		onParamChange(value, func, param) {
-			const args = (this.callFuncArgs[func.name] ??= new Map())
-			args.set(param.name, value)
-		},
 		async onMainnetDeploy() {
 			try {
 				if (!this.canDeployMainnet) return
-				// if(!this.rawContract.isClearedForMainnet) {
-				// 	//redirect to discord
-				// 	window.open(this.$config.DISCORD_INVITE_URL, '_blank')
-				// 	return
-				// }
 
 				const { id, chainId, isClearedForMainnet } = this.rawContract
 
@@ -504,6 +388,9 @@ export default {
 					})
 				}
 
+				if (!this.$wallet.isConnected) {
+					await this.$wallet.connect()
+				}
 				await this.$wallet.switchNetwork(mainnetConfig.chainId)
 
 				this.setBusy({
@@ -561,155 +448,78 @@ export default {
 				this.setBusy({ isBusy: false })
 			}
 		},
-		onUpdateSaleStatus(value) {
-			const func = this.functions.find((val) => val.name === 'setSaleStatus')
-			if (func) {
-				this.onParamChange(value, func, { name: 'status' })
-				this.callFunc(func)
-			}
-		},
-		callFuncByName(name) {
-			this.setBusy({ isBusy: true })
-			const func = this.functions.find((val) => val.name === name)
-			func && this.callFunc(func)
-			this.setBusy({ isBusy: false })
-		},
-		async callFunc(func) {
+		async callFuncByName(name, args = []) {
 			try {
-				console.log('executing ', func)
+				const func = this.functions.find((val) => val.name === name)
+				if(!func) throw new Error(`Function ${name }not found`)
 
-				Vue.set(this.busyState, func.name, true)
+				this.isBusy = true
 
-				let txResponse, args
-				const txOverrides = {}
-
-				let smartContract = this.contract
-
-				// if function updates state we need a signed version of the smart contract to make updates
-				if (!func.constant) {
-					if(!this.$wallet.isConnected) {
-						await this.$wallet.connect()
-					}
-					if (this.$wallet.chainId !== +this.rawContract.chainId) {
-						await this.$wallet.switchNetwork(this.rawContract.chainId)
-					}
-					smartContract = this.contract.connect(
-						this.$wallet.provider.
-						getSigner()
-					)
-
-					txOverrides.gasPrice = await this.$wallet.provider.getGasPrice()
+				if (!this.$wallet.isConnected) {
+					await this.$wallet.connect()
+				}
+				if (this.$wallet.chainId !== +this.rawContract.chainId) {
+					await this.$wallet.switchNetwork(this.rawContract.chainId)
 				}
 
-				const hasFuncArgs = this.callFuncArgs[func.name]?.size > 0
-				if (hasFuncArgs) {
-					// to preserve correct argument order we run mapping based on original function inputs order
-					// since we can't guarantee the correct order in callFuncArgs Map
-					args = func.inputs.map((x) => {
-						const value = this.callFuncArgs[func.name].get(x.name)
-						return isNumber(value) ? ethers.BigNumber.from(value) : value
-					})
-					console.log({ args })
+				const signedContract = this.contract.connect(
+					this.$wallet.provider.getSigner()
+				)
 
-					if (func.payable) {
-						if (func.name === 'mint') {
-							const mintPrice = await smartContract.MINT_PRICE()
-							const value =
-								Number(ethers.utils.formatEther(mintPrice)) * Number(args[0])
-							txOverrides.value = ethers.utils.parseEther(value.toString())
-						}
-					}
-
-					if (func.name === 'setPublicMintPrice') {
-						const value = this.callFuncArgs[func.name].get(func.inputs[0].name)
-						args = [ethers.utils.parseUnits(value)]
-					}
-
-					txResponse = await smartContract[func.name].call(
-						null,
-						...args,
-						txOverrides
-					)
-				} else {
-					txResponse = await smartContract[func.name](txOverrides)
+				const txOverrides = {
+					gasPrice: await this.$wallet.provider.getGasPrice()
 				}
 
-				console.log({ txResponse })
+				const txResponse = await signedContract[name].call(
+					null,
+					...args,
+					txOverrides
+				)
 
-				if (func.name === 'setPlaceholderUri') {
-					await this.$axios.patch(`/smartcontracts/${this.rawContract.id}`, {
-						delayedRevealURL: args[0],
-					})
+				if(name === 'saleStatus' && func.constant) {
+					this.saleStatus = SALE_STATUS[txResponse]
 				}
 
-				if (func.name === 'transferOwnership') {
-					await this.$axios.patch(`/smartcontracts/${this.rawContract.id}`, {
-						ownerAddress: args[0],
-					})
-				}
+				if(!func.constant) {
+					const msg = this.createToastMessage(txResponse.hash, this.rawContract.chainId)
 
-				if (func.constant) {
-					let value = txResponse.toString()
-					if (func.name.includes('PRICE')) {
-						value = `${+ethers.utils.formatEther(txResponse)} ${getCurrency(
-							this.rawContract.chainId
-						)}`
-					}
-					if (func.name === 'saleStatus') {
-						value = SALE_STATUS[txResponse]
-						this.saleStatus = SALE_STATUS[txResponse]
-					}
-
-					Vue.set(this.responses, func.name, value)
-
-					this.$bvToast.toast(`Returned value: ${value}`, {
-						title: startCase(func.name),
-						variant: 'success',
-					})
-				} else {
-					const msg = [this.createToastMessage(txResponse.hash)]
 					this.$bvToast.toast(msg, {
-						title: `Processing '${startCase(func.name)}'`,
+						title: `${startCase(name)} - processing, please wait.`,
 						variant: 'success',
 					})
-					txResponse.wait().then(async (res) => {
-						this.$bvToast.toast(msg, {
-							title: `${startCase(func.name)} completed`,
-							variant: 'success',
-						})
+
+					await txResponse.wait()
+
+					this.$bvToast.toast(msg, {
+						title: `${startCase(name)} - completed`,
+						variant: 'success',
 					})
 				}
 			} catch (err) {
 				console.error({ err })
 				const { method, code } = err
-				this.$bvToast.toast(
-					getMetamaskError(err, 'Function call failed'),
-					{
-						title: method || code || 'Error',
-						variant: 'danger',
-					}
-				)
+				this.$bvToast.toast(getMetamaskError(err, 'Function call failed'), {
+					title: method || code || 'Error',
+					variant: 'danger',
+				})
 			} finally {
-				Vue.set(this.busyState, func.name, false)
+				this.isBusy = false
 			}
 		},
-		createToastMessage(hash) {
+		createToastMessage(hash, chainId) {
 			const h = this.$createElement
-			return h('span', [
-				'Transaction accepted! ',
+			return [h('span', [
 				h(
 					'b-link',
 					{
 						props: {
 							target: '_blank',
-							href: `${this.getExplorerUrl(
-								this.rawContract.chainId
-							)}/tx/${hash}`,
+							href: `${getExplorerUrl(chainId)}/tx/${hash}`,
 						},
 					},
 					['View on block explorer >']
 				),
-			])
+			])]
 		},
 	},
 }
