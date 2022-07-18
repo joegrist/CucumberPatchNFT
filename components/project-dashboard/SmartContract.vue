@@ -2,119 +2,102 @@
 	<b-container fluid>
 		<b-row class="mb-3">
 			<b-col sm="12" md="8">
-				<p class="lead font-weight-bold mb-1">
-					{{ rawContract.name }}
-					{{ CONTRACT_TYPE[rawContract.contractType] }} Deployed on
-					{{ rawContract.blockchain | blockchainName }}
-					{{
-						rawContract.status === SMARTCONTRACT_STATUS.Testnet
-							? '(Testnet)'
-							: '(Mainnet)'
-					}}
-					<br />
-					Address:
-					<b-link
-						:href="`${getExplorerUrl(rawContract.chainId)}/address/${
-							rawContract.address
-						}`"
-						target="_blank"
-						>{{ rawContract.address | compactAddress }}</b-link
-					>
-					<b-icon v-if="rawContract.isVerified" icon="check-circle" variant="success" title="Source code verified"></b-icon>
-				</p>
-				<div class="d-flex">
-					<b-overlay :show="isBusy" rounded opacity="0.6" spinner-small>
-						<b-button
-							v-if="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet"
-							:disabled="!canDeployMainnet"
-							variant="primary"
-							@click="onMainnetDeploy">
-							<template v-if="rawContract.isClearedForMainnet">
-								Deploy to Mainnet
-							</template>
-							<template v-else>
-								Checkout <b-icon icon="wallet2" />
-							</template>
-						</b-button>
-						<b-button
-							variant="primary"
-							v-if="canVerify"
-							@click="onVerify">
-							Verify Source Code
-						</b-button>
-					</b-overlay>
-				</div>
-			</b-col>
-			<b-col sm="12" md="4" class="d-flex flex-column">
-				<div class="lead font-weight-bold mb-1">
-					Balance: {{ contractBalance }}
-					{{ getCurrency(rawContract.chainId) }}
-					<b-button-group size="sm">
-						<b-button variant="success">
-							<b-icon
-								v-if="isBusy"
-								icon="bootstrap-reboot"
-								animation="spin"
-								:disabled="true" />
-							<b-icon
-								v-else
-								icon="bootstrap-reboot"
-								@click="onRefreshBalance(true)" />
-						</b-button>
-						<b-button
-							:disabled="contractBalance === 0"
-							variant="success"
-							@click="callFuncByName('withdraw')">
-							<b-icon icon="cash-stack" /> Withdraw
-						</b-button>
-					</b-button-group>
-				</div>
-				<div class="lead font-weight-bold">
-					Sale Status:
-					<span
-						:class="{
-							'text-warning': saleStatus === 'Paused',
-							'text-dark': saleStatus === 'Presale',
-							'text-success': saleStatus === 'Public',
-						}"
-						>{{ saleStatus }}</span
-					>
-					<b-button-toolbar
-						key-nav
-						justify
-						aria-label="Smart contract sales menu">
-						<b-overlay :show="isBusy">
+				<b-row>
+					<b-col>
+						<span class="lead font-weight-bold">
+							{{ rawContract.name }}
+							deployed on
+							{{ rawContract.blockchain | blockchainName }}
+							{{
+								rawContract.status === SMARTCONTRACT_STATUS.Testnet
+									? '(testnet)'
+									: '(mainnet)'
+							}}
+						</span>
+					</b-col>
+				</b-row>
+				<b-row>
+					<b-col>
+						<b-button-toolbar
+							class="my-1"
+							key-nav
+							aria-label="Smart Contract Actions">
 							<b-button-group>
 								<b-button
-									variant="success"
-									title="Refresh Status"
-									@click="callFuncByName('saleStatus')">
-									<b-icon icon="bootstrap-reboot" />
+									v-if="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet"
+									:disabled="!canDeployMainnet"
+									variant="primary"
+									@click="onMainnetDeploy">
+									<template v-if="rawContract.isClearedForMainnet">
+										Deploy to Mainnet
+									</template>
+									<template v-else>
+										Checkout <b-icon icon="wallet2" />
+									</template>
 								</b-button>
-								<b-button
-									variant="warning"
-									title="Pause Sale"
-									@click="callFuncByName('setSaleStatus', [SALE_STATUS.Paused])">
-									<b-icon icon="pause-fill" />
-								</b-button>
-								<b-button
-									v-if="rawContract.hasWhitelist"
-									variant="dark"
-									title="Start Presale"
-									@click="callFuncByName('setSaleStatus', [SALE_STATUS.Presale])">
-									<b-icon icon="play-fill" />
-									<b-icon icon="list-check" />
-								</b-button>
-								<b-button
-									variant="success"
-									title="Start Public Sale"
-									@click="callFuncByName('setSaleStatus', [SALE_STATUS.Public])">
-									<b-icon icon="play-fill" />
-									<b-icon v-if="rawContract.hasWhitelist" icon="people-fill" />
+								<b-button variant="primary" v-if="canVerify" @click="onVerify">
+									Verify Source Code
 								</b-button>
 							</b-button-group>
-						</b-overlay>
-					</b-button-toolbar>
+						</b-button-toolbar>
+					</b-col>
+				</b-row>
+			</b-col>
+			<b-col sm="12" md="4" class="d-flex flex-column">
+				<div class="d-flex justify-content-between mb-1">
+					<span class="lead font-weight-bold">
+						Balance: {{ contractBalance }}
+						{{ getCurrency(rawContract.chainId) }}
+					</span>
+					<b-dropdown right lazy variant="primary" size="sm" text="Actions">
+						<b-dd-item-btn @click="onRefreshBalance(true)">
+							<b-icon icon="bootstrap-reboot" />
+							Refresh
+						</b-dd-item-btn>
+						<b-dd-item-btn
+							@click="callFuncByName('withdraw')"
+							:disabled="contractBalance === 0">
+							<b-icon icon="cash-stack" />
+							Withdraw
+						</b-dd-item-btn>
+					</b-dropdown>
+				</div>
+				<div class="d-flex justify-content-between">
+					<span class="lead font-weight-bold">
+						Sale Status:
+						<span
+							:class="{
+								'text-warning': saleStatus === 'Paused',
+								'text-dark': saleStatus === 'Presale',
+								'text-success': saleStatus === 'Public',
+							}"
+							>{{ saleStatus }}</span
+						>
+					</span>
+					<b-dropdown right lazy variant="primary" size="sm" text="Actions">
+						<b-dd-item-btn @click="callFuncByName('saleStatus')">
+							<b-icon icon="bootstrap-reboot" />
+							Refresh Sale Status
+						</b-dd-item-btn>
+						<b-dd-item-btn
+							@click="callFuncByName('setSaleStatus', [SALE_STATUS.Paused])">
+							<b-icon icon="pause-fill" />
+							Pause Sales
+						</b-dd-item-btn>
+						<b-dd-item-btn
+							v-if="rawContract.hasWhitelist"
+							@click="callFuncByName('setSaleStatus', [SALE_STATUS.Presale])">
+							<b-icon icon="play-fill" />
+							<b-icon icon="list-check" />
+							Start Presale (WL)
+						</b-dd-item-btn>
+						<b-dd-item-btn
+							@click="callFuncByName('setSaleStatus', [SALE_STATUS.Public])">
+							<b-icon icon="play-fill" />
+							<b-icon v-if="rawContract.hasWhitelist" icon="people-fill" />
+							Start Public Sale
+						</b-dd-item-btn>
+					</b-dropdown>
 				</div>
 			</b-col>
 		</b-row>
@@ -127,10 +110,27 @@
 			</b-col>
 		</b-row>
 		<b-row v-else>
-			<b-col sm="12">
+			<b-col>
 				<b-row class="mb-2">
-					<b-col cols="6" class="d-flex">
-						<h4 class="m-0">Update Smart Contract</h4>
+					<b-col sm="12" md="8" class="d-flex flex-wrap">
+						<h4 class="m-0 mr-1">
+							{{ CONTRACT_TYPE[rawContract.contractType] }}
+						</h4>
+						<b-icon
+							v-if="rawContract.isVerified"
+							class="my-auto"
+							icon="check-circle"
+							variant="success"
+							title="Source code verified"></b-icon>
+						<b-button
+							size="sm"
+							variant="link"
+							target="_blank"
+							:href="`${getExplorerUrl(rawContract.chainId)}/address/${
+								rawContract.address
+							}`"
+							>[{{ rawContract.address | compactAddress }}]</b-button
+						>
 						<b-button
 							size="sm"
 							variant="link"
@@ -147,25 +147,27 @@
 							size="sm"
 							variant="link"
 							@click="
-								downloadTextFile(
-									`${rawContract.name}.sol`,
-									rawContract.rawCode
-								)
+								downloadTextFile(`${rawContract.name}.sol`, rawContract.rawCode)
 							"
 							>[Source Code]</b-button
 						>
 					</b-col>
-					<b-col cols="6" class="d-flex justify-content-end my-auto">
-						<span class="pr-2">Advanced</span>
+					<b-col
+						sm="12"
+						md="4"
+						class="d-flex justify-content-left justify-content-md-end my-auto">
+						<span class="pr-1">Advanced</span>
 						<b-form-checkbox
 							v-model="showAdvancedFunctions"
 							name="check-button"
 							switch />
 					</b-col>
 				</b-row>
-				<b-row v-for="(func, idx) in filteredFunctions" :key="idx" >
+				<b-row v-for="(func, idx) in filteredFunctions" :key="idx">
 					<b-col class="mb-2">
-						<FunctionForm :func="func" :smartContract="smartContract"></FunctionForm>
+						<FunctionForm
+							:func="func"
+							:smartContract="smartContract"></FunctionForm>
 					</b-col>
 				</b-row>
 			</b-col>
@@ -190,7 +192,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations } from 'vuex'
 import { startCase } from 'lodash-es'
 import {
 	SALE_STATUS,
@@ -231,7 +233,7 @@ export default {
 		smartContract: Object,
 	},
 	components: {
-		FunctionForm
+		FunctionForm,
 	},
 	data: () => ({
 		SMARTCONTRACT_STATUS,
@@ -244,7 +246,10 @@ export default {
 		saleStatus: 'N/A',
 		isReady: false,
 		currentOwner: null,
-		isBusy: false,
+		busyStates: {
+			withdraw: false,
+			setSaleStatus: false,
+		},
 	}),
 	async mounted() {
 		try {
@@ -302,9 +307,14 @@ export default {
 		},
 		canVerify() {
 			const { isVerified, status, addons } = this.rawContract
-			const feature = SMART_CONTRACT_FEATURES[SMART_CONTRACT_FEATURES.SourceCodeVerification]
-			return !isVerified && status === SMARTCONTRACT_STATUS.Mainnet && addons?.includes(feature)
-		}
+			const feature =
+				SMART_CONTRACT_FEATURES[SMART_CONTRACT_FEATURES.SourceCodeVerification]
+			return (
+				!isVerified &&
+				status === SMARTCONTRACT_STATUS.Mainnet &&
+				addons?.includes(feature)
+			)
+		},
 	},
 	methods: {
 		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
@@ -335,7 +345,10 @@ export default {
 		},
 		async onVerify() {
 			try {
-				this.setBusy({isBusy: true, message: 'Verifying... this might take up to 5 mins.'})
+				this.setBusy({
+					isBusy: true,
+					message: 'Verifying... this might take up to 5 mins.',
+				})
 				await this.$axios.post(`/smartcontracts/${this.rawContract.id}/verify`)
 				this.rawContract.isVerified = true
 				this.$bvToast.toast(
@@ -355,11 +368,10 @@ export default {
 			}
 		},
 		async onRefreshBalance(showNotification = false) {
-			this.setBusy({ isBusy: true })
 			const balance =
-				(await this.contract.provider.getBalance(this.rawContract.address)) || '0'
+				(await this.contract.provider.getBalance(this.rawContract.address)) ||
+				'0'
 			this.contractBalance = +ethers.utils.formatEther(balance)
-			this.setBusy({ isBusy: false })
 			showNotification &&
 				this.$bvToast.toast('Balance successfully refreshed', {
 					title: 'Balance',
@@ -423,7 +435,7 @@ export default {
 				)
 
 				const contract = await contractFactory.deploy({
-					gasPrice
+					gasPrice,
 				})
 
 				const { data: mainnetContract } = await this.$axios.post(
@@ -450,38 +462,50 @@ export default {
 		},
 		async callFuncByName(name, args = []) {
 			try {
+				console.log('calling ', name)
 				const func = this.functions.find((val) => val.name === name)
-				if(!func) throw new Error(`Function ${name }not found`)
+				if (!func) throw new Error(`Function ${name} not found`)
 
-				this.isBusy = true
+				this.busyStates[name] = true
 
-				if (!this.$wallet.isConnected) {
-					await this.$wallet.connect()
-				}
-				if (this.$wallet.chainId !== +this.rawContract.chainId) {
-					await this.$wallet.switchNetwork(this.rawContract.chainId)
-				}
+				let txResponse
 
-				const signedContract = this.contract.connect(
-					this.$wallet.provider.getSigner()
-				)
+				if (func.constant) {
+					txResponse = await this.contract.saleStatus()
 
-				const txOverrides = {
-					gasPrice: await this.$wallet.provider.getGasPrice()
-				}
+					if (name === 'saleStatus') {
+						this.saleStatus = SALE_STATUS[txResponse]
+						this.$bvToast.toast('Sale Status successfully refreshed', {
+							title: `${startCase(name)}`,
+							variant: 'success',
+						})
+					}
+				} else {
+					if (!this.$wallet.isConnected) {
+						await this.$wallet.connect()
+					}
+					if (this.$wallet.chainId !== +this.rawContract.chainId) {
+						await this.$wallet.switchNetwork(this.rawContract.chainId)
+					}
 
-				const txResponse = await signedContract[name].call(
-					null,
-					...args,
-					txOverrides
-				)
+					const txOverrides = {
+						gasPrice: await this.$wallet.provider.getGasPrice(),
+					}
 
-				if(name === 'saleStatus' && func.constant) {
-					this.saleStatus = SALE_STATUS[txResponse]
-				}
+					const signedContract = this.contract.connect(
+						this.$wallet.provider.getSigner()
+					)
 
-				if(!func.constant) {
-					const msg = this.createToastMessage(txResponse.hash, this.rawContract.chainId)
+					txResponse = await signedContract[name].call(
+						null,
+						...args,
+						txOverrides
+					)
+
+					const msg = this.createToastMessage(
+						txResponse.hash,
+						this.rawContract.chainId
+					)
 
 					this.$bvToast.toast(msg, {
 						title: `${startCase(name)} - processing, please wait.`,
@@ -503,23 +527,25 @@ export default {
 					variant: 'danger',
 				})
 			} finally {
-				this.isBusy = false
+				this.busyStates[name] = false
 			}
 		},
 		createToastMessage(hash, chainId) {
 			const h = this.$createElement
-			return [h('span', [
-				h(
-					'b-link',
-					{
-						props: {
-							target: '_blank',
-							href: `${getExplorerUrl(chainId)}/tx/${hash}`,
+			return [
+				h('span', [
+					h(
+						'b-link',
+						{
+							props: {
+								target: '_blank',
+								href: `${getExplorerUrl(chainId)}/tx/${hash}`,
+							},
 						},
-					},
-					['View on block explorer >']
-				),
-			])]
+						['View on block explorer >']
+					),
+				]),
+			]
 		},
 	},
 }

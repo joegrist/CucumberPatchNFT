@@ -34,39 +34,33 @@
 							<b-form-input
 								required
 								:type="funcParam.type.includes('uint') ? 'number' : 'text'"
+                                :value="funcArgs.get(funcParam.name)"
 								@change="(val) => onParamChange(funcParam.name, val)" />
 						</b-form-group>
 					</li>
 				</ul>
 				<div>
-					<b-overlay
-						:show="isBusy"
-						rounded
-						class="w-100"
-						opacity="0.5"
-						spinner-small>
-						<b-button-group v-if="func.name === 'setSaleStatus'" class="w-100">
-							<b-button
-								variant="warning"
-								@click="onUpdateSaleStatus(SALE_STATUS.Paused)"
-								>Pause Sales</b-button
-							>
-							<b-button
-								v-if="smartContract.hasWhitelist"
-								variant="dark"
-								@click="onUpdateSaleStatus(SALE_STATUS.Presale)"
-								>Start Presale</b-button
-							>
-							<b-button
-								variant="success"
-								@click="onUpdateSaleStatus(SALE_STATUS.Public)"
-								>Start Public Sale</b-button
-							>
-						</b-button-group>
-						<b-button v-else class="w-100" type="submit" variant="success">{{
-							func.constant ? 'View' : 'Submit'
-						}}</b-button>
-					</b-overlay>
+                    <b-button-group v-if="func.name === 'setSaleStatus'" class="w-100">
+                        <b-button
+                            variant="warning"
+                            @click="onUpdateSaleStatus(SALE_STATUS.Paused)"
+                            >Pause Sales</b-button
+                        >
+                        <b-button
+                            v-if="smartContract.hasWhitelist"
+                            variant="dark"
+                            @click="onUpdateSaleStatus(SALE_STATUS.Presale)"
+                            >Start Presale</b-button
+                        >
+                        <b-button
+                            variant="success"
+                            @click="onUpdateSaleStatus(SALE_STATUS.Public)"
+                            >Start Public Sale</b-button
+                        >
+                    </b-button-group>
+                    <b-button v-else class="w-100" type="submit" variant="success">{{
+                        func.constant ? 'View' : 'Submit'
+                    }}</b-button>
 				</div>
 				<div v-show="response" class="font-weight-bold mt-2 text-center">
 					{{ formattedResponse }}
@@ -100,7 +94,7 @@ export default {
 			SALE_STATUS,
 			isBusy: false,
 			response: null,
-			funcArgs: null,
+			funcArgs: new Map(),
 		}
 	},
 	computed: {
@@ -127,8 +121,7 @@ export default {
 			this.onSubmit()
         },
 		onParamChange(name, value) {
-			const args = (this.funcArgs ??= new Map())
-			args.set(name, value)
+			this.funcArgs.set(name, value)
 		},
 		async executeConstant() {
 			const txResponse = await this.contract[this.func.name]()
@@ -218,7 +211,7 @@ export default {
                 variant: 'success',
             })
 
-            this.funcArgs = null
+            this.funcArgs = new Map()
 		},
 		async onSubmit() {
 			try {
