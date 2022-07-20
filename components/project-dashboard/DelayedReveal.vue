@@ -3,7 +3,8 @@
 		<b-row class="mb-2">
 			<b-col sm="12" md="9" class="my-auto">
 				<h4 class="m-0">Delayed Reveal</h4>
-				<span class="text-muted">Upload image and create metadata for your NFT placeholder | </span>
+				<span class="text-muted">Upload image and create metadata for your NFT placeholder |
+				</span>
 				<ExternalLink href="https://youtu.be/It05AkP_Wt4" icon="youtube" text="What's this?" />
 			</b-col>
 			<b-col sm="12" md="3">
@@ -22,7 +23,8 @@
 		<b-row>
 			<b-col>
 				<b-form novalidate>
-					<NftStorageApiKeyFormGroup v-model="metadata.apiKey"></NftStorageApiKeyFormGroup>
+					<NftStorageApiKeyFormGroup v-model="metadata.apiKey">
+					</NftStorageApiKeyFormGroup>
 					<b-form-group label="Name" label-class="required">
 						<b-form-input v-model="metadata.name" placeholder="e.g. Hidden Monkey"
 							:state="validateState('metadata.name')" />
@@ -64,7 +66,7 @@ export default {
 	setup(props) {
 		const contract = useSmartContract(props.smartContract)
 		return { contract }
-  	},
+	},
 	data() {
 		return {
 			isBusy: false,

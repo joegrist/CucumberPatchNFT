@@ -12,10 +12,10 @@
 				</b-overlay> -->
 			</b-col>
 		</b-row>
-		<b-row v-show="smartContract.baseURL">
+		<b-row v-show="newBaseURL || smartContract.baseURL">
 			<b-col>
 				<p class="break-word">
-					Current Base URL: <b>{{ smartContract.baseURL }}</b>
+					Current Base URL: <b>{{ newBaseURL || smartContract.baseURL }}</b>
 				</p>
 			</b-col>
 		</b-row>
@@ -35,7 +35,9 @@
 				</b-form-group>
 				<p v-show="imageFiles.length">
 					Files: {{ imageFiles.length }} | Size: {{ calcSize(imageFiles) }} |
-					CID: {{ imagesCID || 'Not yet generated...' }}
+					CID: {{ imagesCID || 'Not yet generated' }} |
+					<span v-show="imagesCID">Status: {{ imagesStatus }} |</span>
+					<!-- <b-button v-show="imagesCID" size="sm" variant="success" @click="refreshImagesStatus">Refresh</b-button> -->
 				</p>
 				<b-form-group class="mb-1" label="Step 2: Upload metadata folder (files with .json extension)">
 					<div class="d-flex w-100">
@@ -53,12 +55,12 @@
 				</p>
 			</b-col>
 		</b-row>
-		<b-row v-if="baseUrl">
+		<b-row v-if="newBaseURL">
 			<b-col>
 				<h6 class="text-success">
 					Success! Here's your metadata url:
-					<br />{{ baseUrl }}
-					<Copy :value="baseUrl"></Copy>
+					<br />{{ newBaseURL }}
+					<Copy :value="newBaseURL"></Copy>
 				</h6>
 			</b-col>
 		</b-row>
@@ -79,10 +81,20 @@ export default {
 			imagesCID: null,
 			metadataCID: null,
 			isUploading: false,
-			baseUrl: null,
+			newBaseURL: null,
+			imagesStatus: 'Fetching...',
+			nftStorageClient: null,
 			imageFiles: [],
 			jsonFiles: [],
 		};
+	},
+	watch: {
+		apiKey: {
+			handler: function (newVal) {
+				this.nftStorageClient = new NFTStorage({ token: newVal })
+			},
+			immediate: true
+		}
 	},
 	methods: {
 		calcSize(files) {
@@ -105,7 +117,6 @@ export default {
 				this.isUploading = true;
 				const client = new NFTStorage({ token: this.apiKey });
 				this.imagesCID = await client.storeDirectory(this.imageFiles);
-				console.log(this.imagesCID);
 			} catch (err) {
 				this.$bvToast.toast(err.message || "Upload failed", {
 					title: "Image Upload",
@@ -114,43 +125,54 @@ export default {
 			} finally {
 				this.isUploading = false;
 			}
+			await this.refreshImagesStatus()
+		},
+		async refreshImagesStatus() {
+			this.imagesStatus = (await this.nftStorageClient.check(this.imagesCID))?.pin.status
 		},
 		async uploadMetadata() {
 			try {
 				if (this.imageFiles.length != this.jsonFiles.length) {
-					throw new Error("Number of images doesn't match number of netadata files");
+					throw new Error(
+						"Number of images doesn't match number of netadata files"
+					)
 				}
-				this.isUploading = true;
-				const promises = this.jsonFiles.map((f) => f.text());
-				// console.log(promises)
-				const textFiles = await Promise.all(promises);
-				// console.log(textFiles)
+				this.isUploading = true
+				const promises = this.jsonFiles.map((f) => f.text())
+
+				const textFiles = await Promise.all(promises)
+
 				const filesToUpload = textFiles.map((x, i) => {
-					const meta = JSON.parse(x);
-					console.log(meta, `${i + 1}.json`);
-					meta.image = `ipfs://${this.imagesCID}/${this.imageFiles[i].name}`;
-					return new File([JSON.stringify(meta)], `${i + 1}.json`);
-				});
-				// console.log(filesToUpload)
-				const client = new NFTStorage({ token: this.apiKey });
-				this.metadataCID = await client.storeDirectory(filesToUpload);
-				console.log(this.metadataCID);
-				this.updateBaseUrl();
-			}
-			catch (err) {
-				this.$bvToast.toast(err.message || "Upload failed", {
-					title: "Metadata Upload",
-					variant: "danger",
-				});
+					const meta = JSON.parse(x)
+					meta.image = `ipfs://${this.imagesCID}/${this.imageFiles[i].name}`
+					return new File([JSON.stringify(meta)], `${i + 1}.json`)
+				})
+
+				this.metadataCID = await this.nftStorageClient.storeDirectory(filesToUpload)
+
+				await this.updateBaseUrl()
+			} catch (err) {
+				this.$bvToast.toast(err.message || 'Upload failed', {
+					title: 'Metadata Upload',
+					variant: 'danger',
+				})
 			} finally {
-				this.isUploading = false;
+				this.isUploading = false
 			}
 		},
 		async updateBaseUrl() {
-			this.baseUrl = `ipfs://${this.metadataCID}`;
-			await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
-				baseURL: this.baseUrl,
-			});
+			try {
+
+				const baseURL = `ipfs://${this.metadataCID}`
+
+				await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
+					baseURL
+				})
+
+				this.newBaseURL = baseURL
+			} catch (error) {
+				throw error;
+			}
 		},
 	},
 	components: { NftStorageApiKeyFormGroup }
