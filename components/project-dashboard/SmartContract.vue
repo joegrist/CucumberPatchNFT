@@ -222,6 +222,7 @@ const basicFunctions = [
 	'totalSupply',
 	'setPublicMintPrice',
 	'setPreRevealUrl',
+	'setBaseURL'
 ]
 
 export default {

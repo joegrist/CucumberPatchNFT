@@ -44,6 +44,7 @@
 					</template>
 					<b-form-input
 						autofocus
+						type="password"
 						v-model="apiKey"
 						placeholder="Enter nft.storage api key." />
 				</b-form-group>

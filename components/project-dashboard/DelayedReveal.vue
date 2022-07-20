@@ -3,11 +3,13 @@
 		<b-row class="mb-2">
 			<b-col sm="12" md="9" class="my-auto">
 				<h4 class="m-0">Delayed Reveal</h4>
-				<span class="text-muted">Upload image and create metadata for your NFT placeholder | </span>
+				<span class="text-muted"
+					>Upload image and create metadata for your NFT placeholder |
+				</span>
 				<ExternalLink
-								href="https://youtu.be/It05AkP_Wt4"
-								icon="youtube"
-								text="What's this?" />
+					href="https://youtu.be/It05AkP_Wt4"
+					icon="youtube"
+					text="What's this?" />
 			</b-col>
 			<b-col sm="12" md="3">
 				<b-overlay :show="isBusy">
@@ -25,19 +27,25 @@
 		<b-row>
 			<b-col>
 				<b-form novalidate>
-					<b-form-group description="The key is only stored locally in your browser and never on our servers">
+					<b-form-group
+						description="The key is only stored locally in your browser and never on our servers">
 						<template #label>
 							<div class="d-flex">
 								<ExternalLink
 									text="nft.storage API key"
 									href="https://nft.storage/docs/#get-an-api-token"></ExternalLink>
-								<b-form-checkbox class="ml-auto" switch v-model="rememberApiKey" @change="rememberKey"
+								<b-form-checkbox
+									class="ml-auto"
+									switch
+									v-model="rememberApiKey"
+									@change="rememberKey"
 									>Remember Key</b-form-checkbox
 								>
 							</div>
 						</template>
 						<b-form-input
 							v-model="metadata.apiKey"
+							type="password"
 							:state="validateState('metadata.apiKey')"
 							placeholder="Enter nft.storage api key." />
 						<b-form-invalid-feedback :state="state.apiKey">
@@ -62,7 +70,10 @@
 							Please provide description for the metadata.
 						</b-form-invalid-feedback>
 					</b-form-group>
-					<b-form-group label="Image" description="Can be any image format, including .gif" label-class="required">
+					<b-form-group
+						label="Image"
+						description="Can be any image format, including .gif"
+						label-class="required">
 						<b-form-file
 							v-model="metadata.image"
 							accept="image/*"
@@ -90,7 +101,7 @@ export default {
 	setup(props) {
 		const contract = useSmartContract(props.smartContract)
 		return { contract }
-  	},
+	},
 	data() {
 		return {
 			isBusy: false,
@@ -125,10 +136,10 @@ export default {
 	},
 	async created() {
 		this.metadata.apiKey = localStorage.getItem('zcnft_nft_storage_api_key')
-		if(this.metadata.apiKey) {
-            this.rememberApiKey = true
-        }
-		
+		if (this.metadata.apiKey) {
+			this.rememberApiKey = true
+		}
+
 		this.url = await this.contract?.preRevealURL()
 	},
 	methods: {
