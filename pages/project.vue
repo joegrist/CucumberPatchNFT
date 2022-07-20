@@ -6,6 +6,9 @@
 					<b-tab title="Smart Contract" active>
 						<SmartContract :smartContract="rawContract" />
 					</b-tab>
+					<b-tab title="Assets">
+						<Assets :smartContract="rawContract" />
+					</b-tab>
 					<b-tab v-if="rawContract.hasWhitelist" title="Whitelist" lazy>
 						<Whitelist :smartContractId="rawContract.id" />
 					</b-tab>
@@ -34,6 +37,7 @@
 import { mapGetters, mapState } from 'vuex'
 
 import SmartContract from '@/components/project-dashboard/SmartContract'
+import Assets from '@/components/project-dashboard/Assets'
 import Whitelist from '@/components/project-dashboard/Whitelist'
 import DelayedReveal from '@/components/project-dashboard/DelayedReveal'
 import MintPage from '@/components/project-dashboard/MintPage'
@@ -45,6 +49,7 @@ export default {
 	middleware: 'authenticated',
 	components: {
 		SmartContract,
+		Assets,
 		Whitelist,
 		DelayedReveal,
 		MintPage,

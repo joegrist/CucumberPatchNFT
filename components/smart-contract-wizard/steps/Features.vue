@@ -3,7 +3,7 @@
 		<b-container>
 			<b-row>
 				<b-col>
-					<b-form-group>
+					<b-form-group description="Your customers will see a placeholder image on all NFTs until the reveal date.">
 						<b-form-checkbox
 							id="delayedRevealFeature"
 							name="delayedRevealFeature"
@@ -18,7 +18,7 @@
 					</b-form-group>
 				</b-col>
 			</b-row>
-			<b-row>
+			<!-- <b-row>
 				<b-col>
 					<b-form-group
 						description="URL to the .json file containing pre-reveal metadata, can be updated later"
@@ -48,10 +48,10 @@
 						</b-form-invalid-feedback>
 					</b-form-group>
 				</b-col>
-			</b-row>
+			</b-row> -->
 			<b-row>
 				<b-col>
-					<b-form-group>
+					<b-form-group description="Give specific group of people (could be team, early supporters, etc.) access to mint before others">
 						<b-form-checkbox
 							id="whitelistFeature"
 							name="whitelistFeature"
@@ -230,7 +230,7 @@ import {
 	maxValue,
 } from 'vuelidate/lib/validators'
 import { getMainnetConfig } from '@/constants/metamask'
-import { validateState, mustBeURL, hasValidAddress } from '@/utils'
+import { validateState, hasValidAddress } from '@/utils'
 import { cloneDeep } from 'lodash-es'
 
 export default {
@@ -247,7 +247,6 @@ export default {
 				hasDelayedReveal: false,
 				hasWhitelist: false,
 				hasRevenueSplits: false,
-				delayedRevealURL: null,
 				whitelistPrice: null,
 				maxTokensPerPersonOnWhitelist: 1,
 				revenueSplits: [
@@ -261,7 +260,7 @@ export default {
 	},
 	validations: {
 		smartContractBuilder: {
-			delayedRevealURL: { mustBeURL },
+			// delayedRevealURL: { mustBeURL },
 			whitelistPrice: {
 				required: requiredIf(function () {
 					return this.smartContractBuilder.hasWhitelist

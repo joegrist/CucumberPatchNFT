@@ -12,7 +12,8 @@
 					<h6 class="text-muted">{{ smartContract.symbol }}</h6>
 				</div>
 				<b-img
-					width="130px"
+					class="d-none d-md-block"
+					width="100px"
 					:src="blockchainIcon[smartContract.blockchain]"></b-img>
 			</b-col>
 			<b-col sm="12" md="9">
@@ -36,32 +37,20 @@ import { getCurrency } from '@/constants/metamask'
 import { isArray } from 'lodash-es'
 import BlockchainImage from '@/mixins/blockchainImage'
 
-const excludeList = [
-	'id',
-	'isDeployed',
-	'collectionMetadataURL',
-	'abi',
-	'bytecode',
-	'address',
-	'createdOn',
-	'blockchain',
-	'name',
-	'chainId',
-	'voucherSignerPublicAddress',
-	'website',
-	'marketplaceCollection',
-	'whitelist',
-	'email',
-	'revenueSplits',
-	'hasRaribleRoyalties',
-	'hasMintableRoyalties',
-	'isClearedForMainnet',
-	'ownerAddress',
-	'clonedFrom',
-	'status',
-	'isVerified',
-	'isImported',
-	'features'
+const allowList = [
+	'baseURL',
+	'symbol',
+	'collectionSize',
+	'mintPrice',
+	'firstXFree',
+	'maxTokensPerTransaction',
+	'maxTokensPerPerson',
+	'hasDelayedReveal',
+	'hasWhitelist',
+	'whitelistPrice',
+	'maxTokensPerPersonOnWhitelist',
+	'hasRevenueSplits',
+	'marketplace'
 ]
 
 export default {
@@ -86,7 +75,7 @@ export default {
 				}, {})
 			
 			return Object.entries({...this.smartContract, ...marketplace})
-				.filter(([k, _]) => !excludeList.includes(k))
+				.filter(([k, _]) => allowList.includes(k))
 				.map(([key, val]) => {
 					if (isArray(val)) {
 						val = val.join(',')
