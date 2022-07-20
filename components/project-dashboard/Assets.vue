@@ -17,10 +17,10 @@
 				</b-overlay> -->
 			</b-col>
 		</b-row>
-		<b-row v-show="smartContract.baseURL">
+		<b-row v-show="newBaseURL || smartContract.baseURL">
 			<b-col>
 				<p class="break-word">
-					Current Base URL: <b>{{ smartContract.baseURL }}</b>
+					Current Base URL: <b>{{ newBaseURL || smartContract.baseURL }}</b>
 				</p>
 			</b-col>
 		</b-row>
@@ -75,7 +75,9 @@
 				</b-form-group>
 				<p v-show="imageFiles.length">
 					Files: {{ imageFiles.length }} | Size: {{ calcSize(imageFiles) }} |
-					CID: {{ imagesCID || 'Not yet generated...' }}
+					CID: {{ imagesCID || 'Not yet generated' }} | 
+					<span v-show="imagesCID">Status: {{ imagesStatus }} |</span>
+					<!-- <b-button v-show="imagesCID" size="sm" variant="success" @click="refreshImagesStatus">Refresh</b-button> -->
 				</p>
 				<b-form-group
 					class="mb-1"
@@ -106,12 +108,12 @@
 				</p>
 			</b-col>
 		</b-row>
-		<b-row v-if="baseUrl">
+		<b-row v-if="newBaseURL">
 			<b-col>
 				<h6 class="text-success">
 					Success! Here's your metadata url:
-					<br />{{ baseUrl }}
-					<Copy :value="baseUrl"></Copy>
+					<br />{{ newBaseURL }}
+					<Copy :value="newBaseURL"></Copy>
 				</h6>
 			</b-col>
 		</b-row>
@@ -133,7 +135,9 @@ export default {
 			imagesCID: null,
 			metadataCID: null,
 			isUploading: false,
-			baseUrl: null,
+			newBaseURL: null,
+			imagesStatus: 'Fetching...',
+			nftStorageClient: null,
 			imageFiles: [],
 			jsonFiles: [],
 		}
@@ -144,6 +148,14 @@ export default {
 			this.rememberApiKey = true
 		}
 	},
+	watch: {
+		apiKey: {
+			handler: function(newVal) {
+				this.nftStorageClient = new NFTStorage({ token: newVal })
+			},
+			immediate: true
+		}
+	},	
 	methods: {
 		rememberKey(remember) {
 			if (remember) {
@@ -172,11 +184,15 @@ export default {
 		async uploadImages() {
 			this.isUploading = true
 
-			const client = new NFTStorage({ token: this.apiKey })
-			this.imagesCID = await client.storeDirectory(this.imageFiles)
+			this.imagesCID = await this.nftStorageClient.storeDirectory(this.imageFiles)
 			console.log(this.imagesCID)
 
 			this.isUploading = false
+
+			await this.refreshImagesStatus()
+		},
+		async refreshImagesStatus() {
+			this.imagesStatus = (await this.nftStorageClient.check(this.imagesCID))?.pin.status
 		},
 		async uploadMetadata() {
 			try {
@@ -203,8 +219,7 @@ export default {
 
 				// console.log(filesToUpload)
 
-				const client = new NFTStorage({ token: this.apiKey })
-				this.metadataCID = await client.storeDirectory(filesToUpload)
+				this.metadataCID = await this.nftStorageClient.storeDirectory(filesToUpload)
 				console.log(this.metadataCID)
 
 				this.updateBaseUrl()
@@ -218,11 +233,13 @@ export default {
 			}
 		},
 		async updateBaseUrl() {
-			this.baseUrl = `ipfs://${this.metadataCID}`
+			const baseURL = `ipfs://${this.metadataCID}`
 
 			await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
-				baseURL: this.baseUrl,
+				baseURL
 			})
+
+			this.newBaseURL = baseURL
 		},
 	},
 }
