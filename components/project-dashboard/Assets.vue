@@ -183,10 +183,7 @@ export default {
 		},
 		async uploadImages() {
 			this.isUploading = true
-
 			this.imagesCID = await this.nftStorageClient.storeDirectory(this.imageFiles)
-			console.log(this.imagesCID)
-
 			this.isUploading = false
 
 			await this.refreshImagesStatus()
@@ -205,22 +202,16 @@ export default {
 				this.isUploading = true
 
 				const promises = this.jsonFiles.map((f) => f.text())
-				// console.log(promises)
 
 				const textFiles = await Promise.all(promises)
-				// console.log(textFiles)
 
 				const filesToUpload = textFiles.map((x, i) => {
 					const meta = JSON.parse(x)
-					console.log(meta, `${i + 1}.json`)
 					meta.image = `ipfs://${this.imagesCID}/${this.imageFiles[i].name}`
 					return new File([JSON.stringify(meta)], `${i + 1}.json`)
 				})
 
-				// console.log(filesToUpload)
-
 				this.metadataCID = await this.nftStorageClient.storeDirectory(filesToUpload)
-				console.log(this.metadataCID)
 
 				this.updateBaseUrl()
 
