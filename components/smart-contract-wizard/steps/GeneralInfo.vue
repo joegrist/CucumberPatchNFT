@@ -2,7 +2,7 @@
 	<b-form v-if="showForm" @reset.prevent="onFormReset(reset)" novalidate>
 		<b-container fluid>
 			<b-row>
-				<b-col sm="12" md="6">
+				<!-- <b-col sm="12" md="6">
 					<b-form-group
 						description="URL to the endpoint (folder) that contains metadata .json files. Can be set later.">
 						<template #label>
@@ -25,6 +25,51 @@
 							"></b-form-input>
 						<b-form-invalid-feedback :state="state.baseURL">
 							Please correct "Metadata URL"
+						</b-form-invalid-feedback>
+					</b-form-group>
+				</b-col> -->
+				<b-col>
+					<b-form-group
+						label="Name"
+						label-class="required"
+						description="Purely presentational, no special characters, max 50, start with a letter">
+						<b-form-input
+							id="contractName"
+							name="contractName"
+							type="text"
+							placeholder="Bored Apes Yacht Club"
+							:value="smartContractBuilder.name"
+							@change="(val) => updateSmartContractBuilder({ name: val })"
+							@blur="$v.smartContractBuilder.name.$touch()"
+							:state="
+								validateState('smartContractBuilder.name')
+							"></b-form-input>
+						<b-form-invalid-feedback :state="state.name">
+							Please correct "Name"
+						</b-form-invalid-feedback>
+					</b-form-group>
+				</b-col>
+			</b-row>
+			<b-row>
+				<b-col sm="12" md="6">
+					<b-form-group
+						label="Token Symbol"
+						label-class="required"
+						description="Purely presentational, no spaces, max 10 characters">
+						<b-form-input
+							id="symbol"
+							name="symbol"
+							type="text"
+							maxlength="10"
+							placeholder="BAYC"
+							:value="smartContractBuilder.symbol"
+							@change="(val) => updateSmartContractBuilder({ symbol: val })"
+							@blur="$v.smartContractBuilder.symbol.$touch()"
+							:state="
+								validateState('smartContractBuilder.symbol')
+							"></b-form-input>
+						<b-form-invalid-feedback :state="state.symbol">
+							Please corrent "Token Symbol"
 						</b-form-invalid-feedback>
 					</b-form-group>
 				</b-col>
@@ -58,51 +103,6 @@
 			<b-row>
 				<b-col sm="12" md="6">
 					<b-form-group
-						label="Name"
-						label-class="required"
-						description="Purely presentational, no special characters, max 50, start with a letter">
-						<b-form-input
-							id="contractName"
-							name="contractName"
-							type="text"
-							placeholder="Bored Apes Yacht Club"
-							:value="smartContractBuilder.name"
-							@change="(val) => updateSmartContractBuilder({ name: val })"
-							@blur="$v.smartContractBuilder.name.$touch()"
-							:state="
-								validateState('smartContractBuilder.name')
-							"></b-form-input>
-						<b-form-invalid-feedback :state="state.name">
-							Please correct "Name"
-						</b-form-invalid-feedback>
-					</b-form-group>
-				</b-col>
-				<b-col sm="12" md="6">
-					<b-form-group
-						label="Token Symbol"
-						label-class="required"
-						description="Purely presentational, no spaces, max 10 characters">
-						<b-form-input
-							id="symbol"
-							name="symbol"
-							type="text"
-							maxlength="10"
-							placeholder="BAYC"
-							:value="smartContractBuilder.symbol"
-							@change="(val) => updateSmartContractBuilder({ symbol: val })"
-							@blur="$v.smartContractBuilder.symbol.$touch()"
-							:state="
-								validateState('smartContractBuilder.symbol')
-							"></b-form-input>
-						<b-form-invalid-feedback :state="state.symbol">
-							Please corrent "Token Symbol"
-						</b-form-invalid-feedback>
-					</b-form-group>
-				</b-col>
-			</b-row>
-			<b-row>
-				<b-col sm="12" md="6">
-					<b-form-group
 						:label="`Price per NFT in ${currency}`"
 						label-class="required"
 						description="Mint price during public sale">
@@ -127,7 +127,7 @@
 				</b-col>
 				<b-col sm="12" md="6">
 					<b-form-group
-						label="First X Free Per Person (experimental)"
+						label="First X Free Per Person"
 						description="Maximum number of NFTs someone can mint for free. Subject to Max NFTs Per Person and Max NFTs Per Transaction limits.">
 						<b-form-input
 							id="firstXFree"
@@ -234,7 +234,7 @@ export default {
 	data() {
 		return {
 			reset: {
-				baseURL: null,
+				// baseURL: null,
 				collectionSize: null,
 				name: null,
 				symbol: null,
@@ -248,7 +248,7 @@ export default {
 		smartContractBuilder: {
 			collectionSize: { required, numeric, minValue: minValue(1) },
 			name: { required, mustBeName, maxLength: maxLength(50) },
-			baseURL: { mustBeURL, maxLength: maxLength(200) },
+			// baseURL: { mustBeURL, maxLength: maxLength(200) },
 			symbol: { required, alphaNum, maxLength: maxLength(10) },
 			mintPrice: { required, decimal, minValue: minValue(0) },
 			firstXFree: { numeric, minValue: minValue(0) },
