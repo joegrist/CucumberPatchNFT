@@ -6,7 +6,7 @@
 					<b-tab title="Smart Contract" active>
 						<SmartContract :smartContract="rawContract" />
 					</b-tab>
-					<b-tab title="Assets">
+					<b-tab title="Assets" lazy>
 						<Assets :smartContract="rawContract" />
 					</b-tab>
 					<b-tab v-if="rawContract.hasWhitelist" title="Whitelist" lazy>

@@ -8,7 +8,7 @@
         </b-form-checkbox>
       </div>
     </template>
-    <b-form-input @blur="handleInputBlur" v-model="localData" :state="validateState('localData')"
+    <b-form-input autofocus v-model="localData" :state="validateState('localData')"
       placeholder="Enter nft.storage api key." />
     <b-form-invalid-feedback :state="state.localData">
       Please provide the nft.storage api key.
@@ -21,20 +21,13 @@ import { ZEROCODENFT_STORAGE_API_KEY } from '@/constants/';
 import { validateState } from '@/utils'
 
 export default {
-  model: {
-    prop: "apiKey",
-    event: "change",
-  },
   props: {
-    apiKey: {
-      type: String,
-      required: false,
-    }
+    value: String
   },
   data() {
     return {
       rememberApiKey: null,
-      localData: this.apiKey
+      localData: this.value
     }
   },
   validations: {
@@ -42,7 +35,9 @@ export default {
   },
   watch: {
     localData(nv) {
-      this.$emit('change', nv);
+      this.$emit('input', nv);
+      this.rememberKey(this.rememberApiKey)
+      this.$v.$touch();
     }
   },
   computed: {
@@ -55,6 +50,7 @@ export default {
   created() {
     this.localData = localStorage.getItem(ZEROCODENFT_STORAGE_API_KEY);
     if (this.localData) {
+      this.$emit('input', this.localData);
       this.rememberApiKey = true;
     }
   },
@@ -68,10 +64,6 @@ export default {
         localStorage.removeItem(ZEROCODENFT_STORAGE_API_KEY);
       }
     },
-    handleInputBlur() {
-      this.rememberKey(this.rememberApiKey)
-      this.$v.$touch();
-    }
   }
 }
 </script>
