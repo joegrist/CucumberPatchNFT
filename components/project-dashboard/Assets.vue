@@ -1,10 +1,10 @@
 <template>
 	<b-container fluid>
 		<b-row class="mb-2">
-			<b-col sm="12" md="9" class="my-auto">
+			<b-col class="my-auto">
 				<h4 class="m-0">NFT Assets Upload</h4>
 				<span class="text-muted"
-					>Upload your NFT collection images and metadata |</span
+					>Upload your NFT collection images and metadata with nft.storage |</span
 				>
 				<ExternalLink
 					href="https://youtu.be/1f7GvvOIe6Y"
@@ -12,16 +12,11 @@
 					text="How does metadata work ?!"
 				/>
 			</b-col>
-			<b-col sm="12" md="3">
-				<!-- <b-overlay :show="isBusy">
-					<b-button variant="primary" block @click="save">Upload</b-button>
-				</b-overlay> -->
-			</b-col>
 		</b-row>
 		<b-row v-show="newBaseURL || smartContract.baseURL">
 			<b-col>
 				<p class="break-word">
-					Current Base URL: <b>{{ newBaseURL || smartContract.baseURL }}</b>
+					Most Recent Metadata URL: <b>{{ newBaseURL || smartContract.baseURL }}</b>
 				</p>
 			</b-col>
 		</b-row>
@@ -99,13 +94,23 @@
 				</b-form>
 			</b-col>
 		</b-row>
-		<b-row v-if="newBaseURL">
+		<b-row v-show="newBaseURL">
 			<b-col>
 				<h6 class="text-success">
-					Success! Here's your metadata url:
+					Success! Here's your metadata url{{ smartContract.hasDelayedReveal ? ', use it to reveal your collection when ready': ''}}:
 					<br />{{ newBaseURL }}
 					<Copy :value="newBaseURL"></Copy>
 				</h6>
+				<div v-if="!smartContract.hasDelayedReveal" class="d-flex mt-1">
+					<b-form-group
+							class="mb-1"
+							label="Step 4: Update Smart Contract"
+						>
+						<b-overlay rounded :show="isUploading">
+							<b-button variant="primary" @click="onUpdateSmartContract">Update Now</b-button>
+						</b-overlay>
+					</b-form-group>
+				</div>
 			</b-col>
 		</b-row>
 		<b-row> </b-row>
@@ -115,11 +120,17 @@
 <script>
 import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js'
 import NftStorageApiKeyFormGroup from '../forms/NftStorageApiKeyFormGroup.vue'
+import useSmartContract from '@/hooks/useSmartContract'
 export default {
+	
 	props: {
 		smartContract: Object,
 	},
 	components: { NftStorageApiKeyFormGroup },
+	setup(props) {
+		const scInstance = useSmartContract(props.smartContract)
+		return { scInstance }
+	},	
 	data() {
 		return {
 			apiKey: null,
@@ -218,6 +229,43 @@ export default {
 
 			this.newBaseURL = baseURL
 		},
+		async onUpdateSmartContract() {
+			try {
+				if (!this.$wallet.isConnected) {
+					await this.$wallet.connect()
+				}
+				await this.$wallet.switchNetwork(this.smartContract.chainId)
+
+				this.isUploading = true
+
+				this.scInstance = this.scInstance.connect(this.$wallet.provider.getSigner())
+				const gasPrice = await this.$wallet.provider.getGasPrice()
+
+				const tx = await this.scInstance.setBaseURL(this.newBaseURL || 'abc', {
+					gasPrice
+				})
+
+				this.$bvToast.toast('Transaction accepted, wait for confirmation', {
+					title: 'Smart Contract Update',
+					variant: 'success',
+				})
+
+				tx.wait().then(_ => {
+					this.$bvToast.toast('Updated successfully', {
+						title: 'Smart Contract Update',
+						variant: 'success',
+					})
+				})
+
+			} catch (err) {
+				this.$bvToast.toast(err.message || 'Upload failed', {
+					title: 'Metadata Upload',
+					variant: 'danger',
+				})
+			} finally {
+				this.isUploading = false
+			}
+		}
 	},
 }
 </script>

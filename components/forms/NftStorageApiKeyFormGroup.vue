@@ -4,8 +4,10 @@
 	>
 		<template #label>
 			<div class="d-flex">
+				Paste your
 				<ExternalLink
-					text="get nft.storage API key"
+				 	class="ml-1"
+					text="nft.storage API key"
 					href="https://nft.storage/docs/#get-an-api-token"
 				>
 				</ExternalLink>
