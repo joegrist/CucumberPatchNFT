@@ -158,6 +158,7 @@ const ZEROCODENFT_ASCII_ART = `
 |________/ \_______/|__/       \______/  \______/  \______/  \_______/ \_______/|__/  \__/|__/         |__/
 Drop Your NFT Collection With ZERO Coding Skills at https://zerocodenft.com
 `
+const ZEROCODENFT_STORAGE_API_KEY = 'zcnft_nft_storage_api_key';
 
 export {
 	BLOCKCHAIN,
@@ -174,5 +175,6 @@ export {
 	SMART_CONTRACT_FEATURES,
 	DEFAULT_CONFIG_STRING,
 	ANALYTICS_EVENTS,
-	ZEROCODENFT_ASCII_ART
+	ZEROCODENFT_ASCII_ART,
+	ZEROCODENFT_STORAGE_API_KEY
 }

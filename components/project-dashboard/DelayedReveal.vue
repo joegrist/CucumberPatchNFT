@@ -9,7 +9,8 @@
 				<ExternalLink
 					href="https://youtu.be/It05AkP_Wt4"
 					icon="youtube"
-					text="What's this?" />
+					text="What's this?"
+				/>
 			</b-col>
 			<b-col sm="12" md="3">
 				<b-overlay :show="isBusy">
@@ -27,36 +28,14 @@
 		<b-row>
 			<b-col>
 				<b-form novalidate>
-					<b-form-group
-						description="The key is only stored locally in your browser and never on our servers">
-						<template #label>
-							<div class="d-flex">
-								<ExternalLink
-									text="nft.storage API key"
-									href="https://nft.storage/docs/#get-an-api-token"></ExternalLink>
-								<b-form-checkbox
-									class="ml-auto"
-									switch
-									v-model="rememberApiKey"
-									@change="rememberKey"
-									>Remember Key</b-form-checkbox
-								>
-							</div>
-						</template>
-						<b-form-input
-							v-model="metadata.apiKey"
-							type="password"
-							:state="validateState('metadata.apiKey')"
-							placeholder="Enter nft.storage api key." />
-						<b-form-invalid-feedback :state="state.apiKey">
-							Please provide the nft.storage api key.
-						</b-form-invalid-feedback>
-					</b-form-group>
+					<NftStorageApiKeyFormGroup v-model="metadata.apiKey">
+					</NftStorageApiKeyFormGroup>
 					<b-form-group label="Name" label-class="required">
 						<b-form-input
 							v-model="metadata.name"
 							placeholder="e.g. Hidden Monkey"
-							:state="validateState('metadata.name')" />
+							:state="validateState('metadata.name')"
+						/>
 						<b-form-invalid-feedback :state="state.name">
 							Please provide name for the metadata.
 						</b-form-invalid-feedback>
@@ -65,7 +44,8 @@
 						<b-form-textarea
 							v-model="metadata.description"
 							placeholder="e.g. Hidden Monkey is still hidden"
-							:state="validateState('metadata.description')" />
+							:state="validateState('metadata.description')"
+						/>
 						<b-form-invalid-feedback :state="state.description">
 							Please provide description for the metadata.
 						</b-form-invalid-feedback>
@@ -73,11 +53,13 @@
 					<b-form-group
 						label="Image"
 						description="Can be any image format, including .gif"
-						label-class="required">
+						label-class="required"
+					>
 						<b-form-file
 							v-model="metadata.image"
 							accept="image/*"
-							:state="validateState('metadata.image')" />
+							:state="validateState('metadata.image')"
+						/>
 						<b-form-invalid-feedback :state="state.image">
 							Please select the image.
 						</b-form-invalid-feedback>
@@ -93,11 +75,13 @@ import { required } from 'vuelidate/lib/validators'
 import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js'
 import { validateState, getMetamaskError } from '@/utils'
 import useSmartContract from '@/hooks/useSmartContract'
+import NftStorageApiKeyFormGroup from '../forms/NftStorageApiKeyFormGroup.vue'
 
 export default {
 	props: {
 		smartContract: Object,
 	},
+	components: { NftStorageApiKeyFormGroup },
 	setup(props) {
 		const contract = useSmartContract(props.smartContract)
 		return { contract }
@@ -111,9 +95,9 @@ export default {
 				name: '',
 				description: '',
 				image: [],
-				apiKey: null,
+				apiKey: '',
 			},
-			rememberApiKey: false,
+			nftStorageClient: null,
 		}
 	},
 	computed: {
@@ -122,7 +106,6 @@ export default {
 				name: !this.$v.metadata.name.$error,
 				description: !this.$v.metadata.description.$error,
 				image: !this.$v.metadata.image.$error,
-				apiKey: !this.$v.metadata.apiKey.$error,
 			}
 		},
 	},
@@ -131,33 +114,25 @@ export default {
 			name: { required },
 			description: { required },
 			image: { required },
-			apiKey: { required },
+		},
+	},
+	watch: {
+		'metadata.apiKey': {
+			handler: function (newVal) {
+				this.nftStorageClient = new NFTStorage({ token: newVal })
+			},
+			immediate: true,
 		},
 	},
 	async created() {
-		this.metadata.apiKey = localStorage.getItem('zcnft_nft_storage_api_key')
-		if (this.metadata.apiKey) {
-			this.rememberApiKey = true
-		}
-
 		this.url = await this.contract?.preRevealURL()
 	},
 	methods: {
 		validateState,
-		rememberKey(remember) {
-			if (remember) {
-				localStorage.setItem('zcnft_nft_storage_api_key', this.apiKey)
-			} else {
-				localStorage.removeItem('zcnft_nft_storage_api_key')
-			}
-		},
 		async save() {
 			this.$v.$touch()
 			if (this.$v.metadata.$invalid) {
 				return
-			}
-			if (this.rememberApiKey) {
-				localStorage.setItem('zcnft_nft_storage_api_key', this.metadata.apiKey)
 			}
 			try {
 				this.isBusy = true
@@ -173,9 +148,8 @@ export default {
 			}
 		},
 		async uploadMetadata() {
-			const { apiKey, name, description, image } = this.metadata
-			const client = new NFTStorage({ token: apiKey })
-			const metadata = await client.store({
+			const { name, description, image } = this.metadata
+			const metadata = await this.nftStorageClient.store({
 				image,
 				name,
 				description,
@@ -196,9 +170,12 @@ export default {
 			)
 			const gasPrice = await this.$wallet.provider.getGasPrice()
 
-			const tx = await signedContract.setPreRevealUrl(this.url, {
-				gasPrice,
-			})
+			const tx = await signedContract.setPreRevealUrl(
+				this.uploadedMetadataUrl,
+				{
+					gasPrice,
+				}
+			)
 
 			this.$bvToast.toast('Update transaction accepted', {
 				title: 'Delayed Reveal URL',

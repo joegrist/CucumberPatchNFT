@@ -9,7 +9,8 @@
 				<ExternalLink
 					href="https://youtu.be/1f7GvvOIe6Y"
 					icon="youtube"
-					text="How does metadata work ?!" />
+					text="How does metadata work ?!"
+				/>
 			</b-col>
 			<b-col sm="12" md="3">
 				<!-- <b-overlay :show="isBusy">
@@ -26,86 +27,76 @@
 		</b-row>
 		<b-row>
 			<b-col>
-				<b-form-group
-					description="The key is only stored locally in your browser and never on our servers">
-					<template #label>
-						<div class="d-flex">
-							<ExternalLink
-								text="Step 1:  get nft.storage API key"
-								href="https://nft.storage/docs/#get-an-api-token"></ExternalLink>
-							<b-form-checkbox
-								class="ml-auto"
-								switch
-								v-model="rememberApiKey"
-								@change="rememberKey"
-								>Remember Key</b-form-checkbox
-							>
-						</div>
-					</template>
-					<b-form-input
-						autofocus
-						type="password"
+				<b-form novalidate>
+					<NftStorageApiKeyFormGroup
 						v-model="apiKey"
-						placeholder="Enter nft.storage api key." />
-				</b-form-group>
-				<b-form-group
-					class="mb-1"
-					label="Step 2: Upload images folder"
-					description="Name files in a sequential order e.g. 1.png, 2.png, etc. for best results">
-					<div class="d-flex w-100">
-						<b-form-file
-							:disabled="!apiKey"
-							:value="imageFiles"
-							@input="(val) => (imageFiles = val.sort(sortFilesFn))"
-							directory
-							no-traverse
-							multiple
-							placeholder="No folder chosen"
-							accept="image/*" />
-						<b-overlay :show="isUploading" rounded>
-							<b-button
-								variant="primary"
-								class="ml-2"
-								:disabled="!imageFiles.length"
-								@click="uploadImages"
-								>Upload</b-button
-							>
-						</b-overlay>
-					</div>
-				</b-form-group>
-				<p v-show="imageFiles.length">
-					Files: {{ imageFiles.length }} | Size: {{ calcSize(imageFiles) }} |
-					CID: {{ imagesCID || 'Not yet generated' }} | 
-					<span v-show="imagesCID">Status: {{ imagesStatus }} |</span>
-					<!-- <b-button v-show="imagesCID" size="sm" variant="success" @click="refreshImagesStatus">Refresh</b-button> -->
-				</p>
-				<b-form-group
-					class="mb-1"
-					label="Step 3: Upload metadata folder (files with .json extension)">
-					<div class="d-flex w-100">
-						<b-form-file
-							:value="jsonFiles"
-							@input="(val) => (jsonFiles = val.sort(sortFilesFn))"
-							directory
-							no-traverse
-							multiple
-							placeholder="No folder chosen"
-							accept=".json" />
-						<b-overlay :show="isUploading" rounded>
-							<b-button
-								variant="primary"
-								class="ml-2"
-								:disabled="!jsonFiles.length"
-								@click="uploadMetadata"
-								>Upload</b-button
-							>
-						</b-overlay>
-					</div>
-				</b-form-group>
-				<p v-show="jsonFiles.length">
-					Files: {{ jsonFiles.length }} | Size: {{ calcSize(jsonFiles) }} | CID:
-					{{ metadataCID || 'Not yet generated...' }}
-				</p>
+					></NftStorageApiKeyFormGroup>
+					<b-form-group
+						class="mb-1"
+						label="Step 1: Upload images folder"
+						description="Name files in a sequential order e.g. 1.png, 2.png, etc. for best results"
+					>
+						<div class="d-flex w-100">
+							<b-form-file
+								:disabled="!apiKey"
+								:value="imageFiles"
+								@input="(val) => (imageFiles = val.sort(sortFilesFn))"
+								directory
+								no-traverse
+								multiple
+								placeholder="No folder chosen"
+								accept="image/*"
+							/>
+							<b-overlay :show="isUploading" rounded>
+								<b-button
+									variant="primary"
+									class="ml-2"
+									:disabled="!imageFiles.length"
+									@click="uploadImages"
+									>Upload
+								</b-button>
+							</b-overlay>
+						</div>
+					</b-form-group>
+					<p v-show="imageFiles.length">
+						Files: {{ imageFiles.length }} | Size: {{ calcSize(imageFiles) }} |
+						CID: {{ imagesCID || 'Not yet generated' }} |
+						<span v-show="imagesCID">Status: {{ imagesStatus }} | </span>
+						<!-- 	<b-button v-show="imagesCID" size="sm" variant="success" @click="refreshImagesStatus">
+								Refresh</b-button> -->
+					</p>
+					<b-form-group
+						class="mb-1"
+						label="Step 2: Upload metadata folder (files with .json extension)"
+					>
+						<div class="d-flex w-100">
+							<b-form-file
+								:disabled="!apiKey"
+								:value="jsonFiles"
+								@input="(val) => (jsonFiles = val.sort(sortFilesFn))"
+								directory
+								no-traverse
+								multiple
+								placeholder="No folder chosen"
+								accept=".json"
+							/>
+							<b-overlay :show="isUploading" rounded>
+								<b-button
+									variant="primary"
+									class="ml-2"
+									:disabled="!jsonFiles.length"
+									@click="uploadMetadata"
+									>Upload
+								</b-button>
+							</b-overlay>
+						</div>
+					</b-form-group>
+					<p v-show="jsonFiles.length">
+						Files: {{ jsonFiles.length }} | Size: {{ calcSize(jsonFiles) }} |
+						CID:
+						{{ metadataCID || 'Not yet generated...' }}
+					</p>
+				</b-form>
 			</b-col>
 		</b-row>
 		<b-row v-if="newBaseURL">
@@ -123,14 +114,14 @@
 
 <script>
 import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js'
-
+import NftStorageApiKeyFormGroup from '../forms/NftStorageApiKeyFormGroup.vue'
 export default {
 	props: {
 		smartContract: Object,
 	},
+	components: { NftStorageApiKeyFormGroup },
 	data() {
 		return {
-			rememberApiKey: null,
 			apiKey: null,
 			imagesCID: null,
 			metadataCID: null,
@@ -142,28 +133,15 @@ export default {
 			jsonFiles: [],
 		}
 	},
-	created() {
-		this.apiKey = localStorage.getItem('zcnft_nft_storage_api_key')
-		if (this.apiKey) {
-			this.rememberApiKey = true
-		}
-	},
 	watch: {
 		apiKey: {
-			handler: function(newVal) {
+			handler: function (newVal) {
 				this.nftStorageClient = new NFTStorage({ token: newVal })
 			},
-			immediate: true
-		}
-	},	
-	methods: {
-		rememberKey(remember) {
-			if (remember) {
-				localStorage.setItem('zcnft_nft_storage_api_key', this.apiKey)
-			} else {
-				localStorage.removeItem('zcnft_nft_storage_api_key')
-			}
+			immediate: true,
 		},
+	},
+	methods: {
 		calcSize(files) {
 			const size =
 				files.reduce((acc, val) => {
@@ -172,7 +150,6 @@ export default {
 				}, 0) /
 				1024 /
 				1024
-
 			return `${size.toFixed(2)} MB`
 		},
 		sortFilesFn(a, b) {
@@ -182,11 +159,20 @@ export default {
 			})
 		},
 		async uploadImages() {
-			this.isUploading = true
-			this.imagesCID = await this.nftStorageClient.storeDirectory(this.imageFiles)
-			this.isUploading = false
-
-			await this.refreshImagesStatus()
+			try {
+				this.isUploading = true
+				this.imagesCID = await this.nftStorageClient.storeDirectory(
+					this.imageFiles
+				)
+			} catch (err) {
+				this.$bvToast.toast(err.message || 'Upload failed', {
+					title: 'Image Upload',
+					variant: 'danger',
+				})
+				await this.refreshImagesStatus()
+			} finally {
+				this.isUploading = false
+			}
 		},
 		async refreshImagesStatus() {
 			this.imagesStatus = (await this.nftStorageClient.check(this.imagesCID))?.pin.status
@@ -198,9 +184,7 @@ export default {
 						"Number of images doesn't match number of netadata files"
 					)
 				}
-
 				this.isUploading = true
-
 				const promises = this.jsonFiles.map((f) => f.text())
 
 				const textFiles = await Promise.all(promises)
@@ -211,23 +195,25 @@ export default {
 					return new File([JSON.stringify(meta)], `${i + 1}.json`)
 				})
 
-				this.metadataCID = await this.nftStorageClient.storeDirectory(filesToUpload)
+				this.metadataCID = await this.nftStorageClient.storeDirectory(
+					filesToUpload
+				)
 
-				this.updateBaseUrl()
-
-				this.isUploading = false
+				await this.updateBaseUrl()
 			} catch (err) {
 				this.$bvToast.toast(err.message || 'Upload failed', {
 					title: 'Metadata Upload',
 					variant: 'danger',
 				})
+			} finally {
+				this.isUploading = false
 			}
 		},
 		async updateBaseUrl() {
 			const baseURL = `ipfs://${this.metadataCID}`
 
 			await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
-				baseURL
+				baseURL,
 			})
 
 			this.newBaseURL = baseURL
