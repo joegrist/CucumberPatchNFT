@@ -56,14 +56,14 @@
 			<b-form-input
 				id="phoneNumber"
 				name="phoneNumber"
-				type="text"
+				type="tel"
 				v-model="form.phoneNumber"
 				></b-form-input>
 			<!-- <b-form-invalid-feedback :state="state.phoneNumber">
 				Please correct "Phone Number"
 			</b-form-invalid-feedback> -->
 		</b-form-group>
-		<b-form-group label="Public Key">
+		<b-form-group label="Connected Wallet Address">
 			<b-form-input
 				id="publicKey"
 				name="publicKey"
@@ -128,7 +128,7 @@ export default {
 		console.info('lead source: ', this.form.leadSource)
 	},
 	watch: {
-		'$wallet.account': function(newVal, oldVal) {
+		'$wallet.account': function(newVal) {
 			this.form.publicKey = newVal
 		}
 	},
@@ -147,6 +147,7 @@ export default {
 			const success = await this.signUp(this.form)
 			if(success) {
 				this.$emit('done')
+				this.$gtag('event', 'signup')
 			}
 			this.isBusy = false
 		}
