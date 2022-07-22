@@ -175,9 +175,7 @@ export default {
 			}
 		},
 		async refreshImagesStatus() {
-			this.imagesStatus = (
-				await this.nftStorageClient.check(this.imagesCID)
-			)?.pin.status
+			this.imagesStatus = (await this.nftStorageClient.check(this.imagesCID))?.pin.status
 		},
 		async uploadMetadata() {
 			try {
