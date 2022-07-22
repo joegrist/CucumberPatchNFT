@@ -18,8 +18,8 @@ const dashboard = [
     {
         element: '#user-profile-btn',
         popover: {
-            title: 'Account Sidebar',
-			description: 'Your avatar (from ENS) and balance. Click to open the sidebar.',
+            title: 'Your Account',
+			description: 'Avatar (from ENS), address and balance. Click for more options.',
 			position: 'left',
         }
     },
@@ -44,7 +44,7 @@ const dashboard = [
 		popover: {
 			title: 'Contract Network & Type',
 			description:
-				'The network contract is deployed to and type: ERC721, ERC721A, etc.',
+				'The network contract is deployed on and its type: ERC721, ERC721A, etc.',
 			position: 'right',
 		},
 	},
