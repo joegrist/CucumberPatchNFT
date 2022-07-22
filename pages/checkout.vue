@@ -52,12 +52,12 @@
 					</b-col>
 				</b-row>
 				<b-row v-for="fee in fees" :key="fee.description" class="mb-1">
-					<b-col cols="9">{{ fee.description }}</b-col>
-					<b-col cols="3" class="text-right">{{ fee.cost }} eth</b-col>
+					<b-col cols="8" class="truncate-text">{{ fee.description }}</b-col>
+					<b-col cols="4" class="text-right">{{ fee.cost }} eth</b-col>
 				</b-row>
 				<b-row class="border-top font-weight-bold mb-3">
-					<b-col cols="9">Total: </b-col>
-					<b-col cols="3" class="text-right"> {{ calcTotal }} eth </b-col>
+					<b-col cols="8">Total: </b-col>
+					<b-col cols="4" class="text-right"> {{ calcTotal }} eth </b-col>
 				</b-row>
 				<b-alert :show="insufficientBalance" variant="warning">Insufficient balance. Your balance: {{ $wallet.balanceFormatted }}</b-alert>
 				<b-overlay :show="isBusy">
@@ -89,38 +89,41 @@
 							>See examples >></b-link
 						>
 					</li>
+					<li>and more</li>
 				</ul>
 				<b-collapse id="dappExamples">
 					<ul>
 						<li><ExternalLink href="https://69fsailingnft.io/" /></li>
 						<li><ExternalLink href="https://lipsoflove.io/" /></li>
+						<li><ExternalLink href="https://phunkyfungi.io" /></li>
 						<li><ExternalLink href="https://genesisreborn.com" /></li>
 						<li><ExternalLink href="https://crypticvisions.io/" /></li>
 						<li><ExternalLink href="https://metazoidsocialclub.io/" /></li>
-						<li><ExternalLink href="https://phunkyfungi.io" /></li>
 					</ul>
 				</b-collapse>
-				<b-button
-					size="lg"
-					variant="primary"
-					href="https://discord.gg/NdEpB6ZYKn"
-					target="_blank"
-					><b-icon icon="discord"></b-icon
-				></b-button>
-				<b-button
-					size="lg"
-					variant="primary"
-					href="http://twitter.com/zero_code_nft"
-					target="_blank"
-					><b-icon icon="twitter"></b-icon
-				></b-button>
-				<b-button
-					size="lg"
-					variant="primary"
-					:href="`mailto:drop@zerocodenft.com?subject=Custom Deployment for ${smartContractId}`"
-					target="_blank"
-					><b-icon icon="envelope"></b-icon
-				></b-button>
+				<div class="mb-2">
+					<b-button
+						size="lg"
+						variant="primary"
+						href="https://discord.gg/NdEpB6ZYKn"
+						target="_blank"
+						><b-icon icon="discord"></b-icon
+					></b-button>
+					<b-button
+						size="lg"
+						variant="primary"
+						href="http://twitter.com/zero_code_nft"
+						target="_blank"
+						><b-icon icon="twitter"></b-icon
+					></b-button>
+					<b-button
+						size="lg"
+						variant="primary"
+						:href="`mailto:drop@zerocodenft.com?subject=Custom Deployment for ${smartContractId}`"
+						target="_blank"
+						><b-icon icon="envelope"></b-icon
+					></b-button>
+				</div>
 				<!-- <div id="paypal-container"></div> -->
 			</b-col>
 		</b-row>
