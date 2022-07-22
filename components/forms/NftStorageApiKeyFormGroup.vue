@@ -21,7 +21,7 @@
 			</div>
 		</template>
 		<b-form-input
-			autofocus
+			type="password"
 			v-model="localData"
 			:state="validateState('localData')"
 			placeholder="Enter nft.storage api key."

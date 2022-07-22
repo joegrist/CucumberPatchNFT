@@ -4,13 +4,8 @@
 			<b-col sm="12" md="9" class="my-auto">
 				<h4 class="m-0">Delayed Reveal</h4>
 				<span class="text-muted"
-					>Upload image and create metadata for your NFT placeholder |
+					>Upload image and create metadata as your NFT placeholder
 				</span>
-				<ExternalLink
-					href="https://youtu.be/It05AkP_Wt4"
-					icon="youtube"
-					text="What's this?"
-				/>
 			</b-col>
 			<b-col sm="12" md="3">
 				<b-overlay :show="isBusy">
