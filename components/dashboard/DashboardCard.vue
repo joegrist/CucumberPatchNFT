@@ -164,7 +164,7 @@ import {
 import { getExplorerUrl, getCurrency } from '@/constants/metamask'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 import { wait, validateState, getProvider } from '@/utils'
-import { required } from 'vuelidate/lib/validators'
+import { required, maxLength } from 'vuelidate/lib/validators'
 import BlockchainImage from '@/mixins/blockchainImage'
 
 export default {
@@ -190,7 +190,7 @@ export default {
 	},
 	validations: {
 		openSeaLinkUrl: { required },
-		cloneContractTitle: { required },
+		cloneContractTitle: { required, maxLength: maxLength(50) },
 	},
 	async mounted() {
 		if (!this.isDeployed) return

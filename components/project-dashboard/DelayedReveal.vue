@@ -18,9 +18,9 @@
 				</b-overlay>
 			</b-col>
 		</b-row>
-		<b-row>
+		<b-row v-show="!!url">
 			<b-col>
-				<p v-show="url" class="break-word">
+				<p class="break-word">
 					Current Metadata URL: <b>{{ url }}</b>
 				</p>
 			</b-col>
@@ -95,7 +95,7 @@ export default {
 				name: '',
 				description: '',
 				image: [],
-				apiKey: '',
+				apiKey: null,
 			},
 			nftStorageClient: null,
 		}

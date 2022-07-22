@@ -2,32 +2,6 @@
 	<b-form v-if="showForm" @reset.prevent="onFormReset(reset)" novalidate>
 		<b-container fluid>
 			<b-row>
-				<!-- <b-col sm="12" md="6">
-					<b-form-group
-						description="URL to the endpoint (folder) that contains metadata .json files. Can be set later.">
-						<template #label>
-							Metadata URL (IPFS)
-							<ExternalLink
-								href="https://youtu.be/1f7GvvOIe6Y"
-								icon="youtube"
-								text="What's this?" />
-						</template>
-						<b-form-input
-							id="baseURL"
-							name="baseURL"
-							type="text"
-							placeholder="ipfs://*************************/"
-							:value="smartContractBuilder.baseURL"
-							@change="(baseURL) => updateSmartContractBuilder({ baseURL })"
-							@blur="$v.smartContractBuilder.baseURL.$touch()"
-							:state="
-								validateState('smartContractBuilder.baseURL')
-							"></b-form-input>
-						<b-form-invalid-feedback :state="state.baseURL">
-							Please correct "Metadata URL"
-						</b-form-invalid-feedback>
-					</b-form-group>
-				</b-col> -->
 				<b-col>
 					<b-form-group
 						label="Name"
@@ -225,7 +199,7 @@ import {
 	decimal,
 	alphaNum,
 } from 'vuelidate/lib/validators'
-import { validateState, mustBeURL } from '@/utils'
+import { validateState } from '@/utils'
 import { getMainnetConfig } from '@/constants/metamask'
 const mustBeName = (val) => /^[A-Za-z][\w ]{1,50}$/.test(val)
 
@@ -248,7 +222,6 @@ export default {
 		smartContractBuilder: {
 			collectionSize: { required, numeric, minValue: minValue(1) },
 			name: { required, mustBeName, maxLength: maxLength(50) },
-			// baseURL: { mustBeURL, maxLength: maxLength(200) },
 			symbol: { required, alphaNum, maxLength: maxLength(10) },
 			mintPrice: { required, decimal, minValue: minValue(0) },
 			firstXFree: { numeric, minValue: minValue(0) },
