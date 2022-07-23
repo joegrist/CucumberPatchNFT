@@ -35,6 +35,7 @@
 								required
 								:type="funcParam.type.includes('uint') ? 'number' : 'text'"
                                 :value="funcArgs.get(funcParam.name)"
+								step="any"
 								@change="(val) => onParamChange(funcParam.name, val)" />
 						</b-form-group>
 					</li>
