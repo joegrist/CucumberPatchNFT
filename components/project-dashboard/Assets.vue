@@ -104,7 +104,7 @@
 				<div v-if="!smartContract.hasDelayedReveal" class="d-flex mt-1">
 					<b-form-group
 							class="mb-1"
-							label="Step 4: Update Smart Contract"
+							label="Step 3: Update Smart Contract"
 						>
 						<b-overlay rounded :show="isUploading">
 							<b-button variant="primary" @click="onUpdateSmartContract">Update Now</b-button>
@@ -122,7 +122,6 @@ import { NFTStorage } from 'nft.storage/dist/bundle.esm.min.js'
 import NftStorageApiKeyFormGroup from '../forms/NftStorageApiKeyFormGroup.vue'
 import useSmartContract from '@/hooks/useSmartContract'
 export default {
-	
 	props: {
 		smartContract: Object,
 	},
@@ -175,12 +174,12 @@ export default {
 				this.imagesCID = await this.nftStorageClient.storeDirectory(
 					this.imageFiles
 				)
+				await this.refreshImagesStatus()
 			} catch (err) {
 				this.$bvToast.toast(err.message || 'Upload failed', {
 					title: 'Image Upload',
 					variant: 'danger',
 				})
-				await this.refreshImagesStatus()
 			} finally {
 				this.isUploading = false
 			}
