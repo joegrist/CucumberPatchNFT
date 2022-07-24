@@ -28,8 +28,8 @@
 			</b-dd-item>
 		</b-dropdown>
 		<b-card-title class="text-center truncate-text px-3 mb-0 pb-2" id="project-name">
-			<b-link v-if="isDeployed" class="text-dark" :to="`/project?id=${sc.id}`">{{ sc.name | startCase }}</b-link>
-			<span v-else>{{ sc.name | startCase }}</span>
+			<b-link v-if="isDeployed" class="text-dark" :to="`/project?id=${sc.id}`">{{ sc.name }}</b-link>
+			<span v-else>{{ sc.name }}</span>
 		</b-card-title>
 
 		<b-card-sub-title class="text-center mb-2" id="project-type-network">
