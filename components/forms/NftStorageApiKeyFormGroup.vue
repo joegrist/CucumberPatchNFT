@@ -69,11 +69,11 @@ export default {
 			this.$emit('input', this.localData)
 			this.rememberApiKey = true
 		}
-	},
+	},	
 	methods: {
 		validateState,
-		rememberKey(remember) {
-			if (remember) {
+		rememberKey(remember) {	
+			if (remember && this.localData) {
 				localStorage.setItem(ZEROCODENFT_STORAGE_API_KEY, this.localData)
 			} else {
 				localStorage.removeItem(ZEROCODENFT_STORAGE_API_KEY)
