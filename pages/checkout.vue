@@ -56,8 +56,24 @@
 					<b-col cols="4" class="text-right">{{ fee.cost }} eth</b-col>
 				</b-row>
 				<b-row class="border-top font-weight-bold mb-3">
+					<b-col cols="12">
+						<b-row v-for="discount in discounts" :key="discount.text" class="mb-1">
+							<b-col cols="8" class="truncate-text">{{ discount.text }}</b-col>
+							<b-col cols="4" class="text-right">{{ discount.value }}</b-col>
+						</b-row>
+					</b-col>
 					<b-col cols="8">Total: </b-col>
 					<b-col cols="4" class="text-right"> {{ calcTotal }} eth </b-col>
+				</b-row>
+				<b-row>
+					<b-col>
+						<b-form-group label="Have a discount code?">
+							<div class="d-flex flex-row">
+								<b-form-input v-model="discountCode"></b-form-input>
+								<b-button variant="primary" class="ml-2" @click="applyPromoCode">Apply</b-button>
+							</div>
+						</b-form-group>
+					</b-col>
 				</b-row>
 				<b-alert :show="insufficientBalance" variant="warning">Insufficient balance. Your balance: {{ $wallet.balanceFormatted }}</b-alert>
 				<b-overlay :show="isBusy">
@@ -159,7 +175,6 @@
 </template>
 
 <script>
-// import { loadScript } from '@paypal/paypal-js'
 import { ethers } from 'ethers'
 import { mapState, mapGetters, mapMutations } from 'vuex'
 import {
@@ -173,6 +188,7 @@ import { getMetamaskError } from '@/utils'
 export default {
 	data() {
 		return {
+			SMART_CONTRACT_FEATURES,
 			selectedAddons: [],
 			addons: [
 				{
@@ -186,7 +202,7 @@ export default {
 				{
 					text: 'Custom ASCII Art',
 					value: SMART_CONTRACT_FEATURES.CustomASCIIArt,
-				},
+				}
 			],
 			payWithEthDisabled: false,
 			ethPayTxHash: null,
@@ -195,7 +211,8 @@ export default {
 			feeStructure: [],
 			smartContract: null,
 			asciiArt: null,
-			SMART_CONTRACT_FEATURES,
+			discountCode: null,
+			discounts: []
 		}
 	},
 	async created() {
@@ -258,10 +275,19 @@ export default {
 		calcTotal() {
 			if (!this.feeStructure) return '0.00'
 
-			const total = this.fees.reduce((acc, val) => {
+			let total = this.fees.reduce((acc, val) => {
 				acc += val.cost
 				return acc
 			}, 0)
+
+			if(this.discounts.length > 0) {
+				const discountsTotal = this.discounts.reduce((acc, val) => {
+					acc += val.apply(total)
+					return acc
+				}, 0)
+
+				total -= discountsTotal
+			}
 
 			return total.toFixed(2)
 		},
@@ -270,6 +296,25 @@ export default {
 		...mapMutations(['setBusy']),
 		onArtInput(e) {
 			this.asciiArt = e.target.innerText
+		},
+		applyPromoCode() {
+			const alreadyApplied = this.discounts.find(x => x.text === this.discountCode)
+			if(alreadyApplied) {
+				this.discountCode = null
+				return
+			}
+
+			if(this.smartContract.chainId != 4 && this.discountCode === 'ALT25') {
+				this.discounts.push({
+					text: 'ALT25',
+					value: '25% OFF',
+					apply: (val) => val * 25/100
+				})
+			} else {
+				alert(`Discount code "${this.discountCode}" is invalid`)
+			}
+
+			this.discountCode = null
 		},
 		async payWithEth() {
 			try {
@@ -318,7 +363,7 @@ export default {
 					paymentMethod: PAYMENT_METHOD.ETH,
 					amount: this.calcTotal,
 					orderId: confirmedTx?.transactionHash,
-					countryCode: null,
+					discountCodes: this.discounts.map(x => x.text).join(','),
 					payerId: this.userId,
 					payerName: `${firstName} ${lastName}`,
 					features: this.selectedAddons,
