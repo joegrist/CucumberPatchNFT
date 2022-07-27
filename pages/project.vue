@@ -83,6 +83,7 @@ export default {
 	watch: {
 		'$wallet.account': {
 			handler: 'checkOwner',
+			immediate: true
 		},
 	},
 	methods: {
@@ -92,13 +93,14 @@ export default {
 			this.project.ownerAddress = await this.contract.owner()
 		},
 		checkOwner(newVal, oldVal) {
-			if (!newVal || !this.project.ownerAddress) return
+			if (!this.project.ownerAddress) return
 
-			const mismatch =
+			const hasError = !newVal || (
 				ethers.utils.getAddress(newVal) !==
 				ethers.utils.getAddress(this.project.ownerAddress)
+			)
 
-			if (mismatch) {
+			if (hasError) {
 				const addr = this.project.ownerAddress
 				const addrTo = `${addr.substring(0, 4)}...${addr.substring(
 					addr.length - 4
@@ -106,7 +108,7 @@ export default {
 				this.addAlert({
 					id: 'smartContractOwnerMismatch',
 					show: true,
-					text: `Connected wallet address ${this.$wallet.accountCompact} is not the smart contract owner. Please switch to ${addrTo} to perform updates.`,
+					text: `Connected wallet address ${this.$wallet.accountCompact} is not the smart contract owner. Please connect ${addrTo} to perform updates.`,
 				})
 			} else {
 				this.removeAlert('smartContractOwnerMismatch')
