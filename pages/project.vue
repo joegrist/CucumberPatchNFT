@@ -2,30 +2,38 @@
 	<b-container class="mt-3">
 		<b-row>
 			<b-col>
-				<b-tabs v-if="rawContract" content-class="mt-3">
+				<b-tabs v-if="project" content-class="mt-3">
 					<b-tab title="Smart Contract" active>
-						<SmartContract :smartContract="rawContract" />
+						<SmartContract :smartContract="project" @ready="onReady" />
 					</b-tab>
 					<b-tab title="Assets" lazy>
-						<Assets :smartContract="rawContract" />
+						<Assets :smartContract="project" />
 					</b-tab>
-					<b-tab v-if="rawContract.hasWhitelist" title="Whitelist" lazy>
-						<Whitelist :smartContractId="rawContract.id" />
+					<b-tab
+						v-if="project.hasWhitelist"
+						title="Whitelist"
+						lazy
+						:disabled="!isDeployed">
+						<Whitelist :smartContractId="project.id" />
 					</b-tab>
-					<b-tab v-if="rawContract.hasDelayedReveal" title="Delayed Reveal" lazy>
-						<DelayedReveal :smartContract="rawContract" />
+					<b-tab
+						v-if="project.hasDelayedReveal"
+						title="Delayed Reveal"
+						lazy
+						:disabled="!isDeployed">
+						<DelayedReveal :smartContract="project" />
 					</b-tab>
 					<b-tab v-if="!isImported" title="Mint Page" lazy>
-						<MintPage :smartContractId="rawContract.id" />
+						<MintPage :smartContractId="project.id" />
 					</b-tab>
-					<b-tab title="Snapshot" lazy>
-						<Snapshot :smartContract="rawContract" />
+					<b-tab title="Snapshot" lazy :disabled="!isDeployed">
+						<Snapshot :smartContract="project" />
 					</b-tab>
 					<b-tab v-if="!isImported" title="Source Code" lazy>
-						<SourceCode :smartContract="rawContract" />
+						<SourceCode :smartContract="project" />
 					</b-tab>
 					<b-tab v-if="!isImported" title="Other" lazy>
-						<Config :smartContractId="rawContract.id" />
+						<Config :smartContractId="project.id" />
 					</b-tab>
 				</b-tabs>
 			</b-col>
@@ -34,16 +42,17 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
-
+import { mapMutations } from 'vuex'
+import { ethers } from 'ethers'
+import useSmartContract from '@/hooks/useSmartContract'
 import SmartContract from '@/components/project-dashboard/SmartContract'
 import Assets from '@/components/project-dashboard/Assets'
 import Whitelist from '@/components/project-dashboard/Whitelist'
 import DelayedReveal from '@/components/project-dashboard/DelayedReveal'
 import MintPage from '@/components/project-dashboard/MintPage'
 import Snapshot from '@/components/project-dashboard/Snapshot'
-import Config from '@/components/project-dashboard/Config'
 import SourceCode from '@/components/project-dashboard/SourceCode'
+import Config from '@/components/project-dashboard/Config'
 
 export default {
 	middleware: 'authenticated',
@@ -54,30 +63,62 @@ export default {
 		DelayedReveal,
 		MintPage,
 		Snapshot,
+		SourceCode,
 		Config,
-		SourceCode
 	},
 	data: () => ({
-		rawContract: null,
+		isDeployed: false,
 	}),
-	fetchOnServer: false,
-	fetchKey: 'project-id',
-	async fetch() {
-		try {
-			const { data } = await this.$axios.get(
-				`/users/${this.userId}/smartcontracts/${this.$route.query['id']}`
-			)
-			this.rawContract = data
-		} catch (err) {
-			console.error(err)
-		}
+	async asyncData({ $axios, route, store }) {
+		const { data: project } = await $axios.get(
+			`/users/${store.getters.userId}/smartcontracts/${route.query.id}`
+		)
+		return { project, contract: useSmartContract(project) }
 	},
 	computed: {
-		...mapState(['isBusy']),
-		...mapGetters(['userId']),
 		isImported() {
-			return this.rawContract?.isImported
-		}
+			return this.project?.isImported
+		},
+	},
+	watch: {
+		'$wallet.account': {
+			handler: 'checkOwner',
+		},
+	},
+	methods: {
+		...mapMutations(['addAlert', 'removeAlert']),
+		async onReady() {
+			this.isDeployed = true
+			this.project.ownerAddress = await this.contract.owner()
+		},
+		checkOwner(newVal, oldVal) {
+			if (!newVal || !this.project.ownerAddress) return
+
+			const mismatch =
+				ethers.utils.getAddress(newVal) !==
+				ethers.utils.getAddress(this.project.ownerAddress)
+
+			if (mismatch) {
+				const addr = this.project.ownerAddress
+				const addrTo = `${addr.substring(0, 4)}...${addr.substring(
+					addr.length - 4
+				)}`
+				this.addAlert({
+					id: 'smartContractOwnerMismatch',
+					show: true,
+					text: `Connected wallet address ${this.$wallet.accountCompact} is not the smart contract owner. Please switch to ${addrTo} to perform updates.`,
+				})
+			} else {
+				this.removeAlert('smartContractOwnerMismatch')
+			}
+		},
 	},
 }
 </script>
+
+<style lang="scss">
+.nav-tabs .nav-link.disabled {
+	pointer-events: all;
+	cursor: not-allowed;
+}
+</style>

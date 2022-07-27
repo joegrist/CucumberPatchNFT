@@ -176,6 +176,7 @@ export default {
 				)
 				await this.refreshImagesStatus()
 			} catch (err) {
+				console.log(this.imagesCID, err)
 				this.$bvToast.toast(err.message || 'Upload failed', {
 					title: 'Image Upload',
 					variant: 'danger',

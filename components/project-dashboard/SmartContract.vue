@@ -6,7 +6,7 @@
 					<b-col>
 						<span class="lead font-weight-bold">
 							{{ rawContract.name }}
-							deployed on
+							{{ isReady ? 'deployed' : 'pending' }} on
 							{{ rawContract.blockchain | blockchainName }}
 							{{
 								rawContract.status === SMARTCONTRACT_STATUS.Testnet
@@ -49,7 +49,13 @@
 						Balance: {{ contractBalance }}
 						{{ getCurrency(rawContract.chainId) }}
 					</span>
-					<b-dropdown right lazy variant="primary" size="sm" text="Actions">
+					<b-dropdown
+						right
+						lazy
+						variant="primary"
+						size="sm"
+						text="Actions"
+						:disabled="!isReady">
 						<b-dd-item-btn @click="onRefreshBalance(true)">
 							<b-icon icon="bootstrap-reboot" />
 							Refresh
@@ -74,7 +80,13 @@
 							>{{ saleStatus }}</span
 						>
 					</span>
-					<b-dropdown right lazy variant="primary" size="sm" text="Actions">
+					<b-dropdown
+						right
+						lazy
+						variant="primary"
+						size="sm"
+						text="Actions"
+						:disabled="!isReady">
 						<b-dd-item-btn @click="callFuncByName('saleStatus')">
 							<b-icon icon="bootstrap-reboot" />
 							Refresh Sale Status
@@ -102,11 +114,10 @@
 			</b-col>
 		</b-row>
 		<b-row v-if="!isReady">
-			<b-col>
-				<h3 class="pt-3 text-center">
-					Contract deployment is still in progress, please check back in a few
-					minutes
-				</h3>
+			<b-col class="text-center">
+				<h4 class="pt-3">
+					Pending smart contract deployment, please wait. Some functions are disabled.
+				</h4>
 			</b-col>
 		</b-row>
 		<b-row v-else>
@@ -222,13 +233,13 @@ const basicFunctions = [
 	'totalSupply',
 	'setPublicMintPrice',
 	'setPreRevealUrl',
-	'setBaseURL'
+	'setBaseURL',
 ]
 
 export default {
 	setup(props) {
 		const contract = useSmartContract(props.smartContract)
-		return { contract }
+		return { contract, rawContract: props.smartContract }
 	},
 	props: {
 		smartContract: Object,
@@ -241,56 +252,40 @@ export default {
 		CONTRACT_TYPE,
 		SALE_STATUS,
 		showAdvancedFunctions: false,
-		rawContract: {},
-		deployedContract: {},
+		mainnetContract: {},
 		contractBalance: 0,
 		saleStatus: 'N/A',
 		isReady: false,
-		currentOwner: null,
 		busyStates: {
 			withdraw: false,
 			setSaleStatus: false,
 		},
 	}),
-	async mounted() {
+	fetchOnServer: false,
+	fetchKey: 'smart-contract-tab',
+	async fetch() {
 		try {
-			this.rawContract = this.smartContract
-			const { ownerAddress } = this.rawContract
-			this.currentOwner = ownerAddress
-
-			this.setBusy({ isBusy: true })
-
-			this.isReady = !!(await this.contract.deployed())
-			if (this.isReady) {
-				await this.onRefreshBalance()
-				const saleStatus = await this.contract.saleStatus()
-				this.saleStatus = SALE_STATUS[saleStatus]
-				this.currentOwner = await this.contract.owner()
-			}
-
-			this.checkOwner(this.$wallet.account)
-		} catch (err) {
-			console.error(err)
-			this.$bvToast.toast(err.message || 'Smart contract load failed', {
-				title: 'Smart Contract',
-				variant: 'danger',
+			await this.contract.deployed() // throws if not deployed
+			await this.onReady()
+		} catch {
+			// if not deployed setup one-time listener
+			this.contract.once('OwnershipTransferred', async (from, to) => {
+				console.log('OwnershipTransferred', from, to)
+				if(from === ethers.constants.AddressZero) {
+					await this.onReady()
+				}
 			})
-		} finally {
-			this.setBusy({ isBusy: false })
 		}
 	},
-	watch: {
-		'$wallet.account': {
-			handler: 'checkOwner',
-		},
-	},
 	computed: {
-		// ...mapState(['isBusy']),
+		isBusy() {
+			return this.$fetchState.pending || this.$store.state.isBusy
+		},
 		deployedExplorerUrl() {
-			if (!this.deployedContract?.address) return
+			if (!this.mainnetContract?.address) return
 
-			return `${getExplorerUrl(this.deployedContract.chainId)}/address/${
-				this.deployedContract.address
+			return `${getExplorerUrl(this.mainnetContract.chainId)}/address/${
+				this.mainnetContract.address
 			}`
 		},
 		canDeployMainnet() {
@@ -318,31 +313,16 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
+		...mapMutations(['setBusy']),
 		getExplorerUrl,
 		getCurrency,
 		downloadTextFile,
-		checkOwner(newVal, oldVal) {
-			// console.log('here', newVal, this.currentOwner)
-			if (!newVal || !this.currentOwner) return
-
-			const mismatch =
-				ethers.utils.getAddress(newVal) !==
-				ethers.utils.getAddress(this.currentOwner)
-
-			if (mismatch) {
-				const addr = this.rawContract.ownerAddress
-				const addrTo = `${addr.substring(0, 4)}...${addr.substring(
-					addr.length - 4
-				)}`
-				this.addAlert({
-					id: 'smartContractOwnerMismatch',
-					show: true,
-					text: `Connected wallet address ${this.$wallet.accountCompact} is not the smart contract owner. Please switch to ${addrTo} to perform updates.`,
-				})
-			} else {
-				this.removeAlert('smartContractOwnerMismatch')
-			}
+		async onReady() {
+			this.$emit('ready')
+			this.isReady = true
+			await this.onRefreshBalance()
+			const saleStatus = await this.contract.saleStatus()
+			this.saleStatus = SALE_STATUS[saleStatus]
 		},
 		async onVerify() {
 			try {
@@ -448,7 +428,7 @@ export default {
 					}
 				)
 
-				this.deployedContract = mainnetContract
+				this.mainnetContract = mainnetContract
 
 				this.$bvModal.show('deployment')
 			} catch (err) {

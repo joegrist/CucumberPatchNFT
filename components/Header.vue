@@ -23,13 +23,21 @@
 						class="text-center text-md-left"
 						>Dashboard</b-nav-item
 					>
-					<b-nav-item v-else class="gradient-text" to="/login"
+					<b-nav-item 
+						v-else
+						to="/login" 
+						active-class="active-nav"
+						class="text-center text-md-left"
 						>Login</b-nav-item
 					>
+					
 				</b-navbar-nav>
 
 				<!-- Right aligned nav items -->
 				<b-navbar-nav class="ml-auto">
+					<b-nav-text v-if="$nuxt.isOffline" class="my-auto text-danger">
+						You are offline
+					</b-nav-text>
 					 <b-nav-item-dropdown text="Help" class="my-auto text-center text-md-left" right>
 						<b-dropdown-item v-show="canTour" @click="initTour('dashboard')">Start Tour</b-dropdown-item>
 						<b-dropdown-item href="https://discord.gg/zerocodenft" target="_blank">Discord</b-dropdown-item>

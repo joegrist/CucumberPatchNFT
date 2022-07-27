@@ -35,7 +35,7 @@ const BLOCKCHAIN = Object.freeze({
 	15: 'Harmony',
 	16: 'Klaytn',
 	17: 'Heco',
-	18:"Cube"
+	18: 'Cube'
 })
 
 const MARKETPLACE = Object.freeze({

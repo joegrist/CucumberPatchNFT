@@ -9,7 +9,7 @@
         </h6>
         <div class="d-flex">
             <LoginButton variant="primary" caption="Login with Metamask" redirect="/" />
-            <b-button variant="link" href="https://discord.gg/NdEpB6ZYKn" target="_blank">Join Discord</b-button>
+            <b-button variant="link" href="https://discord.gg/ZeroCodeNFT" target="_blank">Join Discord</b-button>
         </div>
         <div class="mt-1">
             <b-link class="text-muted text-skip" to="/wizard">Skip for now >></b-link>

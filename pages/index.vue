@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import ProductTour from '@/mixins/productTour';
 
 export default {
@@ -44,10 +44,8 @@ export default {
 			searchTerm: '',
 		}
 	},
-	fetchOnServer: false,
-	fetchKey: 'dashboard',
-	async fetch() {
-		await this.loadDashboardCards()
+	async asyncData({store}) {
+		await store.dispatch('loadDashboardCards')
 	},
 	watch: {
 		dashboardItems: {
@@ -71,7 +69,6 @@ export default {
 		},
 	},
 	methods: {
-		...mapActions(['loadDashboardCards']),
 		...mapMutations(['updateTourPrompts']),
 		onAcceptTour() {
 			this.$bvModal.hide("tourModal")
