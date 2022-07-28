@@ -92,15 +92,10 @@
 					<span class="text-muted">Volume</span>
 				</b-col>
 				<b-col cols="12" class="text-center" style="padding: 0;" id="marketplace">
-					<template v-if="isOpenSea">
-						<b-link :href="collectionUrl" target="_blank">
-							<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
-							<b-icon icon="box-arrow-up-right" />
-						</b-link>
-					</template>
-					<template v-else>
-						<span>Marketplace N/A</span>
-					</template>
+					<b-button v-if="isOpenSea" size="sm" :href="collectionUrl" target="_blank" variant="outline-light" class="border">
+						<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
+					</b-button>
+					<b-button v-else size="sm" variant="transparent" disabled>Marketplace N/A</b-button>
 				</b-col>
 				<b-col cols="6" class="text-center" id="floor-price">
 					<span class="font-weight-bold">{{ openSeaStats.floor_price }}</span>
@@ -428,7 +423,7 @@ export default {
 
 .card-logo {
 	position: absolute;
-	top: 52%;
+	top: 51%;
 	left: 50%;
 	z-index: 1;
 	background: white;
