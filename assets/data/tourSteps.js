@@ -56,6 +56,7 @@ const dashboard = [
                           <li> See contract on etherscan </li>
                           <li> Clone project </li>
                           <li> Link OpenSea (when applicable) </li>
+                          <li> Checkout </li>
                           <li> Remove the project from Zero Code NFT </li>
                       </ul>`,
 			position: 'right',
@@ -151,6 +152,15 @@ const dashboard = [
 			title: 'Manage Project',
 			description:
 				'Deploy to the mainnet, withdraw balance, customize minting page and more!',
+			position: 'right',
+		},
+	},
+	{
+	element: '#project-created-on',
+		popover: {
+			title: 'Created On',
+			description:
+				'Date the project was created',
 			position: 'right',
 		},
 	},

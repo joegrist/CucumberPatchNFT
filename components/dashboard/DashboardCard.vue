@@ -111,10 +111,11 @@
 			<b-row class="pb-0">
 				<b-col cols="8" id="manage-project">
 					<b-button v-if="isDeployed" class="font-weight-bold" variant="link" size="sm" :to="`/project?id=${sc.id}`">
-						Manage Project >></b-button>
+						Manage Project >>
+					</b-button>
 					<b-button v-else variant="link" size="sm" class="font-weight-bold" @click="onEdit">Edit/Deploy >></b-button>
 				</b-col>
-				<b-col cols="4" class="text-muted text-right">
+				<b-col id="project-created-on" cols="4" class="text-muted text-right">
 					{{ sc.createdOn | toDate }}
 				</b-col>
 			</b-row>
