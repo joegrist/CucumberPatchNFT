@@ -107,7 +107,6 @@ export default {
 				)}`
 				this.addAlert({
 					id: 'smartContractOwnerMismatch',
-					show: true,
 					text: `Connected wallet "${this.$wallet.accountCompact}" is not the smart contract owner. Please connect wallet "${addrTo}" to perform updates.`,
 				})
 			} else {

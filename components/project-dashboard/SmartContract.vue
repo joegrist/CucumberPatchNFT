@@ -27,13 +27,9 @@
 									v-if="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet"
 									:disabled="!canDeployMainnet"
 									variant="primary"
-									@click="onMainnetDeploy">
-									<template v-if="rawContract.isClearedForMainnet">
-										Deploy to Mainnet
-									</template>
-									<template v-else>
-										Checkout <b-icon icon="wallet2" />
-									</template>
+									@click="onMainnetDeploy"
+								>
+									Deploy to Mainnet <b-icon v-if="!rawContract.isClearedForMainnet" icon="wallet2" />
 								</b-button>
 								<b-button variant="primary" v-if="canVerify" @click="onVerify">
 									Verify Source Code
@@ -277,6 +273,13 @@ export default {
 			})
 		}
 	},
+	watch: {
+		'$wallet.balance': function(newVal) {
+			if(newVal > 0) {
+				this.removeAlert('insufficientBalance')
+			}
+		}
+	},
 	computed: {
 		isBusy() {
 			return this.$fetchState.pending || this.$store.state.isBusy
@@ -313,7 +316,7 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['setBusy', 'addAlert']),
+		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
 		getExplorerUrl,
 		getCurrency,
 		downloadTextFile,

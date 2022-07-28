@@ -22,8 +22,11 @@
 				<b-dd-item v-if="supportsOpenSea" v-b-modal="`OpenSea${sc.id}`" id="link-opensea">
 					<b-icon icon="link" /> Link OpenSea
 				</b-dd-item>
+				<b-dd-item v-if="isTestnet && !sc.isClearedForMainnet" :to="`/checkout?smId=${sc.id}`">
+					<b-icon icon="wallet2" /> Go to Checkout
+				</b-dd-item>
 			</template>
-			<b-dd-item variant="danger" v-b-modal="`Remove${sc.id}`" id="remove-card">
+			<b-dd-item id="remove-card" variant="danger" v-b-modal="`Remove${sc.id}`">
 				<b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>

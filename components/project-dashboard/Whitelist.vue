@@ -171,9 +171,7 @@ export default {
 					variant: 'success',
 				})
 				this.commitBtnVariant = 'primary'
-				this.removeAlert({
-					id: 'whitelistMustCommit',
-				})
+				this.removeAlert('whitelistMustCommit')
 
 				txResponse.wait().then(async (res) => {
 					this.isProcessingWhitelistCommit = false
@@ -216,7 +214,6 @@ export default {
 
 				this.addAlert({
 					id: 'whitelistMustCommit',
-					show: true,
 					text: 'You MUST commit the list to save it into the smart contract for it to take effect!',
 				})
 

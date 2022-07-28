@@ -29,7 +29,7 @@
 					<b-form-group
 						class="mb-1"
 						label="Step 1: Upload images folder"
-						description="Name files in a sequential order e.g. 1.png, 2.png, etc. for best results"
+						description="Name files in a sequential order e.g. 1.png, 2.png, etc. and up to 5 GB total size for best results"
 					>
 						<div class="d-flex w-100">
 							<b-form-file
@@ -192,7 +192,7 @@ export default {
 			try {
 				if (this.imageFiles.length != this.jsonFiles.length) {
 					throw new Error(
-						"Number of images doesn't match number of netadata files"
+						"Number of images doesn't match number of metadata files"
 					)
 				}
 				this.isUploading = true
