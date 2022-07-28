@@ -304,7 +304,7 @@ export default {
 				return
 			}
 
-			if(this.smartContract.chainId != 4 && this.discountCode === 'ALT25') {
+			if(this.smartContract.chainId != 1 && this.discountCode === 'ALT25') {
 				this.discounts.push({
 					text: 'ALT25',
 					value: '25% OFF',
