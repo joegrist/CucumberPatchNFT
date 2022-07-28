@@ -313,7 +313,7 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['setBusy']),
+		...mapMutations(['setBusy', 'addAlert']),
 		getExplorerUrl,
 		getCurrency,
 		downloadTextFile,
@@ -385,6 +385,15 @@ export default {
 					await this.$wallet.connect()
 				}
 				await this.$wallet.switchNetwork(mainnetConfig.chainId)
+
+				if(this.$wallet.balance === 0) {
+					this.addAlert({
+						id: 'insufficientBalance',
+						variant: 'danger',
+						text: 'Connected wallet doesn\'t have enough balance to cover the deployment gas fees.',
+					})
+					return
+				}
 
 				this.setBusy({
 					isBusy: true,

@@ -48,7 +48,7 @@ export const mutations = {
         const defaults = {
             id: nanoid(),
             variant: "warning",
-            show: 5
+            show: true,
         }
         const alert = {
             ...defaults,
