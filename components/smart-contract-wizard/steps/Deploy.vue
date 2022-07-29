@@ -27,14 +27,14 @@
             <span class="break-word">{{ $wallet.account }}</span>
             <Copy :value="$wallet.account" />
           </div>
-          <b-alert :show="lowBalance" variant="warning">{{ getCurrency(smartContractBuilder.chainId)}} balance too low. Please get some funds from the faucet or select a different wallet to deploy.</b-alert>
+          <b-alert :show="lowBalance" variant="danger">Your {{ getCurrency(smartContractBuilder.chainId)}} balance too low. Get some funds from the faucet first or select a different wallet.</b-alert>
         </b-col>
       </b-row>
       <b-row>
         <b-col>
           <div class="d-flex justify-content-center">
             <template v-if="isLoggedIn">
-              <b-button variant="outline-info" :disabled='!canSaveDraft' @click="saveDraft" class="mr-3">Save Draft</b-button>
+              <b-button variant="outline-success" :disabled='!canSaveDraft' @click="saveDraft" class="mr-3">Save Draft</b-button>
               <b-button variant='outline-primary' :disabled='!canDeploy' @click='deploy'>Deploy contract</b-button>
             </template>
             <LoginButton v-else variant="primary" caption="Login to Deploy" />
@@ -161,11 +161,13 @@ export default {
 
         const { abi, bytecode } = compilationResult
 
-        const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, this.$wallet.provider.getSigner())
+        const signer = this.$wallet.provider.getSigner()
+
+        const contractFactory = new ethers.ContractFactory(abi, `0x${bytecode}`, signer)
 
         // const deploymentData = contractFactory.interface.encodeDeploy([])
-        // const estimatedGas = await this.$wallet.provider.estimateGas({ data: deploymentData })
-        // console.log('gas estimate', estimatedGas.toString())
+        // const estimatedGas = await signer.estimateGas({ data: deploymentData })
+        // console.log('gas estimate', estimatedGas.toNumber(), ethers.utils.formatUnits(estimatedGas, 'gwei'))
 
         const gasPrice = await this.$wallet.provider.getGasPrice()
 				console.info(

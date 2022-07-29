@@ -43,7 +43,7 @@ const downloadTextFile = (
 	format = 'data:text/plain',
 	encoding = 'charset=utf-8'
 ) => {
-	var element = document.createElement('a')
+	const element = document.createElement('a')
 	element.setAttribute(
 		'href',
 		`${format};${encoding},${encodeURIComponent(data)}`

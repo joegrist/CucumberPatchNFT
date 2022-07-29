@@ -1,19 +1,18 @@
 import { ref } from 'vue'
 import { ethers } from 'ethers'
-import { CHAINID_CONFIG_MAP } from '@/constants/metamask'
+import { getProvider } from '@/utils'
 
 const smartContract = ref(null)
 
 export default function useSmartContract({abi, address, chainId}, signer = null) {
 
-    if(signer) {
+    const provider = getProvider(chainId)
+    
+    if(ethers.Signer.isSigner(signer)) {
+        signer.provider ??= provider
         smartContract.value = new ethers.Contract(address, abi, signer)
     } else {
-        const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
-        const jsonRpcProvider = new ethers.providers.StaticJsonRpcProvider(
-            providerUrl
-        )
-        smartContract.value = new ethers.Contract(address, abi, jsonRpcProvider)
+        smartContract.value = new ethers.Contract(address, abi, provider)
     }
 
     return smartContract

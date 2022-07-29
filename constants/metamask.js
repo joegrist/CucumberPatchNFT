@@ -424,7 +424,7 @@ export const CHAINID_CONFIG_MAP = {
 	'0x2019': KLAYTN_MAINNET,
 	'0x3E9': KLAYTN_TESTNET,
 	'0x80': HECO_MAINNET,
-	'0x100' :HECO_TESTNET,	
+	'0x100': HECO_TESTNET,	
 	'0x71A': CUBE_MAINNET,
 	'0x71B':CUBE_TESTNET,
 }
@@ -443,7 +443,8 @@ export const FAUCETS = {
 	'166670e0000': ["https://stakely.io/en/faucet/harmony-one"],
 	'1001':["https://baobab.wallet.klaytn.foundation/faucet"],
 	'256': ["https://scan-testnet.hecochain.com/faucet"],
-	'1819':["https://faucet.cube.network"]
+	'1819':["https://faucet.cube.network"],
+	'1666700000': ['https://faucet.pops.one']
 }
 
 const toHex = (chainId) => {
