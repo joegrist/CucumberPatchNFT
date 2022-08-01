@@ -304,11 +304,11 @@ export default {
 				return
 			}
 
-			if(this.smartContract.chainId != 1 && this.discountCode === 'ALT25') {
+			if(this.smartContract.chainId != 1 && this.discountCode === 'ALT50') {
 				this.discounts.push({
-					text: 'ALT25',
-					value: '25% OFF',
-					apply: (val) => val * 25/100
+					text: 'ALT50',
+					value: '50% OFF',
+					apply: (val) => val * 50/100
 				})
 			} else {
 				alert(`Discount code "${this.discountCode}" is invalid`)
