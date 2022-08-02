@@ -67,7 +67,7 @@ const getProvider = (chainId, isStatic = true) => {
 
 const getMetamaskError = (err, defaultMsg = 'Unknown Error') => {
 	const { data, reason, message, code, method, error } = err
-	return error?.message || data?.message || reason || message || defaultMsg
+	return reason || message || error?.message || data?.message || defaultMsg
 }
 
 export {
