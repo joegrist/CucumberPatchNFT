@@ -31,8 +31,9 @@
 						label="Step 1: Upload images folder"
 						description="Name files in a sequential order e.g. 1.png, 2.png, etc. and up to 5 GB total size for best results"
 					>
-						<div class="d-flex w-100">
-							<b-form-file
+						<b-row no-gutters class="w-100">
+							<b-col sm="12" md="10">
+														<b-form-file
 								:disabled="!apiKey"
 								:value="imageFiles"
 								@input="(val) => (imageFiles = val.sort(sortFilesFn))"
@@ -42,16 +43,20 @@
 								placeholder="No folder chosen"
 								accept="image/*"
 							/>
+							</b-col>
+							<b-col sm="12" md="2">
 							<b-overlay :show="isUploading" rounded>
 								<b-button
+								block
 									variant="primary"
 									class="ml-2"
 									:disabled="!imageFiles.length"
 									@click="uploadImages"
-									>Upload
+									>Upload <b-icon icon="cloud-arrow-up"></b-icon>
 								</b-button>
 							</b-overlay>
-						</div>
+							</b-col>
+						</b-row>
 					</b-form-group>
 					<p v-show="imageFiles.length">
 						Files: {{ imageFiles.length }} | Size: {{ calcSize(imageFiles) }} |
@@ -64,27 +69,33 @@
 						class="mb-1"
 						label="Step 2: Upload metadata folder (files with .json extension)"
 					>
-						<div class="d-flex w-100">
-							<b-form-file
-								:disabled="!apiKey"
-								:value="jsonFiles"
-								@input="(val) => (jsonFiles = val.sort(sortFilesFn))"
-								directory
-								no-traverse
-								multiple
-								placeholder="No folder chosen"
-								accept=".json"
-							/>
-							<b-overlay :show="isUploading" rounded>
-								<b-button
-									variant="primary"
-									class="ml-2"
-									:disabled="!jsonFiles.length"
-									@click="uploadMetadata"
-									>Upload
-								</b-button>
+						<b-row no-gutters class="w-100">
+							<b-col sm="12" md="10">
+								<b-form-file
+									:disabled="!apiKey"
+									:value="jsonFiles"
+									@input="(val) => (jsonFiles = val.sort(sortFilesFn))"
+									directory
+									no-traverse
+									multiple
+									placeholder="No folder chosen"
+									accept=".json"
+								/>
+							</b-col>
+							<b-col sm="12" md="2">
+								<b-overlay :show="isUploading" rounded>
+									<b-button
+									block
+										variant="primary"
+										class="ml-2"
+										:disabled="!jsonFiles.length"
+										@click="uploadMetadata"
+										>Upload <b-icon icon="cloud-arrow-up"></b-icon>
+									</b-button>
 							</b-overlay>
-						</div>
+							</b-col>
+						</b-row>
+							
 					</b-form-group>
 					<p v-show="jsonFiles.length">
 						Files: {{ jsonFiles.length }} | Size: {{ calcSize(jsonFiles) }} |

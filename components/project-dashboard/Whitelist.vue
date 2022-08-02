@@ -15,7 +15,9 @@
 							:variant="commitBtnVariant"
 							:disabled="isProcessingWhitelistCommit"
 							@click="onWhitelistCommit"
-							>Commit List</b-button
+							>
+								Commit <b-icon icon="cloud-arrow-up"></b-icon>
+							</b-button
 						>
 					</b-col>
 					<b-col cols="6">

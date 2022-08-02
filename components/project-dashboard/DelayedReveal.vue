@@ -9,7 +9,9 @@
 			</b-col>
 			<b-col sm="12" md="3">
 				<b-overlay :show="isBusy">
-					<b-button variant="primary" block @click="save">Save</b-button>
+					<b-button variant="primary" block @click="save">
+						Upload <b-icon icon="cloud-arrow-up"></b-icon>
+					</b-button>
 				</b-overlay>
 			</b-col>
 		</b-row>

@@ -131,32 +131,35 @@
 							title="Source code verified"></b-icon>
 						<b-button
 							size="sm"
-							variant="link"
+							class="ml-2"
+							variant="outline-primary"
 							target="_blank"
 							:href="`${getExplorerUrl(rawContract.chainId)}/address/${
 								rawContract.address
 							}`"
-							>[{{ rawContract.address | compactAddress }}]</b-button
+							>{{ rawContract.address | compactAddress }} <b-icon icon="box-arrow-up-right" /></b-button
 						>
 						<b-button
 							size="sm"
-							variant="link"
+							class="ml-2"
+							variant="outline-primary"
 							@click="
 								downloadTextFile(
 									`${rawContract.name}-abi.txt`,
 									JSON.stringify(JSON.parse(rawContract.abi), null, 2)
 								)
 							"
-							>[ABI]</b-button
+							>ABI <b-icon icon="download" /></b-button
 						>
 						<b-button
 							v-if="rawContract.rawCode"
 							size="sm"
-							variant="link"
+							class="ml-2"
+							variant="outline-primary"
 							@click="
 								downloadTextFile(`${rawContract.name}.sol`, rawContract.rawCode)
 							"
-							>[Source Code]</b-button
+							>Source Code <b-icon icon="download" />	</b-button
 						>
 					</b-col>
 					<b-col
