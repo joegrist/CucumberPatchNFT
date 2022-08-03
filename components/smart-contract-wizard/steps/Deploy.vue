@@ -41,14 +41,28 @@
           </div>
         </b-col>
       </b-row>
-    <b-modal id='deployed' title='Deployed' size='md' centered ok-only @ok="$router.push('/')">
+    <b-modal id='deployed' title='Congratulations 🎉' centered ok-only ok-title="Continue" @ok="$router.push('/')">
       <div class='text-center'>
-        <h3>Success!!</h3>
-        <p>Contract has been deployed!
-          <br> 
-          <b-link :href="explorerUrl" target="_blank"> View on block explorer </b-link>
-        </p>
-        <b-link href="https://forms.gle/nJrJRzh98FHhqmN4A" target="_blank"> Take a 2 minute survey! </b-link>
+        <p>You've successfully deployed smart contract in <b>{{duration}}!</b></p>
+        <p>Now what ?</p>
+        <b-list-group>
+          <b-list-group-item button @click="() => $refs.twitterShare.$el.click()">
+          <ShareNetwork
+              ref="twitterShare"
+              network="twitter"
+              :url="twitterUrl"
+              :title="`I've just deployed my NFT smart contract with ZERO code in ${duration}!`"
+              hashtags="zerocodenft,nocode,nft,launchpad"
+            >
+              <b-icon icon="twitter"></b-icon> Tweet
+            </ShareNetwork>
+          </b-list-group-item>
+          <b-list-group-item :href="explorerUrl" target="_blank">View on block explorer</b-list-group-item>
+          <b-list-group-item>
+            Tell us how we did ?!
+            <b-form-rating variant="warning" size="sm" inline no-border @change="goToSurvey"></b-form-rating>
+          </b-list-group-item>
+        </b-list-group>
       </div>
     </b-modal>
     <b-modal
@@ -75,6 +89,7 @@ import { mapState, mapGetters, mapMutations } from 'vuex'
 import Summary from '@/components/smart-contract-wizard/Summary'
 import LoginButton from '@/components/login/LoginButton'
 import { getMetamaskError } from '@/utils'
+import dayjs from 'dayjs'
 
 export default {
   mixins: [smartContractBuilderMixin],
@@ -85,7 +100,8 @@ export default {
   data() {
     return {
       FAUCETS,
-      showConnectWalletModal: false
+      showConnectWalletModal: false,
+      duration: null
     }
   },  
   watch: {
@@ -98,7 +114,7 @@ export default {
   },
   computed: {
     ...mapState(['isBusy']),
-    ...mapGetters(['isLoggedIn']),
+    ...mapGetters(['isLoggedIn', 'referral']),
     explorerUrl() {
       return `${getExplorerUrl(this.smartContractBuilder.chainId)}/address/${this.smartContractBuilder.address}`
     },
@@ -111,10 +127,18 @@ export default {
     canDeploy() {
       return this.isLoggedIn && !this.lowBalance && !this.smartContractBuilder.isDeployed
     },
+    twitterUrl() {
+      return this.referral
+        ? `https://app.zerocodenft.com?ref=${this.referral.code}`
+        : 'https://app.zerocodenft.com'
+    }
   },
   methods: {
     ...mapMutations(['setBusy']),
     getCurrency,
+    goToSurvey() {
+      window.open('https://forms.gle/nJrJRzh98FHhqmN4A', '_blank')
+    },
     async saveDraft() {
       try {
         const res = await this.$axios.post('/smartcontracts/save-draft', {
@@ -189,6 +213,7 @@ export default {
         })
 
         // console.log({ contract })
+        this.duration = `${dayjs().diff(this.smartContractBuilder.startTimestamp, 'minute')} minutes`
 
         this.$bvModal.show('deployed')
       } catch (err) {
@@ -203,3 +228,12 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  .share-network-twitter {
+    color: #1DA1F2;
+    &:hover {
+      text-decoration: none
+    }
+  }
+</style>

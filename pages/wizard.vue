@@ -30,7 +30,7 @@ export default {
         meta: [
           ...getSiteMeta({
             title: 'Zero Code NFT Wizard',
-            description: 'Create and deploy custom smart contract for your NFT drop with ZERO code!',
+            description: 'Create your NFT collection in minutes with ZERO code!',
             url: '/wizard',
             mainImage: '/smart-contract-wizard.png'
           })
@@ -52,6 +52,11 @@ export default {
   components: {
     HorizontalStepper
   },
+  created() {
+    this.updateSmartContractBuilder({
+      startTimestamp: Date.now(),
+    })
+  }, 
   data() {
     return {
       buildSteps: [
@@ -139,10 +144,10 @@ export default {
     // Executed when @stepper-finished event is triggered
     alert(payload) {
       if(!this.isLoggedIn) {
-        alert("Please click 'Login to Deploy' to save progress!")
+        alert("Please login to save progress!")
         return
       }
-      if(this.smartContractBuilder?.id || confirm("You are about to lose all your changes. Are you sure you want to finish ?")) {
+      if(this.smartContractBuilder?.id || confirm("You are about to lose all your changes. Are you sure you want to continue ?")) {
         this.$router.push('/')
       }
     }
