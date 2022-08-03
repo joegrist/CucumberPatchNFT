@@ -50,7 +50,7 @@
 						<b-form-group
 							label="Collection Name"
 							label-class="required"
-							:description="collectionNameDesc">
+							:description="`https://testnets.opensea.io/collection/${formattedName}`">
 							<b-form-input
 								id="collectionName"
 								name="collectionName"
@@ -58,19 +58,19 @@
 								placeholder="e.g. Doodles"
 								:value="smartContractBuilder.marketplaceCollection.name"
 								@change="onNameChange"
-								@blur="
-									$v.smartContractBuilder.marketplaceCollection.name.$touch()
-								"
 								:state="
 									validateState(
 										'smartContractBuilder.marketplaceCollection.name'
 									)
 								"></b-form-input>
 							<b-form-invalid-feedback
-								:state="state.marketplaceCollection.name">
+								:state="state.marketplaceCollection.nameError">
 								Please correct "Collection Name"
 							</b-form-invalid-feedback>
-							<b-form-invalid-feedback :state="!nameIsTaken">
+							<b-form-invalid-feedback
+								:state="
+									!state.marketplaceCollection.uniqueError
+								">
 								This name is already taken
 							</b-form-invalid-feedback>
 						</b-form-group>
@@ -212,12 +212,14 @@ export default {
 			MARKETPLACE,
 			maxValue,
 			createdAlready: false,
-			nameIsTaken: false,
 			openSeaBlockchains: [BLOCKCHAIN.Ethereum, BLOCKCHAIN.Polygon],
 			marketplaces: [],
 		}
 	},
-	mounted() {
+	created() {
+		if(this.formattedName.length > 0) {
+			this.$v.smartContractBuilder.marketplaceCollection.name.$touch()
+		}
 		if (
 			this.$wallet.account &&
 			!this.smartContractBuilder.marketplaceCollection?.feeRecipient
@@ -261,7 +263,8 @@ export default {
 
 			return {
 				marketplaceCollection: {
-					name: !name.$anyError,
+					nameError: !name.$anyError,
+					uniqueError: !name.isUnique,
 					feeRecipient: !feeRecipient.$anyError,
 					royalties: !royalties.$anyError,
 				},
@@ -273,10 +276,9 @@ export default {
 		isOpenSea() {
 			return this.smartContractBuilder.marketplace === MARKETPLACE.OpenSea
 		},
-		collectionNameDesc() {
+		formattedName() {
 			const name = this.smartContractBuilder.marketplaceCollection?.name || ''
-			const formattedName = name.replace(/\s/g, '-').toLowerCase()
-			return `https://testnets.opensea.io/collection/${formattedName}`
+			return name.replace(/\s/g, '-').toLowerCase()
 		},
 	},
 	validations: {
@@ -287,6 +289,22 @@ export default {
 					required: requiredIf(function () {
 						return this.isOpenSea
 					}),
+					isUnique: function (value) {
+						if (!value) return true
+
+						return new Promise((resolve) => {
+							fetch(
+								`https://rinkeby-api.opensea.io/api/v1/collection/${this.formattedName}`
+							)
+							.then((response) => {
+								// console.log(response)
+								resolve(response.status === 404)
+							})
+							.catch((_) => {
+								resolve(true)
+							})
+						})
+					},
 				},
 				externalUrl: {},
 				feeRecipient: {
@@ -326,25 +344,9 @@ export default {
 			}
 		},
 
-		onNameChange(name) {
+		async onNameChange(name) {
 			this.updateSmartContractBuilder({ marketplaceCollection: { name } })
-
-			if (name?.length > 0) {
-				const formattedName = name.replace(/\s/g, '-').toLowerCase()
-
-				fetch(
-					`https://rinkeby-api.opensea.io/api/v1/collection/${formattedName}`
-				)
-					.then((response) => {
-						// console.log(response)
-						this.nameIsTaken = response.status !== 404
-					})
-					.catch((_) => {
-						this.nameIsTaken = false
-					})
-			} else {
-				this.nameIsTaken = false
-			}
+			this.$v.smartContractBuilder.marketplaceCollection.name.$touch()
 		},
 	},
 }

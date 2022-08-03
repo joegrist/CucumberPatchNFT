@@ -116,6 +116,7 @@ export default {
 		'@nuxtjs/sitemap',
 		// '@nuxtjs/recaptcha',
 		'@nuxtjs/style-resources',
+		'vue-social-sharing/nuxt'
 	],
 
 	// recaptcha: {
