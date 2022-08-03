@@ -406,12 +406,7 @@ export default {
 					message: 'Confirm metamask transaction to deploy',
 				})
 
-				const { data } = await this.$axios.get(
-					`/smartcontracts/${id}/compiled`,
-					{
-						params: { ownerAddress: this.$wallet.account },
-					}
-				)
+				const { data } = await this.$axios.post(`/smartcontracts/${id}/compile`)
 				const { abi, bytecode } = data
 
 				const signer = this.$wallet.provider?.getSigner()
