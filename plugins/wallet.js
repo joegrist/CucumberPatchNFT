@@ -2,8 +2,11 @@ import Vue from 'vue'
 import { ethers } from 'ethers'
 import MetaMaskOnboarding from '@metamask/onboarding'
 import { getCurrency, CHAINID_CONFIG_MAP } from '@/constants/metamask'
+import detectEthereumProvider from '@metamask/detect-provider'
 
-export default ({store}, inject) => {
+export default async (_, inject) => {
+
+    const metamaskProvider = await detectEthereumProvider();
 
     const wallet = Vue.observable({
         account: null,
@@ -38,7 +41,7 @@ export default ({store}, inject) => {
         },
 
         async init() {
-            this.provider = new ethers.providers.Web3Provider(window.ethereum) //prefably diff node like Infura, Alchemy or Moralis
+            this.provider = new ethers.providers.Web3Provider(metamaskProvider)
             this.network = await this.provider.getNetwork()
             const [account] = await this.provider.listAccounts()
 
@@ -125,16 +128,16 @@ export default ({store}, inject) => {
         }
     })
 
-    if(window.ethereum) {
+    if(metamaskProvider) {
 
         // console.log(window.ethereum._metamask, window.ethereum._metamask.isUnlocked())
     
-        window.ethereum.on('accountsChanged', ([newAddress]) => {
+        metamaskProvider.on('accountsChanged', ([newAddress]) => {
             console.info('accountsChanged', newAddress)
             wallet.setAccount(newAddress)
         })
     
-        window.ethereum.on('chainChanged', async (chainId) => {
+        metamaskProvider.on('chainChanged', async (chainId) => {
             console.info('chainChanged', chainId)
             wallet.init()
         })
