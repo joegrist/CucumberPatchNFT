@@ -2,11 +2,16 @@ import Vue from 'vue'
 import { ethers } from 'ethers'
 import MetaMaskOnboarding from '@metamask/onboarding'
 import { getCurrency, CHAINID_CONFIG_MAP } from '@/constants/metamask'
-import detectEthereumProvider from '@metamask/detect-provider'
 
 export default async (_, inject) => {
 
-    const metamaskProvider = await detectEthereumProvider();
+    let metamaskProvider = null
+
+    if(window.ethereum?.providers) {
+        metamaskProvider = window.ethereum.providers.find((p) => p.isMetaMask)
+    } else if(window.ethereum?.isMetaMask) {
+        metamaskProvider = window.ethereum
+    }
 
     const wallet = Vue.observable({
         account: null,
@@ -71,8 +76,7 @@ export default async (_, inject) => {
 
         async connect() {
             if(!MetaMaskOnboarding.isMetaMaskInstalled()) {
-                const onboarding = new MetaMaskOnboarding()
-                onboarding.startOnboarding()
+                new MetaMaskOnboarding().startOnboarding()
                 return
             }
         
