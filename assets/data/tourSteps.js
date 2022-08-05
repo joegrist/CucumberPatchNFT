@@ -1,28 +1,30 @@
 const dashboard = [
-    {
-        element: '#search-bar',
-        popover: {
-            title: 'Search Bar',
+	{
+		element: '#search-bar',
+		popover: {
+			title: 'Search Bar',
 			description: 'Search all your projects by name or symbol.',
 			position: 'bottom',
-        }
-    },
-    {
-        element: '#add-new-btn',
-        popover: {
-            title: 'Create New Project',
-			description: 'Navigates you to the wizard so you can craft a new project.',
+		},
+	},
+	{
+		element: '#add-new-btn',
+		popover: {
+			title: 'Create New Project',
+			description:
+				'Navigates you to the wizard so you can craft a new project.',
 			position: 'left',
-        }
-    },
-    {
-        element: '#user-profile-btn',
-        popover: {
-            title: 'Your Account',
-			description: 'Avatar (from ENS), address and balance. Click for more options.',
+		},
+	},
+	{
+		element: '#user-profile-btn',
+		popover: {
+			title: 'Your Account',
+			description:
+				'Avatar (from ENS), address and balance. Click for more options.',
 			position: 'left',
-        }
-    },
+		},
+	},
 	{
 		element: '.card',
 		popover: {
@@ -156,16 +158,163 @@ const dashboard = [
 		},
 	},
 	{
-	element: '#project-created-on',
+		element: '#project-created-on',
 		popover: {
 			title: 'Created On',
-			description:
-				'Date the project was created',
+			description: 'Date the project was created',
 			position: 'right',
 		},
 	},
 ]
 
-export {
-    dashboard
-}
+const project = [
+	{
+		element: '#smart-contract___BV_tab_button__',
+		popover: {
+			title: 'Smart Contract',
+			description:
+				'Overview of the Smart Contract with the functions available to interact with it.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#assets___BV_tab_button__',
+		popover: {
+			title: 'Assets',
+			description:
+				'Upload your NFT Assets using nft.storage. You would need your nft.storage API key.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#whitelist___BV_tab_button__',
+		popover: {
+			title: 'Whitelist',
+			description: 'Add the whitelist addresses for your collection.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#delayed-reveal___BV_tab_button__',
+		popover: {
+			title: 'Delayed Reveal',
+			description:
+				'Upload your Delayed reveal image and metadata using nft.storage. You would need your nft.storage API key.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#mint-page___BV_tab_button__',
+		popover: {
+			title: 'Mint page',
+			description:
+				'Mint page to mint your NFTs. Different options are available to customize it.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#snapshot___BV_tab_button__',
+		popover: {
+			title: 'Snapshot',
+			description: 'Snapshot of the contract.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#source-code___BV_tab_button__',
+		popover: {
+			title: 'Source Code',
+			description: 'Source code of the contract for auditing and analyzing.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#source-code___BV_tab_button__',
+		popover: {
+			title: 'Source Code',
+			description: 'Source code of the contract for auditing and analyzing.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#other-config___BV_tab_button__',
+		popover: {
+			title: 'Other Config',
+			description: `Other configuration for the mint page.
+				<ul>
+				<li>Discord server ID or channel ID</li>
+				<li>Google Analytics</li>
+                      </ul>`,
+			position: 'right',
+		},
+	},
+	{
+		element: '#contract-name-network',
+		popover: {
+			title: 'Contract Name & Network',
+			description: "Name of the contract and the network it's deployed on.",
+			position: 'right',
+		},
+	},
+	{
+		element: '#mainnet-deploy',
+		popover: {
+			title: 'Mainnet Deployment',
+			description:
+				'Deploy on the mainnet. You can select different add-ons in the checkout page.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#contract-balance',
+		popover: {
+			title: 'Contract Balance',
+			description: 'Available balance on the contract to withdraw.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#sale-status',
+		popover: {
+			title: 'Sale Status',
+			description: 'Sale status of the contract. (Paused, Presale, Public)',
+			position: 'right',
+		},
+	},
+	{
+		element: '#contract-type',
+		popover: {
+			title: 'Contract Type',
+			description: 'The type of the contract. ERC721, ERC721A, etc.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#block-explorer',
+		popover: {
+			title: 'Block Explorer',
+			description:
+				'Block Explorer for the contract, view all the transactions until now.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#download-contract-abi',
+		popover: {
+			title: 'Contract ABI',
+			description:
+				'Download ABI(Application Binary Interface) of the contract.',
+			position: 'right',
+		},
+	},
+	{
+		element: '#download-source-code',
+		popover: {
+			title: 'Source Code',
+			description: 'Download source code of the contract.',
+			position: 'right',
+		},
+	},
+]
+
+export { dashboard, project }

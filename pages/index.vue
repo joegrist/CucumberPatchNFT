@@ -7,24 +7,45 @@
 						<b-icon icon="search" />
 					</b-input-group-text>
 				</b-input-group-prepend>
-				<b-form-input id="search-bar" @input="(val) => (searchTerm = val)" debounce="500" placeholder="Start typing project name.." />
+				<b-form-input
+					id="search-bar"
+					@input="(val) => (searchTerm = val)"
+					debounce="500"
+					placeholder="Start typing project name.."
+				/>
 				<b-input-group-append>
-					<b-button id="add-new-btn" variant="primary" class="border-0" to="/wizard">Add New</b-button>
+					<b-button
+						id="add-new-btn"
+						variant="primary"
+						class="border-0"
+						to="/wizard"
+						>Add New</b-button
+					>
 				</b-input-group-append>
 			</b-input-group>
 		</div>
-		<b-row v-if="dashboardItems.length > 0" >
-			<b-col md="6" lg="4" xl="3" v-for="(sc) in filteredItems" :key="sc.id">
+		<b-row v-if="dashboardItems.length > 0">
+			<b-col md="6" lg="4" xl="3" v-for="sc in filteredItems" :key="sc.id">
 				<DashboardCard :sc="sc" class="mb-3" />
 			</b-col>
 		</b-row>
 		<div v-else class="text-center pt-2">
 			<h1>You Don't Have Any Projects Yet</h1>
-			<b-button variant="primary" size="lg" @click="$router.push('/wizard')">Start One</b-button>
+			<b-button variant="primary" size="lg" @click="$router.push('/wizard')"
+				>Start One</b-button
+			>
 		</div>
-		<b-modal id="tourModal" title="Would you like a tour?" centered hide-footer body-class="text-center p-3">
+		<b-modal
+			id="tourModal"
+			title="Would you like a tour?"
+			centered
+			hide-footer
+			body-class="text-center p-3"
+		>
 			<div class="text-center mb-3">
-				<b-button variant="primary" @click="onAcceptTour">Yes, please!</b-button>
+				<b-button variant="primary" @click="onAcceptTour"
+					>Yes, please!</b-button
+				>
 				<b-button @click="onDeclineTour">Maybe Later</b-button>
 			</div>
 			<span>💡 Can be started anytime from the Help navbar menu</span>
@@ -34,7 +55,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import ProductTour from '@/mixins/productTour';
+import ProductTour from '@/mixins/productTour'
 
 export default {
 	middleware: 'authenticated',
@@ -44,18 +65,18 @@ export default {
 			searchTerm: '',
 		}
 	},
-	async asyncData({store}) {
+	async asyncData({ store }) {
 		await store.dispatch('loadDashboardCards')
 	},
 	watch: {
 		dashboardItems: {
-			handler: function(newVal) {
-				if(newVal.length > 0 && this.tourPrompts.dashboard) {
-					this.$bvModal.show("tourModal")
+			handler: function (newVal) {
+				if (newVal.length > 0 && this.tourPrompts.dashboard) {
+					this.$bvModal.show('tourModal')
 				}
 			},
-			immediate: true
-		}
+			immediate: true,
+		},
 	},
 	computed: {
 		...mapState(['dashboardItems', 'tourPrompts']),
@@ -71,16 +92,16 @@ export default {
 	methods: {
 		...mapMutations(['updateTourPrompts']),
 		onAcceptTour() {
-			this.$bvModal.hide("tourModal")
+			this.$bvModal.hide('tourModal')
 			this.initTour('dashboard')
 			this.updateTourPrompts({
-				dashboard: false
+				dashboard: false,
 			})
 		},
 		onDeclineTour() {
-			this.$bvModal.hide("tourModal")
+			this.$bvModal.hide('tourModal')
 			this.updateTourPrompts({
-				dashboard: false
+				dashboard: false,
 			})
 		},
 	},
