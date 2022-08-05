@@ -25,7 +25,7 @@
 					>
 					<b-nav-item 
 						v-else
-						to="/login" 
+						:to="localePath('/login')" 
 						active-class="active-nav"
 						class="text-center text-md-left"
 						>Login</b-nav-item
@@ -111,11 +111,7 @@ export default {
 	},
 	methods: {
 		...mapMutations(['showSidebar']),
-		...mapActions(['login', 'logout']),
-		onLogout() {
-			this.logout()
-			this.$router.push('/login')
-		}
+		...mapActions(['login']),
 	},
 }
 </script>
