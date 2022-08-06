@@ -63,8 +63,10 @@
 						size="sm"
 						text="Actions"
 						:disabled="!isReady"
+						ref="balanceDropdown"
+						id="balance-dropdown"
 					>
-						<b-dd-item-btn @click="onRefreshBalance(true)">
+						<b-dd-item-btn @click="onRefreshBalance(true)" id="refresh-button">
 							<b-icon icon="bootstrap-reboot" />
 							Refresh
 						</b-dd-item-btn>
@@ -96,6 +98,7 @@
 						size="sm"
 						text="Actions"
 						:disabled="!isReady"
+						id="saleStatus-dropdown"
 					>
 						<b-dd-item-btn @click="callFuncByName('saleStatus')">
 							<b-icon icon="bootstrap-reboot" />
@@ -203,6 +206,10 @@
 						<FunctionForm
 							:func="func"
 							:smartContract="smartContract"
+							:class="{
+								gas: idx === 0,
+								eco: idx === 1,
+							}"
 						></FunctionForm>
 					</b-col>
 				</b-row>
@@ -305,6 +312,13 @@ export default {
 			})
 		}
 	},
+	/* mounted() {
+			this.$root.$on('dropdown-emit', (e) => {
+				if (e === 'balanceDropdown') {
+					this.$refs.balanceDropdown.show();
+				}
+			})
+	}, */
 	watch: {
 		'$wallet.balance': function (newVal) {
 			if (newVal > 0) {

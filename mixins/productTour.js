@@ -4,8 +4,16 @@ import 'driver.js/dist/driver.min.css'
 export default {
   methods: {
     async initTour(tourId) {
+      let self = this;
       const driver = new Driver({
         allowClose: false,
+        onNext: function (element) {
+         /*  if (element.node.id === 'contract-balance') {
+            driver.preventMove();
+            self.$root.$emit('dropdown-emit', 'balanceDropdown')
+              driver.moveNext();
+          } */
+        }
       })
 
       const { [tourId]: steps } = await import('@/assets/data/tourSteps')

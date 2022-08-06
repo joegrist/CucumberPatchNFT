@@ -166,7 +166,6 @@ const dashboard = [
 		},
 	},
 ]
-
 const project = [
 	{
 		element: '#smart-contract___BV_tab_button__',
@@ -274,11 +273,37 @@ const project = [
 		},
 	},
 	{
+		element: '#balance-dropdown',
+		popover: {
+			title: 'Balance Actions',
+			description: `<ul>
+											<li>Refresh your contract balance.</li>
+											<li>Withdraw balance to the addresses you added as revenue split address.</li>
+										</ul>
+									`,
+			position: 'left',
+		},
+	},
+	{
 		element: '#sale-status',
 		popover: {
 			title: 'Sale Status',
 			description: 'Sale status of the contract. (Paused, Presale, Public)',
 			position: 'right',
+		},
+	},
+	{
+		element: '#saleStatus-dropdown',
+		popover: {
+			title: 'Sale Status Actions',
+			description: `<ul>
+											<li>Refresh your contract sale status.</li>
+											<li>Pause sales.</li>
+											<li>Start Pre-sale.</li>
+											<li>Start Public Sale</li>
+										</ul>
+									`,
+			position: 'left',
 		},
 	},
 	{
@@ -313,6 +338,22 @@ const project = [
 			title: 'Source Code',
 			description: 'Download source code of the contract.',
 			position: 'right',
+		},
+	},
+	{
+		element: '.gas',
+		popover: {
+			title: 'Write Contract (Gas)',
+			description: 'Contract function that costs the <b>Gas fees</b>.',
+			position: 'bottom',
+		},
+	},
+	{
+		element: '.eco',
+		popover: {
+			title: 'Read Contract (Eco)',
+			description: 'Contract functions to call without paying <b>Gas Fees</b>',
+			position: 'bottom',
 		},
 	},
 ]
