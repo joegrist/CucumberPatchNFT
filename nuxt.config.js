@@ -8,7 +8,7 @@ const {
 	DISCORD_SERVER,
 	DISCORD_CHANNEL,
 	GTAG_ID,
-	GTAG_DEBUG
+	GTAG_DEBUG,
 } = process.env
 
 export default {
@@ -30,7 +30,7 @@ export default {
 		DISCORD_SERVER,
 		DISCORD_CHANNEL,
 		GTAG_ID,
-		GTAG_DEBUG
+		GTAG_DEBUG,
 	},
 
 	router: {
@@ -96,7 +96,7 @@ export default {
 		'@/plugins/vuelidate',
 		'@/plugins/filters',
 		'@/plugins/wallet',
-		'@/plugins/vue-prism'
+		'@/plugins/vue-prism',
 	],
 
 	// Auto import components: https://go.nuxtjs.dev/config-components
@@ -116,8 +116,34 @@ export default {
 		'@nuxtjs/sitemap',
 		// '@nuxtjs/recaptcha',
 		'@nuxtjs/style-resources',
-		'vue-social-sharing/nuxt'
+		'@nuxtjs/i18n',
+		'vue-social-sharing/nuxt',
 	],
+
+	i18n: {
+		locales: [
+			{
+				code: 'en',
+				iso: 'en-US',
+			},
+			{
+				code: 'es',
+				iso: 'es-ES',
+			},
+			{
+				code: 'ua',
+				iso: 'uk-UA',
+			},
+		],
+		defaultLocale: 'en',
+		vueI18nLoader: true,
+		// vueI18n: {
+		// 	fallbackLocale: 'en',
+		// 	messages: {
+
+		// 	},
+		// },
+	},
 
 	// recaptcha: {
 	//   siteKey: RECAPTCHA_KEY,
@@ -168,10 +194,10 @@ export default {
 				},
 			},
 		},
-		 extend (config, { isDev, isClient }) {
-       config.node= {
-          fs: 'empty'
-        }
-    }
+		extend(config, { isDev, isClient }) {
+			config.node = {
+				fs: 'empty',
+			}
+		},
 	},
 }

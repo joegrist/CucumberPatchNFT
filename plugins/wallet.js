@@ -3,7 +3,15 @@ import { ethers } from 'ethers'
 import MetaMaskOnboarding from '@metamask/onboarding'
 import { getCurrency, CHAINID_CONFIG_MAP } from '@/constants/metamask'
 
-export default ({store}, inject) => {
+export default async (_, inject) => {
+
+    let metamaskProvider = null
+
+    if(window.ethereum?.providers) {
+        metamaskProvider = window.ethereum.providers.find((p) => p.isMetaMask)
+    } else if(window.ethereum?.isMetaMask) {
+        metamaskProvider = window.ethereum
+    }
 
     const wallet = Vue.observable({
         account: null,
@@ -38,7 +46,7 @@ export default ({store}, inject) => {
         },
 
         async init() {
-            this.provider = new ethers.providers.Web3Provider(window.ethereum) //prefably diff node like Infura, Alchemy or Moralis
+            this.provider = new ethers.providers.Web3Provider(metamaskProvider)
             this.network = await this.provider.getNetwork()
             const [account] = await this.provider.listAccounts()
 
@@ -68,8 +76,7 @@ export default ({store}, inject) => {
 
         async connect() {
             if(!MetaMaskOnboarding.isMetaMaskInstalled()) {
-                const onboarding = new MetaMaskOnboarding()
-                onboarding.startOnboarding()
+                new MetaMaskOnboarding().startOnboarding()
                 return
             }
         
@@ -125,16 +132,16 @@ export default ({store}, inject) => {
         }
     })
 
-    if(window.ethereum) {
+    if(metamaskProvider) {
 
         // console.log(window.ethereum._metamask, window.ethereum._metamask.isUnlocked())
     
-        window.ethereum.on('accountsChanged', ([newAddress]) => {
+        metamaskProvider.on('accountsChanged', ([newAddress]) => {
             console.info('accountsChanged', newAddress)
             wallet.setAccount(newAddress)
         })
     
-        window.ethereum.on('chainChanged', async (chainId) => {
+        metamaskProvider.on('chainChanged', async (chainId) => {
             console.info('chainChanged', chainId)
             wallet.init()
         })

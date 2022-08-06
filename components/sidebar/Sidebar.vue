@@ -101,7 +101,7 @@ export default {
 		onLogout() {
 			this.showSidebar(false)
 			this.logout()
-			this.$router.push('/login')
+			this.$router.push(this.localePath('/login'))
 		},
 		async onShown() {
 			this.$wallet.refreshBalance()

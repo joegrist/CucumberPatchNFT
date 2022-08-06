@@ -65,7 +65,7 @@ export default {
 				if (nonce) {
 					await this.login()
 					if (this.redirect) {
-						this.$router.push(this.redirect)
+						this.$router.push(this.localePath(this.redirect))
 					}
 				} else {
 					this.$bvModal.show(this.modalId)
@@ -79,7 +79,7 @@ export default {
 		onRegistrationDone() {
 			this.$bvModal.hide(this.modalId)
 			if (this.redirect) {
-				this.$router.push(this.redirect)
+				this.$router.push(this.localePath(this.redirect))
 			}
 		},
 	},
