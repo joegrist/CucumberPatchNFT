@@ -25,11 +25,7 @@
 					>
 					<b-nav-item
 						v-else
-<<<<<<< HEAD
-						to="/login"
-=======
 						:to="localePath('/login')" 
->>>>>>> 8103a66e4d03d03a04452ab09d76aeeac6ebc203
 						active-class="active-nav"
 						class="text-center text-md-left"
 						>Login</b-nav-item
