@@ -212,7 +212,6 @@ export default {
                 variant: 'success',
             })
 
-            this.funcArgs = new Map()
 		},
 		async onSubmit() {
 			try {
@@ -235,6 +234,8 @@ export default {
 						ownerAddress: this.funcArgs[0],
 					})
 				}
+	
+				this.funcArgs = new Map()
 			} catch (err) {
 				console.error({ err })
 				const { method, code } = err
