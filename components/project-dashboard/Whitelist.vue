@@ -163,7 +163,7 @@ export default {
 					`/smartcontracts/${this.smartContract.id}/whitelist`,
 					{
 						whitelist: this.whitelist,
-						merkleRoot,
+						merkleRoot: `0x${merkleRoot.toString('hex')}`
 					}
 				)
 
