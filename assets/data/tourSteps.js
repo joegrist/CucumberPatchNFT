@@ -172,7 +172,7 @@ const project = [
 		popover: {
 			title: 'Smart Contract',
 			description:
-				'Overview of the Contract with the functions available to interact with it.',
+				'View and interact with your Contract here',
 			position: 'right',
 		},
 	},
@@ -181,7 +181,7 @@ const project = [
 		popover: {
 			title: 'Assets',
 			description:
-				'Upload your NFT Assets using nft.storage. You would need your nft.storage API key.',
+				'Upload your artwork and metadata to IPFS',
 			position: 'right',
 		},
 	},
@@ -189,7 +189,7 @@ const project = [
 		element: '#whitelist___BV_tab_button__',
 		popover: {
 			title: 'Whitelist',
-			description: 'Add the whitelist addresses for your collection.',
+			description: 'Upload whitelisted wallet addresses',
 			position: 'right',
 		},
 	},
@@ -198,7 +198,7 @@ const project = [
 		popover: {
 			title: 'Delayed Reveal',
 			description:
-				'Upload your Delayed reveal image and metadata using nft.storage. You would need your nft.storage API key.',
+				'Upload image and metadata that will be used before the reveal',
 			position: 'right',
 		},
 	},
@@ -207,7 +207,7 @@ const project = [
 		popover: {
 			title: 'Mint page',
 			description:
-				'Page to mint your NFTs. Customize the UI of the page with different options available.',
+				'Customize, test and learn how to integrate your NFT minting page into any website builder',
 			position: 'right',
 		},
 	},
@@ -215,7 +215,7 @@ const project = [
 		element: '#snapshot___BV_tab_button__',
 		popover: {
 			title: 'Snapshot',
-			description: 'The list of the addresses and the number of tokens it hold.',
+			description: 'Run and export a report on your NFT holders',
 			position: 'right',
 		},
 	},
@@ -223,16 +223,16 @@ const project = [
 		element: '#source-code___BV_tab_button__',
 		popover: {
 			title: 'Source Code',
-			description: 'Source code of the contract for auditing and analyzing.',
+			description: 'Preview of the source code for auditing and analyzing',
 			position: 'right',
 		},
 	},
 	{
 		element: '#other-config___BV_tab_button__',
 		popover: {
-			title: 'Extra config for mint page',
+			title: 'Analytics and more',
 			description: `<ul>
-											<li>Discord server ID or channel ID</li>
+											<li>Discord chat window integration</li>
 											<li>Google Analytics</li>
 										</ul>`,
 			position: 'right',
@@ -251,7 +251,7 @@ const project = [
 		popover: {
 			title: 'Mainnet Deployment',
 			description:
-				'Deploy on the mainnet. You can select different add-ons in the checkout page.',
+				'Checkout/Deploy to the mainnet. Add-ons available at the checkout.',
 			position: 'right',
 		},
 	},
@@ -268,9 +268,9 @@ const project = [
 		popover: {
 			title: 'Balance Actions',
 			description: `<ul>
-											<li>Refresh your contract balance.</li>
-											<li>Withdraw balance to the addresses you added as revenue split address.</li>
-										</ul>`,
+							<li>Refresh your contract's balance.</li>
+							<li>Withdraw balance</li>
+						</ul>`,
 			position: 'left',
 		},
 	},
@@ -278,7 +278,7 @@ const project = [
 		element: '#sale-status',
 		popover: {
 			title: 'Status',
-			description: 'Sale status of the contract. (Paused, Presale, Public)',
+			description: 'Currently activated sales phase. (Paused, Presale, Public)',
 			position: 'right',
 		},
 	},
@@ -287,11 +287,11 @@ const project = [
 		popover: {
 			title: 'Sale Status Actions',
 			description: `<ul>
-											<li>Refresh your contract sale status.</li>
-											<li>Pause sales.</li>
-											<li>Start Pre-sale.</li>
-											<li>Start Public Sale</li>
-										</ul>`,
+							<li>Refresh your contract's sale status.</li>
+							<li>Pause sales.</li>
+							<li>Start Pre-sale (when applicable).</li>
+							<li>Start Public Sale</li>
+						</ul>`,
 			position: 'left',
 		},
 	},
@@ -308,7 +308,7 @@ const project = [
 		popover: {
 			title: 'Block Explorer',
 			description:
-				'Block Explorer for the contract, view all the transactions until now.',
+				'Block Explorer hyperlink like Etherscan to review all the transaction activity.',
 			position: 'right',
 		},
 	},
@@ -332,8 +332,8 @@ const project = [
 	{
 		element: '#advanced-function',
 		popover: {
-			title: "Advanced Function",
-			description: "Toggle switch to view other available functions in the contract.",
+			title: "Advanced Functionality",
+			description: "Toggle to view all smart contract functions.",
 			position:'left'
 		}
 	},
@@ -341,7 +341,7 @@ const project = [
 		element: '.gas-badge:first-child',
 		popover: {
 			title: 'Write Contract',
-			description: 'Functions that costs the <b>Gas fees</b> to interact with the contract.',
+			description: 'Functions marked <b>"Gas"</b> write information to the smart contract and incur gas fees.',
 			position: 'bottom',
 		},
 	},
@@ -349,7 +349,7 @@ const project = [
 		element: '.eco-badge:first-child',
 		popover: {
 			title: 'Read Contract', 
-			description: 'Functions that are called without any <b>Gas Fees</b>.',
+			description: 'Functions marked <b>"Eco"</b> are readonly and don\'t incur any gas fees.',
 			position: 'bottom',
 		},
 	},
