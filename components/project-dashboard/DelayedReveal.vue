@@ -54,7 +54,7 @@
 					>
 						<b-form-file
 							v-model="metadata.image"
-							accept="image/*"
+							accept="audio/*,video/*,image/*"
 							:state="validateState('metadata.image')"
 						/>
 						<b-form-invalid-feedback :state="state.image">

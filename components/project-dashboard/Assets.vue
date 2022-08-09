@@ -39,7 +39,6 @@
 								no-traverse
 								multiple
 								placeholder="No folder chosen"
-								accept="image/*"
 							/>
 							</b-col>
 							<b-col sm="12" md="2">
@@ -79,7 +78,6 @@
 									no-traverse
 									multiple
 									placeholder="No folder chosen"
-									accept=".json"
 								/>
 							</b-col>
 							<b-col sm="12" md="2">
