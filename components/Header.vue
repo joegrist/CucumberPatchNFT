@@ -133,11 +133,7 @@ export default {
 	},
 	methods: {
 		...mapMutations(['showSidebar', 'updateTourPrompts']),
-		...mapActions(['login', 'logout']),
-		onLogout() {
-			this.logout()
-			this.$router.push('/login')
-		},
+		...mapActions(['login']),
 		startTour() {
 			switch (this.$route.path) {
 				case '/':

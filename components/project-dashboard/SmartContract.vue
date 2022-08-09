@@ -211,13 +211,7 @@
 						<FunctionForm
 							:func="func"
 							:smartContract="smartContract"
-							:isGas="idx === 0"
-							:isEco="idx === 1 "
 						></FunctionForm>
-							<!-- :class="{
-								gas: idx === 0,
-								eco: idx === 1,
-							}" -->
 					</b-col>
 				</b-row>
 			</b-col>

@@ -338,7 +338,7 @@ const project = [
 		}
 	},
 	{
-		element: '#gas-function',
+		element: '.gas-badge:first-child',
 		popover: {
 			title: 'Write Contract',
 			description: 'Functions that costs the <b>Gas fees</b> to interact with the contract.',
@@ -346,7 +346,7 @@ const project = [
 		},
 	},
 	{
-		element: '#eco-function',
+		element: '.eco-badge:first-child',
 		popover: {
 			title: 'Read Contract', 
 			description: 'Functions that are called without any <b>Gas Fees</b>.',

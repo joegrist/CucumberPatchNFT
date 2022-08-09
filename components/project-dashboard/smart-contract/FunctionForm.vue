@@ -1,19 +1,15 @@
 <template>
 	<div role="tab" class="border rounded">
-		<div
-			class="d-flex justify-content-between p-2"
-			v-b-toggle="uniqueId">
+		<div class="d-flex justify-content-between p-2" v-b-toggle="uniqueId">
 			<b-badge
 				v-if="func.constant"
 				pill
 				size="sm"
 				variant="success"
-				class="my-auto"
-				:id="isEco ? 'eco-function':''"
+				class="my-auto eco-badge"
 				>Eco</b-badge
 			>
-			<b-badge v-else pill size="sm" variant="warning" class="my-auto"
-				:id="isGas ? 'gas-function' : ''"
+			<b-badge v-else pill size="sm" variant="warning" class="my-auto gas-badge"
 				>Gas</b-badge
 			>
 			<span variant="link">
@@ -25,45 +21,47 @@
 			:id="uniqueId"
 			class="px-3 py-1"
 			accordion="eco-accordion"
-			role="tabpanel">
+			role="tabpanel"
+		>
 			<b-form @submit.prevent="onSubmit">
 				<ul
 					v-if="func.inputs.length > 0 && func.name !== 'setSaleStatus'"
-					class="mb-2 list-unstyled">
-					<li
-						v-for="(funcParam, idx) in funcParams" :key="idx">
+					class="mb-2 list-unstyled"
+				>
+					<li v-for="(funcParam, idx) in funcParams" :key="idx">
 						<b-form-group :label="funcParam.name">
 							<b-form-input
 								required
 								:type="funcParam.type.includes('uint') ? 'number' : 'text'"
-                                :value="funcArgs.get(funcParam.name)"
+								:value="funcArgs.get(funcParam.name)"
 								step="any"
-								@change="(val) => onParamChange(funcParam.name, val)" />
+								@change="(val) => onParamChange(funcParam.name, val)"
+							/>
 						</b-form-group>
 					</li>
 				</ul>
 				<div>
-                    <b-button-group v-if="func.name === 'setSaleStatus'" class="w-100">
-                        <b-button
-                            variant="warning"
-                            @click="onUpdateSaleStatus(SALE_STATUS.Paused)"
-                            >Pause Sales</b-button
-                        >
-                        <b-button
-                            v-if="smartContract.hasWhitelist"
-                            variant="dark"
-                            @click="onUpdateSaleStatus(SALE_STATUS.Presale)"
-                            >Start Presale</b-button
-                        >
-                        <b-button
-                            variant="success"
-                            @click="onUpdateSaleStatus(SALE_STATUS.Public)"
-                            >Start Public Sale</b-button
-                        >
-                    </b-button-group>
-                    <b-button v-else class="w-100" type="submit" variant="success">{{
-                        func.constant ? 'View' : 'Submit'
-                    }}</b-button>
+					<b-button-group v-if="func.name === 'setSaleStatus'" class="w-100">
+						<b-button
+							variant="warning"
+							@click="onUpdateSaleStatus(SALE_STATUS.Paused)"
+							>Pause Sales</b-button
+						>
+						<b-button
+							v-if="smartContract.hasWhitelist"
+							variant="dark"
+							@click="onUpdateSaleStatus(SALE_STATUS.Presale)"
+							>Start Presale</b-button
+						>
+						<b-button
+							variant="success"
+							@click="onUpdateSaleStatus(SALE_STATUS.Public)"
+							>Start Public Sale</b-button
+						>
+					</b-button-group>
+					<b-button v-else class="w-100" type="submit" variant="success">{{
+						func.constant ? 'View' : 'Submit'
+					}}</b-button>
 				</div>
 				<div v-show="response" class="font-weight-bold mt-2 text-center">
 					{{ formattedResponse }}
@@ -85,14 +83,12 @@ import { nanoid } from 'nanoid'
 export default {
 	setup(props) {
 		const contract = useSmartContract(props.smartContract)
-        const uniqueId = nanoid()
+		const uniqueId = nanoid()
 		return { uniqueId, contract }
 	},
 	props: {
 		func: Object,
 		smartContract: Object,
-		isGas: Boolean,
-		isEco:Boolean
 	},
 	data() {
 		return {
@@ -109,9 +105,8 @@ export default {
 		formattedResponse() {
 			if (!this.response) return null
 
-			const prefix = this.func.inputs.length > 0 
-                ? 'Response' 
-                : startCase(this.func.name)
+			const prefix =
+				this.func.inputs.length > 0 ? 'Response' : startCase(this.func.name)
 
 			if (this.response === 'true' || this.response === 'false') {
 				this.response = this.response === 'true' ? 'Yes' : 'No'
@@ -121,10 +116,10 @@ export default {
 		},
 	},
 	methods: {
-        onUpdateSaleStatus(value) {
-            this.onParamChange('status', value)
+		onUpdateSaleStatus(value) {
+			this.onParamChange('status', value)
 			this.onSubmit()
-        },
+		},
 		onParamChange(name, value) {
 			this.funcArgs.set(name, value)
 		},
@@ -133,13 +128,13 @@ export default {
 			let value = txResponse.toString()
 
 			if (this.func.name.includes('PRICE')) {
-                const ethValue = ethers.utils.formatEther(txResponse)
-                const currency = getCurrency(this.smartContract.chainId)
+				const ethValue = ethers.utils.formatEther(txResponse)
+				const currency = getCurrency(this.smartContract.chainId)
 				value = `${ethValue} ${currency}`
 			}
 			if (this.func.name === 'saleStatus') {
 				value = SALE_STATUS[txResponse]
-                this.$emit('valueUpdated', value)
+				this.$emit('valueUpdated', value)
 			}
 
 			this.$bvToast.toast(`Returned value: ${value}`, {
@@ -181,8 +176,8 @@ export default {
 				if (payable) {
 					if (functionName === 'mint') {
 						const mintPrice = await scInstance.MINT_PRICE()
-                        const ethMintPrice = Number(ethers.utils.formatEther(mintPrice))
-                        const howMany = Number(args[0])
+						const ethMintPrice = Number(ethers.utils.formatEther(mintPrice))
+						const howMany = Number(args[0])
 						const paymentValue = (ethMintPrice * howMany).toString()
 						txOverrides.value = ethers.utils.parseEther(paymentValue)
 					}
@@ -202,7 +197,10 @@ export default {
 				txResponse = await signedContract[functionName](txOverrides)
 			}
 
-			const msg = this.createToastMessage(txResponse.hash, this.smartContract.chainId)
+			const msg = this.createToastMessage(
+				txResponse.hash,
+				this.smartContract.chainId
+			)
 			this.$bvToast.toast(msg, {
 				title: `${startCase(functionName)} - processing, please wait.`,
 				variant: 'success',
@@ -210,11 +208,10 @@ export default {
 
 			await txResponse.wait()
 
-            this.$bvToast.toast(msg, {
-                title: `${startCase(functionName)} - completed`,
-                variant: 'success',
-            })
-
+			this.$bvToast.toast(msg, {
+				title: `${startCase(functionName)} - completed`,
+				variant: 'success',
+			})
 		},
 		async onSubmit() {
 			try {
@@ -243,7 +240,7 @@ export default {
 						ownerAddress: this.funcArgs.get(this.func.inputs[0]?.name),
 					})
 				}
-	
+
 				this.funcArgs = new Map()
 			} catch (err) {
 				console.error({ err })
@@ -258,18 +255,20 @@ export default {
 		},
 		createToastMessage(hash, chainId) {
 			const h = this.$createElement
-			return [h('span', [
-				h(
-					'b-link',
-					{
-						props: {
-							target: '_blank',
-							href: `${getExplorerUrl(chainId)}/tx/${hash}`,
+			return [
+				h('span', [
+					h(
+						'b-link',
+						{
+							props: {
+								target: '_blank',
+								href: `${getExplorerUrl(chainId)}/tx/${hash}`,
+							},
 						},
-					},
-					['View on block explorer >']
-				),
-			])]
+						['View on block explorer >']
+					),
+				]),
+			]
 		},
 	},
 }
