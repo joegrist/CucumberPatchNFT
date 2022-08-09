@@ -5,7 +5,7 @@
                 <h4>Source Code Preview</h4>
             </b-col>
             <b-col sm="12" md="4" class="text-left text-md-right">
-                <b-button v-if="canDownload" variant="primary" @click="onDownload">Download</b-button>
+                <b-button v-if="canDownload" variant="primary" @click="onDownload">Download <b-icon icon="download" /></b-button>
             </b-col>
         </b-row>
 		<b-row>

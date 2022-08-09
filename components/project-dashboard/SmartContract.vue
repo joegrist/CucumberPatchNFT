@@ -152,7 +152,7 @@
 							>ABI <b-icon icon="download" /></b-button
 						>
 						<b-button
-							v-if="rawContract.rawCode"
+							v-if="rawContract.rawCode && rawContract.isClearedForMainnet"
 							size="sm"
 							class="ml-2"
 							variant="outline-primary"
