@@ -57,9 +57,11 @@ import MintPage from '@/components/project-dashboard/MintPage'
 import Snapshot from '@/components/project-dashboard/Snapshot'
 import SourceCode from '@/components/project-dashboard/SourceCode'
 import Config from '@/components/project-dashboard/Config'
+import alertMixin from "@/mixins/alertMixin";
 
 export default {
 	middleware: 'authenticated',
+	mixins:[alertMixin],
 	components: {
 		SmartContract,
 		Assets,
@@ -91,7 +93,6 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['addAlert', 'removeAlert']),
 		async onReady() {
 			this.isDeployed = true
 			this.project.ownerAddress = await this.contract.owner()

@@ -81,7 +81,7 @@ export default {
 		},
 	},
 	computed: {
-		...mapState(['dashboardItems', 'tourPrompts']),
+		...mapState(['dashboardItems']),
 		filteredItems() {
 			const term = this.searchTerm.toLowerCase()
 			return this.dashboardItems.filter(
@@ -92,7 +92,6 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['updateTourPrompts']),
 		onAcceptTour() {
 			this.$bvModal.hide('tourModal')
 			this.initTour('dashboard')

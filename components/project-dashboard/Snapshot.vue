@@ -3,6 +3,9 @@
 		<b-row class="mb-2">
 			<b-col sm="12" md="6" class="my-auto">
 				<h4>Snapshot</h4>
+				<p class="text-muted">
+					Run and export a report on your NFT holders
+				</p>
 			</b-col>
 			<b-col sm="12" md="6" class="text-left text-md-right">
 				<b-overlay :show="isRunning">

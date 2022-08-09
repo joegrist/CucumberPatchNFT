@@ -238,7 +238,6 @@ export const actions = {
         this.$wallet.disconnect()
         localStorage.removeItem('accessToken')
         localStorage.removeItem('user')
-        localStorage.removeItem(tourPromptsKey);
         commit('setUser', null)
         commit('setAccessToken', null)
     }

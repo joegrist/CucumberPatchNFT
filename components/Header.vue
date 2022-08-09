@@ -124,32 +124,10 @@ export default {
 		walletAddress() {
 			return this.$wallet.ensName || this.$wallet.accountCompact
 		},
-		canTour() {
-			return (
-				(this.$route.path === '/' && this.dashboardItems.length) ||
-				this.$route.path === '/project'
-			)
-		},
 	},
 	methods: {
-		...mapMutations(['showSidebar', 'updateTourPrompts']),
+		...mapMutations(['showSidebar']),
 		...mapActions(['login']),
-		startTour() {
-			switch (this.$route.path) {
-				case '/':
-					this.initTour('dashboard')
-					this.updateTourPrompts({
-						dashboard: false,
-					})
-					break
-				case '/project':
-					this.initTour('project')
-					this.updateTourPrompts({
-						project: false,
-					})
-					break
-			}
-		},
 	},
 }
 </script>
