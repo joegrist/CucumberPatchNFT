@@ -58,6 +58,7 @@
             </ShareNetwork>
           </b-list-group-item>
           <b-list-group-item :href="explorerUrl" target="_blank">View on block explorer</b-list-group-item>
+          <b-list-group-item :href="`https://mint.zerocodenft.com?siteId=${smartContractBuilder.siteId}`" target="_blank">Mint your first NFT</b-list-group-item>
           <b-list-group-item>
             Tell us how we did ?!
             <b-form-rating variant="warning" size="sm" inline no-border @change="goToSurvey"></b-form-rating>
@@ -202,14 +203,15 @@ export default {
           gasPrice
         })
 
-        await this.$axios.patch(`/smartcontracts/${id}/deploy-testnet`, {
+        const { data: contractResponse } = await this.$axios.patch(`/smartcontracts/${id}/deploy-testnet`, {
           ownerAddress: this.$wallet.account,
           address: contract.address,
         })
 
         this.updateSmartContractBuilder({
             isDeployed: true,
-            address: contract.address
+            address: contract.address,
+            siteId: contractResponse.siteId
         })
 
         // console.log({ contract })

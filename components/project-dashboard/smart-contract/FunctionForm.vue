@@ -177,7 +177,6 @@ export default {
 					const value = this.funcArgs.get(x.name)
 					return isNumber(value) ? ethers.BigNumber.from(value) : value
 				})
-				console.log({ args })
 
 				if (payable) {
 					if (functionName === 'mint') {
@@ -216,7 +215,6 @@ export default {
                 variant: 'success',
             })
 
-            this.funcArgs = new Map()
 		},
 		async onSubmit() {
 			try {
@@ -228,17 +226,25 @@ export default {
 					? await this.executeConstant()
 					: await this.executeGas()
 
+				if (this.func.name === 'setBaseURL') {
+					await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
+						baseURL: this.funcArgs.get(this.func.inputs[0]?.name),
+					})
+				}
+
 				if (this.func.name === 'setPreRevealUrl') {
 					await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
-						delayedRevealURL: this.funcArgs[0],
+						delayedRevealURL: this.funcArgs.get(this.func.inputs[0]?.name),
 					})
 				}
 
 				if (this.func.name === 'transferOwnership') {
 					await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
-						ownerAddress: this.funcArgs[0],
+						ownerAddress: this.funcArgs.get(this.func.inputs[0]?.name),
 					})
 				}
+	
+				this.funcArgs = new Map()
 			} catch (err) {
 				console.error({ err })
 				const { method, code } = err

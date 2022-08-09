@@ -162,7 +162,8 @@ export default {
 				await this.$axios.patch(
 					`/smartcontracts/${this.smartContract.id}/whitelist`,
 					{
-						whitelist: this.whitelist
+						whitelist: this.whitelist,
+						merkleRoot: `0x${merkleRoot.toString('hex')}`
 					}
 				)
 
