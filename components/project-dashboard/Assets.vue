@@ -16,7 +16,7 @@
 		<b-row v-show="newBaseURL || smartContract.baseURL">
 			<b-col>
 				<p class="break-word">
-					Most Recent Metadata URL: <b>{{ newBaseURL || smartContract.baseURL }}</b>
+					Most recent metadata URL: <b>{{ newBaseURL || smartContract.baseURL }}</b>
 				</p>
 			</b-col>
 		</b-row>

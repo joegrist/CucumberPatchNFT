@@ -18,7 +18,7 @@
 		<b-row v-show="!!url">
 			<b-col>
 				<p class="break-word">
-					Current Metadata URL: <b>{{ url }}</b>
+					Most recent metadata URL: <b>{{ url }}</b>
 				</p>
 			</b-col>
 		</b-row>
@@ -48,8 +48,8 @@
 						</b-form-invalid-feedback>
 					</b-form-group>
 					<b-form-group
-						label="Image"
-						description="Can be any image format, including .gif"
+						label="File"
+						description="Any image, video or audio file"
 						label-class="required"
 					>
 						<b-form-file
