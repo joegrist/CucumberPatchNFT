@@ -172,7 +172,7 @@ const project = [
 		popover: {
 			title: 'Smart Contract',
 			description:
-				'Overview of the Smart Contract with the functions available to interact with it.',
+				'Overview of the Contract with the functions available to interact with it.',
 			position: 'right',
 		},
 	},
@@ -207,7 +207,7 @@ const project = [
 		popover: {
 			title: 'Mint page',
 			description:
-				'Mint page to mint your NFTs. Different options are available to customize it.',
+				'Page to mint your NFTs. Customize the UI of the page with different options available.',
 			position: 'right',
 		},
 	},
@@ -215,15 +215,7 @@ const project = [
 		element: '#snapshot___BV_tab_button__',
 		popover: {
 			title: 'Snapshot',
-			description: 'Snapshot of the contract.',
-			position: 'right',
-		},
-	},
-	{
-		element: '#source-code___BV_tab_button__',
-		popover: {
-			title: 'Source Code',
-			description: 'Source code of the contract for auditing and analyzing.',
+			description: 'The list of the addresses and the number of tokens it hold.',
 			position: 'right',
 		},
 	},
@@ -238,12 +230,11 @@ const project = [
 	{
 		element: '#other-config___BV_tab_button__',
 		popover: {
-			title: 'Other Config',
-			description: `Other configuration for the mint page.
-				<ul>
-				<li>Discord server ID or channel ID</li>
-				<li>Google Analytics</li>
-                      </ul>`,
+			title: 'Extra config for mint page',
+			description: `<ul>
+											<li>Discord server ID or channel ID</li>
+											<li>Google Analytics</li>
+										</ul>`,
 			position: 'right',
 		},
 	},
@@ -279,15 +270,14 @@ const project = [
 			description: `<ul>
 											<li>Refresh your contract balance.</li>
 											<li>Withdraw balance to the addresses you added as revenue split address.</li>
-										</ul>
-									`,
+										</ul>`,
 			position: 'left',
 		},
 	},
 	{
 		element: '#sale-status',
 		popover: {
-			title: 'Sale Status',
+			title: 'Status',
 			description: 'Sale status of the contract. (Paused, Presale, Public)',
 			position: 'right',
 		},
@@ -301,8 +291,7 @@ const project = [
 											<li>Pause sales.</li>
 											<li>Start Pre-sale.</li>
 											<li>Start Public Sale</li>
-										</ul>
-									`,
+										</ul>`,
 			position: 'left',
 		},
 	},
@@ -328,7 +317,7 @@ const project = [
 		popover: {
 			title: 'Contract ABI',
 			description:
-				'Download ABI(Application Binary Interface) of the contract.',
+				'Download ABI (Application Binary Interface) of the contract.',
 			position: 'right',
 		},
 	},
@@ -341,18 +330,26 @@ const project = [
 		},
 	},
 	{
-		element: '.gas',
+		element: '#advanced-function',
 		popover: {
-			title: 'Write Contract (Gas)',
-			description: 'Contract function that costs the <b>Gas fees</b>.',
+			title: "Advanced Function",
+			description: "Toggle switch to view other available functions in the contract.",
+			position:'left'
+		}
+	},
+	{
+		element: '#gas-function',
+		popover: {
+			title: 'Write Contract',
+			description: 'Functions that costs the <b>Gas fees</b> to interact with the contract.',
 			position: 'bottom',
 		},
 	},
 	{
-		element: '.eco',
+		element: '#eco-function',
 		popover: {
-			title: 'Read Contract (Eco)',
-			description: 'Contract functions to call without paying <b>Gas Fees</b>',
+			title: 'Read Contract', 
+			description: 'Functions that are called without any <b>Gas Fees</b>.',
 			position: 'bottom',
 		},
 	},

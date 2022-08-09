@@ -9,9 +9,11 @@
 				size="sm"
 				variant="success"
 				class="my-auto"
+				:id="isEco ? 'eco-function':''"
 				>Eco</b-badge
 			>
 			<b-badge v-else pill size="sm" variant="warning" class="my-auto"
+				:id="isGas ? 'gas-function' : ''"
 				>Gas</b-badge
 			>
 			<span variant="link">
@@ -89,6 +91,8 @@ export default {
 	props: {
 		func: Object,
 		smartContract: Object,
+		isGas: Boolean,
+		isEco:Boolean
 	},
 	data() {
 		return {

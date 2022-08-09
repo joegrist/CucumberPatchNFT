@@ -193,12 +193,17 @@
 						md="4"
 						class="d-flex justify-content-left justify-content-md-end my-auto"
 					>
+					<div
+						id="advanced-function"
+						class="d-flex"
+					>
 						<span class="pr-1">Advanced</span>
 						<b-form-checkbox
 							v-model="showAdvancedFunctions"
 							name="check-button"
 							switch
 						/>
+					</div>
 					</b-col>
 				</b-row>
 				<b-row v-for="(func, idx) in filteredFunctions" :key="idx">
@@ -206,11 +211,13 @@
 						<FunctionForm
 							:func="func"
 							:smartContract="smartContract"
-							:class="{
+							:isGas="idx === 0"
+							:isEco="idx === 1 "
+						></FunctionForm>
+							<!-- :class="{
 								gas: idx === 0,
 								eco: idx === 1,
-							}"
-						></FunctionForm>
+							}" -->
 					</b-col>
 				</b-row>
 			</b-col>

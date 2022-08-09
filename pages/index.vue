@@ -72,7 +72,9 @@ export default {
 		dashboardItems: {
 			handler: function (newVal) {
 				if (newVal.length > 0 && this.tourPrompts.dashboard) {
-					this.$bvModal.show('tourModal')
+					this.$nextTick(() => {
+						this.$bvModal.show('tourModal')
+					})
 				}
 			},
 			immediate: true,
