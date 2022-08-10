@@ -80,13 +80,15 @@
 <script>
 import { ethers } from 'ethers'
 import { getMerkleRoot } from '@/utils'
-import { mapMutations, mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 import { getExplorerUrl } from '@/constants/metamask'
+import alertMixin from "@/mixins/alertMixin";
 
 export default {
 	props: {
 		smartContractId: String,
 	},
+	mixins:[alertMixin],
 	data() {
 		return {
 			smartContract: null,
@@ -110,7 +112,7 @@ export default {
 		...mapGetters(['userId']),
 	},
 	methods: {
-		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
+		...mapMutations(['setBusy']),
 		whitelistValidator(tag) {
 			return ethers.utils.isAddress(tag)
 		},
