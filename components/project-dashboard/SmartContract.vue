@@ -365,7 +365,6 @@ export default {
 			const saleStatus = await this.contract.saleStatus()
 			this.saleStatus = SALE_STATUS[saleStatus]
 			if (this.tourPrompts.project) {
-				this.$root.$on('activate-smart-contract-tab')
 				this.initTour('project')
 				this.updateTourPrompts({
 					project: false,
