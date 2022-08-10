@@ -2,7 +2,7 @@
 	<b-container class="mt-3">
 		<b-row>
 			<b-col>
-				<b-tabs v-if="project" content-class="mt-3">
+				<b-tabs v-if="project" content-class="mt-3" v-model="tabIndex">
 					<b-tab title="Smart Contract" active id="smart-contract">
 						<SmartContract :smartContract="project" @ready="onReady" />
 					</b-tab>
@@ -46,7 +46,6 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
 import { ethers } from 'ethers'
 import useSmartContract from '@/hooks/useSmartContract'
 import SmartContract from '@/components/project-dashboard/SmartContract'
@@ -74,7 +73,15 @@ export default {
 	},
 	data: () => ({
 		isDeployed: false,
+		tabIndex:0
 	}),
+	created() {
+		this.$root.$on('activate-smart-contract-tab', () => {
+			if (this.tabIndex !== 0) {
+				this.tabIndex = 0
+			}
+		})
+	},
 	async asyncData({ $axios, route, store }) {
 		const { data: project } = await $axios.get(
 			`/users/${store.getters.userId}/smartcontracts/${route.query.id}`
