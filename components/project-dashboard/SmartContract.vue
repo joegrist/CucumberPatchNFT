@@ -177,7 +177,7 @@
 							>ABI <b-icon icon="download"
 						/></b-button>
 						<b-button
-              v-if="rawContract.rawCode && rawContract.isClearedForMainnet"
+							v-if="rawContract.rawCode && rawContract.isClearedForMainnet"
 							size="sm"
 							class="ml-2"
 							variant="outline-primary"
@@ -234,7 +234,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations } from 'vuex'
 import { startCase } from 'lodash-es'
 import {
 	SALE_STATUS,
@@ -354,7 +354,7 @@ export default {
 		},
 	},
 	methods: {
-    ...mapMutations(['setBusy']),
+		...mapMutations(['setBusy']),
 		getExplorerUrl,
 		getCurrency,
 		downloadTextFile,
