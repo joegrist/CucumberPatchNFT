@@ -4,7 +4,7 @@
 			<b-col sm="12" md="8">
 				<b-row>
 					<b-col>
-						<span class="lead font-weight-bold">
+						<span class="lead font-weight-bold" id="contract-name-network">
 							{{ rawContract.name }}
 							{{ isReady ? 'deployed' : 'pending' }} on
 							{{ rawContract.blockchain | blockchainName }}
@@ -21,17 +21,28 @@
 						<b-button-toolbar
 							class="my-1"
 							key-nav
-							aria-label="Smart Contract Actions">
+							aria-label="Smart Contract Actions"
+						>
 							<b-button-group>
 								<b-button
 									v-if="rawContract.status !== SMARTCONTRACT_STATUS.Mainnet"
 									:disabled="!canDeployMainnet"
 									variant="primary"
 									@click="onMainnetDeploy"
+									id="mainnet-deploy"
 								>
-									Deploy to Mainnet <b-icon v-if="!rawContract.isClearedForMainnet" icon="wallet2" />
+									Deploy to Mainnet
+									<b-icon
+										v-if="!rawContract.isClearedForMainnet"
+										icon="wallet2"
+									/>
 								</b-button>
-								<b-button variant="primary" v-if="canVerify" @click="onVerify">
+								<b-button
+									variant="primary"
+									v-if="canVerify"
+									@click="onVerify"
+									id="verify-source-code"
+								>
 									Verify Source Code
 								</b-button>
 							</b-button-group>
@@ -41,7 +52,7 @@
 			</b-col>
 			<b-col sm="12" md="4" class="d-flex flex-column">
 				<div class="d-flex justify-content-between mb-1">
-					<span class="lead font-weight-bold">
+					<span class="lead font-weight-bold" id="contract-balance">
 						Balance: {{ contractBalance }}
 						{{ getCurrency(rawContract.chainId) }}
 					</span>
@@ -51,21 +62,25 @@
 						variant="primary"
 						size="sm"
 						text="Actions"
-						:disabled="!isReady">
-						<b-dd-item-btn @click="onRefreshBalance(true)">
+						:disabled="!isReady"
+						ref="balanceDropdown"
+						id="balance-dropdown"
+					>
+						<b-dd-item-btn @click="onRefreshBalance(true)" id="refresh-button">
 							<b-icon icon="bootstrap-reboot" />
 							Refresh
 						</b-dd-item-btn>
 						<b-dd-item-btn
 							@click="callFuncByName('withdraw')"
-							:disabled="contractBalance === 0">
+							:disabled="contractBalance === 0"
+						>
 							<b-icon icon="cash-stack" />
 							Withdraw
 						</b-dd-item-btn>
 					</b-dropdown>
 				</div>
 				<div class="d-flex justify-content-between">
-					<span class="lead font-weight-bold">
+					<span class="lead font-weight-bold" id="sale-status">
 						Sale Status:
 						<span
 							:class="{
@@ -82,25 +97,30 @@
 						variant="primary"
 						size="sm"
 						text="Actions"
-						:disabled="!isReady">
+						:disabled="!isReady"
+						id="saleStatus-dropdown"
+					>
 						<b-dd-item-btn @click="callFuncByName('saleStatus')">
 							<b-icon icon="bootstrap-reboot" />
 							Refresh Sale Status
 						</b-dd-item-btn>
 						<b-dd-item-btn
-							@click="callFuncByName('setSaleStatus', [SALE_STATUS.Paused])">
+							@click="callFuncByName('setSaleStatus', [SALE_STATUS.Paused])"
+						>
 							<b-icon icon="pause-fill" />
 							Pause Sales
 						</b-dd-item-btn>
 						<b-dd-item-btn
 							v-if="rawContract.hasWhitelist"
-							@click="callFuncByName('setSaleStatus', [SALE_STATUS.Presale])">
+							@click="callFuncByName('setSaleStatus', [SALE_STATUS.Presale])"
+						>
 							<b-icon icon="play-fill" />
 							<b-icon icon="list-check" />
 							Start Presale (WL)
 						</b-dd-item-btn>
 						<b-dd-item-btn
-							@click="callFuncByName('setSaleStatus', [SALE_STATUS.Public])">
+							@click="callFuncByName('setSaleStatus', [SALE_STATUS.Public])"
+						>
 							<b-icon icon="play-fill" />
 							<b-icon v-if="rawContract.hasWhitelist" icon="people-fill" />
 							Start Public Sale
@@ -112,7 +132,8 @@
 		<b-row v-if="!isReady">
 			<b-col class="text-center">
 				<h4 class="pt-3">
-					Pending smart contract deployment, please wait. Some functions are disabled.
+					Pending smart contract deployment, please wait. Some functions are
+					disabled.
 				</h4>
 			</b-col>
 		</b-row>
@@ -120,7 +141,7 @@
 			<b-col>
 				<b-row class="mb-2">
 					<b-col sm="12" md="8" class="d-flex flex-wrap">
-						<h4 class="m-0 mr-1">
+						<h4 class="m-0 mr-1" id="contract-type">
 							{{ CONTRACT_TYPE[rawContract.contractType] }}
 						</h4>
 						<b-icon
@@ -128,7 +149,8 @@
 							class="my-auto"
 							icon="check-circle"
 							variant="success"
-							title="Source code verified"></b-icon>
+							title="Source code verified"
+						></b-icon>
 						<b-button
 							size="sm"
 							class="ml-2"
@@ -137,8 +159,10 @@
 							:href="`${getExplorerUrl(rawContract.chainId)}/address/${
 								rawContract.address
 							}`"
-							>{{ rawContract.address | compactAddress }} <b-icon icon="box-arrow-up-right" /></b-button
-						>
+							id="block-explorer"
+							>{{ rawContract.address | compactAddress }}
+							<b-icon icon="box-arrow-up-right"
+						/></b-button>
 						<b-button
 							size="sm"
 							class="ml-2"
@@ -149,8 +173,9 @@
 									JSON.stringify(JSON.parse(rawContract.abi), null, 2)
 								)
 							"
-							>ABI <b-icon icon="download" /></b-button
-						>
+							id="download-contract-abi"
+							>ABI <b-icon icon="download"
+						/></b-button>
 						<b-button
 							v-if="rawContract.rawCode && rawContract.isClearedForMainnet"
 							size="sm"
@@ -159,25 +184,31 @@
 							@click="
 								downloadTextFile(`${rawContract.name}.sol`, rawContract.rawCode)
 							"
-							>Source Code <b-icon icon="download" />	</b-button
-						>
+							id="download-source-code"
+							>Source Code <b-icon icon="download" />
+						</b-button>
 					</b-col>
 					<b-col
 						sm="12"
 						md="4"
-						class="d-flex justify-content-left justify-content-md-end my-auto">
-						<span class="pr-1">Advanced</span>
-						<b-form-checkbox
-							v-model="showAdvancedFunctions"
-							name="check-button"
-							switch />
+						class="d-flex justify-content-left justify-content-md-end my-auto"
+					>
+						<div id="advanced-function" class="d-flex">
+							<span class="pr-1">Advanced</span>
+							<b-form-checkbox
+								v-model="showAdvancedFunctions"
+								name="check-button"
+								switch
+							/>
+						</div>
 					</b-col>
 				</b-row>
 				<b-row v-for="(func, idx) in filteredFunctions" :key="idx">
 					<b-col class="mb-2">
 						<FunctionForm
 							:func="func"
-							:smartContract="smartContract"></FunctionForm>
+							:smartContract="smartContract"
+						></FunctionForm>
 					</b-col>
 				</b-row>
 			</b-col>
@@ -188,7 +219,8 @@
 			size="md"
 			centered
 			ok-only
-			@hidden="$router.push('/')">
+			@hidden="$router.push('/')"
+		>
 			<div class="text-center">
 				<h3 class="text-success">Success!!</h3>
 				<b-link :href="deployedExplorerUrl" target="_blank">
@@ -219,6 +251,8 @@ import { ethers } from 'ethers'
 import { downloadTextFile, getMetamaskError } from '@/utils'
 import useSmartContract from '@/hooks/useSmartContract'
 import FunctionForm from './smart-contract/FunctionForm'
+import ProductTour from '@/mixins/productTour'
+import alertMixin from '@/mixins/alertMixin'
 
 const basicFunctions = [
 	'airdrop',
@@ -240,6 +274,7 @@ export default {
 		const contract = useSmartContract(props.smartContract)
 		return { contract, rawContract: props.smartContract }
 	},
+	mixins: [ProductTour, alertMixin],
 	props: {
 		smartContract: Object,
 	},
@@ -270,18 +305,18 @@ export default {
 			// if not deployed setup one-time listener
 			this.contract.once('OwnershipTransferred', async (from, to) => {
 				console.log('OwnershipTransferred', from, to)
-				if(from === ethers.constants.AddressZero) {
+				if (from === ethers.constants.AddressZero) {
 					await this.onReady()
 				}
 			})
 		}
 	},
 	watch: {
-		'$wallet.balance': function(newVal) {
-			if(newVal > 0) {
+		'$wallet.balance': function (newVal) {
+			if (newVal > 0) {
 				this.removeAlert('insufficientBalance')
 			}
-		}
+		},
 	},
 	computed: {
 		isBusy() {
@@ -298,9 +333,9 @@ export default {
 			return this.rawContract.status === SMARTCONTRACT_STATUS.Testnet
 		},
 		functions() {
-			return Object.values(this.contract.interface?.functions || {}).sort(
-				(a, b) => a.name.localeCompare(b.name)
-			)
+			return Object.values(
+				this.contract.interface?.functions || {}
+			).sort((a, b) => a.name.localeCompare(b.name))
 		},
 		filteredFunctions() {
 			return this.functions?.filter(
@@ -319,7 +354,7 @@ export default {
 		},
 	},
 	methods: {
-		...mapMutations(['setBusy', 'addAlert', 'removeAlert']),
+		...mapMutations(['setBusy']),
 		getExplorerUrl,
 		getCurrency,
 		downloadTextFile,
@@ -329,6 +364,12 @@ export default {
 			await this.onRefreshBalance()
 			const saleStatus = await this.contract.saleStatus()
 			this.saleStatus = SALE_STATUS[saleStatus]
+			if (this.tourPrompts.project) {
+				this.initTour('project')
+				this.updateTourPrompts({
+					project: false,
+				})
+			}
 		},
 		async onVerify() {
 			try {
@@ -392,11 +433,12 @@ export default {
 				}
 				await this.$wallet.switchNetwork(mainnetConfig.chainId)
 
-				if(this.$wallet.balance === 0) {
+				if (this.$wallet.balance === 0) {
 					this.addAlert({
 						id: 'insufficientBalance',
 						variant: 'danger',
-						text: 'Connected wallet doesn\'t have enough balance to cover the deployment gas fees.',
+						text:
+							"Connected wallet doesn't have enough balance to cover the deployment gas fees.",
 					})
 					return
 				}
