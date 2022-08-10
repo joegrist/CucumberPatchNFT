@@ -4,7 +4,7 @@
 			<b-col class="my-auto">
 				<h4 class="m-0">NFT Assets Upload</h4>
 				<span class="text-muted"
-					>Upload your NFT collection images and metadata with nft.storage |</span
+					>Upload your NFT collection images and metadata |</span
 				>
 				<ExternalLink
 					href="https://youtu.be/1f7GvvOIe6Y"
@@ -23,31 +23,28 @@
 		<b-row>
 			<b-col>
 				<b-form novalidate>
-					<NftStorageApiKeyFormGroup
-						v-model="apiKey"
-					></NftStorageApiKeyFormGroup>
+					<NftStorageApiKeyFormGroup v-model="apiKey" />
 					<b-form-group
-						class="mb-1"
 						label="Step 1: Upload images folder"
 						description="Name files in a sequential order e.g. 1.png, 2.png, etc. and up to 5 GB total size for best results"
 					>
 						<b-row no-gutters class="w-100">
 							<b-col sm="12" md="10">
-														<b-form-file
+								<b-form-file
 								:disabled="!apiKey"
 								:value="imageFiles"
-								@input="(val) => (imageFiles = val.sort(sortFilesFn))"
+								@input="(val) => (imageFiles = onFilesSelected(val))"
+								:file-name-formatter="formatNames"
 								directory
 								no-traverse
 								multiple
 								placeholder="No folder chosen"
-								accept="image/*"
 							/>
 							</b-col>
 							<b-col sm="12" md="2">
 							<b-overlay :show="isUploading" rounded>
 								<b-button
-								block
+									block
 									variant="primary"
 									class="ml-2"
 									:disabled="!imageFiles.length"
@@ -58,28 +55,29 @@
 							</b-col>
 						</b-row>
 					</b-form-group>
-					<p v-show="imageFiles.length">
+					<h6 v-show="imageFiles.length" class="mb-3">
+						<b-icon icon="info-square"></b-icon>
 						Files: {{ imageFiles.length }} | Size: {{ calcSize(imageFiles) }} |
 						CID: {{ imagesCID || 'Not yet generated' }} |
 						<span v-show="imagesCID">Status: {{ imagesStatus }} | </span>
-						<!-- 	<b-button v-show="imagesCID" size="sm" variant="success" @click="refreshImagesStatus">
-								Refresh</b-button> -->
-					</p>
+						<!--<b-button v-show="imagesCID" size="sm" variant="success" @click="refreshImagesStatus">
+							Refresh</b-button> -->
+					</h6>
 					<b-form-group
-						class="mb-1"
 						label="Step 2: Upload metadata folder (files with .json extension)"
+						description="We will rename and format these files automatically before uploading"
 					>
 						<b-row no-gutters class="w-100">
 							<b-col sm="12" md="10">
 								<b-form-file
 									:disabled="!apiKey"
 									:value="jsonFiles"
-									@input="(val) => (jsonFiles = val.sort(sortFilesFn))"
+									@input="(val) => (jsonFiles = onFilesSelected(val))"
+									:file-name-formatter="formatNames"
 									directory
 									no-traverse
 									multiple
 									placeholder="No folder chosen"
-									accept=".json"
 								/>
 							</b-col>
 							<b-col sm="12" md="2">
@@ -97,18 +95,19 @@
 						</b-row>
 							
 					</b-form-group>
-					<p v-show="jsonFiles.length">
+					<h6 v-show="jsonFiles.length">
+						<b-icon icon="info-square"></b-icon>
 						Files: {{ jsonFiles.length }} | Size: {{ calcSize(jsonFiles) }} |
 						CID:
-						{{ metadataCID || 'Not yet generated...' }}
-					</p>
+						{{ metadataCID || 'Not yet generated' }}
+					</h6>
 				</b-form>
 			</b-col>
 		</b-row>
 		<b-row v-show="newBaseURL">
 			<b-col>
 				<h6 class="text-success">
-					Success! Here's your metadata url{{ smartContract.hasDelayedReveal ? ', use it to reveal your collection when ready': ''}}:
+					Success! Here's your metadata url {{ smartContract.hasDelayedReveal ? ', use it to reveal your collection when ready': ''}}:
 					<br />{{ newBaseURL }}
 					<Copy :value="newBaseURL"></Copy>
 				</h6>
@@ -163,6 +162,16 @@ export default {
 		},
 	},
 	methods: {
+		onFilesSelected(files) {
+			return files.filter(f => !f.name.startsWith('.')).sort(this.sortFilesFn)
+		},
+		formatNames(files) {
+			return files
+				.filter(f => !f.name.startsWith('.'))
+				.sort(this.sortFilesFn)
+				.map(f => f.name)
+				.join(', ')
+		},
 		calcSize(files) {
 			const size =
 				files.reduce((acc, val) => {

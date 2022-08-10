@@ -14,10 +14,13 @@
 			</b-row>
 			<b-row class="mb-2 mb-md-0">
 				<b-col sm="12" md="9" style="overflow: auto" class="text-center">
-					<div v-if="showPreview" v-html="iframeCode"></div>
-					<b-link :href="directURL" target="_blank">{{ directURL }}</b-link>
-					<h5 class="text-center text-muted mb-3">
+					<div v-if="showPreview" class="border rounded" v-html="iframeCode"></div>
+					<h5 class="text-center text-muted mb-3 mt-1">
 						Preview window |
+						<ExternalLink
+							:href="directURL"
+							text="Open in New Tab"
+							 /> |
 						<ExternalLink
 							href="https://www.youtube.com/playlist?list=PLSimebE4ITqOVKn2mZXb3dS51Ifqu_BEm"
 							text="How To Use"
@@ -162,17 +165,17 @@
 							</b-collapse>
 						</b-card>
 					</div>
+					
+				</b-col>
+			</b-row>
+			<b-row class="mb-3">
+				<b-col>
 					Embed code <Copy :value="iframeCode" />
-					<br />
 					<div class="border rounded p-2">
 						<code>
 							{{ iframeCode }}
 						</code>
 					</div>
-					<ExternalLink
-						href="https://www.youtube.com/playlist?list=PLSimebE4ITqOVKn2mZXb3dS51Ifqu_BEm"
-						text="How to videos"
-						icon="youtube" />
 				</b-col>
 			</b-row>
 			<b-row>

@@ -80,7 +80,7 @@
 <script>
 import { ethers } from 'ethers'
 import { getMerkleRoot } from '@/utils'
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapMutations } from 'vuex'
 import { getExplorerUrl } from '@/constants/metamask'
 import alertMixin from "@/mixins/alertMixin";
 
@@ -112,6 +112,7 @@ export default {
 		...mapGetters(['userId']),
 	},
 	methods: {
+		...mapMutations(['setBusy']),
 		whitelistValidator(tag) {
 			return ethers.utils.isAddress(tag)
 		},
