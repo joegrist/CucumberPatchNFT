@@ -31,7 +31,8 @@ export default {
 					})
 					break
 				case '/project':
-					this.$root.$emit('activate-smart-contract-tab');
+					// activate the 'smart contract' tab before initiating the project tour.
+					this.$root.$emit('activate-tab', 0);
 					this.initTour('project')
 					this.updateTourPrompts({
 						project: false,

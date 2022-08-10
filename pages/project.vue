@@ -75,18 +75,16 @@ export default {
 		isDeployed: false,
 		tabIndex:0
 	}),
-	created() {
-		this.$root.$on('activate-smart-contract-tab', () => {
-			if (this.tabIndex !== 0) {
-				this.tabIndex = 0
-			}
-		})
-	},
 	async asyncData({ $axios, route, store }) {
 		const { data: project } = await $axios.get(
 			`/users/${store.getters.userId}/smartcontracts/${route.query.id}`
 		)
 		return { project, contract: useSmartContract(project) }
+	},
+	created() {
+		this.$root.$on('activate-tab', (idx) => {
+			this.tabIndex = idx;
+		})
 	},
 	computed: {
 		isImported() {
