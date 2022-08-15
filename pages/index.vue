@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 import ProductTour from '@/mixins/productTour'
 
 export default {

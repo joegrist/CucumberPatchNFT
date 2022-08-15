@@ -304,15 +304,17 @@ export default {
 				return
 			}
 
-			if(this.smartContract.chainId != 1 && this.discountCode === 'ALT50') {
-				this.discounts.push({
-					text: 'ALT50',
-					value: '50% OFF',
-					apply: (val) => val * 50/100
-				})
-			} else {
-				alert(`Discount code "${this.discountCode}" is invalid`)
-			}
+			alert(`Discount code "${this.discountCode}" is invalid or expired`)
+
+			// if(this.smartContract.chainId != 1 && this.discountCode === 'ALT50') {
+			// 	this.discounts.push({
+			// 		text: 'ALT50',
+			// 		value: '50% OFF',
+			// 		apply: (val) => val * 50/100
+			// 	})
+			// } else {
+			// 	alert(`Discount code "${this.discountCode}" is invalid`)
+			// }
 
 			this.discountCode = null
 		},
