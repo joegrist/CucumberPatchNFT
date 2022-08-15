@@ -232,7 +232,7 @@ export default {
 				if (err.response.data.errors?.invalidAddresses) {
 					this.invalidAddresses = err.response.data.errors?.invalidAddresses
 				}
-				this.$bvToast.toast('File upload failed', {
+				this.$bvToast.toast('File upload failed. Please make sure format matches the example with no trailing commas in .csv', {
 					title: 'Whitelist',
 					variant: 'danger',
 				})
