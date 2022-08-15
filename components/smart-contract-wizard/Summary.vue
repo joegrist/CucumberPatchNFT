@@ -75,7 +75,7 @@ export default {
 				}, {})
 			
 			return Object.entries({...this.smartContract, ...marketplace})
-				.filter(([k, _]) => allowList.includes(k))
+				.filter(([k, v]) => allowList.includes(k) && v !== null)
 				.map(([key, val]) => {
 					if (isArray(val)) {
 						val = val.join(',')

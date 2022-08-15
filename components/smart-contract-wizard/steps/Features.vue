@@ -148,10 +148,10 @@
 				</b-col>
 				<b-col sm="12" md="4" class="text-left text-md-right mb-2 mb-md-0">
 					<b-button
-						variant="success"
+						variant="outline-success"
 						:hidden="!smartContractBuilder.hasRevenueSplits"
 						@click="onAddSplit">
-						Add Split <b-icon icon="wallet2" />
+						Add Split <b-icon icon="diagram3" />
 					</b-button>
 				</b-col>
 			</b-row>
@@ -248,7 +248,7 @@ export default {
 				hasWhitelist: false,
 				hasRevenueSplits: false,
 				whitelistPrice: null,
-				maxTokensPerPersonOnWhitelist: 1,
+				maxTokensPerPersonOnWhitelist: null,
 				revenueSplits: [
 					{
 						wallet: this.$wallet.account,

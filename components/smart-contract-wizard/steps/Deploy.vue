@@ -5,12 +5,14 @@
 				<Summary :smartContract="smartContractBuilder" />
 			</b-col>
 		</b-row>
-      <b-row>
+      <b-row class="mb-3">
         <b-col class='text-center'>
           <h2> Attention! </h2>
           <p> You will be using your own metamask wallet to pay the deployment fees and this wallet will thus be the owner of the smart contract.
             This is only a <b>testnet deployment</b> meaning you won't be spending real currency but you should still have test tokens to cover the deployment fees.
             You will still be able to deploy this contract to the mainnet at a later stage.
+            <br />
+            <span>Based on your selections the projected Zero Code NFT fee is </span> {{ projectedTotal }} ETH. Pay now: 0 ETH
           </p>
           <b-button v-if="FAUCETS[smartContractBuilder.chainId]" class="mb-2" variant="link" v-b-toggle.faucetList>
             Faucet list to get FREE test tokens (click to expand)
@@ -22,7 +24,7 @@
               </li>
             </ul>
           </b-collapse>
-          <div v-if="$wallet.account" class="mb-3">
+          <div v-if="$wallet.account">
             <span class="font-weight-bold">Your wallet address: </span>
             <span class="break-word">{{ $wallet.account }}</span>
             <Copy :value="$wallet.account" />
@@ -59,6 +61,7 @@
           </b-list-group-item>
           <b-list-group-item :href="explorerUrl" target="_blank">View on block explorer</b-list-group-item>
           <b-list-group-item :href="`https://mint.zerocodenft.com?siteId=${smartContractBuilder.siteId}`" target="_blank">Mint your first NFT</b-list-group-item>
+          <b-list-group-item :to="`/project?id=${smartContractBuilder.id}&tabIndex=1`">Upload your assets</b-list-group-item>
           <b-list-group-item>
             Tell us how we did ?!
             <b-form-rating variant="warning" size="sm" inline no-border @change="goToSurvey"></b-form-rating>
@@ -102,16 +105,24 @@ export default {
     return {
       FAUCETS,
       showConnectWalletModal: false,
-      duration: null
+      duration: null,
+      projectedTotal: 'loading...'
     }
   },  
   watch: {
-    '$wallet.account': function(newVal, oldVal) {
+    '$wallet.account': function(newVal, _) {
       this.showConnectWalletModal = newVal === null
     }
   },
   validations: {
     smartContractBuilder: {}
+  },
+  created() {
+    this.$axios.post('/smartcontracts/calculate-total', this.smartContractBuilder)
+    .then(res => {
+      this.projectedTotal = res.data
+    })
+    .catch(console.error)
   },
   computed: {
     ...mapState(['isBusy']),

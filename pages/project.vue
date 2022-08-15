@@ -73,7 +73,7 @@ export default {
 	},
 	data: () => ({
 		isDeployed: false,
-		tabIndex:0
+		tabIndex: 0
 	}),
 	async asyncData({ $axios, route, store }) {
 		const { data: project } = await $axios.get(
@@ -84,6 +84,10 @@ export default {
 	created() {
 		this.$root.$on('activate-tab', (idx) => {
 			this.tabIndex = idx;
+		})
+
+		this.$nextTick(() => {
+			this.tabIndex = Number(this.$route.query['tabIndex'] || 0)
 		})
 	},
 	computed: {
@@ -102,7 +106,7 @@ export default {
 			this.isDeployed = true
 			this.project.ownerAddress = await this.contract.owner()
 		},
-		checkOwner(newVal, oldVal) {
+		checkOwner(newVal, _) {
 			if (!this.project.ownerAddress) return
 
 			const hasError =
