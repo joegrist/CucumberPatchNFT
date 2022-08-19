@@ -7,39 +7,44 @@
 		</b-row>
 		<b-row>
 			<b-col>
-				<b-form @submit.prevent="updateJsonFiles">
-					<b-form-group label="Field name" label-class="required">
-						<b-form-input
-							v-model="jsonUpdate.field"
-							required
-							placeholder="e.g. image"></b-form-input>
-					</b-form-group>
-					<b-form-group label="Field value" label-class="required">
-						<b-form-input
-							v-model="jsonUpdate.value"
-							required
-							placeholder="e.g. ipfs://"></b-form-input>
-					</b-form-group>
-					<b-form-group label="Files (.json)" label-class="required">
-						<b-row no-gutters class="w-100">
-							<b-col sm="12" md="10">
-								<b-form-file
-									:value="jsonFiles"
-									@input="onFilesSelected"
-									:file-name-formatter="formatterFn"
-									directory
-									no-traverse
-									multiple
-									placeholder="Choose folder" />
-							</b-col>
-							<b-col sm="12" md="2">
-								<b-button block variant="primary" class="ml-2" type="submit"
-									>Run</b-button
-								>
-							</b-col>
-						</b-row>
-					</b-form-group>
-				</b-form>
+                <b-card bg-variant="light">
+                    <b-card-title>
+                        Update a field in all metadata files
+                    </b-card-title>
+                    <b-form @submit.prevent="updateJsonFiles">
+                        <b-form-group label="Field name" label-class="required">
+                            <b-form-input
+                                v-model="jsonUpdate.field"
+                                required
+                                placeholder="e.g. image"></b-form-input>
+                        </b-form-group>
+                        <b-form-group label="Field value" label-class="required">
+                            <b-form-input
+                                v-model="jsonUpdate.value"
+                                required
+                                placeholder="e.g. ipfs://"></b-form-input>
+                        </b-form-group>
+                        <b-form-group label="Files (.json)" label-class="required">
+                            <b-row no-gutters class="w-100">
+                                <b-col sm="12" md="10">
+                                    <b-form-file
+                                        :value="jsonFiles"
+                                        @input="onFilesSelected"
+                                        :file-name-formatter="formatterFn"
+                                        directory
+                                        no-traverse
+                                        multiple
+                                        placeholder="Choose folder" />
+                                </b-col>
+                                <b-col sm="12" md="2">
+                                    <b-button block variant="primary" class="ml-2" type="submit"
+                                        >Run</b-button
+                                    >
+                                </b-col>
+                            </b-row>
+                        </b-form-group>
+                    </b-form>
+                </b-card>
 			</b-col>
 		</b-row>
 	</b-container>
