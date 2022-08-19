@@ -13,7 +13,7 @@
 						<b-button
 							block
 							:variant="commitBtnVariant"
-							:disabled="isProcessingWhitelistCommit"
+							:disabled="isProcessingWhitelistCommit || invalidAddresses.length > 0"
 							@click="onWhitelistCommit"
 							>
 								Commit <b-icon icon="cloud-arrow-up"></b-icon>
@@ -38,7 +38,7 @@
 					<b-form-tags
 						v-model="whitelist"
 						invalid-tag-text="Address is invalid"
-						:tag-validator="whitelistValidator"
+						:tag-validator="validateAddress"
 						placeholder="Enter Wallet Address">
 					</b-form-tags>
 				</b-form-group>
@@ -55,7 +55,7 @@
 						</b-form-file>
 					</b-form-group>
 						<div v-if="invalidAddresses.length > 0">
-							<h5 class="text-danger">Invalid addresses</h5>
+							<h5 class="text-danger">Fix invalid addresses</h5>
 							<ul class="p-0">
 								<li
 									class="d-flex"
@@ -63,7 +63,7 @@
 									:key="idx">
 									{{ addr }}
 									<b-icon
-										class="my-auto"
+										class="my-auto pointer"
 										icon="trash"
 										variant="danger"
 										@click="onRemoveInvalidAddress(addr)"></b-icon>
@@ -93,7 +93,6 @@ export default {
 		return {
 			smartContract: null,
 			whitelist: [],
-			invalidAddresses: [],
 			isProcessingWhitelistCommit: false,
 			commitBtnVariant: 'primary',
 		}
@@ -110,26 +109,21 @@ export default {
 	computed: {
 		...mapState(['isBusy']),
 		...mapGetters(['userId']),
+		invalidAddresses() {
+			return this.whitelist.filter(a => !this.validateAddress(a))
+		}
 	},
 	methods: {
 		...mapMutations(['setBusy']),
-		whitelistValidator(tag) {
-			return ethers.utils.isAddress(tag)
+		validateAddress(value) {
+			return ethers.utils.isAddress(value)
 		},
 		onRemoveInvalidAddress(a) {
-			this.invalidAddresses = this.invalidAddresses.filter((x) => x !== a)
-			this.whitelist = this.whitelist.filter((x) => x !== a)
+			const idx = this.whitelist.indexOf(a)
+			this.whitelist.splice(idx,1)
 		},
 		async onWhitelistCommit() {
-			this.setBusy({ isBusy: true })
-
 			try {
-				this.whitelist.forEach((a) => {
-					if (!ethers.utils.isAddress(a)) {
-						this.invalidAddresses.push(a)
-					}
-				})
-
 				if (this.invalidAddresses.length > 0) {
 					this.$bvToast.toast(
 						'Whitelist contains invalid addresses. Please remove and resubmit',
@@ -141,23 +135,27 @@ export default {
 					return
 				}
 
+				this.setBusy({ isBusy: true })
+
 				const wlToCommit = this.whitelist.length === 0
 					? [ethers.constants.AddressZero]
 					: this.whitelist
 
 				const merkleRoot = getMerkleRoot(wlToCommit)
 
-				const { address, abi } = this.smartContract
+				const { address, abi, chainId } = this.smartContract
 				const contract = new ethers.Contract(
 					address,
 					abi,
 					this.$wallet.provider.getSigner()
 				)
 
+				await this.$wallet.switchNetwork(chainId)
+
 				const gasPrice = await this.$wallet.provider.getGasPrice()
 
 				const txResponse = await contract.setMerkleRoot(merkleRoot, {
-					gasPrice					
+					gasPrice
 				})
 				this.isProcessingWhitelistCommit = true
 
@@ -178,7 +176,7 @@ export default {
 				this.commitBtnVariant = 'primary'
 				this.removeAlert('whitelistMustCommit')
 
-				txResponse.wait().then(async (res) => {
+				txResponse.wait().then(async (_) => {
 					this.isProcessingWhitelistCommit = false
 					this.$bvToast.toast(msg, {
 						title: 'Commit List',
@@ -197,12 +195,13 @@ export default {
 			}
 		},
 		async onClearWhitelist() {
-			this.invalidAddresses = []
 			this.whitelist = []
 			this.commitBtnVariant = 'warning'
 		},
 		async onImportCsv(file) {
 			if (file === null) return
+
+			this.setBusy({ isBusy: true })
 
 			try {
 				const form = new FormData()
@@ -226,16 +225,14 @@ export default {
 					title: 'Whitelist',
 					variant: 'success',
 				})
-				this.invalidAddresses = []
 			} catch (err) {
 				console.log({ err })
-				if (err.response.data.errors?.invalidAddresses) {
-					this.invalidAddresses = err.response.data.errors?.invalidAddresses
-				}
 				this.$bvToast.toast('File upload failed. Please make sure format matches the example with no trailing commas in .csv', {
 					title: 'Whitelist',
 					variant: 'danger',
 				})
+			} finally {
+				this.setBusy({ isBusy: false})
 			}
 		},
 		createToastMessage(hash) {
