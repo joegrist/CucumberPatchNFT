@@ -40,7 +40,7 @@
 
 <script>
 import JSZip from 'jszip/dist/jszip.min.js'
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver'
 
 export default {
     data() {

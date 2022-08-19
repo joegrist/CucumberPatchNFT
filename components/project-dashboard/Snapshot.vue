@@ -46,8 +46,9 @@
 
 <script>
 import Vue from 'vue'
-import { downloadTextFile, getMetamaskError } from '@/utils'
+import { getMetamaskError } from '@/utils'
 import useSmartContract from '@/hooks/useSmartContract'
+import { saveAs } from 'file-saver'
 
 export default {
 	props: {
@@ -125,7 +126,8 @@ export default {
 				.join('\n')
 
 			const filename = `${this.smartContract.name}_snapshot_${Date.now()}.csv`
-			downloadTextFile(filename, data, 'data:text/csv')
+			const file = new File([data], filename)
+			saveAs(file)
 		},
 	},
 }
