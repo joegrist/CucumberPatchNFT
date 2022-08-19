@@ -167,12 +167,7 @@
 							size="sm"
 							class="ml-2"
 							variant="outline-primary"
-							@click="
-								downloadTextFile(
-									`${rawContract.name}-abi.txt`,
-									JSON.stringify(JSON.parse(rawContract.abi), null, 2)
-								)
-							"
+							@click="downloadAbi"
 							id="download-contract-abi"
 							>ABI <b-icon icon="download"
 						/></b-button>
@@ -181,9 +176,7 @@
 							size="sm"
 							class="ml-2"
 							variant="outline-primary"
-							@click="
-								downloadTextFile(`${rawContract.name}.sol`, rawContract.rawCode)
-							"
+							@click="downloadSourceCode"
 							id="download-source-code"
 							>Source Code <b-icon icon="download" />
 						</b-button>
@@ -248,11 +241,12 @@ import {
 	getMainnetConfig,
 } from '@/constants/metamask'
 import { ethers } from 'ethers'
-import { downloadTextFile, getMetamaskError } from '@/utils'
+import { getMetamaskError } from '@/utils'
 import useSmartContract from '@/hooks/useSmartContract'
 import FunctionForm from './smart-contract/FunctionForm'
 import ProductTour from '@/mixins/productTour'
 import alertMixin from '@/mixins/alertMixin'
+import { saveAs } from 'file-saver'
 
 const basicFunctions = [
 	'airdrop',
@@ -357,7 +351,17 @@ export default {
 		...mapMutations(['setBusy']),
 		getExplorerUrl,
 		getCurrency,
-		downloadTextFile,
+		downloadAbi() {
+			const data = JSON.stringify(JSON.parse(this.rawContract.abi), null, 2)
+			const fileName = `${this.rawContract.name}_abi.txt`
+			const file = new File([data], fileName)
+			saveAs(file)
+		},
+		downloadSourceCode() {
+			const fileName = `${rawContract.name}.sol`
+			const file = new File([rawContract.rawCode], fileName)
+			saveAs(file)
+		},
 		async onReady() {
 			this.$emit('ready')
 			this.isReady = true

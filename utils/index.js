@@ -37,27 +37,6 @@ const scrollTo = (id) => {
 	document.getElementById(id).scrollIntoView({ behavior: 'smooth' })
 }
 
-const downloadTextFile = (
-	filename,
-	data,
-	format = 'data:text/plain',
-	encoding = 'charset=utf-8'
-) => {
-	const element = document.createElement('a')
-	element.setAttribute(
-		'href',
-		`${format};${encoding},${encodeURIComponent(data)}`
-	)
-	element.setAttribute('download', filename)
-
-	element.style.display = 'none'
-	document.body.appendChild(element)
-
-	element.click()
-
-	document.body.removeChild(element)
-}
-
 const getProvider = (chainId, isStatic = true) => {
 	const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
 	return isStatic
@@ -78,7 +57,6 @@ export {
 	hasValidAddress,
 	copyToClipboard,
 	scrollTo,
-	downloadTextFile,
 	getProvider,
     getMetamaskError
 }

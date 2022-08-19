@@ -22,7 +22,7 @@
 
 <script>
 import { ref } from 'vue'
-import { downloadTextFile } from '@/utils'
+import { saveAs } from 'file-saver'
 
 export default {
     props: {
@@ -34,7 +34,8 @@ export default {
 
         function onDownload() {
             const filename = `${this.smartContract.name}.sol`
-            downloadTextFile(filename, this.smartContract.rawCode)
+            const file = new File([this.smartContract.rawCode], filename)
+            saveAs(file)
         }
 
         return { canDownload, code, onDownload }

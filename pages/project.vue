@@ -36,6 +36,9 @@
 					<b-tab v-if="!isImported" title="Source Code" lazy id="source-code">
 						<SourceCode :smartContract="project" />
 					</b-tab>
+					<b-tab title="Tools" lazy id="tools">
+						<Tools />
+					</b-tab>
 					<b-tab v-if="!isImported" title="Other" lazy id="other-config">
 						<Config :smartContractId="project.id" />
 					</b-tab>
@@ -56,6 +59,7 @@ import MintPage from '@/components/project-dashboard/MintPage'
 import Snapshot from '@/components/project-dashboard/Snapshot'
 import SourceCode from '@/components/project-dashboard/SourceCode'
 import Config from '@/components/project-dashboard/Config'
+import Tools from '@/components/project-dashboard/Tools'
 import alertMixin from "@/mixins/alertMixin";
 
 export default {
@@ -70,6 +74,7 @@ export default {
 		Snapshot,
 		SourceCode,
 		Config,
+		Tools
 	},
 	data: () => ({
 		isDeployed: false,
