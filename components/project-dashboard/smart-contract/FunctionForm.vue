@@ -63,7 +63,7 @@
 						func.constant ? 'View' : 'Submit'
 					}}</b-button>
 				</div>
-				<div v-show="response" class="font-weight-bold mt-2 text-center">
+				<div v-show="response" class="font-weight-bold mt-2 text-center break-word">
 					{{ formattedResponse }}
 				</div>
 			</b-form>
