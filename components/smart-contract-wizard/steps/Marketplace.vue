@@ -294,7 +294,7 @@ export default {
 
 						return new Promise((resolve) => {
 							fetch(
-								`https://rinkeby-api.opensea.io/api/v1/collection/${this.formattedName}`
+								`https://testnets-api.opensea.io/api/v1/collection/${this.formattedName}`
 							)
 							.then((response) => {
 								// console.log(response)
