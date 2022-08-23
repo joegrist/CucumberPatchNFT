@@ -126,7 +126,6 @@
 		</b-modal>
 		<b-modal :id="`Clone${sc.id}`" title="Clone Contract" centered ok-variant="primary" ok-title="Clone"
 			cancel-title="Cancel" @ok.prevent="onCloneContract">
-			<b-form>
 				<b-form-group label="Title" label-class="required">
 					<b-form-input id="cloneContractTitle" name="cloneContractTitle" type="text" v-model="cloneContractTitle"
 						:state="validateState('cloneContractTitle')"></b-form-input>
@@ -134,7 +133,6 @@
 						Please correct "Title"
 					</b-form-invalid-feedback>
 				</b-form-group>
-			</b-form>
 		</b-modal>
 		<b-modal :id="`OpenSea${sc.id}`" title="Link your OpenSea collection" centered ok-variant="primary" ok-title="Link"
 			:ok-disabled="$v.openSeaLinkUrl.$error" @ok.prevent="onLinkOpenSea" cancel-title="Cancel">
@@ -347,17 +345,12 @@ export default {
 		async getOpenSeaStats() {
 			if (!this.isOpenSea || !this.isDeployed) return
 
-			let openseaApiUrl
-			let retryCount = 0
+			let openseaApiUrl, retryCount = 0
 			const fetchParams = {}
-
 			const name = this.sc.marketplaceCollection?.formattedName
 
 			if (this.isTestnet) {
 				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${name}/stats`
-				fetchParams.headers = {
-					'X-API-KEY': '',
-				}
 			} else {
 				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${name}/stats`
 				fetchParams.headers = {
