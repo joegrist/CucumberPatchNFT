@@ -1,4 +1,5 @@
 import { mapState, mapMutations } from 'vuex'
+import { getMainnetConfig } from '@/constants/metamask'
 
 const smartContractWizardMixin = {
 	data() {
@@ -9,6 +10,10 @@ const smartContractWizardMixin = {
 	props: ['clickedNext', 'currentStep'],
 	computed: {
 		...mapState(['smartContractBuilder']),
+		currency() {
+			const chainId = this.smartContractBuilder.chainId
+			return getMainnetConfig(chainId)?.nativeCurrency.symbol || ''
+		},
 		state() {
 			return Object.keys(this.$v.smartContractBuilder || {})
 				.filter((key) => !key.startsWith('$'))
