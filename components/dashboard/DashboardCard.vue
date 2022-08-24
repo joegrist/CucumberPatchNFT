@@ -1,9 +1,22 @@
 <template>
 	<b-card class="shadow-sm py-3" no-body>
-		<b-avatar id="blockchain-logo" class="p-2 border card-logo" :src="blockchainIcon[sc.blockchain]" size="lg">
+		<b-avatar
+			id="blockchain-logo"
+			class="p-2 border card-logo"
+			:src="blockchainIcon[sc.blockchain]"
+			size="lg"
+		>
 		</b-avatar>
-		<b-dropdown size="lg" variant="link" class="card-menu" ref="cardMenu" toggle-class="text-decoration-none p-0"
-			no-caret id="contract-actions" right>
+		<b-dropdown
+			size="lg"
+			variant="link"
+			class="card-menu"
+			ref="cardMenu"
+			toggle-class="text-decoration-none p-0"
+			no-caret
+			id="contract-actions"
+			right
+		>
 			<template #button-content>
 				<b-icon icon="three-dots-vertical" class="text-muted" />
 				<span class="sr-only">Card Menu</span>
@@ -12,17 +25,26 @@
 				<div id="block-explorer">
 					<b-dd-text v-if="sc.address" class="text-center">
 						<span class="text-muted">Block Expolorer</span><br />
-						<b-link target="_blank" :href="viewContractUrl">{{ sc.address | compactAddress }} ></b-link>
+						<b-link target="_blank" :href="viewContractUrl"
+							>{{ sc.address | compactAddress }} ></b-link
+						>
 					</b-dd-text>
 				</div>
 				<b-dropdown-divider></b-dropdown-divider>
 				<b-dd-item v-b-modal="`Clone${sc.id}`" id="clone-contract">
 					<b-icon icon="files" /> Clone Contract
 				</b-dd-item>
-				<b-dd-item v-if="supportsOpenSea" v-b-modal="`OpenSea${sc.id}`" id="link-opensea">
+				<b-dd-item
+					v-if="supportsOpenSea"
+					@click="handleLinkOpensea(sc)"
+					id="link-opensea"
+				>
 					<b-icon icon="link" /> Link OpenSea
 				</b-dd-item>
-				<b-dd-item v-if="isTestnet && !sc.isClearedForMainnet" :to="`/checkout?smId=${sc.id}`">
+				<b-dd-item
+					v-if="isTestnet && !sc.isClearedForMainnet"
+					:to="`/checkout?smId=${sc.id}`"
+				>
 					<b-icon icon="wallet2" /> Go to Checkout
 				</b-dd-item>
 			</template>
@@ -30,37 +52,56 @@
 				<b-icon icon="trash" /> Remove Card
 			</b-dd-item>
 		</b-dropdown>
-		<b-card-title class="text-center truncate-text px-3 mb-0 pb-2" id="project-name">
-			<b-link v-if="isDeployed" class="text-dark" :to="`/project?id=${sc.id}`">{{ sc.name }}</b-link>
+		<b-card-title
+			class="text-center truncate-text px-3 mb-0 pb-2"
+			id="project-name"
+		>
+			<div v-if="isDeployed" class="text-dark" @click="onManageProject(sc.id)">
+				{{ sc.name }}
+			</div>
 			<span v-else>{{ sc.name }}</span>
 		</b-card-title>
 
 		<b-card-sub-title class="text-center mb-2" id="project-type-network">
 			{{ subTitle }}
-			<b-icon v-if="sc.isVerified" icon="check-circle" variant="success" title="Source code verified"></b-icon>
+			<b-icon
+				v-if="sc.isVerified"
+				icon="check-circle"
+				variant="success"
+				title="Source code verified"
+			></b-icon>
 		</b-card-sub-title>
 
 		<b-container fluid>
 			<b-row class="stats">
 				<b-col cols="6" class="text-center" id="project-status">
-					<span :class="[
+					<span
+						:class="[
 							'font-weight-bold',
 							{
 								'text-success': isDeployed,
 								'text-info': !isDeployed,
 							},
-						]">{{ isDeployed ? 'Live' : 'Draft' }}</span>
+						]"
+						>{{ isDeployed ? 'Live' : 'Draft' }}</span
+					>
 					<br />
 					<span class="text-muted">Status</span>
 				</b-col>
 				<b-col cols="6" class="text-center" id="feature-preview">
-					<span class="font-weight-bold">{{ sc.hasDelayedReveal | yesNo }} /
-						{{ sc.hasWhitelist | yesNo }}</span>
+					<span class="font-weight-bold"
+						>{{ sc.hasDelayedReveal | yesNo }} /
+						{{ sc.hasWhitelist | yesNo }}</span
+					>
 					<br />
-					<span class="text-muted" title="Delayed Reveal / White List">DR / WL</span>
+					<span class="text-muted" title="Delayed Reveal / White List"
+						>DR / WL</span
+					>
 				</b-col>
 				<b-col cols="6" class="text-center" id="mint-count">
-					<span class="font-weight-bold">{{ minted }} / {{ sc.collectionSize }}</span>
+					<span class="font-weight-bold"
+						>{{ minted }} / {{ sc.collectionSize }}</span
+					>
 					<span v-if="minted === sc.collectionSize">🎉</span>
 					<br />
 					<span class="text-muted">Minted</span>
@@ -77,12 +118,22 @@
 				</b-col>
 			</b-row>
 			<b-row class="stats mt-3">
-				<b-col cols="6" class="text-center" style="padding-bottom: 0;" id="owners-count">
+				<b-col
+					cols="6"
+					class="text-center"
+					style="padding-bottom: 0;"
+					id="owners-count"
+				>
 					<span class="font-weight-bold">{{ openSeaStats.num_owners }}</span>
 					<br />
 					<span class="text-muted">Owners</span>
 				</b-col>
-				<b-col cols="6" class="text-center" style="padding-bottom: 0;" id="total-volume">
+				<b-col
+					cols="6"
+					class="text-center"
+					style="padding-bottom: 0;"
+					id="total-volume"
+				>
 					<span class="font-weight-bold">{{
 						openSeaStats.total_volume === 'n/a'
 							? 'n/a'
@@ -91,11 +142,25 @@
 					<br />
 					<span class="text-muted">Volume</span>
 				</b-col>
-				<b-col cols="12" class="text-center" style="padding: 0;" id="marketplace">
-					<b-button v-if="isOpenSea" size="sm" :href="collectionUrl" target="_blank" variant="outline-light" class="border">
+				<b-col
+					cols="12"
+					class="text-center"
+					style="padding: 0;"
+					id="marketplace"
+				>
+					<b-button
+						v-if="isOpenSea"
+						size="sm"
+						:href="collectionUrl"
+						target="_blank"
+						variant="outline-light"
+						class="border"
+					>
 						<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
 					</b-button>
-					<b-button v-else size="sm" variant="transparent" disabled>Marketplace N/A</b-button>
+					<b-button v-else size="sm" variant="transparent" disabled
+						>Marketplace N/A</b-button
+					>
 				</b-col>
 				<b-col cols="6" class="text-center" id="floor-price">
 					<span class="font-weight-bold">{{ openSeaStats.floor_price }}</span>
@@ -110,44 +175,104 @@
 			</b-row>
 			<b-row class="pb-0">
 				<b-col cols="8" id="manage-project">
-					<b-button v-if="isDeployed" class="font-weight-bold" variant="link" size="sm" :to="`/project?id=${sc.id}`">
+					<b-button
+						v-if="isDeployed"
+						class="font-weight-bold"
+						variant="link"
+						size="sm"
+						@click="onManageProject(sc.id)"
+					>
 						Manage Project >>
 					</b-button>
-					<b-button v-else variant="link" size="sm" class="font-weight-bold" @click="onEdit">Edit/Deploy >></b-button>
+					<b-button
+						v-else
+						variant="link"
+						size="sm"
+						class="font-weight-bold"
+						@click="onEdit"
+						>Edit/Deploy >></b-button
+					>
 				</b-col>
 				<b-col id="project-created-on" cols="4" class="text-muted text-right">
 					{{ sc.createdOn | toDate }}
 				</b-col>
 			</b-row>
 		</b-container>
-		<b-modal :id="`Remove${sc.id}`" title="Confirm" centered body-class="text-center" ok-variant="primary"
-			ok-title="Yes" cancel-title="No" @ok="onRemoveCard">
+		<b-modal
+			:id="`Remove${sc.id}`"
+			title="Confirm"
+			centered
+			body-class="text-center"
+			ok-variant="primary"
+			ok-title="Yes"
+			cancel-title="No"
+			@ok="onRemoveCard"
+		>
 			<h5>Are you sure want to remove this card ?</h5>
 		</b-modal>
-		<b-modal :id="`Clone${sc.id}`" title="Clone Contract" centered ok-variant="primary" ok-title="Clone"
-			cancel-title="Cancel" @ok.prevent="onCloneContract">
+		<b-modal
+			:id="`Clone${sc.id}`"
+			title="Clone Contract"
+			centered
+			ok-variant="primary"
+			ok-title="Clone"
+			cancel-title="Cancel"
+			@ok.prevent="onCloneContract"
+		>
 			<b-form>
 				<b-form-group label="Title" label-class="required">
-					<b-form-input id="cloneContractTitle" name="cloneContractTitle" type="text" v-model="cloneContractTitle"
-						:state="validateState('cloneContractTitle')"></b-form-input>
+					<b-form-input
+						id="cloneContractTitle"
+						name="cloneContractTitle"
+						type="text"
+						v-model="cloneContractTitle"
+						:state="validateState('cloneContractTitle')"
+					></b-form-input>
 					<b-form-invalid-feedback :state="validation.cloneContractTitle">
 						Please correct "Title"
 					</b-form-invalid-feedback>
 				</b-form-group>
 			</b-form>
 		</b-modal>
-		<b-modal :id="`OpenSea${sc.id}`" title="Link your OpenSea collection" centered ok-variant="primary" ok-title="Link"
-			:ok-disabled="$v.openSeaLinkUrl.$error" @ok.prevent="onLinkOpenSea" cancel-title="Cancel">
+		<b-modal
+			:id="`OpenSea${sc.id}`"
+			title="Link your OpenSea collection"
+			centered
+			ok-variant="primary"
+			ok-title="Link"
+			:ok-disabled="$v.openSeaLinkUrl.$error"
+			@ok.prevent="onLinkOpenSea"
+			cancel-title="Cancel"
+		>
 			<div>
-				<b-form-group :label="`Collection URL on ${projectDeploymentStatus}`" label-class="required"
-					:description="collectionNameDesc">
-					<b-form-input id="link" name="link" type="url" v-model="openSeaLinkUrl"
-						:state="validateState('openSeaLinkUrl')" @blur="$v.openSeaLinkUrl.$touch()"></b-form-input>
+				<b-form-group
+					:label="`Collection URL on ${projectDeploymentStatus}`"
+					label-class="required"
+					:description="collectionNameDesc"
+				>
+					<b-form-input
+						id="link"
+						name="link"
+						type="url"
+						v-model="openSeaLinkUrl"
+						:state="validateState('openSeaLinkUrl')"
+						@blur="$v.openSeaLinkUrl.$touch()"
+					></b-form-input>
 					<b-form-invalid-feedback :state="validation.openSeaLinkUrl">
 						Please correct "Collection URL"
 					</b-form-invalid-feedback>
 				</b-form-group>
 			</div>
+		</b-modal>
+		<b-modal
+			:id="`deprecated-network-${sc.id}`"
+			title="Deprecated Network"
+			centered
+			hide-footer
+		>
+			The contract is deployed on Rinkeby network and it's been deprecated due
+			to eth2.0 merge. Clone the contract and redeploy so that it gets
+			redeployed on Goerli test network.
 		</b-modal>
 	</b-card>
 </template>
@@ -253,6 +378,9 @@ export default {
 				? `https://testnets.opensea.io/collection/${slug}`
 				: `https://opensea.io/collection/${slug}`
 		},
+		isOnDeprecatedNetwork() {
+			return [4].includes(Number(this.sc.chainId));
+		}
 	},
 	methods: {
 		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
@@ -397,6 +525,20 @@ export default {
 
 			return getData()
 		},
+		onManageProject(id) {
+			if (this.isOnDeprecatedNetwork) {
+				this.$bvModal.show(`deprecated-network-${id}`)
+				return
+			}
+			this.$router.push(`/project?id=${id}`)
+		},
+		handleLinkOpensea(id) {
+			if (this.isOnDeprecatedNetwork) {
+				this.$bvModal.show(`deprecated-network-${id}`)
+				return;
+				}
+				this.$bvModal.show(`Opensea${id}`);
+		}
 	},
 }
 </script>
@@ -439,6 +581,12 @@ export default {
 .stats {
 	div {
 		padding-bottom: 1rem;
+	}
+}
+#project-name {
+	.text-dark:hover {
+		text-decoration: underline;
+		cursor: pointer;
 	}
 }
 </style>
