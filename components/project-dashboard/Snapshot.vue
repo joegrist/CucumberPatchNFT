@@ -80,7 +80,7 @@ export default {
 		async runSnapshot() {
 			this.ownerMap = {}
 			try {
-				this.supply = await this.contract.totalSupply()
+				this.supply = (await this.contract.totalSupply()).toNumber()
 			} catch {
 				this.$bvToast.toast('Could not determine collection size', {
 					title: 'Snapshot',
@@ -91,13 +91,15 @@ export default {
 				this.isRunning = true
 				this.showProgress = true
 				for (let i = 1; i <= this.supply; i++) {
+					debugger
 					const address = await this.contract.ownerOf(i)
 					this.progress = i
 					if (!this.ownerMap[address]) {
+						debugger
 						const balance = await this.contract.balanceOf(address)
 						const newEntry = {
 							address: address,
-							count: balance,
+							count: balance.toNumber(),
 						}
 						Vue.set(this.ownerMap, address, newEntry)
 					}

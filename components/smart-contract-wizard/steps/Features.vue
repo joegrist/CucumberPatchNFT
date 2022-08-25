@@ -3,7 +3,7 @@
 		<b-container>
 			<b-row>
 				<b-col>
-					<b-form-group description="Your customers will see a placeholder image on all NFTs until the reveal date.">
+					<b-form-group>
 						<b-form-checkbox
 							id="delayedRevealFeature"
 							name="delayedRevealFeature"
@@ -15,43 +15,13 @@
 							">
 							Delayed Reveal
 						</b-form-checkbox>
+						<span class="text-muted">Your customers will see a placeholder image on all NFTs until the reveal date</span>
 					</b-form-group>
 				</b-col>
 			</b-row>
-			<!-- <b-row>
-				<b-col>
-					<b-form-group
-						description="URL to the .json file containing pre-reveal metadata, can be updated later"
-						:disabled="!smartContractBuilder.hasDelayedReveal">
-						<template #label>
-							Placeholder URL
-							<ExternalLink
-								href="https://youtu.be/It05AkP_Wt4"
-								icon="youtube"
-								text="What's this?" />
-						</template>
-						<b-form-input
-							id="delayedRevealURL"
-							name="delayedRevealURL"
-							type="text"
-							placeholder="ipfs://..."
-							:value="smartContractBuilder.delayedRevealURL"
-							@change="
-								(delayedRevealURL) => updateSmartContractBuilder({ delayedRevealURL })
-							"
-							@blur="$v.smartContractBuilder.delayedRevealURL.$touch()"
-							:state="
-								validateState('smartContractBuilder.delayedRevealURL')
-							"></b-form-input>
-						<b-form-invalid-feedback :state="state.delayedRevealURL">
-							Please correct "Placeholder URL"
-						</b-form-invalid-feedback>
-					</b-form-group>
-				</b-col>
-			</b-row> -->
 			<b-row>
 				<b-col>
-					<b-form-group description="Give specific group of people (could be team, early supporters, etc.) access to mint before others">
+					<b-form-group>
 						<b-form-checkbox
 							id="whitelistFeature"
 							name="whitelistFeature"
@@ -63,15 +33,16 @@
 							">
 							Whitelist
 						</b-form-checkbox>
+						<span class="text-muted">Give specific group of people (team, early supporters, etc.) access to mint before others</span>
 					</b-form-group>
 				</b-col>
 			</b-row>
-			<b-row>
+			<b-row v-show="smartContractBuilder.hasWhitelist">
 				<b-col sm="12" md="6">
 					<b-form-group
 						description="Can be the same as public sale price or even zero to allow free mint"
 						:label="`Price per NFT in ${currency}`"
-						:label-class="{ required: smartContractBuilder.hasWhitelist }"
+						label-class="required"
 						:disabled="!smartContractBuilder.hasWhitelist">
 						<b-form-input
 							id="whitelistPrice"
@@ -99,7 +70,7 @@
 					<b-form-group
 						label="Max NFTs Per Person"
 						description="Maximum number of tokens someone can mint during whitelist sale, independent of public"
-						:label-class="{ required: smartContractBuilder.hasWhitelist }"
+						label-class="required"
 						:disabled="!smartContractBuilder.hasWhitelist">
 						<b-form-input
 							id="maxTokensPerPersonOnWhitelist"
@@ -131,8 +102,7 @@
 			</b-row>
 			<b-row>
 				<b-col sm="12" md="8">
-					<b-form-group
-						description="If you are the 100% shareholder your wallet will be added automatically during deployment">
+					<b-form-group>
 						<b-form-checkbox
 							id="revenueSplitFeature"
 							name="revenueSplitFeature"
@@ -144,37 +114,43 @@
 							">
 							Primary Sales Revenue Splits
 						</b-form-checkbox>
+						<span class="text-muted">Skip when you (the collection owner) are the 100% shareholder</span>
 					</b-form-group>
 				</b-col>
 				<b-col sm="12" md="4" class="text-left text-md-right mb-2 mb-md-0">
 					<b-button
+						v-show="smartContractBuilder.hasRevenueSplits"
 						variant="outline-success"
-						:hidden="!smartContractBuilder.hasRevenueSplits"
 						@click="onAddSplit">
 						Add Split <b-icon icon="diagram3" />
 					</b-button>
 				</b-col>
 			</b-row>
-			<b-row v-for="(split, idx) in revenueSplits" :key="idx">
+			<b-row v-show="smartContractBuilder.hasRevenueSplits" v-for="(split, idx) in revenueSplits" :key="idx">
 				<b-col sm="12" md="8">
 					<b-form-group
-						label="Wallet Address"
-						:label-class="{ required: smartContractBuilder.hasRevenueSplits }"
+						:label="`Wallet Address ${idx+1}`"
+						label-class="required"
 						:disabled="!smartContractBuilder.hasRevenueSplits">
 						<b-form-input
 							type="text"
 							:name="`wallet${idx}`"
 							:value="split.wallet"
-							@change="(val) => onSplitWalletUpdate(val, idx)"></b-form-input>
-						<!-- <b-form-invalid-feedback :state="revenueSplitErrors[idx]">
-							Please correct "Wallet {{ idx }}"
-						</b-form-invalid-feedback> -->
+							@change="(val) => onSplitWalletUpdate(val, idx)"
+							@blur="$v.revenueSplits.$each[idx].wallet.$touch()"
+							:state="
+								validateState(
+									`revenueSplits.$each[${idx}].wallet`
+							)"></b-form-input>
+							<b-form-invalid-feedback :state="!$v.revenueSplits.$each[idx].wallet.$anyError">
+								Please correct "Wallet Address"
+							</b-form-invalid-feedback>
 					</b-form-group>
 				</b-col>
 				<b-col sm="12" md="3">
 					<b-form-group
 						label="Share %"
-						:label-class="{ required: smartContractBuilder.hasRevenueSplits }"
+						label-class="required"
 						:disabled="!smartContractBuilder.hasRevenueSplits">
 						<b-form-input
 							:name="`share${idx}`"
@@ -183,7 +159,12 @@
 							step="any"
 							min="0"
 							@change="(val) => onSplitShareUpdate(val ? +val : 0, idx)"
+							@blur="$v.revenueSplits.$each[idx].share.$touch()"
+							:state="validateState(`revenueSplits.$each[${idx}].share`)"
 							></b-form-input>
+							<b-form-invalid-feedback :state="!$v.revenueSplits.$each[idx].share.$anyError">
+								Please correct "Share"
+							</b-form-invalid-feedback>
 					</b-form-group>
 				</b-col>
 				<b-col sm="12" md="1">
@@ -199,21 +180,14 @@
 					</b-form-group>
 				</b-col>
 			</b-row>
-			<b-row v-if="revenueSplitErrors.length > 0">
+			<b-row v-show="revenueSplitErrors.length > 0">
 				<b-col cols="12">
-					<ul>
-						<li
-							v-for="msg in revenueSplitErrors"
-							:key="msg"
-							class="text-danger">
-							{{ msg }}
-						</li>
-					</ul>
+					<b-alert v-for="err in revenueSplitErrors" :key="err" variant="danger" show>{{ err }}</b-alert>
 				</b-col>
 			</b-row>
 			<b-row class="mt-3">
-				<b-col>
-					<b-button type="reset" variant="danger">Reset</b-button>
+				<b-col class="text-right">
+					<b-button type="reset" variant="danger">Reset All</b-button>
 				</b-col>
 			</b-row>
 		</b-container>
@@ -228,8 +202,8 @@ import {
 	decimal,
 	minValue,
 	maxValue,
+	helpers
 } from 'vuelidate/lib/validators'
-import { getMainnetConfig } from '@/constants/metamask'
 import { validateState, hasValidAddress } from '@/utils'
 import { cloneDeep } from 'lodash-es'
 
@@ -260,7 +234,6 @@ export default {
 	},
 	validations: {
 		smartContractBuilder: {
-			// delayedRevealURL: { mustBeURL },
 			whitelistPrice: {
 				required: requiredIf(function () {
 					return this.smartContractBuilder.hasWhitelist
@@ -275,12 +248,26 @@ export default {
 				minValue: minValue(1),
 			},
 		},
+		revenueSplits: {
+			$each: {
+				wallet: {
+					required: requiredIf(function () {
+						return this.smartContractBuilder.hasRevenueSplits
+					}),
+					hasValidAddress: (value) => !helpers.req(value) || hasValidAddress(value)
+				},
+				share: {
+					minValue: minValue(0),
+					maxValue: maxValue(100)
+				}
+			}
+		},
 		revenueSplitErrors: {
-			maxValue: maxValue(0),
+			maxValue: maxValue(0), // this won't let to go Next if there is at least 1 error
 		},
 	},
 	mounted() {
-		const splits = this.$store.state.smartContractBuilder.revenueSplits
+		const splits = this.smartContractBuilder.revenueSplits
 		if (splits?.length) {
 			// hard copy from state to avoid vuex errors of mutating state outside of store
 			this.revenueSplits = cloneDeep(splits)
@@ -293,10 +280,6 @@ export default {
 		}
 	},
 	computed: {
-		currency() {
-			const chainId = this.smartContractBuilder.chainId
-			return this.getMainnetConfig(chainId)?.nativeCurrency.symbol || ''
-		},
 		splitShareTotal() {
 			return this.revenueSplits
 				.map((x) => x.share)
@@ -307,22 +290,15 @@ export default {
 
 			const errors = []
 			const sumsTo100 = this.splitShareTotal === 100
-			const hasValidWallets = this.revenueSplits
-				.map((x) => x.wallet)
-				.every(hasValidAddress)
-			const hasShares = this.revenueSplits
-				.map((x) => x.share)
-				.every((s) => s !== null && s !== 0)
+
+			console.log(sumsTo100)
 
 			if (!sumsTo100) errors.push('Shares must add up to 100%')
-			if (!hasValidWallets) errors.push('All wallets must have a valid address')
-			if (!hasShares) errors.push('Shares must be greater than 0')
 
 			return errors
 		},
 	},
 	methods: {
-		getMainnetConfig,
 		validateState,
 		onAddSplit() {
 			const otherShares = this.revenueSplits

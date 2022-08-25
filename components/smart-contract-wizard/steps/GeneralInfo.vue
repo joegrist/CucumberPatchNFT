@@ -200,7 +200,6 @@ import {
 	alphaNum,
 } from 'vuelidate/lib/validators'
 import { validateState } from '@/utils'
-import { getMainnetConfig } from '@/constants/metamask'
 const mustBeName = (val) => /^[A-Za-z][\w ]{1,50}$/.test(val)
 
 export default {
@@ -229,14 +228,7 @@ export default {
 			maxTokensPerPerson: { numeric, minValue: minValue(0) },
 		},
 	},
-	computed: {
-		currency() {
-			const chainId = this.smartContractBuilder.chainId
-			return this.getMainnetConfig(chainId)?.nativeCurrency.symbol || ''
-		},
-	},
 	methods: {
-		getMainnetConfig,
 		validateState,
 	},
 }

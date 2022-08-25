@@ -33,17 +33,35 @@ const copyToClipboard = async function (value) {
 	})
 }
 
+/**
+ * 
+ * @param {string} id - DOM element ID to scroll to 
+ */
 const scrollTo = (id) => {
 	document.getElementById(id).scrollIntoView({ behavior: 'smooth' })
 }
 
-const getProvider = (chainId, isStatic = true) => {
-	const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
-	return isStatic
-		? new ethers.providers.StaticJsonRpcProvider(providerUrl)
-		: new ethers.providers.JsonRpcProvider(providerUrl)
+/**
+ * 
+ * @param {(int|string)} chainId 
+ * @param {('nonstatic'|'batch')} [type] 
+ * @returns 
+ */
+const getProvider = (chainId, type = null) => {
+    const providerUrl = CHAINID_CONFIG_MAP[chainId.toString()].rpcUrls[0]
+    switch(type) {
+        case 'nonstatic': return new ethers.providers.JsonRpcProvider(providerUrl)
+        case 'batch': return new ethers.providers.JsonRpcBatchProvider(providerUrl)
+        default: return new ethers.providers.StaticJsonRpcProvider(providerUrl)
+    }
 }
 
+/**
+ * Parses metamask error
+ * @param {Object} err 
+ * @param {string} [defaultMsg=Unknown Error] 
+ * @returns 
+ */
 const getMetamaskError = (err, defaultMsg = 'Unknown Error') => {
 	const { data, reason, message, code, method, error } = err
 	return reason || message || error?.message || data?.message || defaultMsg

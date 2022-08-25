@@ -4,8 +4,7 @@
 			id="blockchain-logo"
 			class="p-2 border card-logo"
 			:src="blockchainIcon[sc.blockchain]"
-			size="lg"
-		>
+			size="lg">
 		</b-avatar>
 		<b-dropdown
 			size="lg"
@@ -15,8 +14,7 @@
 			toggle-class="text-decoration-none p-0"
 			no-caret
 			id="contract-actions"
-			right
-		>
+			right>
 			<template #button-content>
 				<b-icon icon="three-dots-vertical" class="text-muted" />
 				<span class="sr-only">Card Menu</span>
@@ -43,8 +41,7 @@
 				</b-dd-item>
 				<b-dd-item
 					v-if="isTestnet && !sc.isClearedForMainnet"
-					:to="`/checkout?smId=${sc.id}`"
-				>
+					:to="`/checkout?smId=${sc.id}`">
 					<b-icon icon="wallet2" /> Go to Checkout
 				</b-dd-item>
 			</template>
@@ -54,11 +51,13 @@
 		</b-dropdown>
 		<b-card-title
 			class="text-center truncate-text px-3 mb-0 pb-2"
-			id="project-name"
-		>
-			<div v-if="isDeployed" class="text-dark" @click="onManageProject(sc.id)">
-				{{ sc.name }}
-			</div>
+			id="project-name">
+			<b-link
+				v-if="isDeployed"
+				class="text-dark"
+				:to="`/project?id=${sc.id}`"
+				>{{ sc.name }}</b-link
+			>
 			<span v-else>{{ sc.name }}</span>
 		</b-card-title>
 
@@ -68,8 +67,7 @@
 				v-if="sc.isVerified"
 				icon="check-circle"
 				variant="success"
-				title="Source code verified"
-			></b-icon>
+				title="Source code verified"></b-icon>
 		</b-card-sub-title>
 
 		<b-container fluid>
@@ -121,9 +119,8 @@
 				<b-col
 					cols="6"
 					class="text-center"
-					style="padding-bottom: 0;"
-					id="owners-count"
-				>
+					style="padding-bottom: 0"
+					id="owners-count">
 					<span class="font-weight-bold">{{ openSeaStats.num_owners }}</span>
 					<br />
 					<span class="text-muted">Owners</span>
@@ -131,9 +128,8 @@
 				<b-col
 					cols="6"
 					class="text-center"
-					style="padding-bottom: 0;"
-					id="total-volume"
-				>
+					style="padding-bottom: 0"
+					id="total-volume">
 					<span class="font-weight-bold">{{
 						openSeaStats.total_volume === 'n/a'
 							? 'n/a'
@@ -145,17 +141,15 @@
 				<b-col
 					cols="12"
 					class="text-center"
-					style="padding: 0;"
-					id="marketplace"
-				>
+					style="padding: 0"
+					id="marketplace">
 					<b-button
 						v-if="isOpenSea"
 						size="sm"
 						:href="collectionUrl"
 						target="_blank"
 						variant="outline-light"
-						class="border"
-					>
+						class="border">
 						<b-img width="90px" src="@/assets/images/open-sea-logo-dark.svg" />
 					</b-button>
 					<b-button v-else size="sm" variant="transparent" disabled
@@ -202,67 +196,62 @@
 			:id="`Remove${sc.id}`"
 			title="Confirm"
 			centered
+			lazy
 			body-class="text-center"
 			ok-variant="primary"
 			ok-title="Yes"
-			cancel-title="No"
 			@ok="onRemoveCard"
-		>
+			cancel-title="No">
 			<h5>Are you sure want to remove this card ?</h5>
 		</b-modal>
 		<b-modal
 			:id="`Clone${sc.id}`"
 			title="Clone Contract"
 			centered
+			lazy
 			ok-variant="primary"
 			ok-title="Clone"
-			cancel-title="Cancel"
 			@ok.prevent="onCloneContract"
-		>
-			<b-form>
-				<b-form-group label="Title" label-class="required">
-					<b-form-input
-						id="cloneContractTitle"
-						name="cloneContractTitle"
-						type="text"
-						v-model="cloneContractTitle"
-						:state="validateState('cloneContractTitle')"
-					></b-form-input>
-					<b-form-invalid-feedback :state="validation.cloneContractTitle">
-						Please correct "Title"
-					</b-form-invalid-feedback>
-				</b-form-group>
-			</b-form>
+			cancel-title="Cancel">
+			<b-form-group label="Title" label-class="required">
+				<b-form-input
+					id="cloneContractTitle"
+					name="cloneContractTitle"
+					type="text"
+					autofocus
+					v-model="cloneContractTitle"
+					:state="validateState('cloneContractTitle')"></b-form-input>
+				<b-form-invalid-feedback :state="validation.cloneContractTitle">
+					Please correct "Title"
+				</b-form-invalid-feedback>
+			</b-form-group>
 		</b-modal>
 		<b-modal
 			:id="`OpenSea${sc.id}`"
 			title="Link your OpenSea collection"
 			centered
+			lazy
 			ok-variant="primary"
 			ok-title="Link"
 			:ok-disabled="$v.openSeaLinkUrl.$error"
 			@ok.prevent="onLinkOpenSea"
-			cancel-title="Cancel"
-		>
-			<div>
+			cancel-title="Cancel">
 				<b-form-group
 					:label="`Collection URL on ${projectDeploymentStatus}`"
 					label-class="required"
-					:description="collectionNameDesc"
-				>
+					:description="collectionNameDesc">
 					<b-form-input
 						id="link"
 						name="link"
 						type="url"
+						autofocus
 						v-model="openSeaLinkUrl"
 						:state="validateState('openSeaLinkUrl')"
-						@blur="$v.openSeaLinkUrl.$touch()"
-					></b-form-input>
+						@blur="$v.openSeaLinkUrl.$touch()"></b-form-input>
 					<b-form-invalid-feedback :state="validation.openSeaLinkUrl">
 						Please correct "Collection URL"
 					</b-form-invalid-feedback>
 				</b-form-group>
-			</div>
 		</b-modal>
 		<b-modal
 			:id="`deprecated-network-${sc.id}`"
@@ -379,8 +368,8 @@ export default {
 				: `https://opensea.io/collection/${slug}`
 		},
 		isOnDeprecatedNetwork() {
-			return [4].includes(Number(this.sc.chainId));
-		}
+			return [4].includes(Number(this.sc.chainId))
+		},
 	},
 	methods: {
 		...mapMutations(['updateSmartContractBuilder', 'setBusy']),
@@ -475,17 +464,13 @@ export default {
 		async getOpenSeaStats() {
 			if (!this.isOpenSea || !this.isDeployed) return
 
-			let openseaApiUrl
-			let retryCount = 0
+			let openseaApiUrl,
+				retryCount = 0
 			const fetchParams = {}
-
 			const name = this.sc.marketplaceCollection?.formattedName
 
 			if (this.isTestnet) {
 				openseaApiUrl = `https://testnets-api.opensea.io/api/v1/collection/${name}/stats`
-				fetchParams.headers = {
-					'X-API-KEY': '',
-				}
 			} else {
 				openseaApiUrl = `https://api.opensea.io/api/v1/collection/${name}/stats`
 				fetchParams.headers = {
@@ -535,10 +520,10 @@ export default {
 		handleLinkOpensea(id) {
 			if (this.isOnDeprecatedNetwork) {
 				this.$bvModal.show(`deprecated-network-${id}`)
-				return;
-				}
-				this.$bvModal.show(`Opensea${id}`);
-		}
+				return
+			}
+			this.$bvModal.show(`Opensea${id}`)
+		},
 	},
 }
 </script>

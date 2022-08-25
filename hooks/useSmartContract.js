@@ -4,15 +4,15 @@ import { getProvider } from '@/utils'
 
 const smartContract = ref(null)
 
-export default function useSmartContract({abi, address, chainId}, signer = null) {
+export default function useSmartContract({abi, address, chainId}, provider = null, signer = null) {
 
-    const provider = getProvider(chainId)
+    const defaultProvider = provider ?? getProvider(chainId)
     
     if(ethers.Signer.isSigner(signer)) {
-        signer.provider ??= provider
+        signer.provider ??= defaultProvider
         smartContract.value = new ethers.Contract(address, abi, signer)
     } else {
-        smartContract.value = new ethers.Contract(address, abi, provider)
+        smartContract.value = new ethers.Contract(address, abi, defaultProvider)
     }
 
     return smartContract

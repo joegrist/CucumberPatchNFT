@@ -358,8 +358,8 @@ export default {
 			saveAs(file)
 		},
 		downloadSourceCode() {
-			const fileName = `${rawContract.name}.sol`
-			const file = new File([rawContract.rawCode], fileName)
+			const fileName = `${this.rawContract.name}.sol`
+			const file = new File([this.rawContract.rawCode], fileName)
 			saveAs(file)
 		},
 		async onReady() {
