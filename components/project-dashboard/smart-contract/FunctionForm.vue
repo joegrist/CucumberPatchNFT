@@ -31,11 +31,13 @@
 					<li v-for="(funcParam, idx) in funcParams" :key="idx">
 						<b-form-group :label="funcParam.name">
 							<b-form-input
+								v-if="funcParam.name"
 								required
-								:type="funcParam.type.includes('uint') ? 'number' : 'text'"
-								:value="funcArgs.get(funcParam.name)"
+								min="0"
 								step="any"
-								@change="(val) => onParamChange(funcParam.name, val)"
+								ref="paramInput"
+								:type="funcParam.type.includes('uint') ? 'number' : 'text'"
+								v-model="funcArgs[funcParam.name]"
 							/>
 						</b-form-group>
 					</li>
@@ -95,18 +97,19 @@ export default {
 			SALE_STATUS,
 			isBusy: false,
 			response: null,
-			funcArgs: new Map(),
+			funcArgs: {}
 		}
 	},
 	computed: {
 		funcParams() {
-			return this.func.inputs.filter((x) => !x.name.startsWith('_'))
+			return this.func.inputs.filter((x) => !x.name?.startsWith('_'))
 		},
 		formattedResponse() {
 			if (!this.response) return null
 
-			const prefix =
-				this.func.inputs.length > 0 ? 'Response' : startCase(this.func.name)
+			const { inputs, name } = this.func
+
+			const prefix = inputs.length > 0 ? 'Response' : startCase(name)
 
 			if (this.response === 'true' || this.response === 'false') {
 				this.response = this.response === 'true' ? 'Yes' : 'No'
@@ -116,35 +119,51 @@ export default {
 		},
 	},
 	methods: {
+		getArgValues() {
+			// to preserve correct argument order we run mapping based on original function inputs order
+			// since we can't guarantee the correct order in funcArgs Map
+			return this.func.inputs.map((x) => {
+				const value = this.funcArgs[x.name]
+				return isNumber(value) ? ethers.BigNumber.from(value) : value
+			})
+		},
 		onUpdateSaleStatus(value) {
-			this.onParamChange('status', value)
+			this.funcArgs['status'] = value
 			this.onSubmit()
 		},
-		onParamChange(name, value) {
-			this.funcArgs.set(name, value)
-		},
 		async executeConstant() {
-			const txResponse = await this.contract[this.func.name]()
+			const { name: functionName } = this.func
+
+			const txResponse = await this.contract[functionName].call(
+				null,
+				...this.getArgValues(),
+			)
 			let value = txResponse.toString()
 
-			if (this.func.name.includes('PRICE')) {
+			if (functionName.includes('PRICE')) {
 				const ethValue = ethers.utils.formatEther(txResponse)
 				const currency = getCurrency(this.smartContract.chainId)
 				value = `${ethValue} ${currency}`
 			}
-			if (this.func.name === 'saleStatus') {
+			if (functionName === 'saleStatus') {
 				value = SALE_STATUS[txResponse]
 				this.$emit('valueUpdated', value)
 			}
 
 			this.$bvToast.toast(`Returned value: ${value}`, {
-				title: startCase(this.func.name),
+				title: startCase(functionName),
 				variant: 'success',
 			})
 
 			this.response = value
 		},
 		async executeGas() {
+
+			const { name: functionName, payable } = this.func
+			
+			if (functionName === 'redeem') {
+				throw new Error("This function is not supported")
+			}
 			if (!this.$wallet.isConnected) {
 				await this.$wallet.connect()
 			}
@@ -156,51 +175,33 @@ export default {
 				this.$wallet.provider.getSigner()
 			)
 
+			let args = this.getArgValues()
+
 			const txOverrides = {
 				gasPrice: await this.$wallet.provider.getGasPrice(),
 			}
 
-			let txResponse, args
-
-			const { name: functionName, payable, inputs } = this.func
-
-			const hasFuncArgs = this.funcArgs?.size > 0
-			if (hasFuncArgs) {
-				// to preserve correct argument order we run mapping based on original function inputs order
-				// since we can't guarantee the correct order in funcArgs Map
-				args = inputs.map((x) => {
-					const value = this.funcArgs.get(x.name)
-					return isNumber(value) ? ethers.BigNumber.from(value) : value
-				})
-
-				if (payable) {
-					if (functionName === 'mint') {
-						const mintPrice = await scInstance.MINT_PRICE()
-						const ethMintPrice = Number(ethers.utils.formatEther(mintPrice))
-						const howMany = Number(args[0])
-						const paymentValue = (ethMintPrice * howMany).toString()
-						txOverrides.value = ethers.utils.parseEther(paymentValue)
-					}
+			if (payable) {
+				if (functionName === 'mint') {
+					txOverrides.value = await signedContract.calcTotal(Number(args[0]))
 				}
-
-				if (functionName === 'setPublicMintPrice') {
-					const newPrice = this.funcArgs.get(inputs[0].name)
-					args = [ethers.utils.parseUnits(newPrice)]
-				}
-
-				txResponse = await signedContract[functionName].call(
-					null,
-					...args,
-					txOverrides
-				)
-			} else {
-				txResponse = await signedContract[functionName](txOverrides)
 			}
+
+			if (functionName === 'setPublicMintPrice') {
+				args = [ethers.utils.parseUnits(args[0])]
+			}
+
+			const txResponse = await signedContract[functionName].call(
+				null,
+				...args,
+				txOverrides
+			)
 
 			const msg = this.createToastMessage(
 				txResponse.hash,
 				this.smartContract.chainId
 			)
+
 			this.$bvToast.toast(msg, {
 				title: `${startCase(functionName)} - processing, please wait.`,
 				variant: 'success',
@@ -219,29 +220,31 @@ export default {
 
 				this.isBusy = true
 
-				this.func.constant
+				const { name: functionName, constant: isFuncConstant } = this.func
+				const [firstArgument] = this.getArgValues()
+
+				isFuncConstant
 					? await this.executeConstant()
 					: await this.executeGas()
 
-				if (this.func.name === 'setBaseURL') {
+				if (functionName === 'setBaseURL') {
 					await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
-						baseURL: this.funcArgs.get(this.func.inputs[0]?.name),
+						baseURL: firstArgument
 					})
 				}
 
-				if (this.func.name === 'setPreRevealUrl') {
+				if (functionName === 'setPreRevealUrl') {
 					await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
-						delayedRevealURL: this.funcArgs.get(this.func.inputs[0]?.name),
+						delayedRevealURL: firstArgument
 					})
 				}
 
-				if (this.func.name === 'transferOwnership') {
+				if (functionName === 'transferOwnership') {
 					await this.$axios.patch(`/smartcontracts/${this.smartContract.id}`, {
-						ownerAddress: this.funcArgs.get(this.func.inputs[0]?.name),
+						ownerAddress: firstArgument
 					})
 				}
 
-				this.funcArgs = new Map()
 			} catch (err) {
 				console.error({ err })
 				const { method, code } = err
