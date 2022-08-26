@@ -111,7 +111,7 @@
 		<b-row v-show="newBaseURL">
 			<b-col>
 				<h6 class="text-success">
-					Success! Here's your metadata url {{ smartContract.hasDelayedReveal ? ', use it to reveal your collection when ready': ''}}:
+					Success! Here's your metadata url, {{ smartContract.hasDelayedReveal ? ' use it to reveal your collection when ready': ' use it to Set Base URL' }}:
 					<br />{{ newBaseURL }}
 					<Copy :value="newBaseURL"></Copy>
 				</h6>
@@ -226,7 +226,7 @@ export default {
 
 				const filesToUpload = textFiles.map((x, i) => {
 					const meta = JSON.parse(x)
-					meta.image = `ipfs://${this.imagesCID}/${this.imageFiles[i].name}`
+					meta.image = `ipfs://${this.imagesCID}/${encodeURIComponent(this.imageFiles[i].name)}`
 					return new File([JSON.stringify(meta)], `${i + 1}.json`)
 				})
 
