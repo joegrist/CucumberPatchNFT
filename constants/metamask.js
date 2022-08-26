@@ -90,7 +90,7 @@ export const ETHEREUM_GOERLI = {
 		symbol: 'GoerliETH',
 		decimals: 18
 	},
-	rpcUrls: ["https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"],
+	rpcUrls: ["https://eth-goerli.g.alchemy.com/v2/mOLxnODEDgfoeldZVup3j7LEd2TANS3U"],
 	blockExplorerUrls: ['https://goerli.etherscan.io']
 }
 

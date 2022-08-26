@@ -272,9 +272,7 @@
 			hide-footer
 			lazy
 		>
-			The contract is deployed on Rinkeby network and it's been deprecated due
-			to eth2.0 merge. Clone the contract and redeploy so that it gets
-			redeployed on Goerli test network.
+			This project was deployed on Rinkeby testnet that will soon be deprecated due to the eth2.0 merge. Clone and redeploy this project to continue using it on the Goerli test network.
 		</b-modal>
 	</b-card>
 </template>
@@ -381,7 +379,7 @@ export default {
 				: `https://opensea.io/collection/${slug}`
 		},
 		isOnDeprecatedNetwork() {
-			return [4].includes(Number(this.sc.chainId))
+			return Number(this.sc.chainId) === 4;
 		},
 	},
 	methods: {
