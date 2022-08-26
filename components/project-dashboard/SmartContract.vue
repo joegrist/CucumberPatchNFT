@@ -40,6 +40,7 @@
 								<b-button
 									variant="primary"
 									v-if="canVerify"
+									:disabled="!isReady"
 									@click="onVerify"
 									id="verify-source-code"
 								>
@@ -298,7 +299,6 @@ export default {
 		} catch {
 			// if not deployed setup one-time listener
 			this.contract.once('OwnershipTransferred', async (from, to) => {
-				console.log('OwnershipTransferred', from, to)
 				if (from === ethers.constants.AddressZero) {
 					await this.onReady()
 				}

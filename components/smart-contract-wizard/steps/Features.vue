@@ -266,7 +266,7 @@ export default {
 			maxValue: maxValue(0), // this won't let to go Next if there is at least 1 error
 		},
 	},
-	mounted() {
+	created() {
 		const splits = this.smartContractBuilder.revenueSplits
 		if (splits?.length) {
 			// hard copy from state to avoid vuex errors of mutating state outside of store
@@ -291,8 +291,6 @@ export default {
 			const errors = []
 			const sumsTo100 = this.splitShareTotal === 100
 
-			console.log(sumsTo100)
-
 			if (!sumsTo100) errors.push('Shares must add up to 100%')
 
 			return errors
@@ -301,12 +299,9 @@ export default {
 	methods: {
 		validateState,
 		onAddSplit() {
-			const otherShares = this.revenueSplits
-				.map((x) => x.share)
-				.reduce((acc, val) => acc + val, 0)
 			this.revenueSplits.push({
 				wallet: null,
-				share: 100 - otherShares,
+				share: 100 - this.splitShareTotal,
 			})
 		},
 		onRemoveSplit(idx) {
