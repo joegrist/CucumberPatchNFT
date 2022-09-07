@@ -10,11 +10,7 @@
 					href="https://youtu.be/1f7GvvOIe6Y"
 					icon="youtube"
 					text="How does metadata work ?!"
-				/> |
-				<ExternalLink
-					href="https://nft-inator.com/?ref=zerocodenft"
-					text="Generate yours FREE"
-				/> |
+				/>
 			</b-col>
 		</b-row>
 		<b-row v-show="newBaseURL || smartContract.baseURL">
