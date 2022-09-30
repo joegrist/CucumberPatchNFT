@@ -92,7 +92,6 @@ export default {
 	// Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
 	plugins: [
 		'@/plugins/axios',
-		// '@/plugins/netlify',
 		'@/plugins/vuelidate',
 		'@/plugins/filters',
 		'@/plugins/wallet',
@@ -107,14 +106,10 @@ export default {
 
 	// Modules: https://go.nuxtjs.dev/config-modules
 	modules: [
-		// https://go.nuxtjs.dev/bootstrap
 		'bootstrap-vue/nuxt',
-		// https://go.nuxtjs.dev/axios
 		'@nuxtjs/axios',
-		// https://go.nuxtjs.dev/pwa
 		'@nuxtjs/pwa',
 		'@nuxtjs/sitemap',
-		// '@nuxtjs/recaptcha',
 		'@nuxtjs/style-resources',
 		'@nuxtjs/i18n',
 		'vue-social-sharing/nuxt',
@@ -137,19 +132,7 @@ export default {
 		],
 		defaultLocale: 'en',
 		vueI18nLoader: true,
-		// vueI18n: {
-		// 	fallbackLocale: 'en',
-		// 	messages: {
-
-		// 	},
-		// },
 	},
-
-	// recaptcha: {
-	//   siteKey: RECAPTCHA_KEY,
-	//   version: 3,
-	//   size: 'compact'
-	// },
 
 	bootstrapVue: {
 		icons: true,
@@ -194,7 +177,7 @@ export default {
 				},
 			},
 		},
-		extend(config, { isDev, isClient }) {
+		extend(config) {
 			config.node = {
 				fs: 'empty',
 			}
