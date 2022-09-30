@@ -1,5 +1,7 @@
 # ZeroCodeNFT
 
+[Dashboard](assets/images/dashboard_screenshot.png)
+
 ## wallet plugin
 
 contains all the interactions and event listeners necessary to interact with the metamask or another provider
