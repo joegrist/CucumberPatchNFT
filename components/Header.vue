@@ -46,7 +46,7 @@
 							>Start Tour</b-dropdown-item
 						>
 						<b-dropdown-item
-							href="https://discord.gg/zerocodenft"
+							:href="$config.DISCORD_INVITE_URL"
 							target="_blank"
 							>Discord</b-dropdown-item
 						>
