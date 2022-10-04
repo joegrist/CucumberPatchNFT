@@ -40,7 +40,7 @@
         </h6>
         <div class="d-flex">
             <LoginButton variant="primary" :caption="$t('loginWithMetamask')" redirect="/" />
-            <b-button variant="link" href="https://discord.gg/ZeroCodeNFT" target="_blank">{{ $t('joinDiscord') }}</b-button>
+            <b-button variant="link" :href="$config.DISCORD_INVITE_URL" target="_blank">{{ $t('joinDiscord') }}</b-button>
         </div>
         <div class="mt-1">
             <b-link class="text-muted" :to="localePath('/wizard')">

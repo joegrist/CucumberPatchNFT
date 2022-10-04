@@ -37,7 +37,7 @@ import smartContractBuilderMixin from '@/mixins/smartContractBuilder'
 import { BLOCKCHAIN } from '@/constants'
 
 const blockchainToTestChainIdMap = {
-	[BLOCKCHAIN.Ethereum]: 4,
+	[BLOCKCHAIN.Ethereum]: 5,
 	[BLOCKCHAIN.Fantom]: 4002,
 	[BLOCKCHAIN.BinanceSmartChain]: 97,
 	[BLOCKCHAIN.Polygon]: 80001,

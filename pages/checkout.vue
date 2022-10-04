@@ -121,7 +121,7 @@
 					<b-button
 						size="lg"
 						variant="primary"
-						href="https://discord.gg/NdEpB6ZYKn"
+						:href="$config.DISCORD_INVITE_URL"
 						target="_blank"
 						><b-icon icon="discord"></b-icon
 					></b-button>
