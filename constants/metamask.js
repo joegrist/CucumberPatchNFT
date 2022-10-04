@@ -460,7 +460,7 @@ export function getMainnetConfig(testnetChainId) {
 	if(typeof testnetChainId !== 'string') {
 		testnetChainId = testnetChainId.toString()
 	}
-	if(['0x5','5'].includes(testnetChainId)) return ETHEREUM_MAINNET
+	if(['0x4', '4', '0x5', '5'].includes(testnetChainId)) return ETHEREUM_MAINNET
 	if(['0xA869', '43113'].includes(testnetChainId)) return AVALANCHE_MAINNET_PARAMS
 	if(['0x89', '80001'].includes(testnetChainId)) return POLYGON_MAINNET_PARAMS
 	if(['0xFA2', '4002'].includes(testnetChainId)) return FANTOM_MAINNET_CONFIG
