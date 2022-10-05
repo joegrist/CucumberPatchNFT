@@ -149,7 +149,7 @@
 					id="marketplace"
 				>
 					<b-button
-						v-if="isOpenSea"
+						v-if="collectionUrl"
 						size="sm"
 						:href="collectionUrl"
 						target="_blank"
@@ -298,6 +298,7 @@ export default {
 	},
 	data() {
 		return {
+			sc: null,
 			balance: 'n/a',
 			minted: 0,
 			openSeaLinkUrl: null,
@@ -315,6 +316,9 @@ export default {
 	validations: {
 		openSeaLinkUrl: { required },
 		cloneContractTitle: { required, maxLength: maxLength(50) },
+	},
+	created() {
+		this.sc = this.$props.sc
 	},
 	async mounted() {
 		if (!this.isDeployed) return
@@ -371,12 +375,11 @@ export default {
 			return 'Draft'
 		},
 		collectionNameDesc() {
-			const name = this.openSeaLinkUrl || ''
-			const parts = name.split('/')
-			const slug = parts[parts.length - 1]
-			return this.isTestnet
-				? `https://testnets.opensea.io/collection/${slug}`
-				: `https://opensea.io/collection/${slug}`
+			return 'Format: ' + (
+				this.isTestnet
+				? 'https://testnets.opensea.io/collection/your-collection-name'
+				: 'https://opensea.io/collection/your-collection-name'
+			)
 		},
 		isOnDeprecatedNetwork() {
 			return Number(this.sc.chainId) === 4;
@@ -407,6 +410,13 @@ export default {
 					title: 'OpenSea Link',
 					variant: 'success',
 				})
+
+				if(!this.sc.marketplaceCollection) {
+					this.sc.marketplaceCollection = {}
+				}
+
+				this.sc.marketplaceCollection.url = this.openSeaLinkUrl
+
 				wait(2000).then(this.getOpenSeaStats)
 			} catch (err) {
 				this.$bvToast.toast('Linking failed', {
