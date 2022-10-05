@@ -272,7 +272,10 @@
 			hide-footer
 			lazy
 		>
-			This project was deployed on Rinkeby testnet that will soon be deprecated due to the eth2.0 merge. Clone and redeploy this project to continue using it on the Goerli test network.
+			<p>This project was deployed on Rinkeby testnet that will soon be deprecated due to the eth2.0 merge. Clone and redeploy this project to continue using it on the Goerli test network.</p>
+			<b-button variant="primary" v-b-modal="`Clone${sc.id}`">
+				Clone Now
+			</b-button>
 		</b-modal>
 	</b-card>
 </template>
@@ -438,6 +441,7 @@ export default {
 					name: this.cloneContractTitle,
 				})
 				this.$bvModal.hide(`Clone${this.sc.id}`)
+				this.$bvModal.hide(`deprecated-network-${this.sc.id}`)
 				this.cloneContractTitle = null
 			} catch (err) {
 				this.$bvToast.toast('Clone failed', {
