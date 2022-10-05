@@ -533,7 +533,7 @@ export default {
 				this.$bvModal.show(`deprecated-network-${id}`)
 				return
 			}
-			this.$bvModal.show(`Opensea${id}`)
+			this.$bvModal.show(`OpenSea${id}`)
 		},
 	},
 }
