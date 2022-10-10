@@ -414,6 +414,9 @@ export default {
 			try {
 				if (!this.canDeployMainnet) return
 
+				alert("Please contact us via email or Discord to deploy to the mainnet. Thanks!")
+				return
+
 				const { id, chainId, isClearedForMainnet } = this.rawContract
 
 				const userCredits = await this.$store.dispatch('getCreditsCount')
