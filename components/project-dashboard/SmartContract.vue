@@ -414,10 +414,12 @@ export default {
 			try {
 				if (!this.canDeployMainnet) return
 
-				alert("Please contact us via email or Discord to deploy to the mainnet. Thanks!")
-				return
 
-				const { id, chainId, isClearedForMainnet } = this.rawContract
+				const { id, chainId, isClearedForMainnet, hasRevenueSplits } = this.rawContract
+
+				if(hasRevenueSplits) {
+					alert("Your smart contract has revenue splitting enabled. If any of the revenue split addresses is another smart contract(like gnosis safe vault) - contact us first!")
+				}
 
 				const userCredits = await this.$store.dispatch('getCreditsCount')
 				const isPaid = userCredits > 0 || isClearedForMainnet
