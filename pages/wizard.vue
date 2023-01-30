@@ -62,22 +62,6 @@ export default {
       buildSteps: [
         {
           icon: 'looks_one',
-          name: 'contractType',
-          title: 'Contract Type',
-          subtitle: 'ERC721, ERC721A, etc.',
-          component: ContractType,
-          completed: false
-        },
-        {
-          icon: 'looks_two',
-          name: 'blockchain',
-          title: 'Blockchain',
-          subtitle: 'Blockchain to deploy smart contract to',
-          component: Blockchain,
-          completed: false
-        },
-        {
-          icon: 'looks_3',
           name: 'generalInfo',
           title: 'General Info',
           subtitle: 'Smart contract name, symbol, etc.',
@@ -85,7 +69,7 @@ export default {
           completed: false
         },
         {
-          icon: 'looks_4',
+          icon: 'looks_two',
           name: 'features',
           title: 'Features',
           subtitle: 'Delayed reveal, whitelist, etc.',
@@ -93,7 +77,7 @@ export default {
           completed: false
         },
         {
-          icon: 'looks_5',
+          icon: 'looks_3',
           name: 'marketplace',
           title: 'Marketplace',
           subtitle: 'Collection name, royalties, etc.',
@@ -101,7 +85,7 @@ export default {
           completed: false
         },
         {
-          icon: 'looks_6',
+          icon: 'looks_4',
           name: 'deploy',
           title: 'Deploy',
           subtitle: 'Verify and publish the smart contract',

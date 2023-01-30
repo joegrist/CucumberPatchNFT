@@ -16,9 +16,10 @@ export const state = () => ({
     dashboardItems: [],
     alerts: [],
     smartContractBuilder: {
+        type: 'ERC721',
         baseURL: null,
         blockchain: null,
-        chainId: null,
+        chainId: 97,
         collectionSize: null,
         email: null,
         hasWhitelist: false,
