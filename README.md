@@ -14,7 +14,8 @@ contains all the interactions and event listeners necessary to interact with the
 $ npm install
 
 # serve with hot reload at localhost:3000
-$ npm run dev
+$ #was: npm run dev
+$ NODE_OPTIONS=--openssl-legacy-provider npm run dev
 
 # build for production and launch server
 $ npm run build
